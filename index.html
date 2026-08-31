@@ -995,6 +995,11 @@
             transform: translateY(20px);
             transition: all 0.6s ease-out;
         }
+        
+         .sl-fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
         /* ============================================
   HOMEPAGE VIEW
@@ -1401,27 +1406,6 @@
             .trust-grid { grid-template-columns: repeat(2, 1fr); }
         }
 
-        @media (max-width: 900px) {
-            footer > div:first-of-type {
-                grid-template-columns: 1fr 1fr !important;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .navbar-menu { display: none; }
-            .hero { padding: 100px 0 60px; }
-            .hero-title { font-size: 2rem; }
-            .hero-actions { flex-direction: column; align-items: flex-start; }
-            .ecosystem-illustration { height: 260px; }
-            .ecosystem-illustration .eco-location-name { font-size: 0.45rem; }
-            .ecosystem-illustration .eco-card { padding: 6px 8px; }
-            .ecosystem-illustration .eco-card-title { font-size: 0.45rem; }
-            .ecosystem-illustration .eco-card-sub { display: none; }
-            .ecosystem-illustration .eco-card-icon { width: 20px; height: 20px; }
-            .ecosystem-illustration .eco-card-icon svg { width: 10px; height: 10px; }
-            .ecosystem-illustration .eco-stat-pill { font-size: 0.4rem; padding: 4px 8px; }
-        }
-
         @media (max-width: 640px) {
             .sl-section { padding: 56px 0; }
             .sl-heading { font-size: 1.5rem; }
@@ -1434,6 +1418,7 @@
             .trust-grid { grid-template-columns: 1fr; }
             .final-cta h2 { font-size: 1.5rem; }
             .final-cta-buttons { flex-direction: column; align-items: center; }
+            .navbar-menu { display: none; }
         }
 
         @media (max-width: 600px) {
@@ -1451,13 +1436,59 @@
             .hero { padding: 80px 0 40px; }
             .hero-title { font-size: 1.75rem; }
             .ecosystem-illustration { height: 200px; border-radius: var(--radius-md); }
-            .ecosystem-illustration .eco-location-name { font-size: 0.38rem; }
-            .ecosystem-illustration .eco-card { padding: 4px 6px; }
-            .ecosystem-illustration .eco-card-title { font-size: 0.4rem; }
-            .ecosystem-illustration .eco-stats { font-size: 0.42rem; }
-            .ecosystem-illustration .eco-card-glow { width: 24px; height: 24px; }
-            .ecosystem-illustration .eco-flow-dot { width: 3px; height: 3px; }
-            .ecosystem-illustration .eco-flow-line { width: 6px; height: 2px; }
+        }
+
+        /* Create button */
+        .create-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: var(--forest-green);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.8125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .create-btn:hover {
+            background: var(--forest-green-light);
+        }
+
+        .create-btn i {
+            width: 16px; height: 16px;
+        }
+
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            z-index: 1100;
+            background: var(--forest-green);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 999;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
         }
     </style>
 </head>
