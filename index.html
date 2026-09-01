@@ -2454,209 +2454,197 @@
 
 </div>
 
-<!-- MAIN CONTENT -->
+
+
+<!-- ============================================
+     DASHBOARD VIEW (unchanged from original)
+     ============================================ -->
+<div id="dashboard-view" class="dashboard" style="display: none;">
+
+    <button class="sidebar-toggle" onclick="toggleSidebar()">
+        <i data-lucide="menu"></i>
+    </button>
+
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo" onclick="navigateTo('homepage')">
+                <i data-lucide="compass"></i>
+                <span>SafariLink</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <div class="nav-item active" onclick="switchPage('dashboard')">
+                    <i data-lucide="layout-dashboard"></i>
+                    Dashboard
+                </div>
+                <div class="nav-item" onclick="switchPage('itinerary')">
+                    <i data-lucide="route"></i>
+                    Itineraries
+                </div>
+                <div class="nav-item" onclick="switchPage('trips')">
+                    <i data-lucide="map"></i>
+                    Trips
+                </div>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Sourcing</div>
+                <div class="nav-item" onclick="switchPage('accommodation')">
+                    <i data-lucide="bed-double"></i>
+                    Accommodation
+                </div>
+                <div class="nav-item" onclick="switchPage('vehicles')">
+                    <i data-lucide="car"></i>
+                    Vehicles
+                </div>
+                <div class="nav-item" onclick="switchPage('guides')">
+                    <i data-lucide="users"></i>
+                    Guides
+                </div>
+                <div class="nav-item" onclick="switchPage('activities')">
+                    <i data-lucide="compass"></i>
+                    Activities
+                </div>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Operations</div>
+                <div class="nav-item" onclick="switchPage('messages')">
+                    <i data-lucide="message-square"></i>
+                    Messages
+                </div>
+                <div class="nav-item" onclick="switchPage('documents')">
+                    <i data-lucide="file-text"></i>
+                    Documents
+                </div>
+                <div class="nav-item" onclick="switchPage('invoices')">
+                    <i data-lucide="credit-card"></i>
+                    Invoices
+                </div>
+                <div class="nav-item" onclick="switchPage('tasks')">
+                    <i data-lucide="clipboard-list"></i>
+                    Tasks
+                </div>
+                <div class="nav-item" onclick="switchPage('favorites')">
+                    <i data-lucide="star"></i>
+                    Favorites
+                </div>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Analytics &amp; Settings</div>
+                <div class="nav-item" onclick="switchPage('analytics')">
+                    <i data-lucide="bar-chart-3"></i>
+                    Reports &amp; Analytics
+                </div>
+                <div class="nav-item" onclick="switchPage('company')">
+                    <i data-lucide="building-2"></i>
+                    Company
+                </div>
+                <div class="nav-item" onclick="switchPage('team')">
+                    <i data-lucide="users"></i>
+                    Team
+                </div>
+            </div>
+        </nav>
+    </aside>
+
     <div class="main-content">
-        
-<!-- ==========================================
-             DASHBOARD PAGE
-             ========================================== -->
+
+        <!-- DASHBOARD PAGE -->
         <div id="dashboard-page" class="page active">
             <div class="page-header">
                 <div>
                     <div class="page-title">Dashboard</div>
-                    <div class="page-subtitle">Welcome back, Mathias. Here's your operations overview.</div>
+                    <div class="page-subtitle">Welcome back. Here's your operation overview.</div>
                 </div>
-                <div style="display:flex; gap:8px;">
-                    <button class="create-btn" onclick="switchPage('itinerary')">
-                        <i data-lucide="route"></i> New Itinerary
-                    </button>
-                </div>
+                <button class="create-btn" onclick="switchPage('itinerary')">
+                    <i data-lucide="plus"></i>
+                    New Itinerary
+                </button>
             </div>
-
-            <!-- Quick Actions -->
-            <div class="quick-actions">
-                <div class="action-btn" onclick="switchPage('itinerary')">
-                    <i data-lucide="route"></i>
-                    Build Itinerary
-                </div>
-                <div class="action-btn" onclick="switchPage('accommodation')">
-                    <i data-lucide="bed-double"></i>
-                    Find Hotel
-                </div>
-                <div class="action-btn" onclick="switchPage('fleet')">
-                    <i data-lucide="car"></i>
-                    Find Vehicle
-                </div>
-                <div class="action-btn" onclick="switchPage('guides')">
-                    <i data-lucide="badge-check"></i>
-                    Find Guide
-                </div>
-                <div class="action-btn" onclick="switchPage('quotes')">
-                    <i data-lucide="file-text"></i>
-                    Create Quote
-                </div>
-                <div class="action-btn" onclick="switchPage('clients')">
-                    <i data-lucide="users"></i>
-                    Add Client
-                </div>
-            </div>
-
-            <!-- Smart Operations Assistant -->
-            <div class="assistant-panel">
-                <div class="assistant-header">
-                    <i data-lucide="lightbulb"></i>
-                    Smart Operations Assistant
-                </div>
-                <div class="assistant-items">
-                    <div class="assistant-item warning">
-                        <i data-lucide="alert-circle"></i>
-                        <div>
-                            <strong>Pending Confirmation:</strong> Your Serengeti Heritage Camp reservation for 12–15 Sept is still awaiting confirmation (3+ hours).
-                        </div>
-                    </div>
-                    <div class="assistant-item success">
-                        <i data-lucide="check-circle"></i>
-                        <div>
-                            <strong>Good news:</strong> Two alternative camps are available for the same dates at similar rates.
-                        </div>
-                    </div>
-                    <div class="assistant-item info">
-                        <i data-lucide="bell"></i>
-                        <div>
-                            <strong>Guide Alert:</strong> John Mollel (German-speaking) is available for 15–20 September at $90/day.
-                        </div>
-                    </div>
-                    <div class="assistant-item success">
-                        <i data-lucide="check-circle"></i>
-                        <div>
-                            <strong>Available:</strong> Land Cruiser (7-seat) available in Arusha for 15–20 Sept at $250/day.
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Recent Messages -->
-            <div class="card" style="margin-bottom: 20px;">
+            <div class="card" style="margin-bottom:20px;">
                 <div class="card-header">
-                    <div class="card-title">Recent Messages</div>
-                    <button class="create-btn" style="padding: 6px 14px; font-size: 0.8125rem;" onclick="switchPage('messages')">
-                        <i data-lucide="message-square"></i> View All
-                    </button>
+                    <div class="card-title">Smart Operations Assistant</div>
                 </div>
                 <div class="card-body">
-                    <div class="message-item">
-                        <div class="message-avatar"><i data-lucide="hotel"></i></div>
-                        <div class="message-content">
-                            <div class="message-sender">Serengeti Heritage Camp</div>
-                            <div class="message-preview">"Reservation confirmed for 15–18 September. Welcome to Serengeti Heritage Camp."</div>
+                    <div style="display:flex;flex-direction:column;gap:12px;">
+                        <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:var(--warm-off-white);border-radius:var(--radius-sm);border-left:3px solid var(--status-pending);">
+                            <i data-lucide="alert-triangle" style="width:18px;height:18px;color:var(--status-pending);flex-shrink:0;margin-top:2px;"></i>
+                            <div>
+                                <div style="font-size:0.8rem;font-weight:600;color:var(--charcoal);margin-bottom:4px;">Serengeti Safari (Aug 15) — Accommodation pending</div>
+                                <div style="font-size:0.75rem;color:var(--warm-gray);">Serengeti Serena hasn't confirmed availability. <a href="#" style="font-weight:600;">Follow up →</a></div>
+                            </div>
                         </div>
-                        <div class="message-time">2h ago</div>
-                    </div>
-                    <div class="message-item">
-                        <div class="message-avatar"><i data-lucide="car"></i></div>
-                        <div class="message-content">
-                            <div class="message-sender">Safari Fleet Tanzania</div>
-                            <div class="message-preview">"Vehicle is ready for pickup on 15 September at 08:00 from Arusha office."</div>
+                        <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:var(--warm-off-white);border-radius:var(--radius-sm);border-left:3px solid var(--status-available);">
+                            <i data-lucide="check-circle" style="width:18px;height:18px;color:var(--status-available);flex-shrink:0;margin-top:2px;"></i>
+                            <div>
+                                <div style="font-size:0.8rem;font-weight:600;color:var(--charcoal);margin-bottom:4px;">Ngorongoro Crater trip — Ready to quote</div>
+                                <div style="font-size:0.75rem;color:var(--warm-gray);">All 3 accommodations confirmed. Send quote to client.</div>
+                            </div>
                         </div>
-                        <div class="message-time">4h ago</div>
+                        <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:var(--warm-off-white);border-radius:var(--radius-sm);border-left:3px solid var(--status-info);">
+                            <i data-lucide="info" style="width:18px;height:18px;color:var(--status-info);flex-shrink:0;margin-top:2px;"></i>
+                            <div>
+                                <div style="font-size:0.8rem;font-weight:600;color:var(--charcoal);margin-bottom:4px;">5 new vehicles available in Arusha</div>
+                                <div style="font-size:0.75rem;color:var(--warm-gray);">Available for Sep 1–10. <a href="#" style="font-weight:600;">View vehicles →</a></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Monthly Performance -->
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">
+                <button class="create-btn" style="background:#fff;color:var(--charcoal);border:1px solid var(--border-light);justify-content:center;" onclick="switchPage('itinerary')">
+                    <i data-lucide="plus-circle" style="color:var(--forest-green);"></i>
+                    <span>New Itinerary</span>
+                </button>
+                <button class="create-btn" style="background:#fff;color:var(--charcoal);border:1px solid var(--border-light);justify-content:center;" onclick="switchPage('accommodation')">
+                    <i data-lucide="search" style="color:var(--forest-green);"></i>
+                    <span>Search Accommodation</span>
+                </button>
+                <button class="create-btn" style="background:#fff;color:var(--charcoal);border:1px solid var(--border-light);justify-content:center;" onclick="switchPage('vehicles')">
+                    <i data-lucide="car" style="color:var(--forest-green);"></i>
+                    <span>Find Vehicles</span>
+                </button>
+            </div>
+
+            <div class="grid-4" style="margin-bottom:20px;">
+                <div class="card"><div class="card-body" style="padding:20px;text-align:center;">
+                    <div style="font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--warm-gray);margin-bottom:8px;">Active Trips</div>
+                    <div style="font-size:28px;font-weight:800;color:var(--forest-green);">12</div>
+                    <div style="font-size:0.75rem;color:var(--status-available);margin-top:4px;">&uarr; 3 this month</div>
+                </div></div>
+                <div class="card"><div class="card-body" style="padding:20px;text-align:center;">
+                    <div style="font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--warm-gray);margin-bottom:8px;">Pending Quotes</div>
+                    <div style="font-size:28px;font-weight:800;color:#b08d3a;">5</div>
+                    <div style="font-size:0.75rem;color:#dc2626;margin-top:4px;">&darr; 2 from last week</div>
+                </div></div>
+                <div class="card"><div class="card-body" style="padding:20px;text-align:center;">
+                    <div style="font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--warm-gray);margin-bottom:8px;">Confirmed Bookings</div>
+                    <div style="font-size:28px;font-weight:800;color:var(--forest-green);">28</div>
+                    <div style="font-size:0.75rem;color:var(--status-available);margin-top:4px;">&uarr; 8 this month</div>
+                </div></div>
+                <div class="card"><div class="card-body" style="padding:20px;text-align:center;">
+                    <div style="font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--warm-gray);margin-bottom:8px;">Total Revenue</div>
+                    <div style="font-size:28px;font-weight:800;color:var(--forest-green);">$142K</div>
+                    <div style="font-size:0.75rem;color:var(--status-available);margin-top:4px;">&uarr; 12% vs last month</div>
+                </div></div>
+            </div>
+
             <div class="card">
-                <div class="card-header">
-                    <div class="card-title">This Month's Performance</div>
-                    <button class="create-btn" style="padding: 6px 14px; font-size: 0.8125rem;" onclick="switchPage('analytics')">
-                        <i data-lucide="bar-chart-3"></i> View Full Reports
-                    </button>
-                </div>
-                <div class="card-body">
-                    <div class="grid-4">
-                        <div style="padding: 16px; background: var(--warm-off-white); border-radius: var(--radius-sm); text-align: center;">
-                            <div style="font-size: 0.6875rem; color: var(--warm-gray); margin-bottom: 8px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.04em;">Bookings</div>
-                            <div style="font-size: 28px; font-weight: 700; color: var(--forest-green);">28</div>
-                            <div style="font-size: 0.75rem; color: var(--status-available); margin-top: 4px;">
-                                <span style="display:inline-flex; align-items:center; gap:3px;"><i data-lucide="trending-up" style="width:12px;height:12px;"></i> 15% vs last month</span>
-                            </div>
-                        </div>
-                        <div style="padding: 16px; background: var(--warm-off-white); border-radius: var(--radius-sm); text-align: center;">
-                            <div style="font-size: 0.6875rem; color: var(--warm-gray); margin-bottom: 8px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.04em;">Supplier Spend</div>
-                            <div style="font-size: 28px; font-weight: 700; color: var(--forest-green);">$18.4K</div>
-                            <div style="font-size: 0.75rem; color: var(--warm-gray); margin-top: 4px;">Avg $658/booking</div>
-                        </div>
-                        <div style="padding: 16px; background: var(--warm-off-white); border-radius: var(--radius-sm); text-align: center;">
-                            <div style="font-size: 0.6875rem; color: var(--warm-gray); margin-bottom: 8px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.04em;">Est. Sales</div>
-                            <div style="font-size: 28px; font-weight: 700; color: var(--forest-green);">$27.6K</div>
-                            <div style="font-size: 0.75rem; color: var(--warm-gray); margin-top: 4px;">Avg $986/booking</div>
-                        </div>
-                        <div style="padding: 16px; background: var(--warm-off-white); border-radius: var(--radius-sm); text-align: center;">
-                            <div style="font-size: 0.6875rem; color: var(--warm-gray); margin-bottom: 8px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.04em;">Gross Margin</div>
-                            <div style="font-size: 28px; font-weight: 700; color: var(--status-available);">33.1%</div>
-                            <div style="font-size: 0.75rem; color: var(--warm-gray); margin-top: 4px;">Profit: $9.15K</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Itineraries -->
-            <div class="card" style="margin-top: 20px;">
-                <div class="card-header">
-                    <div>
-                        <div class="card-title">Your Itineraries</div>
-                        <div class="card-subtitle">Build and manage complete safari itineraries</div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;">
-                        <div class="itinerary-item" onclick="switchPage('itinerary')">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                <div class="itinerary-title">5-Day Serengeti & Ngorongoro</div>
-                                <span class="status-badge status-confirmed">Confirmed</span>
-                            </div>
-                            <div class="itinerary-meta">
-                                <div><i data-lucide="calendar-days"></i> 15 Sep — 20 Sep</div>
-                                <div><i data-lucide="users"></i> 2 Travelers</div>
-                            </div>
-                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-light); font-size: 0.75rem; color: var(--warm-gray);">
-                                <span style="display:flex; align-items:center; gap:4px;"><i data-lucide="bed-double" style="width:12px;height:12px;"></i> Serengeti Heritage Camp</span>
-                                <div style="display:flex; align-items:center; gap:4px; margin-top:2px;"><i data-lucide="car" style="width:12px;height:12px;"></i> Land Cruiser</div>
-                                <div style="display:flex; align-items:center; gap:4px; margin-top:2px;"><i data-lucide="badge-check" style="width:12px;height:12px;"></i> John Mollel</div>
-                            </div>
-                        </div>
-
-                        <div class="itinerary-item" onclick="switchPage('itinerary')">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                <div class="itinerary-title">7-Day Luxury Safari</div>
-                                <span class="status-badge status-pending">Pending</span>
-                            </div>
-                            <div class="itinerary-meta">
-                                <div><i data-lucide="calendar-days"></i> 28 Sep — 05 Oct</div>
-                                <div><i data-lucide="users"></i> 4 Travelers</div>
-                            </div>
-                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-light); font-size: 0.75rem; color: var(--warm-gray);">
-                                <span style="display:flex; align-items:center; gap:4px;"><i data-lucide="bed-double" style="width:12px;height:12px;"></i> Pending confirmation</span>
-                                <div style="display:flex; align-items:center; gap:4px; margin-top:2px;"><i data-lucide="car" style="width:12px;height:12px;"></i> Vehicle request sent</div>
-                                <div style="display:flex; align-items:center; gap:4px; margin-top:2px;"><i data-lucide="badge-check" style="width:12px;height:12px;"></i> Guide TBD</div>
-                            </div>
-                        </div>
-
-                        <div class="itinerary-item" onclick="switchPage('itinerary')">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                <div class="itinerary-title">Zanzibar + Safari</div>
-                                <span class="status-badge status-draft">Draft</span>
-                            </div>
-                            <div class="itinerary-meta">
-                                <div><i data-lucide="calendar-days"></i> 10 Oct — 18 Oct</div>
-                                <div><i data-lucide="users"></i> 2 Travelers (Honeymoon)</div>
-                            </div>
-                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-light); font-size: 0.75rem; color: var(--warm-gray);">
-                                <span style="display:flex; align-items:center; gap:4px;"><i data-lucide="bed-double" style="width:12px;height:12px;"></i> Not yet sourced</span>
-                                <div style="display:flex; align-items:center; gap:4px; margin-top:2px;"><i data-lucide="car" style="width:12px;height:12px;"></i> Not yet sourced</div>
-                                <div style="display:flex; align-items:center; gap:4px; margin-top:2px;"><i data-lucide="badge-check" style="width:12px;height:12px;"></i> Not yet sourced</div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="card-header"><div class="card-title">Recent Reservations</div></div>
+                <div class="card-body" style="padding:0;">
+                    <table>
+                        <thead><tr><th>Trip</th><th>Client</th><th>Dates</th><th>Status</th><th>Value</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>Serengeti Migration Safari</strong></td><td>Sarah Mitchell</td><td>Aug 15 – 20</td><td><span class="badge badge-success">Confirmed</span></td><td>$4,200</td></tr>
+                            <tr><td><strong>Ngorongoro Crater Explorer</strong></td><td>James Wilson</td><td>Aug 22 – 24</td><td><span class="badge badge-warning">Pending</span></td><td>$2,800</td></tr>
+                            <tr><td><strong>Kilimanjaro Base Camp</strong></td><td>Anna Kowalski</td><td>Sep 1 – 5</td><td><span class="badge badge-info">Sourcing</span></td><td>$5,100</td></tr>
+                            <tr><td><strong>Zanzibar Beach Extension</strong></td><td>Marco Silva</td><td>Sep 8 – 12</td><td><span class="badge badge-warning" style="background:var(--khaki);color:var(--warm-gray);">Draft</span></td><td>$1,900</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
