@@ -2684,679 +2684,3158 @@ ACCOMMODATION PAGE
         <!-- ==========================================
   FLEET PAGE
   ========================================== -->
-<div style="max-width: 1100px; margin: 0 auto; padding: 24px;">
+<div id="fleet-page" class="page">
+  <div class="page-header">
+    <div class="page-title">Safari Fleet</div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span style="font-size:13px;color:var(--text-secondary);" id="fleetCount">Showing 12 vehicles</span>
+      <button class="create-btn" onclick="switchPage('itinerary')">+ Add to Itinerary</button>
+    </div>
+  </div>
 
-    <!-- Page Header -->
-    <div class="page-header">
-      <div>
-        <div class="page-title">Fleet Management</div>
-        <div class="page-subtitle">Browse, lease, and manage safari vehicles</div>
+  <!-- FILTER BAR -->
+  <div class="card" style="padding:16px 20px;margin-bottom:20px;">
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+      <div class="form-group" style="flex:1;min-width:160px;margin-bottom:0;">
+        <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-secondary);margin-bottom:4px;">Vehicle Type</label>
+        <select id="fleetFilterType" onchange="fleetFilter()" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;width:100%;background:#fff;">
+          <option value="">All Types</option>
+          <option value="Land Cruiser">Land Cruiser</option>
+          <option value="Coaster">Coaster</option>
+          <option value="Hiace">Hiace</option>
+          <option value="Mini Van">Mini Van</option>
+          <option value="SUV">SUV</option>
+        </select>
       </div>
-      <button class="create-btn" onclick="showToast('Add Vehicle — form coming soon')">
-        + Add Vehicle
-      </button>
+      <div class="form-group" style="flex:1;min-width:160px;margin-bottom:0;">
+        <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-secondary);margin-bottom:4px;">Location</label>
+        <select id="fleetFilterLocation" onchange="fleetFilter()" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;width:100%;background:#fff;">
+          <option value="">All Locations</option>
+          <option value="Arusha">Arusha</option>
+          <option value="Kilimanjaro">Kilimanjaro</option>
+          <option value="Serengeti">Serengeti</option>
+          <option value="Ngorongoro">Ngorongoro</option>
+          <option value="Manyara">Manyara</option>
+        </select>
+      </div>
+      <div class="form-group" style="flex:1;min-width:160px;margin-bottom:0;">
+        <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-secondary);margin-bottom:4px;">Availability</label>
+        <select id="fleetFilterAvail" onchange="fleetFilter()" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;width:100%;background:#fff;">
+          <option value="">All</option>
+          <option value="Available">Available</option>
+          <option value="Limited">Limited</option>
+          <option value="Booked">Booked</option>
+        </select>
+      </div>
+      <div class="form-group" style="flex:1;min-width:160px;margin-bottom:0;">
+        <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-secondary);margin-bottom:4px;">Search</label>
+        <input type="text" id="fleetFilterSearch" oninput="fleetFilter()" placeholder="Vehicle name…" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;width:100%;">
+      </div>
+      <button onclick="fleetResetFilters()" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;font-size:12px;background:#fff;cursor:pointer;color:var(--text-secondary);white-space:nowrap;">Reset</button>
     </div>
-
-    <!-- Search & Filter Toolbar -->
-    <div class="fleet-toolbar">
-      <input type="text" class="fleet-search" id="fleetSearch"
-             placeholder="Search vehicles…" oninput="filterFleet()">
-      <select class="fleet-filter" id="fleetTypeFilter" onchange="filterFleet()">
-        <option value="">All Types</option>
-        <option value="4x4">4x4 Safari</option>
-        <option value="luxury">Luxury</option>
-        <option value="minivan">Minivan</option>
-        <option value="truck">Truck</option>
-      </select>
-      <select class="fleet-filter" id="fleetAvailFilter" onchange="filterFleet()">
-        <option value="">All Availability</option>
-        <option value="available">Available</option>
-        <option value="leased">Leased</option>
-        <option value="maintenance">In Maintenance</option>
-      </select>
-    </div>
-
-    <!-- Fleet Card Grid -->
-    <div class="fleet-grid" id="fleetGrid">
-      <!-- Cards injected by JavaScript -->
-    </div>
-
+    <div id="fleetActivePills" style="display:none;margin-top:10px;flex-wrap:wrap;gap:6px;"></div>
   </div>
 
-  <!-- Fleet Detail Modal -->
-  <div class="fleet-detail-overlay" id="fleetDetailOverlay" onclick="closeDetail(event)">
-    <div class="fleet-detail-modal" style="position: relative;" onclick="event.stopPropagation()">
-      <button class="fleet-detail-close" onclick="closeDetail()">&times;</button>
-      <div id="fleetDetailContent"></div>
-    </div>
+  <!-- RESULTS GRID -->
+  <div id="fleetGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;"></div>
+
+  <!-- Empty State -->
+  <div id="fleetEmpty" style="display:none;text-align:center;padding:60px 20px;">
+    <div style="font-size:3rem;margin-bottom:12px;">🚗</div>
+    <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:6px;">No vehicles found</div>
+    <div style="font-size:13px;color:var(--text-secondary);">Try adjusting your filters or search term</div>
   </div>
+</div>
 
-  <!-- Toast Notification -->
-  <div class="fleet-toast" id="fleetToast"></div>
-
-  <script>
-    // ── Sample Fleet Data ──
-    const fleetData = [
-      {
-        id: 1,
-        name: 'Toyota Land Cruiser 4x4',
-        type: '4x4',
-        typeLabel: '4x4 Safari',
-        location: 'Arusha',
-        img: 'https://images.unsplash.com/photo-1533473359262-010853c6f6b5?w=600&h=400&fit=crop',
-        specs: ['7 seats', '4WD', 'Roof tent'],
-        availability: 'available',
-        status: 'Available',
-        rate: '$180/day',
-        year: '2022',
-        plate: 'T 447 ABL',
-        mileage: '28,000 km',
-        fuel: 'Diesel',
-        transmission: 'Manual',
-        condition: 'Excellent'
-      },
-      {
-        id: 2,
-        name: 'Land Rover Defender 110',
-        type: '4x4',
-        typeLabel: '4x4 Safari',
-        location: 'Serengeti',
-        img: 'https://images.unsplash.com/photo-1606152483545-3b89d6c548c0?w=600&h=400&fit=crop',
-        specs: ['8 seats', '4WD', 'Pop-top'],
-        availability: 'leased',
-        status: 'Leased',
-        rate: '$220/day',
-        year: '2023',
-        plate: 'T 892 KLM',
-        mileage: '15,000 km',
-        fuel: 'Diesel',
-        transmission: 'Automatic',
-        condition: 'Excellent'
-      },
-      {
-        id: 3,
-        name: 'Toyota Hiace Minivan',
-        type: 'minivan',
-        typeLabel: 'Minivan',
-        location: 'Dar es Salaam',
-        img: 'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?w=600&h=400&fit=crop',
-        specs: ['12 seats', 'AC', 'Roof rack'],
-        availability: 'available',
-        status: 'Available',
-        rate: '$120/day',
-        year: '2021',
-        plate: 'T 201 XYZ',
-        mileage: '45,000 km',
-        fuel: 'Petrol',
-        transmission: 'Manual',
-        condition: 'Good'
-      },
-      {
-        id: 4,
-        name: 'Mercedes G-Class Luxury',
-        type: 'luxury',
-        typeLabel: 'Luxury',
-        location: 'Arusha',
-        img: 'https://images.unsplash.com/photo-1607853202273-797f1c22a388?w=600&h=400&fit=crop',
-        specs: ['5 seats', '4WD', 'Premium'],
-        availability: 'available',
-        status: 'Available',
-        rate: '$350/day',
-        year: '2023',
-        plate: 'T 770 LUX',
-        mileage: '8,000 km',
-        fuel: 'Petrol',
-        transmission: 'Automatic',
-        condition: 'Excellent'
-      },
-      {
-        id: 5,
-        name: 'Toyota Alphard',
-        type: 'mini van',
-        typeLabel: 'Van',
-        location: 'Arusha',
-        img: 'https://images.unsplash.com/photo-1586191582058-a33a5e68b8b8?w=600&h=400&fit=crop',
-        specs: ['transfer',],
-        availability: 'maintenance',
-        status: 'In Maintenance',
-        rate: '$90/day',
-        year: '2020',
-        plate: 'T 565 TRK',
-        mileage: '72,000 km',
-        fuel: 'Diesel',
-        transmission: 'Manual',
-        condition: 'Fair'
-      },
-      {
-        id: 6,
-        name: 'Nissan Patrol Safari',
-        type: '4x4',
-        typeLabel: '4x4 Safari',
-        location: 'Kilimanjaro',
-        img: 'https://images.unsplash.com/photo-1502877338535-766e1452624a?w=600&h=400&fit=crop',
-        specs: ['7 seats', '4WD', 'Fridge'],
-        availability: 'available',
-        status: 'Available',
-        rate: '$165/day',
-        year: '2022',
-        plate: 'T 334 JKL',
-        mileage: '31,000 km',
-        fuel: 'Diesel',
-        transmission: 'Automatic',
-        condition: 'Excellent'
-      }
-    ];
-
-    // ── Render Fleet Cards ──
-    function renderFleet(items) {
-      const grid = document.getElementById('fleetGrid');
-      if (items.length === 0) {
-        grid.innerHTML = '<p style="color:var(--text-secondary);font-size:0.9rem;padding:40px;text-align:center;">No vehicles match your filters.</p>';
-        return;
-      }
-      grid.innerHTML = items.map(v => `
-        <div class="fleet-card" data-id="${v.id}">
-          <div class="fleet-card-img" style="background-image:url('${v.img}')">
-            <span class="fleet-card-type-badge">${v.typeLabel}</span>
-            <button class="fleet-card-fav" onclick="toggleFav(this, event)">&#9825;</button>
-          </div>
-          <div class="fleet-card-body">
-            <div class="fleet-card-name">${v.name}</div>
-            <div class="fleet-card-location">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
-              </svg>
-              ${v.location}
-            </div>
-            <div class="fleet-card-specs">
-              ${v.specs.map(s => `<span class="fleet-spec">${s}</span>`).join('')}
-              <span class="fleet-spec" style="background:${availBg(v.availability)};color:${availColor(v.availability)};border-color:transparent;">${v.status}</span>
-            </div>
-            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:auto;">
-              <span style="font-size:17px;font-weight:800;color:var(--forest-green);">${v.rate}</span>
-            </div>
-            <div class="fleet-card-actions">
-              <button class="fleet-btn fleet-btn-view" onclick="viewFleet(${v.id})">View Details</button>
-              <button class="fleet-btn fleet-btn-lease" onclick="leaseFleet(${v.id})">Request Lease</button>
-            </div>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function availBg(a) {
-      if (a === 'available') return 'rgba(63,185,131,0.12)';
-      if (a === 'leased') return 'rgba(245,166,35,0.12)';
-      return 'rgba(220,38,38,0.10)';
-    }
-    function availColor(a) {
-      if (a === 'available') return '#1a8c5a';
-      if (a === 'leased') return '#b8860b';
-      return '#c0392b';
-    }
-
-    // ── Filter ──
-    function filterFleet() {
-      const q = document.getElementById('fleetSearch').value.toLowerCase();
-      const tf = document.getElementById('fleetTypeFilter').value;
-      const af = document.getElementById('fleetAvailFilter').value;
-      const filtered = fleetData.filter(v => {
-        const matchQ = v.name.toLowerCase().includes(q) || v.location.toLowerCase().includes(q);
-        const matchT = !tf || v.type === tf;
-        const matchA = !af || v.availability === af;
-        return matchQ && matchT && matchA;
-      });
-      renderFleet(filtered);
-    }
-
-    // ── Detail View ──
-    function viewFleet(id) {
-      const v = fleetData.find(x => x.id === id);
-      if (!v) return;
-      document.getElementById('fleetDetailContent').innerHTML = `
-        <img class="fleet-detail-img" src="${v.img}" alt="${v.name}">
-        <div class="fleet-detail-content">
-          <div class="fleet-detail-title">${v.name}</div>
-          <div class="fleet-detail-location">${v.location} • ${v.typeLabel}</div>
-          <div class="fleet-detail-grid">
-            <div class="fleet-detail-field">
-              <div class="fleet-detail-label">Year</div>
-              <div class="fleet-detail-value">${v.year}</div>
-            </div>
-            <div class="fleet-detail-field">
-              <div class="fleet-detail-label">Plate</div>
-              <div class="fleet-detail-value">${v.plate}</div>
-            </div>
-            <div class="fleet-detail-field">
-              <div class="fleet-detail-label">Mileage</div>
-              <div class="fleet-detail-value">${v.mileage}</div>
-            </div>
-            <div class="fleet-detail-field">
-              <div class="fleet-detail-label">Fuel</div>
-              <div class="fleet-detail-value">${v.fuel}</div>
-            </div>
-            <div class="fleet-detail-field">
-              <div class="fleet-detail-label">Transmission</div>
-              <div class="fleet-detail-value">${v.transmission}</div>
-            </div>
-            <div class="fleet-detail-field">
-              <div class="fleet-detail-label">Condition</div>
-              <div class="fleet-detail-value">${v.condition}</div>
-            </div>
-            <div class="fleet-detail-field">
-              <div class="fleet-detail-label">Rate</div>
-              <div class="fleet-detail-value">${v.rate}</div>
-            </div>
-            <div class="fleet-detail-field">
-              <div class="fleet-detail-label">Status</div>
-              <div class="fleet-detail-value" style="color:${availColor(v.availability)}">${v.status}</div>
-            </div>
-          </div>
-          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;">
-            ${v.specs.map(s => `<span class="fleet-spec">${s}</span>`).join('')}
-          </div>
-          <div class="fleet-detail-actions">
-            <button class="fleet-btn fleet-btn-view" onclick="closeDetail()">Close</button>
-            <button class="fleet-btn fleet-btn-lease" onclick="leaseFleet(${v.id})">Request Lease</button>
-          </div>
-        </div>
-      `;
-      document.getElementById('fleetDetailOverlay').classList.add('active');
-    }
-
-    function closeDetail(e) {
-      if (e && e.target !== e.currentTarget) return;
-      document.getElementById('fleetDetailOverlay').classList.remove('active');
-    }
-
-    // ── Lease Request ──
-    function leaseFleet(id) {
-      const v = fleetData.find(x => x.id === id);
-      if (v.availability === 'leased') {
-        showToast('Sorry — ' + v.name + ' is currently leased.');
-        return;
-      }
-      if (v.availability === 'maintenance') {
-        showToast('Sorry — ' + v.name + ' is in maintenance.');
-        return;
-      }
-      showToast('Lease request sent for ' + v.name);
-      closeDetail();
-    }
-
-    // ── Favorite Toggle ──
-    function toggleFav(btn, e) {
-      e.stopPropagation();
-      if (btn.textContent === '♡' || btn.innerHTML === '&#9825;') {
-        btn.innerHTML = '&#9829;';
-        btn.style.color = '#e74c3c';
-        showToast('Added to favorites');
-      } else {
-        btn.innerHTML = '&#9825;';
-        btn.style.color = '';
-      }
-    }
-
-    // ── Toast ──
-    let toastTimer;
-    function showToast(msg) {
-      const t = document.getElementById('fleetToast');
-      t.textContent = msg;
-      t.classList.add('show');
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
-    }
-
-    // ── Initial Render ──
-    renderFleet(fleetData);
-  </script>
+<!-- FLEET DETAIL MODAL -->
+<div class="modal" id="fleetDetailModal">
+  <div class="modal-content" style="max-width:720px;">
+    <div class="modal-header">
+      <div class="modal-title" id="fleetDetailTitle">Vehicle Details</div>
+      <button class="close-btn" onclick="closeModal('fleetDetailModal')">✕</button>
+    </div>
+    <div class="modal-body" id="fleetDetailBody" style="padding:0;"></div>
+  </div>
+</div>
 
 <style>
-    :root {
-      --primary: #1a5a3a;
-      --forest-green: #1a5a3a;
-      --forest-green-light: #2d7a52;
-      --accent-green: #3fb983;
-      --charcoal: #2c2c2c;
-      --text-secondary: #666;
-      --warm-gray: #8a8578;
-      --bg-light: #f8f7f4;
-      --border-light: #e8e5dd;
-      --radius-sm: 8px;
-      --radius-md: 12px;
-      --radius-lg: 16px;
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
-      --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
-      --shadow-lg: 0 8px 28px rgba(0,0,0,0.10);
-    }
+  .fleet-card {
+    background: #fff;
+    border: 1px solid var(--border-light, #e8e5dd);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: default;
+    transition: all 0.25s ease;
+    display: flex;
+    flex-direction: column;
+  }
+  .fleet-card:hover {
+    box-shadow: 0 8px 28px rgba(0,0,0,0.10);
+    transform: translateY(-2px);
+  }
+  .fleet-card-img {
+    height: 160px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+  }
+  .fleet-card-type-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: rgba(26,90,58,0.9);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    backdrop-filter: blur(4px);
+  }
+  .fleet-card-fav {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.9);
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .fleet-card-fav:hover {
+    background: #fff;
+    transform: scale(1.1);
+  }
+  .fleet-card-body {
+    padding: 14px 16px 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .fleet-card-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--charcoal, #2c2c2c);
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+  .fleet-card-location {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--text-secondary, #666);
+    margin-bottom: 8px;
+  }
+  .fleet-card-specs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .fleet-spec {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: var(--bg-light, #f8f7f4);
+    color: var(--text-secondary, #666);
+    letter-spacing: .2px;
+    text-transform: uppercase;
+    border: 1px solid var(--border-light, #e8e5dd);
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .fleet-avail-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+  .fleet-avail-green { background: rgba(63,185,131,0.12); color: #1a8c5a; }
+  .fleet-avail-amber { background: rgba(245,166,35,0.12); color: #b8860b; }
+  .fleet-avail-red   { background: rgba(220,38,38,0.10);  color: #c0392b; }
+  .fleet-card-rate {
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-light, #e8e5dd);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+  .fleet-rate-amount {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--primary, #1a5a3a);
+  }
+  .fleet-rate-label {
+    font-size: 11px;
+    color: var(--text-secondary, #666);
+  }
+  .fleet-card-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .fleet-btn {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 7px 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'Inter', sans-serif;
+  }
+  .fleet-btn-view {
+    background: var(--bg-light, #f8f7f4);
+    border: 1px solid var(--border-light, #e8e5dd);
+    color: var(--charcoal, #2c2c2c);
+    flex: 1;
+  }
+  .fleet-btn-view:hover {
+    background: var(--border-light, #e8e5dd);
+  }
+  .fleet-btn-lease {
+    background: var(--primary, #1a5a3a);
+    color: #fff;
+    flex: 1;
+  }
+  .fleet-btn-lease:hover {
+    background: #12462a;
+  }
+  .fleet-detail-img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 12px 12px 0 0;
+  }
+  .fleet-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 16px 0;
+  }
+  .fleet-detail-field {
+    background: var(--bg-light, #f8f7f4);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .fleet-detail-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: var(--text-secondary, #666);
+    margin-bottom: 4px;
+  }
+  .fleet-detail-value {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--charcoal, #2c2c2c);
+  }
+  .fleet-highlight-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 12px 0;
+  }
+  .fleet-highlight {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: var(--bg-light, #f8f7f4);
+    border: 1px solid var(--border-light, #e8e5dd);
+    color: var(--charcoal, #2c2c2c);
+  }
+  .fleet-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--charcoal, #2c2c2c);
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+  }
+  .fleet-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg-light);
-      color: var(--charcoal);
-      -webkit-font-smoothing: antialiased;
-    }
+<script>
+(function() {
+  /* ── Sample Fleet Data ── */
+  var fleet = [
+    { id:1, name:"Toyota Land Cruiser 79", type:"Land Cruiser", seats:7, location:"Arusha", rate:250, avail:"Available", img:"linear-gradient(135deg,#5a7a5a,#2d4a2d)", spec:"Pop-up roof, Radio, Fridge, Charging", highlight:"Extended range, off-road ready, pop-up roof for photography", year:2023, transmission:"Manual", fuel:"Diesel", driver:"Included" },
+    { id:2, name:"Toyota Land Cruiser 76", type:"Land Cruiser", seats:7, location:"Serengeti", rate:280, avail:"Available", img:"linear-gradient(135deg,#7a9b5a,#4a6a2a)", spec:"Pop-up roof, Radio, Fridge, Charging", highlight:"Classic safari vehicle, excellent visibility, rugged suspension", year:2022, transmission:"Manual", fuel:"Diesel", driver:"Included" },
+    { id:3, name:"Toyota Coaster", type:"Coaster", seats:24, location:"Arusha", rate:380, avail:"Available", img:"linear-gradient(135deg,#b5a47a,#8a7a5a)", spec:"AC, Luggage rack, PA system, USB", highlight:"Group safari, air-conditioned, luggage storage, ideal for 15+ guests", year:2021, transmission:"Automatic", fuel:"Diesel", driver:"Included" },
+    { id:4, name:"Toyota Hiace", type:"Hiace", seats:14, location:"Kilimanjaro", rate:180, avail:"Limited", img:"linear-gradient(135deg,#8ab5c9,#5a8aa5)", spec:"AC, Luggage rack, USB", highlight:"Transfers, mid-size group, fuel efficient, comfortable ride", year:2023, transmission:"Manual", fuel:"Diesel", driver:"Included" },
+    { id:5, name:"Toyota Hiace Commuter", type:"Hiace", seats:16, location:"Arusha", rate:190, avail:"Available", img:"linear-gradient(135deg,#7a9bb5,#3a6a8a)", spec:"AC, Luggage rack, USB, PA", highlight:"Airport transfers, group shuttle, comfortable seats", year:2022, transmission:"Manual", fuel:"Diesel", driver:"Included" },
+    { id:6, name:"Mercedes-Benz Sprinter", type:"Mini Van", seats:12, location:"Arusha", rate:220, avail:"Available", img:"linear-gradient(135deg,#c9a96e,#8b6914)", spec:"AC, Leather seats, Luggage rack, USB", highlight:"Premium minivan, luxury transfer, leather interior", year:2023, transmission:"Automatic", fuel:"Diesel", driver:"Included" },
+    { id:7, name:"Toyota Prado", type:"SUV", seats:5, location:"Ngorongoro", rate:200, avail:"Available", img:"linear-gradient(135deg,#b59a6a,#8a7a4a)", spec:"AC, Radio, Charging, Luggage", highlight:"Compact safari, excellent off-road, comfortable for 4 guests", year:2023, transmission:"Automatic", fuel:"Diesel", driver:"Included" },
+    { id:8, name:"Toyota RAV4", type:"SUV", seats:5, location:"Arusha", rate:160, avail:"Available", img:"linear-gradient(135deg,#c9b58a,#a58a6a)", spec:"AC, Radio, Charging, Luggage", highlight:"Budget SUV, fuel efficient, road safari, smooth ride", year:2022, transmission:"Automatic", fuel:"Petrol", driver:"Not Included" },
+    { id:9, name:"Land Rover Defender", type:"SUV", seats:6, location:"Serengeti", rate:350, avail:"Limited", img:"linear-gradient(135deg,#d4a56a,#a57a3a)", spec:"Pop-up roof, Radio, Fridge, Charging, Winch", highlight:"Premium off-road, winch, pop-up roof, 4x4 capability", year:2021, transmission:"Manual", fuel:"Diesel", driver:"Included" },
+    { id:10, name:"Toyota Land Cruiser 200", type:"Land Cruiser", seats:7, location:"Ngorongoro", rate:320, avail:"Available", img:"linear-gradient(135deg,#5b7a5b,#2d4a2d)", spec:"Pop-up roof, Radio, Fridge, Charging, GPS", highlight:"Luxury safari, full equipment, GPS, excellent comfort", year:2023, transmission:"Automatic", fuel:"Diesel", driver:"Included" },
+    { id:11, name:"Toyota Land Cruiser 79 Pickup", type:"Land Cruiser", seats:6, location:"Serengeti", rate:270, avail:"Available", img:"linear-gradient(135deg,#7a8a5a,#4a5a2a)", spec:"Pop-up roof, Radio, Fridge, Luggage rack", highlight:"Rugged pickup, extended range, pop-up roof, photography", year:2022, transmission:"Manual", fuel:"Diesel", driver:"Included" },
+    { id:12, name:"Hyundai Staria", type:"Mini Van", seats:12, location:"Arusha", rate:230, avail:"Available", img:"linear-gradient(135deg,#8ab5c9,#5a8aa5)", spec:"AC, Leather seats, USB, Luggage rack", highlight:"Modern design, premium comfort, transfer/shuttle vehicle", year:2024, transmission:"Automatic", fuel:"Petrol", driver:"Included" }
+  ];
 
-    /* ── Page Header ── */
-    .page-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 28px;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-    .page-title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--charcoal);
-    }
-    .page-subtitle {
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-      margin-top: 4px;
-    }
-    .create-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 10px 20px;
-      background: var(--forest-green);
-      color: #fff;
-      border: none;
-      border-radius: var(--radius-sm);
-      font-size: 0.875rem;
-      font-weight: 600;
-      cursor: pointer;
-      font-family: inherit;
-      transition: background 0.2s;
-    }
-    .create-btn:hover { background: var(--forest-green-light); }
+  /* ── Helpers ── */
+  function esc(s) { return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]||c;}); }
+  function showFleetToast(msg) {
+    var t=document.getElementById('fleetToast');
+    if(!t){t=document.createElement('div');t.id='fleetToast';t.className='fleet-toast';document.body.appendChild(t);}
+    t.textContent=msg; t.classList.add('show');
+    clearTimeout(t._hide); t._hide=setTimeout(function(){t.classList.remove('show');},3000);
+  }
 
-    /* ── Search / Filter Bar ── */
-    .fleet-toolbar {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
-      align-items: center;
+  /* ── Render Cards ── */
+  window.fleetRenderCards = function(data) {
+    var grid = document.getElementById('fleetGrid');
+    var empty = document.getElementById('fleetEmpty');
+    var count = document.getElementById('fleetCount');
+    if (!grid) return;
+    if (data.length === 0) {
+      grid.innerHTML = '';
+      grid.style.display = 'none';
+      if (empty) empty.style.display = 'block';
+      if (count) count.textContent = 'Showing 0 vehicles';
+      return;
     }
-    .fleet-search {
-      flex: 1;
-      min-width: 200px;
-      padding: 10px 16px;
-      border: 1px solid var(--border-light);
-      border-radius: var(--radius-sm);
-      font-size: 0.875rem;
-      font-family: inherit;
-      background: #fff;
-      color: var(--charcoal);
-      outline: none;
-      transition: border-color 0.2s;
+    grid.style.display = 'grid';
+    if (empty) empty.style.display = 'none';
+    if (count) count.textContent = 'Showing ' + data.length + ' vehicles';
+    var html = '';
+    for (var i = 0; i < data.length; i++) {
+      var v = data[i];
+      var availClass = v.avail === 'Available' ? 'fleet-avail-green' : (v.avail === 'Limited' ? 'fleet-avail-amber' : 'fleet-avail-red');
+      html +=
+        '<div class="fleet-card">' +
+          '<div class="fleet-card-img" style="background:' + v.img + ';">' +
+            '<span class="fleet-card-type-badge">' + esc(v.type) + '</span>' +
+            '<button class="fleet-card-fav" onclick="event.stopPropagation();fleetToggleFav(this)">♡</button>' +
+          '</div>' +
+          '<div class="fleet-card-body">' +
+            '<div class="fleet-card-name">' + esc(v.name) + '</div>' +
+            '<div class="fleet-card-location">📍 ' + esc(v.location) + ' · ' + esc(v.year) + '</div>' +
+            '<div class="fleet-card-specs">' +
+              '<span class="fleet-spec">🪑 ' + v.seats + ' seats</span>' +
+              '<span class="fleet-spec">⛽ ' + esc(v.fuel) + '</span>' +
+              '<span class="fleet-spec">🔧 ' + esc(v.transmission) + '</span>' +
+              '<span class="fleet-spec ' + availClass + '">' + esc(v.avail) + '</span>' +
+            '</div>' +
+            '<div class="fleet-card-rate">' +
+              '<div><span class="fleet-rate-amount">$' + v.rate + '</span> <span class="fleet-rate-label">/day</span></div>' +
+              '<div style="font-size:11px;color:var(--text-secondary);">' + (v.driver === 'Included' ? '✅ Driver incl.' : '⚠️ No driver') + '</div>' +
+            '</div>' +
+            '<div class="fleet-card-actions">' +
+              '<button class="fleet-btn fleet-btn-view" onclick="fleetViewDetail(' + v.id + ')">👁 View Details</button>' +
+              '<button class="fleet-btn fleet-btn-lease" onclick="fleetLease(' + v.id + ')">🚗 Lease Vehicle</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
     }
-    .fleet-search:focus { border-color: var(--forest-green); }
-    .fleet-filter {
-      padding: 10px 16px;
-      border: 1px solid var(--border-light);
-      border-radius: var(--radius-sm);
-      font-size: 0.875rem;
-      font-family: inherit;
-      background: #fff;
-      color: var(--charcoal);
-      cursor: pointer;
-      outline: none;
-    }
+    grid.innerHTML = html;
+  };
 
-    /* ── Fleet Grid ── */
-    .fleet-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
-    }
-    .fleet-card {
-      background: #fff;
-      border: 1px solid var(--border-light);
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      cursor: default;
-      transition: all 0.25s ease;
-      display: flex;
-      flex-direction: column;
-    }
-    .fleet-card:hover {
-      box-shadow: var(--shadow-lg);
-      transform: translateY(-2px);
-    }
-    .fleet-card-img {
-      height: 160px;
-      background-size: cover;
-      background-position: center;
-      position: relative;
-    }
-    .fleet-card-type-badge {
-      position: absolute;
-      top: 8px;
-      left: 8px;
-      background: rgba(26,90,58,0.9);
-      color: #fff;
-      font-size: 10px;
-      font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 6px;
-      text-transform: uppercase;
-      letter-spacing: .5px;
-      backdrop-filter: blur(4px);
-    }
-    .fleet-card-fav {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.9);
-      border: none;
-      font-size: 16px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s;
-    }
-    .fleet-card-fav:hover {
-      background: #fff;
-      transform: scale(1.1);
-    }
-    .fleet-card-body {
-      padding: 14px 16px 16px;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-    .fleet-card-name {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--charcoal);
-      margin-bottom: 4px;
-      line-height: 1.3;
-    }
-    .fleet-card-location {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 12px;
-      color: var(--text-secondary);
-      margin-bottom: 8px;
-    }
-    .fleet-card-specs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-      margin-bottom: 10px;
-    }
-    .fleet-spec {
-      font-size: 10px;
-      font-weight: 600;
-      padding: 3px 8px;
-      border-radius: 6px;
-      background: var(--bg-light);
-      color: var(--text-secondary);
-      letter-spacing: .2px;
-      text-transform: uppercase;
-      border: 1px solid var(--border-light);
-    }
-    .fleet-card-actions {
-      display: flex;
-      gap: 6px;
-      margin-top: 10px;
-    }
-    .fleet-btn {
-      font-size: 11px;
-      font-weight: 600;
-      padding: 7px 12px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      font-family: inherit;
-    }
-    .fleet-btn-view {
-      background: var(--bg-light);
-      border: 1px solid var(--border-light);
-      color: var(--charcoal);
-      flex: 1;
-    }
-    .fleet-btn-view:hover { background: var(--border-light); }
-    .fleet-btn-lease {
-      background: var(--forest-green);
-      color: #fff;
-      flex: 1;
-    }
-    .fleet-btn-lease:hover { background: #12462a; }
+  /* ── Filter Logic ── */
+  window.fleetFilter = function() {
+    var typ = document.getElementById('fleetFilterType').value;
+    var loc = document.getElementById('fleetFilterLocation').value;
+    var avl = document.getElementById('fleetFilterAvail').value;
+    var q   = (document.getElementById('fleetFilterSearch').value || '').toLowerCase().trim();
+    var filtered = fleet.filter(function(v) {
+      if (typ && v.type !== typ) return false;
+      if (loc && v.location !== loc) return false;
+      if (avl && v.avail !== avl) return false;
+      if (q && v.name.toLowerCase().indexOf(q) === -1 && v.location.toLowerCase().indexOf(q) === -1) return false;
+      return true;
+    });
+    fleetRenderCards(filtered);
+    fleetUpdatePills(typ, loc, avl, q);
+  };
 
-    /* ── Fleet Detail Modal ── */
-    .fleet-detail-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.45);
-      z-index: 2000;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    .fleet-detail-overlay.active { display: flex; }
-    .fleet-detail-modal {
-      background: #fff;
-      border-radius: var(--radius-md);
-      max-width: 560px;
-      width: 100%;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-    }
-    .fleet-detail-img {
-      width: 100%;
-      height: 220px;
-      object-fit: cover;
-      border-radius: 12px 12px 0 0;
-    }
-    .fleet-detail-close {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.9);
-      border: none;
-      font-size: 18px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 10;
-    }
-    .fleet-detail-content { padding: 24px; }
-    .fleet-detail-title {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--charcoal);
-      margin-bottom: 4px;
-    }
-    .fleet-detail-location {
-      font-size: 0.8rem;
-      color: var(--text-secondary);
-      margin-bottom: 16px;
-    }
-    .fleet-detail-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin: 16px 0;
-    }
-    .fleet-detail-field {
-      background: var(--bg-light);
-      border-radius: 8px;
-      padding: 10px 12px;
-    }
-    .fleet-detail-label {
-      font-size: 10px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: .5px;
-      color: var(--text-secondary);
-      margin-bottom: 4px;
-    }
-    .fleet-detail-value {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--charcoal);
-    }
-    .fleet-detail-actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-    }
-    .fleet-detail-actions .fleet-btn { flex: 1; justify-content: center; padding: 12px; font-size: 0.8rem; }
+  window.fleetResetFilters = function() {
+    document.getElementById('fleetFilterType').value = '';
+    document.getElementById('fleetFilterLocation').value = '';
+    document.getElementById('fleetFilterAvail').value = '';
+    document.getElementById('fleetFilterSearch').value = '';
+    document.getElementById('fleetActivePills').style.display = 'none';
+    fleetRenderCards(fleet);
+  };
 
-    /* ── Toast ── */
-    .fleet-toast {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      background: var(--charcoal);
-      color: #fff;
-      padding: 12px 20px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 500;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.3s, transform 0.3s;
-      z-index: 3000;
-      pointer-events: none;
-    }
-    .fleet-toast.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  function fleetUpdatePills(typ, loc, avl, q) {
+    var pills = document.getElementById('fleetActivePills');
+    if (!typ && !loc && !avl && !q) { pills.style.display = 'none'; return; }
+    pills.style.display = 'flex';
+    var html = '';
+    if (typ) html += '<span class="fleet-spec" style="background:var(--primary);color:#fff;border:none;cursor:pointer;" onclick="document.getElementById(\'fleetFilterType\').value=\'\';fleetFilter()">✕ ' + esc(typ) + '</span>';
+    if (loc) html += '<span class="fleet-spec" style="background:var(--primary);color:#fff;border:none;cursor:pointer;" onclick="document.getElementById(\'fleetFilterLocation\').value=\'\';fleetFilter()">✕ ' + esc(loc) + '</span>';
+    if (avl) html += '<span class="fleet-spec" style="background:var(--primary);color:#fff;border:none;cursor:pointer;" onclick="document.getElementById(\'fleetFilterAvail\').value=\'\';fleetFilter()">✕ ' + esc(avl) + '</span>';
+    if (q)   html += '<span class="fleet-spec" style="background:var(--primary);color:#fff;border:none;cursor:pointer;" onclick="document.getElementById(\'fleetFilterSearch\').value=\'\';fleetFilter()">✕ "' + esc(q) + '"</span>';
+    pills.innerHTML = html;
+  }
 
-    /* ── Responsive ── */
-    @media (max-width: 768px) {
-      .fleet-grid { grid-template-columns: 1fr; }
-      .fleet-detail-grid { grid-template-columns: 1fr; }
+  /* ── View Detail Modal ── */
+  window.fleetViewDetail = function(id) {
+    var v = fleet.find(function(x) { return x.id === id; });
+    if (!v) return;
+    document.getElementById('fleetDetailTitle').textContent = v.name;
+    var body = document.getElementById('fleetDetailBody');
+    var highlights = v.highlight.split(',').map(function(h){ return '<span class="fleet-highlight">' + esc(h.trim()) + '</span>'; }).join('');
+    body.innerHTML =
+      '<div class="fleet-detail-img" style="background:' + v.img + ';border-radius:0;"></div>' +
+      '<div style="padding:20px 24px;">' +
+        '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">' +
+          '<div>' +
+            '<div style="font-size:12px;color:var(--text-secondary);margin-bottom:2px;">📍 ' + esc(v.location) + '</div>' +
+            '<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text-secondary);letter-spacing:.4px;">' + esc(v.type) + '</div>' +
+          '</div>' +
+          '<div style="text-align:right;">' +
+            '<span class="fleet-avail-badge ' + (v.avail === 'Available' ? 'fleet-avail-green' : (v.avail === 'Limited' ? 'fleet-avail-amber' : 'fleet-avail-red')) + '">' + esc(v.avail) + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="fleet-detail-grid">' +
+          '<div class="fleet-detail-field"><div class="fleet-detail-label">Daily Rate</div><div class="fleet-detail-value">$' + v.rate + ' / day</div></div>' +
+          '<div class="fleet-detail-field"><div class="fleet-detail-label">Seats</div><div class="fleet-detail-value">' + v.seats + '</div></div>' +
+          '<div class="fleet-detail-field"><div class="fleet-detail-label">Year</div><div class="fleet-detail-value">' + v.year + '</div></div>' +
+          '<div class="fleet-detail-field"><div class="fleet-detail-label">Transmission</div><div class="fleet-detail-value">' + esc(v.transmission) + '</div></div>' +
+          '<div class="fleet-detail-field"><div class="fleet-detail-label">Fuel</div><div class="fleet-detail-value">' + esc(v.fuel) + '</div></div>' +
+          '<div class="fleet-detail-field"><div class="fleet-detail-label">Driver</div><div class="fleet-detail-value">' + esc(v.driver) + '</div></div>' +
+        '</div>' +
+        '<div style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;">Highlights</div>' +
+        '<div class="fleet-highlight-row">' + highlights + '</div>' +
+        '<div style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;">Equipment</div>' +
+        '<div class="fleet-highlight-row">' + v.spec.split(',').map(function(s){ return '<span class="fleet-highlight">' + esc(s.trim()) + '</span>'; }).join('') + '</div>' +
+        '<div style="display:flex;gap:8px;margin-top:20px;">' +
+          '<button class="fleet-btn fleet-btn-lease" style="flex:1;justify-content:center;padding:12px 0;font-size:13px;" onclick="fleetLease(' + v.id + ')">Lease This Vehicle</button>' +
+          '<button class="fleet-btn fleet-btn-view" style="padding:12px 16px;font-size:13px;" onclick="fleetAddToItinerary(' + v.id + ')">+ Add to Itinerary</button>' +
+        '</div>' +
+      '</div>';
+    openModal('fleetDetailModal');
+  };
+
+  /* ── Lease / Itinerary ── */
+  window.fleetLease = function(id) {
+    var v = fleet.find(function(x) { return x.id === id; });
+    showFleetToast('✅ Lease request sent for ' + (v ? v.name : 'vehicle'));
+  };
+  window.fleetAddToItinerary = function(id) {
+    var v = fleet.find(function(x) { return x.id === id; });
+    showFleetToast('✅ ' + (v ? v.name : 'Vehicle') + ' added to itinerary');
+  };
+
+  /* ── Favorite Toggle ── */
+  window.fleetToggleFav = function(btn) {
+    if (btn.textContent === '♡') {
+      btn.textContent = '♥';
+      btn.style.color = '#e74c3c';
+      showFleetToast('Saved to favorites');
+    } else {
+      btn.textContent = '♡';
+      btn.style.color = '';
+      showFleetToast('Removed from favorites');
     }
-    @media (max-width: 480px) {
-      .fleet-toolbar { flex-direction: column; }
-      .fleet-search, .fleet-filter { width: 100%; }
+  };
+
+  /* ── Initial Render ── */
+  if (document.getElementById('fleetGrid')) {
+    fleetRenderCards(fleet);
+  }
+})();
+</script>
+
+       <!-- ==========================================
+  GUIDES PAGE
+  ========================================== -->
+<div id="guides-page" class="page">
+  <div class="page-header">
+    <div class="page-title">Professional Guides</div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span style="font-size:13px;color:var(--text-secondary);" id="guideCount">Showing 10 guides</span>
+      <button class="create-btn" onclick="switchPage('itinerary')">+ Add to Itinerary</button>
+    </div>
+  </div>
+
+  <!-- FILTER BAR -->
+  <div class="card" style="padding:16px 20px;margin-bottom:20px;">
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+      <div class="form-group" style="flex:1;min-width:160px;margin-bottom:0;">
+        <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-secondary);margin-bottom:4px;">Location</label>
+        <select id="guideFilterLocation" onchange="guideFilter()" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;width:100%;background:#fff;">
+          <option value="">All Locations</option>
+          <option value="Arusha">Arusha</option>
+          <option value="Serengeti">Serengeti</option>
+          <option value="Ngorongoro">Ngorongoro</option>
+          <option value="Tarangire">Tarangire</option>
+          <option value="Kilimanjaro">Kilimanjaro</option>
+          <option value="Lake Manyara">Lake Manyara</option>
+        </select>
+      </div>
+      <div class="form-group" style="flex:1;min-width:160px;margin-bottom:0;">
+        <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-secondary);margin-bottom:4px;">Language</label>
+        <select id="guideFilterLanguage" onchange="guideFilter()" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;width:100%;background:#fff;">
+          <option value="">All Languages</option>
+          <option value="English">English</option>
+          <option value="German">German</option>
+          <option value="French">French</option>
+          <option value="Swahili">Swahili</option>
+          <option value="Mandarin">Mandarin</option>
+        </select>
+      </div>
+      <div class="form-group" style="flex:1;min-width:160px;margin-bottom:0;">
+        <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-secondary);margin-bottom:4px;">Specialization</label>
+        <select id="guideFilterSpecial" onchange="guideFilter()" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;width:100%;background:#fff;">
+          <option value="">All Specializations</option>
+          <option value="Safari">Safari</option>
+          <option value="Cultural">Cultural</option>
+          <option value="Photography">Photography</option>
+          <option value="Birdwatching">Birdwatching</option>
+          <option value="Hiking">Hiking &amp; Trekking</option>
+          <option value="Adventure">Adventure</option>
+        </select>
+      </div>
+      <div class="form-group" style="flex:1;min-width:160px;margin-bottom:0;">
+        <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-secondary);margin-bottom:4px;">Availability</label>
+        <select id="guideFilterAvail" onchange="guideFilter()" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;width:100%;background:#fff;">
+          <option value="">All</option>
+          <option value="Available">Available</option>
+          <option value="Limited">Limited</option>
+          <option value="Booked">Booked</option>
+        </select>
+      </div>
+      <div class="form-group" style="flex:1;min-width:160px;margin-bottom:0;">
+        <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-secondary);margin-bottom:4px;">Search</label>
+        <input type="text" id="guideFilterSearch" oninput="guideFilter()" placeholder="Guide name…" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;width:100%;">
+      </div>
+      <button onclick="guideResetFilters()" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;font-size:12px;background:#fff;cursor:pointer;color:var(--text-secondary);white-space:nowrap;">Reset</button>
+    </div>
+    <div id="guideActivePills" style="display:none;margin-top:10px;flex-wrap:wrap;gap:6px;"></div>
+  </div>
+
+  <!-- RESULTS GRID -->
+  <div id="guideGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;"></div>
+
+  <!-- Empty State -->
+  <div id="guideEmpty" style="display:none;text-align:center;padding:60px 20px;">
+    <div style="font-size:3rem;margin-bottom:12px;">🧭</div>
+    <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:6px;">No guides found</div>
+    <div style="font-size:13px;color:var(--text-secondary);">Try adjusting your filters or search term</div>
+  </div>
+</div>
+
+<!-- GUIDE DETAIL MODAL -->
+<div class="modal" id="guideDetailModal">
+  <div class="modal-content" style="max-width:720px;">
+    <div class="modal-header">
+      <div class="modal-title" id="guideDetailTitle">Guide Details</div>
+      <button class="close-btn" onclick="closeModal('guideDetailModal')">✕</button>
+    </div>
+    <div class="modal-body" id="guideDetailBody" style="padding:0;"></div>
+  </div>
+</div>
+
+<style>
+  .guide-card {
+    background: #fff;
+    border: 1px solid var(--border-light, #e8e5dd);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: default;
+    transition: all 0.25s ease;
+    display: flex;
+    flex-direction: column;
+  }
+  .guide-card:hover {
+    box-shadow: 0 8px 28px rgba(0,0,0,0.10);
+    transform: translateY(-2px);
+  }
+  .guide-card-img {
+    height: 160px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+  }
+  .guide-card-type-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: rgba(26,90,58,0.9);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    backdrop-filter: blur(4px);
+  }
+  .guide-card-fav {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.9);
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .guide-card-fav:hover {
+    background: #fff;
+    transform: scale(1.1);
+  }
+  .guide-card-body {
+    padding: 14px 16px 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .guide-card-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--charcoal, #2c2c2c);
+    margin-bottom: 2px;
+    line-height: 1.3;
+  }
+  .guide-card-location {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--text-secondary, #666);
+    margin-bottom: 8px;
+  }
+  .guide-card-specs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+  .guide-spec {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: var(--bg-light, #f8f7f4);
+    color: var(--text-secondary, #666);
+    letter-spacing: .2px;
+    text-transform: uppercase;
+    border: 1px solid var(--border-light, #e8e5dd);
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .guide-avail-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+  .guide-avail-green { background: rgba(63,185,131,0.12); color: #1a8c5a; }
+  .guide-avail-amber { background: rgba(245,166,35,0.12); color: #b8860b; }
+  .guide-avail-red   { background: rgba(220,38,38,0.10);  color: #c0392b; }
+  .guide-card-rate {
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-light, #e8e5dd);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+  .guide-rate-amount {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--primary, #1a5a3a);
+  }
+  .guide-rate-label {
+    font-size: 11px;
+    color: var(--text-secondary, #666);
+  }
+  .guide-card-rating {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #c9a028;
+  }
+  .guide-card-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .guide-btn {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 7px 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'Inter', sans-serif;
+  }
+  .guide-btn-view {
+    background: var(--bg-light, #f8f7f4);
+    border: 1px solid var(--border-light, #e8e5dd);
+    color: var(--charcoal, #2c2c2c);
+    flex: 1;
+  }
+  .guide-btn-view:hover {
+    background: var(--border-light, #e8e5dd);
+  }
+  .guide-btn-request {
+    background: var(--primary, #1a5a3a);
+    color: #fff;
+    flex: 1;
+  }
+  .guide-btn-request:hover {
+    background: #12462a;
+  }
+  .guide-detail-img {
+    width: 100%;
+    height: 220px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 0;
+  }
+  .guide-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 16px 0;
+  }
+  .guide-detail-field {
+    background: var(--bg-light, #f8f7f4);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .guide-detail-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: var(--text-secondary, #666);
+    margin-bottom: 4px;
+  }
+  .guide-detail-value {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--charcoal, #2c2c2c);
+  }
+  .guide-highlight-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 12px 0;
+  }
+  .guide-highlight {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: var(--bg-light, #f8f7f4);
+    border: 1px solid var(--border-light, #e8e5dd);
+    color: var(--charcoal, #2c2c2c);
+  }
+  .guide-lang-tag {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: rgba(26,90,58,0.08);
+    color: var(--primary, #1a5a3a);
+    border: 1px solid rgba(26,90,58,0.15);
+    text-transform: uppercase;
+    letter-spacing: .3px;
+  }
+  .guide-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--charcoal, #2c2c2c);
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+  }
+  .guide-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .guide-stars {
+    color: #c9a028;
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
+</style>
+
+<script>
+(function() {
+  /* ── Guide Data ── */
+  var guides = [
+    {
+      id: 1,
+      name: "John Mollel",
+      location: "Arusha",
+      languages: ["English", "German", "Swahili"],
+      special: "Safari",
+      rating: 4.9,
+      dailyRate: 90,
+      avail: "Available",
+      years: 12,
+      cert: "TANAPA Licensed",
+      img: "linear-gradient(135deg,#3a6a4a 0%,#1a4a2a 50%,#0a3a1a 100%)",
+      highlight: "Fluent in German, Big Five expert, 12 years experience, Serengeti specialist",
+      desc: "Award-winning guide with 12 years of experience across Northern Tanzania. Specializes in Big Five safaris and cultural experiences. Highly recommended by German-speaking clients.",
+      vehicle: "Land Cruiser",
+      groupMax: 7
+    },
+    {
+      id: 2,
+      name: "Peter Kibona",
+      location: "Serengeti",
+      languages: ["English", "Swahili", "French"],
+      special: "Safari",
+      rating: 4.8,
+      dailyRate: 85,
+      avail: "Available",
+      years: 10,
+      cert: "TANAPA Licensed",
+      img: "linear-gradient(135deg,#5a7a3a 0%,#3a5a2a 50%,#2a4a1a 100%)",
+      highlight: "French-speaking, migration expert, 10 years experience, wildlife photography",
+      desc: "Experienced Serengeti guide specializing in the Great Migration. Fluent in French and English with excellent wildlife photography skills. Known for exceptional game sighting success.",
+      vehicle: "Land Cruiser",
+      groupMax: 7
+    },
+    {
+      id: 3,
+      name: "Amina Juma",
+      location: "Ngorongoro",
+      languages: ["English", "Swahili"],
+      special: "Cultural",
+      rating: 4.7,
+      dailyRate: 75,
+      avail: "Available",
+      years: 8,
+      cert: "TANAPA Licensed",
+      img: "linear-gradient(135deg,#8a7a5a 0%,#6a5a3a 50%,#5a4a2a 100%)",
+      highlight: "Cultural specialist, Maasai community liaison, crater expert, 8 years",
+      desc: "Cultural guide with deep connections to Maasai communities around Ngorongoro Crater. Expert in cultural immersion experiences, community visits, and crater floor safaris.",
+      vehicle: "Land Cruiser",
+      groupMax: 6
+    },
+    {
+      id: 4,
+      name: "David Lema",
+      location: "Tarangire",
+      languages: ["English", "Swahili", "Mandarin"],
+      special: "Birdwatching",
+      rating: 4.9,
+      dailyRate: 95,
+      avail: "Limited",
+      years: 15,
+      cert: "TANAPA Licensed",
+      img: "linear-gradient(135deg,#2a5a7a 0%,#1a4a6a 50%,#0a3a5a 100%)",
+      highlight: "Mandarin-speaking, birdwatching expert, 15 years, Tarangire specialist",
+      desc: "One of Tanzania's top birdwatching guides with 15 years of field experience. Fluent in Mandarin and English. Specialist in Tarangire's diverse bird species and elephant herds.",
+      vehicle: "Land Cruiser",
+      groupMax: 6
+    },
+    {
+      id: 5,
+      name: "Grace Mushi",
+      location: "Kilimanjaro",
+      languages: ["English", "Swahili", "German"],
+      special: "Hiking",
+      rating: 4.8,
+      dailyRate: 110,
+      avail: "Available",
+      years: 14,
+      cert: "KPAP Certified",
+      img: "linear-gradient(135deg,#4a6a8a 0%,#2a4a6a 50%,#1a3a5a 100%)",
+      highlight: "Kilimanjaro summit guide, 14 years experience, altitude expert, KPAP certified",
+      desc: "Professional Kilimanjaro summit guide with 14 years of experience. Certified by KPAP (Kilimanjaro Porters Assistance Project). Expert in altitude acclimatization and safety protocols.",
+      vehicle: "HiAce (trailhead transfer)",
+      groupMax: 10
+    },
+    {
+      id: 6,
+      name: "Hassan Omar",
+      location: "Serengeti",
+      languages: ["English", "Swahili"],
+      special: "Adventure",
+      rating: 4.6,
+      dailyRate: 80,
+      avail: "Available",
+      years: 9,
+      cert: "TANAPA Licensed",
+      img: "linear-gradient(135deg,#6a8a3a 0%,#4a6a2a 50%,#3a5a1a 100%)",
+      highlight: "Adventure specialist, hot air balloon safaris, bush walking, 9 years",
+      desc: "Adventure-focused guide with expertise in bush walking safaris and balloon safari coordination. Known for high-energy, immersive safari experiences across the Serengeti.",
+      vehicle: "Land Cruiser",
+      groupMax: 6
+    },
+    {
+      id: 7,
+      name: "Maria Kimaro",
+      location: "Lake Manyara",
+      languages: ["English", "French", "Swahili"],
+      special: "Photography",
+      rating: 4.9,
+      dailyRate: 100,
+      avail: "Limited",
+      years: 11,
+      cert: "TANAPA Licensed",
+      img: "linear-gradient(135deg,#8a5a6a 0%,#6a3a4a 50%,#5a2a3a 100%)",
+      highlight: "Photography guide, manyara flamingos expert, 11 years, French-speaking",
+      desc: "Wildlife photography guide with 11 years of field experience. Specializes in Lake Manyara's flamingo flocks and tree-climbing lions. Fluent in French and English.",
+      vehicle: "Land Cruiser",
+      groupMax: 4
+    },
+    {
+      id: 8,
+      name: "Joseph Mwamba",
+      location: "Arusha",
+      languages: ["English", "Swahili", "German"],
+      special: "Safari",
+      rating: 4.7,
+      dailyRate: 85,
+      avail: "Booked",
+      years: 13,
+      cert: "TANAPA Licensed",
+      img: "linear-gradient(135deg,#5a5a6a 0%,#3a3a4a 50%,#2a2a3a 100%)",
+      highlight: "Multi-park expert, 13 years, German-speaking, Northern Circuit specialist",
+      desc: "Veteran guide covering all Northern Circuit parks. Fluent in German with 13 years of experience. Expert in itinerary planning and multi-park safari coordination.",
+      vehicle: "Land Cruiser",
+      groupMax: 7
+    },
+    {
+      id: 9,
+      name: "Fatima Ally",
+      location: "Ngorongoro",
+      languages: ["English", "Swahili"],
+      special: "Safari",
+      rating: 4.8,
+      dailyRate: 90,
+      avail: "Available",
+      years: 7,
+      cert: "TANAPA Licensed",
+      img: "linear-gradient(135deg,#7a8a5a 0%,#5a6a3a 50%,#4a5a2a 100%)",
+      highlight: "Crater specialist, 7 years experience, wildlife behavioral expert",
+      desc: "Ngorongoro Crater specialist with deep knowledge of wildlife behavior and ecology. Excellent at identifying animal patterns and maximizing game sightings.",
+      vehicle: "Land Cruiser",
+      groupMax: 7
+    },
+    {
+      id: 10,
+      name: "Emmanuel Shirima",
+      location: "Tarangire",
+      languages: ["English", "Swahili", "French"],
+      special: "Safari",
+      rating: 4.7,
+      dailyRate: 80,
+      avail: "Available",
+      years: 6,
+      cert: "TANAPA Licensed",
+      img: "linear-gradient(135deg,#6a7a5a 0%,#4a5a3a 50%,#3a4a2a 100%)",
+      highlight: "Tarangire elephant expert, French-speaking, 6 years experience",
+      desc: "Tarangire specialist guide with a passion for elephant herds and baobab landscapes. Fluent in French with 6 years of experience. Excellent with family groups.",
+      vehicle: "Land Cruiser",
+      groupMax: 7
     }
-  </style>
+  ];
+
+  /* ── Helpers ── */
+  function esc(s) { return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]||c;}); }
+  function stars(n) {
+    var full = Math.floor(n);
+    var half = n - full >= 0.5;
+    var s = '';
+    for (var i = 0; i < full; i++) s += '★';
+    if (half) s += '½';
+    return s;
+  }
+  function showGuideToast(msg) {
+    var t = document.getElementById('guideToast');
+    if (!t) { t = document.createElement('div'); t.id = 'guideToast'; t.className = 'guide-toast'; document.body.appendChild(t); }
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(t._hide); t._hide = setTimeout(function() { t.classList.remove('show'); }, 3000);
+  }
+
+  /* ── Render Cards ── */
+  window.guideRenderCards = function(data) {
+    var grid = document.getElementById('guideGrid');
+    var empty = document.getElementById('guideEmpty');
+    var count = document.getElementById('guideCount');
+    if (!grid) return;
+    if (data.length === 0) {
+      grid.innerHTML = '';
+      grid.style.display = 'none';
+      if (empty) empty.style.display = 'block';
+      if (count) count.textContent = 'Showing 0 guides';
+      return;
+    }
+    grid.style.display = 'grid';
+    if (empty) empty.style.display = 'none';
+    if (count) count.textContent = 'Showing ' + data.length + ' guides';
+    var html = '';
+    for (var i = 0; i < data.length; i++) {
+      var g = data[i];
+      var availClass = g.avail === 'Available' ? 'guide-avail-green' : (g.avail === 'Limited' ? 'guide-avail-amber' : 'guide-avail-red');
+      var langTags = g.languages.map(function(l){ return '<span class="guide-spec">' + esc(l) + '</span>'; }).join('');
+      html +=
+        '<div class="guide-card">' +
+          '<div class="guide-card-img" style="background:' + g.img + ';">' +
+            '<span class="guide-card-type-badge">' + esc(g.special) + '</span>' +
+            '<button class="guide-card-fav" onclick="event.stopPropagation();guideToggleFav(this)">♡</button>' +
+          '</div>' +
+          '<div class="guide-card-body">' +
+            '<div class="guide-card-name">' + esc(g.name) + '</div>' +
+            '<div class="guide-card-location">📍 ' + esc(g.location) + ' · ' + esc(g.years) + ' yrs experience</div>' +
+            '<div class="guide-card-specs">' +
+              langTags +
+              '<span class="guide-spec">🎓 ' + esc(g.cert) + '</span>' +
+              '<span class="guide-spec ' + availClass + '">' + esc(g.avail) + '</span>' +
+            '</div>' +
+            '<div style="font-size:11px;color:var(--text-secondary);line-height:1.4;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">' + esc(g.highlight) + '</div>' +
+            '<div class="guide-card-rate">' +
+              '<div><span class="guide-rate-amount">$' + g.dailyRate + '</span> <span class="guide-rate-label">/day</span></div>' +
+              '<div class="guide-card-rating"><span class="guide-stars">' + stars(g.rating) + '</span> ' + g.rating.toFixed(1) + '</div>' +
+            '</div>' +
+            '<div class="guide-card-actions">' +
+              '<button class="guide-btn guide-btn-view" onclick="guideViewDetail(' + g.id + ')">👁 View Details</button>' +
+              '<button class="guide-btn guide-btn-request" onclick="guideRequest(' + g.id + ')">🧭 Request Guide</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+    }
+    grid.innerHTML = html;
+  };
+
+  /* ── Filter Logic ── */
+  window.guideFilter = function() {
+    var loc = document.getElementById('guideFilterLocation').value;
+    var lang = document.getElementById('guideFilterLanguage').value;
+    var spec = document.getElementById('guideFilterSpecial').value;
+    var avl = document.getElementById('guideFilterAvail').value;
+    var q = (document.getElementById('guideFilterSearch').value || '').toLowerCase().trim();
+    var filtered = guides.filter(function(g) {
+      if (loc && g.location !== loc) return false;
+      if (lang && g.languages.indexOf(lang) === -1) return false;
+      if (spec && g.special !== spec) return false;
+      if (avl && g.avail !== avl) return false;
+      if (q && g.name.toLowerCase().indexOf(q) === -1 && g.location.toLowerCase().indexOf(q) === -1) return false;
+      return true;
+    });
+    guideRenderCards(filtered);
+    guideUpdatePills(loc, lang, spec, avl, q);
+  };
+
+  window.guideResetFilters = function() {
+    document.getElementById('guideFilterLocation').value = '';
+    document.getElementById('guideFilterLanguage').value = '';
+    document.getElementById('guideFilterSpecial').value = '';
+    document.getElementById('guideFilterAvail').value = '';
+    document.getElementById('guideFilterSearch').value = '';
+    document.getElementById('guideActivePills').style.display = 'none';
+    guideRenderCards(guides);
+  };
+
+  function guideUpdatePills(loc, lang, spec, avl, q) {
+    var pills = document.getElementById('guideActivePills');
+    if (!loc && !lang && !spec && !avl && !q) { pills.style.display = 'none'; return; }
+    pills.style.display = 'flex';
+    var html = '';
+    if (loc)  html += '<span class="guide-spec" style="background:var(--primary);color:#fff;border:none;cursor:pointer;" onclick="document.getElementById(\'guideFilterLocation\').value=\'\';guideFilter()">✕ ' + esc(loc) + '</span>';
+    if (lang) html += '<span class="guide-spec" style="background:var(--primary);color:#fff;border:none;cursor:pointer;" onclick="document.getElementById(\'guideFilterLanguage\').value=\'\';guideFilter()">✕ ' + esc(lang) + '</span>';
+    if (spec) html += '<span class="guide-spec" style="background:var(--primary);color:#fff;border:none;cursor:pointer;" onclick="document.getElementById(\'guideFilterSpecial\').value=\'\';guideFilter()">✕ ' + esc(spec) + '</span>';
+    if (avl)  html += '<span class="guide-spec" style="background:var(--primary);color:#fff;border:none;cursor:pointer;" onclick="document.getElementById(\'guideFilterAvail\').value=\'\';guideFilter()">✕ ' + esc(avl) + '</span>';
+    if (q)    html += '<span class="guide-spec" style="background:var(--primary);color:#fff;border:none;cursor:pointer;" onclick="document.getElementById(\'guideFilterSearch\').value=\'\';guideFilter()">✕ "' + esc(q) + '"</span>';
+    pills.innerHTML = html;
+  }
+
+  /* ── View Detail Modal ── */
+  window.guideViewDetail = function(id) {
+    var g = guides.find(function(x) { return x.id === id; });
+    if (!g) return;
+    document.getElementById('guideDetailTitle').textContent = g.name;
+    var body = document.getElementById('guideDetailBody');
+    var highlights = g.highlight.split(',').map(function(h){ return '<span class="guide-highlight">' + esc(h.trim()) + '</span>'; }).join('');
+    var langTags = g.languages.map(function(l){ return '<span class="guide-lang-tag">' + esc(l) + '</span>'; }).join(' ');
+    body.innerHTML =
+      '<div class="guide-detail-img" style="background:' + g.img + ';"></div>' +
+      '<div style="padding:20px 24px;">' +
+        '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">' +
+          '<div>' +
+            '<div style="font-size:12px;color:var(--text-secondary);margin-bottom:2px;">📍 ' + esc(g.location) + '</div>' +
+            '<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text-secondary);letter-spacing:.4px;">' + esc(g.special) + '</div>' +
+          '</div>' +
+          '<div style="text-align:right;">' +
+            '<span class="guide-avail-badge ' + (g.avail === 'Available' ? 'guide-avail-green' : (g.avail === 'Limited' ? 'guide-avail-amber' : 'guide-avail-red')) + '">' + esc(g.avail) + '</span>' +
+            '<div style="font-size:16px;margin-top:4px;"><span class="guide-stars">' + stars(g.rating) + '</span> <span style="font-size:13px;font-weight:700;color:var(--charcoal);">' + g.rating.toFixed(1) + '</span></div>' +
+          '</div>' +
+        '</div>' +
+        '<div style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:12px;">' + esc(g.desc) + '</div>' +
+        '<div class="guide-detail-grid">' +
+          '<div class="guide-detail-field"><div class="guide-detail-label">Daily Rate</div><div class="guide-detail-value">$' + g.dailyRate + ' / day</div></div>' +
+          '<div class="guide-detail-field"><div class="guide-detail-label">Experience</div><div class="guide-detail-value">' + g.years + ' years</div></div>' +
+          '<div class="guide-detail-field"><div class="guide-detail-label">Certification</div><div class="guide-detail-value">' + esc(g.cert) + '</div></div>' +
+          '<div class="guide-detail-field"><div class="guide-detail-label">Max Group</div><div class="guide-detail-value">' + g.groupMax + ' guests</div></div>' +
+          '<div class="guide-detail-field"><div class="guide-detail-label">Vehicle</div><div class="guide-detail-value">' + esc(g.vehicle) + '</div></div>' +
+          '<div class="guide-detail-field"><div class="guide-detail-label">Specialization</div><div class="guide-detail-value">' + esc(g.special) + '</div></div>' +
+        '</div>' +
+        '<div style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;">Languages</div>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">' + langTags + '</div>' +
+        '<div style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;">Highlights</div>' +
+        '<div class="guide-highlight-row">' + highlights + '</div>' +
+        '<div style="display:flex;gap:8px;margin-top:20px;">' +
+          '<button class="guide-btn guide-btn-request" style="flex:1;justify-content:center;padding:12px 0;font-size:13px;" onclick="guideRequest(' + g.id + ')">🧭 Request This Guide</button>' +
+          '<button class="guide-btn guide-btn-view" style="padding:12px 16px;font-size:13px;" onclick="guideAddToItinerary(' + g.id + ')">+ Add to Itinerary</button>' +
+        '</div>' +
+      '</div>';
+    openModal('guideDetailModal');
+  };
+
+  /* ── Request / Itinerary ── */
+  window.guideRequest = function(id) {
+    var g = guides.find(function(x) { return x.id === id; });
+    showGuideToast('✅ Guide request sent for ' + (g ? g.name : 'guide'));
+  };
+  window.guideAddToItinerary = function(id) {
+    var g = guides.find(function(x) { return x.id === id; });
+    showGuideToast('✅ ' + (g ? g.name : 'Guide') + ' added to itinerary');
+  };
+
+  /* ── Favorite Toggle ── */
+  window.guideToggleFav = function(btn) {
+    if (btn.textContent === '♡') {
+      btn.textContent = '♥';
+      btn.style.color = '#e74c3c';
+      showGuideToast('Saved to favorites');
+    } else {
+      btn.textContent = '♡';
+      btn.style.color = '';
+      showGuideToast('Removed from favorites');
+    }
+  };
+
+  /* ── Initial Render ── */
+  if (document.getElementById('guideGrid')) {
+    guideRenderCards(guides);
+  }
+})();
+</script>
+
+        <!-- ==========================================
+             QUOTES PAGE
+             ========================================== -->
+        <div id="quotes-page" class="page">
+            <div class="page-header">
+                <div class="page-title">Quotes</div>
+                <button class="create-btn">
+                    <i data-lucide="plus"></i> New Quote
+                </button>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Recent Quotes</div>
+                </div>
+                <div class="card-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Quote ID</th>
+                                <th>Client</th>
+                                <th>Trip</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>QT-2024-041</strong></td>
+                                <td>James Williams</td>
+                                <td>5-Day Serengeti & Ngorongoro</td>
+                                <td>$3,850</td>
+                                <td><span class="badge badge-success">Accepted</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>QT-2024-040</strong></td>
+                                <td>Maria Fernandez</td>
+                                <td>7-Day Luxury Safari</td>
+                                <td>$8,200</td>
+                                <td><span class="badge badge-warning">Pending</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>QT-2024-039</strong></td>
+                                <td>Hans Mueller</td>
+                                <td>3-Day Tarangire</td>
+                                <td>$1,600</td>
+                                <td><span class="badge badge-info">Draft</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             CLIENTS PAGE
+             ========================================== -->
+        <div id="clients-page" class="page">
+            <div class="page-header">
+                <div class="page-title">Clients</div>
+                <button class="create-btn">
+                    <i data-lucide="plus"></i> Add Client
+                </button>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Client Directory</div>
+                </div>
+                <div class="card-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Nationality</th>
+                                <th>Total Bookings</th>
+                                <th>Total Spend</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>James & Sarah Williams</strong></td>
+                                <td>j.williams@email.com</td>
+                                <td>UK</td>
+                                <td>3</td>
+                                <td>$12,400</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Maria Fernandez</strong></td>
+                                <td>m.fernandez@email.com</td>
+                                <td>Spain</td>
+                                <td>1</td>
+                                <td>$8,200</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Hans Mueller</strong></td>
+                                <td>h.mueller@email.com</td>
+                                <td>Germany</td>
+                                <td>5</td>
+                                <td>$22,100</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             MESSAGES PAGE
+             ========================================== -->
+        <div id="messages-page" class="page">
+            <div class="page-header">
+                <div class="page-title">Messages</div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="message-item">
+                        <div class="message-avatar"><i data-lucide="hotel"></i></div>
+                        <div class="message-content">
+                            <div class="message-sender">Serengeti Heritage Camp</div>
+                            <div class="message-preview">Reservation confirmed for 15–18 September. Welcome to Serengeti Heritage Camp.</div>
+                        </div>
+                        <div class="message-time">2h ago</div>
+                    </div>
+                    <div class="message-item">
+                        <div class="message-avatar"><i data-lucide="car"></i></div>
+                        <div class="message-content">
+                            <div class="message-sender">Safari Fleet Tanzania</div>
+                            <div class="message-preview">Vehicle is ready for pickup on 15 September at 08:00 from Arusha office.</div>
+                        </div>
+                        <div class="message-time">4h ago</div>
+                    </div>
+                    <div class="message-item">
+                        <div class="message-avatar"><i data-lucide="badge-check"></i></div>
+                        <div class="message-content">
+                            <div class="message-sender">John Mollel</div>
+                            <div class="message-preview">Confirmed for the 5-day itinerary. I will meet the group at Arusha Coffee Lodge.</div>
+                        </div>
+                        <div class="message-time">1d ago</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             DOCUMENTS PAGE
+             ========================================== -->
+        <div id="documents-page" class="page">
+            <div class="page-header">
+                <div class="page-title">Documents</div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Document</th>
+                                <th>Type</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Booking Confirmation — Serengeti Heritage Camp</strong></td>
+                                <td>PDF</td>
+                                <td>12 Sep 2024</td>
+                                <td><span class="badge badge-success">Signed</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Vehicle Lease Agreement — Safari Fleet</strong></td>
+                                <td>PDF</td>
+                                <td>10 Sep 2024</td>
+                                <td><span class="badge badge-success">Signed</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Quote — 7-Day Luxury Safari</strong></td>
+                                <td>PDF</td>
+                                <td>08 Sep 2024</td>
+                                <td><span class="badge badge-warning">Pending</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             INVOICES PAGE
+             ========================================== -->
+        <div id="invoices-page" class="page">
+            <div class="page-header">
+                <div class="page-title">Invoices & Payments</div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Invoice</th>
+                                <th>Client</th>
+                                <th>Amount</th>
+                                <th>Due Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>INV-2024-041</strong></td>
+                                <td>James Williams</td>
+                                <td>$3,850</td>
+                                <td>01 Oct 2024</td>
+                                <td><span class="badge badge-success">Paid</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>INV-2024-040</strong></td>
+                                <td>Maria Fernandez</td>
+                                <td>$8,200</td>
+                                <td>15 Oct 2024</td>
+                                <td><span class="badge badge-warning">Pending</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             TASKS PAGE
+             ========================================== -->
+        <div id="tasks-page" class="page">
+            <div class="page-header">
+                <div class="page-title">Tasks</div>
+                <button class="create-btn">
+                    <i data-lucide="plus"></i> New Task
+                </button>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Task</th>
+                                <th>Itinerary</th>
+                                <th>Due Date</th>
+                                <th>Assignee</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Confirm Serengeti Heritage Camp</strong></td>
+                                <td>5-Day Serengeti</td>
+                                <td>12 Sep 2024</td>
+                                <td>Grace Ntuli</td>
+                                <td><span class="badge badge-warning">Pending</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Send vehicle lease agreement</strong></td>
+                                <td>5-Day Serengeti</td>
+                                <td>13 Sep 2024</td>
+                                <td>Mathias Mwembe</td>
+                                <td><span class="badge badge-success">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Source accommodation for Zanzibar</strong></td>
+                                <td>Zanzibar + Safari</td>
+                                <td>01 Oct 2024</td>
+                                <td>Grace Ntuli</td>
+                                <td><span class="badge badge-info">To Do</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             FAVORITES PAGE
+             ========================================== -->
+        <div id="favorites-page" class="page">
+            <div class="page-header">
+                <div class="page-title">Favorites</div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px;">
+                        <div style="padding: 16px; background: var(--warm-off-white); border-radius: var(--radius-sm); border: 1px solid var(--border-light); border-left: 3px solid var(--status-pending);">
+                            <div style="display:flex; align-items:center; gap:6px; font-weight: 600; margin-bottom: 4px;">
+                                <i data-lucide="bed-double" style="width:16px;height:16px; color:var(--forest-green);"></i>
+                                Serengeti Heritage Camp
+                            </div>
+                            <div style="font-size: 0.75rem; color: var(--warm-gray);">Central Serengeti</div>
+                        </div>
+                        <div style="padding: 16px; background: var(--warm-off-white); border-radius: var(--radius-sm); border: 1px solid var(--border-light); border-left: 3px solid var(--status-pending);">
+                            <div style="display:flex; align-items:center; gap:6px; font-weight: 600; margin-bottom: 4px;">
+                                <i data-lucide="car" style="width:16px;height:16px; color:var(--forest-green);"></i>
+                                Safari Fleet Tanzania
+                            </div>
+                            <div style="font-size: 0.75rem; color: var(--warm-gray);">Arusha</div>
+                        </div>
+                        <div style="padding: 16px; background: var(--warm-off-white); border-radius: var(--radius-sm); border: 1px solid var(--border-light); border-left: 3px solid var(--status-pending);">
+                            <div style="display:flex; align-items:center; gap:6px; font-weight: 600; margin-bottom: 4px;">
+                                <i data-lucide="badge-check" style="width:16px;height:16px; color:var(--forest-green);"></i>
+                                John Mollel
+                            </div>
+                            <div style="font-size: 0.75rem; color: var(--warm-gray);">Serengeti Specialist</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             ANALYTICS PAGE
+             ========================================== -->
+        <div id="analytics-page" class="page">
+            <div class="page-header">
+                <div class="page-title">Reports & Analytics</div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Business Overview</div>
+                </div>
+                <div class="card-body">
+                    <div class="grid-4">
+                        <div style="padding: 16px; background: var(--warm-off-white); border-radius: var(--radius-sm); text-align: center;">
+                            <div style="font-size: 0.6875rem; color: var(--warm-gray); margin-bottom: 8px; text-transform: uppercase; font-weight: 700;">Bookings</div>
+                            <div style="font-size: 28px; font-weight: 700; color: var(--forest-green);">28</div>
+                            <div style="font-size: 0.75rem; color: var(--status-available); margin-top: 4px;">
+                                <span style="display:inline-flex; align-items:center; gap:3px;"><i data-lucide="trending-up" style="width:12px;height:12px;"></i> 15% vs last month</span>
+                            </div>
+                        </div>
+                        <div style="padding: 16px; background: var(--warm-off-white); border-radius: var(--radius-sm); text-align: center;">
+                            <div style="font-size: 0.6875rem; color: var(--warm-gray); margin-bottom: 8px; text-transform: uppercase; font-weight: 700;">Supplier Spend</div>
+                            <div style="font-size: 28px; font-weight: 700; color: var(--forest-green);">$18.4K</div>
+                            <div style="font-size: 0.75rem; color: var(--warm-gray); margin-top: 4px;">Avg $658/booking</div>
+                        </div>
+                        <div style="padding: 16px; background: var(--warm-off-white); border-radius: var(--radius-sm); text-align: center;">
+                            <div style="font-size: 0.6875rem; color: var(--warm-gray); margin-bottom: 8px; text-transform: uppercase; font-weight: 700;">Est. Sales</div>
+                            <div style="font-size: 28px; font-weight: 700; color: var(--forest-green);">$27.6K</div>
+                            <div style="font-size: 0.75rem; color: var(--warm-gray); margin-top: 4px;">Avg $986/booking</div>
+                        </div>
+                        <div style="padding: 16px; background: var(--warm-off-white); border-radius: var(--radius-sm); text-align: center;">
+                            <div style="font-size: 0.6875rem; color: var(--warm-gray); margin-bottom: 8px; text-transform: uppercase; font-weight: 700;">Gross Margin</div>
+                            <div style="font-size: 28px; font-weight: 700; color: var(--status-available);">33.1%</div>
+                            <div style="font-size: 0.75rem; color: var(--warm-gray); margin-top: 4px;">Profit: $9.15K</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             COMPANY PAGE
+             ========================================== -->
+        <div id="company-page" class="page">
+            <div class="page-header">
+                <div class="page-title">Company Profile</div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Company Information</div>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label>Company Name</label>
+                        <input type="text" value="Dream Trails Tanzania" readonly>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" value="info@dreamtrails.tz" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone</label>
+                            <input type="text" value="+255 784 123 456" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Address</label>
+                        <input type="text" value="Arusha, Tanzania" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             TEAM PAGE
+             ========================================== -->
+        <div id="team-page" class="page">
+            <div class="page-header">
+                <div class="page-title">Team Members</div>
+                <button class="create-btn">
+                    <i data-lucide="plus"></i> Invite Member
+                </button>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Your Team</div>
+                </div>
+                <div class="card-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Role</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Mathias Mwembe</strong></td>
+                                <td>Owner</td>
+                                <td>mathias@dreamtrails.tz</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Grace Ntuli</strong></td>
+                                <td>Operations Manager</td>
+                                <td>grace@dreamtrails.tz</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Peter Kipchoge</strong></td>
+                                <td>Sales Officer</td>
+                                <td>peter@dreamtrails.tz</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ============================================
+     JAVASCRIPT
+     ============================================ -->
+<!-- ============================================
+     DASHBOARD VIEW (unchanged from original)
+     ============================================ -->
+<div id="dashboard-view" class="dashboard" style="display: none;">
+
+    <button class="sidebar-toggle" onclick="toggleSidebar()">
+        <i data-lucide="menu"></i>
+    </button>
+
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo" onclick="navigateTo('homepage')">
+                <i data-lucide="compass"></i>
+                <span>SafariLink</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <div class="nav-item active" onclick="switchPage('dashboard')">
+                    <i data-lucide="layout-dashboard"></i>
+                    Dashboard
+                </div>
+                <div class="nav-item" onclick="switchPage('itinerary')">
+                    <i data-lucide="route"></i>
+                    Itineraries
+                </div>
+                <div class="nav-item" onclick="switchPage('trips')">
+                    <i data-lucide="map"></i>
+                    Trips
+                </div>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Sourcing</div>
+                <div class="nav-item" onclick="switchPage('accommodation')">
+                    <i data-lucide="bed-double"></i>
+                    Accommodation
+                </div>
+                <div class="nav-item" onclick="switchPage('vehicles')">
+                    <i data-lucide="car"></i>
+                    Vehicles
+                </div>
+                <div class="nav-item" onclick="switchPage('guides')">
+                    <i data-lucide="users"></i>
+                    Guides
+                </div>
+                <div class="nav-item" onclick="switchPage('activities')">
+                    <i data-lucide="compass"></i>
+                    Activities
+                </div>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Operations</div>
+                <div class="nav-item" onclick="switchPage('messages')">
+                    <i data-lucide="message-square"></i>
+                    Messages
+                </div>
+                <div class="nav-item" onclick="switchPage('documents')">
+                    <i data-lucide="file-text"></i>
+                    Documents
+                </div>
+                <div class="nav-item" onclick="switchPage('invoices')">
+                    <i data-lucide="credit-card"></i>
+                    Invoices
+                </div>
+                <div class="nav-item" onclick="switchPage('tasks')">
+                    <i data-lucide="clipboard-list"></i>
+                    Tasks
+                </div>
+                <div class="nav-item" onclick="switchPage('favorites')">
+                    <i data-lucide="star"></i>
+                    Favorites
+                </div>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Analytics &amp; Settings</div>
+                <div class="nav-item" onclick="switchPage('analytics')">
+                    <i data-lucide="bar-chart-3"></i>
+                    Reports &amp; Analytics
+                </div>
+                <div class="nav-item" onclick="switchPage('company')">
+                    <i data-lucide="building-2"></i>
+                    Company
+                </div>
+                <div class="nav-item" onclick="switchPage('team')">
+                    <i data-lucide="users"></i>
+                    Team
+                </div>
+            </div>
+        </nav>
+    </aside>
+
+    <div class="main-content">
+
+        <!-- DASHBOARD PAGE -->
+        <div id="dashboard-page" class="page active">
+            <div class="page-header">
+                <div>
+                    <div class="page-title">Dashboard</div>
+                    <div class="page-subtitle">Welcome back. Here's your operation overview.</div>
+                </div>
+                <button class="create-btn" onclick="switchPage('itinerary')">
+                    <i data-lucide="plus"></i>
+                    New Itinerary
+                </button>
+            </div>
+            <div class="card" style="margin-bottom:20px;">
+                <div class="card-header">
+                    <div class="card-title">Smart Operations Assistant</div>
+                </div>
+                <div class="card-body">
+                    <div style="display:flex;flex-direction:column;gap:12px;">
+                        <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:var(--warm-off-white);border-radius:var(--radius-sm);border-left:3px solid var(--status-pending);">
+                            <i data-lucide="alert-triangle" style="width:18px;height:18px;color:var(--status-pending);flex-shrink:0;margin-top:2px;"></i>
+                            <div>
+                                <div style="font-size:0.8rem;font-weight:600;color:var(--charcoal);margin-bottom:4px;">Serengeti Safari (Aug 15) — Accommodation pending</div>
+                                <div style="font-size:0.75rem;color:var(--warm-gray);">Serengeti Serena hasn't confirmed availability. <a href="#" style="font-weight:600;">Follow up →</a></div>
+                            </div>
+                        </div>
+                        <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:var(--warm-off-white);border-radius:var(--radius-sm);border-left:3px solid var(--status-available);">
+                            <i data-lucide="check-circle" style="width:18px;height:18px;color:var(--status-available);flex-shrink:0;margin-top:2px;"></i>
+                            <div>
+                                <div style="font-size:0.8rem;font-weight:600;color:var(--charcoal);margin-bottom:4px;">Ngorongoro Crater trip — Ready to quote</div>
+                                <div style="font-size:0.75rem;color:var(--warm-gray);">All 3 accommodations confirmed. Send quote to client.</div>
+                            </div>
+                        </div>
+                        <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:var(--warm-off-white);border-radius:var(--radius-sm);border-left:3px solid var(--status-info);">
+                            <i data-lucide="info" style="width:18px;height:18px;color:var(--status-info);flex-shrink:0;margin-top:2px;"></i>
+                            <div>
+                                <div style="font-size:0.8rem;font-weight:600;color:var(--charcoal);margin-bottom:4px;">5 new vehicles available in Arusha</div>
+                                <div style="font-size:0.75rem;color:var(--warm-gray);">Available for Sep 1–10. <a href="#" style="font-weight:600;">View vehicles →</a></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">
+                <button class="create-btn" style="background:#fff;color:var(--charcoal);border:1px solid var(--border-light);justify-content:center;" onclick="switchPage('itinerary')">
+                    <i data-lucide="plus-circle" style="color:var(--forest-green);"></i>
+                    <span>New Itinerary</span>
+                </button>
+                <button class="create-btn" style="background:#fff;color:var(--charcoal);border:1px solid var(--border-light);justify-content:center;" onclick="switchPage('accommodation')">
+                    <i data-lucide="search" style="color:var(--forest-green);"></i>
+                    <span>Search Accommodation</span>
+                </button>
+                <button class="create-btn" style="background:#fff;color:var(--charcoal);border:1px solid var(--border-light);justify-content:center;" onclick="switchPage('vehicles')">
+                    <i data-lucide="car" style="color:var(--forest-green);"></i>
+                    <span>Find Vehicles</span>
+                </button>
+            </div>
+
+            <div class="grid-4" style="margin-bottom:20px;">
+                <div class="card"><div class="card-body" style="padding:20px;text-align:center;">
+                    <div style="font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--warm-gray);margin-bottom:8px;">Active Trips</div>
+                    <div style="font-size:28px;font-weight:800;color:var(--forest-green);">12</div>
+                    <div style="font-size:0.75rem;color:var(--status-available);margin-top:4px;">&uarr; 3 this month</div>
+                </div></div>
+                <div class="card"><div class="card-body" style="padding:20px;text-align:center;">
+                    <div style="font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--warm-gray);margin-bottom:8px;">Pending Quotes</div>
+                    <div style="font-size:28px;font-weight:800;color:#b08d3a;">5</div>
+                    <div style="font-size:0.75rem;color:#dc2626;margin-top:4px;">&darr; 2 from last week</div>
+                </div></div>
+                <div class="card"><div class="card-body" style="padding:20px;text-align:center;">
+                    <div style="font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--warm-gray);margin-bottom:8px;">Confirmed Bookings</div>
+                    <div style="font-size:28px;font-weight:800;color:var(--forest-green);">28</div>
+                    <div style="font-size:0.75rem;color:var(--status-available);margin-top:4px;">&uarr; 8 this month</div>
+                </div></div>
+                <div class="card"><div class="card-body" style="padding:20px;text-align:center;">
+                    <div style="font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--warm-gray);margin-bottom:8px;">Total Revenue</div>
+                    <div style="font-size:28px;font-weight:800;color:var(--forest-green);">$142K</div>
+                    <div style="font-size:0.75rem;color:var(--status-available);margin-top:4px;">&uarr; 12% vs last month</div>
+                </div></div>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><div class="card-title">Recent Reservations</div></div>
+                <div class="card-body" style="padding:0;">
+                    <table>
+                        <thead><tr><th>Trip</th><th>Client</th><th>Dates</th><th>Status</th><th>Value</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>Serengeti Migration Safari</strong></td><td>Sarah Mitchell</td><td>Aug 15 – 20</td><td><span class="badge badge-success">Confirmed</span></td><td>$4,200</td></tr>
+                            <tr><td><strong>Ngorongoro Crater Explorer</strong></td><td>James Wilson</td><td>Aug 22 – 24</td><td><span class="badge badge-warning">Pending</span></td><td>$2,800</td></tr>
+                            <tr><td><strong>Kilimanjaro Base Camp</strong></td><td>Anna Kowalski</td><td>Sep 1 – 5</td><td><span class="badge badge-info">Sourcing</span></td><td>$5,100</td></tr>
+                            <tr><td><strong>Zanzibar Beach Extension</strong></td><td>Marco Silva</td><td>Sep 8 – 12</td><td><span class="badge badge-warning" style="background:var(--khaki);color:var(--warm-gray);">Draft</span></td><td>$1,900</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             ITINERARY PAGE
+             ========================================== -->
+        <div id="itinerary-page" class="page"> 
+            <style>
+/* ── Itinerary Builder Specific Styles ── */
+.ib-wrapper{display:flex;gap:0;background:var(--bg);border-radius:16px;overflow:hidden;min-height:620px;border:1px solid var(--border);}
+.ib-sidebar{width:200px;background:var(--primary);flex-shrink:0;}
+.ib-main{flex:1;padding:24px;overflow-y:auto;max-height:80vh;}
+.ib-step-indicator{display:flex;flex-direction:column;gap:0;padding:20px 0;}
+.ib-step-item{display:flex;align-items:center;gap:12px;padding:14px 20px;cursor:pointer;opacity:.5;transition:all .3s;border-left:3px solid transparent;}
+.ib-step-item.active{opacity:1;background:rgba(255,255,255,.1);border-left-color:var(--accent);}
+.ib-step-item.completed{opacity:.8;}
+.ib-step-num{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:#fff;flex-shrink:0;}
+.ib-step-item.active .ib-step-num,.ib-step-item.completed .ib-step-num{background:var(--accent);}
+.ib-step-text{color:#fff;font-size:.85rem;font-weight:500;}
+.ib-step-line{width:2px;height:20px;background:rgba(255,255,255,.2);margin-left:14px;}
+.day-card{background:#fff;border-radius:12px;border:1px solid var(--border);margin-bottom:12px;overflow:hidden;}
+.day-card-header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:var(--bg);border-bottom:1px solid var(--border);cursor:grab;}
+.day-card-body{padding:18px;}
+.day-card-actions{display:flex;gap:6px;}
+.day-card-actions button{background:none;border:none;cursor:pointer;font-size:.85rem;padding:4px 8px;border-radius:6px;color:var(--text-secondary);}
+.day-card-actions button:hover{background:var(--border);}
+.profit-card{background:#fff;border-radius:12px;border:1px solid var(--border);padding:20px;margin-bottom:20px;}
+.profit-label{font-size:.85rem;color:var(--text-secondary);margin-bottom:4px;}
+.profit-value{font-size:2rem;font-weight:700;color:var(--primary);}
+.quote-preview{background:#fff;border-radius:12px;border:1px solid var(--border);overflow:hidden;margin-bottom:20px;}
+.quote-cover{background:var(--bg);padding:20px 24px;}
+.quote-body{padding:24px;}
+.supplier-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:1000;}
+.supplier-overlay.active{display:flex;}
+.supplier-modal{background:#fff;border-radius:16px;width:90%;max-width:800px;max-height:85vh;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+</style>
+
+<div class="ib-wrapper">
+  <!-- Step Indicator -->
+  <div class="ib-sidebar">
+    <div class="ib-step-indicator">
+      <div class="ib-step-item active" id="ibInd1" onclick="ibGoTo(1)"><span class="ib-step-num">1</span><span class="ib-step-text">Trip Setup</span></div>
+      <div class="ib-step-line"></div>
+      <div class="ib-step-item" id="ibInd2" onclick="ibGoTo(2)"><span class="ib-step-num">2</span><span class="ib-step-text">Day-by-Day</span></div>
+      <div class="ib-step-line"></div>
+      <div class="ib-step-item" id="ibInd3" onclick="ibGoTo(3)"><span class="ib-step-num">3</span><span class="ib-step-text">Cost & Quote</span></div>
+    </div>
+  </div>
+  <div class="ib-main">
+    <!-- STEP 1: TRIP SETUP -->
+    <div class="ib-step" id="ibStep1">
+      <div style="margin:0 0 20px 0;">
+        <div style="font-size:1.2rem;font-weight:700;color:var(--primary-dark);">Trip Setup</div>
+        <div style="font-size:.85rem;color:var(--text-secondary);">Client, dates, and trip details</div>
+      </div>
+      <div class="form-row" style="grid-template-columns:1fr 1fr;">
+        <div class="form-group"><label>Client Name</label><input type="text" id="ibClient" placeholder="e.g. James & Sarah Williams"></div>
+        <div class="form-group"><label>Lead Traveler</label><input type="text" id="ibLead" placeholder="Primary guest name"></div>
+      </div>
+      <div class="form-row" style="grid-template-columns:1fr 1fr 1fr;">
+        <div class="form-group"><label>Arrival Date</label><input type="date" id="ibArrival"></div>
+        <div class="form-group"><label>Departure Date</label><input type="date" id="ibDeparture"></div>
+        <div class="form-group"><label>Travelers</label><input type="number" id="ibTravelers" value="2" min="1"></div>
+      </div>
+      <div class="form-row" style="grid-template-columns:1fr 1fr;">
+        <div class="form-group"><label>Arrival Airport</label><input type="text" id="ibArrAirport" placeholder="e.g. JRO (Kilimanjaro)"></div>
+        <div class="form-group"><label>Departure Airport</label><input type="text" id="ibDepAirport" placeholder="e.g. JRO or ZNZ"></div>
+      </div>
+      <div class="form-row" style="grid-template-columns:1fr 1fr 1fr;">
+        <div class="form-group"><label>Trip Type</label><select id="ibType"><option>Safari</option><option>Honeymoon</option><option>Family</option><option>Luxury</option><option>Budget</option><option>Adventure</option><option>Photography</option><option>Migration</option><option>Beach+Safari</option><option>Kilimanjaro+Safari</option><option>Custom</option></select></div>
+        <div class="form-group"><label>Budget Category</label><select id="ibBudget"><option>Economy ($200-400/night)</option><option>Comfort ($400-700/night)</option><option>Premium ($700-1,200/night)</option><option>Luxury ($1,200+/night)</option></select></div>
+        <div class="form-group"><label>Salesperson</label><input type="text" id="ibSales" placeholder="Your name"></div>
+      </div>
+      <div class="form-group"><label>Internal Reference</label><input type="text" id="ibRef" placeholder="e.g. REF-2024-001"></div>
+      <div class="form-group"><label>Notes / Special Requests</label><textarea id="ibNotes" rows="3" placeholder="Dietary requirements, accessibility needs, special occasions..."></textarea></div>
+      <div style="margin-top:20px;display:flex;justify-content:flex-end;"><button class="btn btn-primary" onclick="ibGoTo(2)">Next: Day-by-Day →</button></div>
+    </div>
+
+    <!-- STEP 2: DAY-BY-DAY -->
+    <div class="ib-step" id="ibStep2" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <div>
+          <div style="font-size:1.2rem;font-weight:700;color:var(--primary-dark);">Day-by-Day Itinerary</div>
+          <div style="font-size:.85rem;color:var(--text-secondary);">Click to edit each day's details</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-secondary btn-sm" onclick="ibAddDay()">+ Add Day</button>
+          <button class="btn btn-primary btn-sm" onclick="openSupplierModal()">+ Find Suppliers</button>
+        </div>
+      </div>
+      <div id="ibDayCards"></div>
+      <div style="margin-top:20px;display:flex;justify-content:space-between;">
+        <button class="btn btn-secondary" onclick="ibGoTo(1)">← Back: Trip Setup</button>
+        <button class="btn btn-primary" onclick="ibGoTo(3)">Next: Cost & Quote →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: COSTING & QUOTE -->
+    <div class="ib-step" id="ibStep3" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <div>
+          <div style="font-size:1.2rem;font-weight:700;color:var(--primary-dark);">Costing & Quote Preview</div>
+          <div style="font-size:.85rem;color:var(--text-secondary);">Add cost items, review margins, and generate quote</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-secondary btn-sm" onclick="showToast('🖨️ Opening print view…')">🖨️ Print</button>
+          <button class="btn btn-primary btn-sm" onclick="showToast('✅ Saved!')">💾 Save</button>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-header"><div class="card-title">Cost Breakdown</div><button class="btn btn-secondary btn-sm" onclick="ibAddCost()">+ Add Item</button></div>
+        <div id="ibCostItems"></div>
+        <div style="padding:16px;border-top:2px solid var(--primary);display:flex;justify-content:flex-end;">
+          <div style="text-align:right;">
+            <div style="margin-bottom:4px;"><span style="font-size:.8rem;color:var(--text-secondary);">Total Cost:</span> <span id="ibTotalCost" style="font-weight:700;font-size:1.2rem;color:var(--text);">$0</span></div>
+            <div style="margin-bottom:4px;"><span style="font-size:.8rem;color:var(--text-secondary);">Sell Price (25% margin):</span> <span id="ibSellPrice" style="font-weight:700;font-size:1.2rem;color:var(--primary);">$0</span></div>
+            <div><span style="font-size:.8rem;color:var(--text-secondary);">Profit:</span> <span id="ibProfit" style="font-weight:700;font-size:1.1rem;color:var(--success);">$0</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="profit-card">
+        <div class="profit-label">Estimated Margin</div>
+        <div class="profit-value" id="ibMargin">25%</div>
+        <div style="margin-top:8px;height:8px;background:var(--border);border-radius:4px;overflow:hidden;"><div id="ibProfitBar" style="height:100%;width:25%;background:var(--success);border-radius:4px;transition:width .3s;"></div></div>
+      </div>
+      <div class="quote-preview">
+        <div class="quote-cover">
+          <div style="font-size:2rem;font-weight:800;color:var(--primary);">SAFARILINK</div>
+          <div style="font-size:.85rem;color:var(--text-secondary);margin-top:4px;">Tanzania B2B Travel Operating Network</div>
+        </div>
+        <div class="quote-body">
+          <div style="margin-bottom:16px;"><div style="font-size:1.3rem;font-weight:700;color:var(--text);">Itinerary Quote</div><div style="font-size:.85rem;color:var(--text-secondary);" id="ibQRef">REF: ITN-2024-001</div></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;font-size:.85rem;">
+            <div><strong>Client:</strong> <span id="qClient">—</span></div>
+            <div><strong>Travelers:</strong> <span id="qTravelers">—</span></div>
+            <div><strong>Dates:</strong> <span id="qDates">—</span></div>
+            <div><strong>Trip Type:</strong> <span id="qType">—</span></div>
+          </div>
+          <table style="width:100%;border-collapse:collapse;font-size:.85rem;">
+            <thead><tr style="background:var(--bg);"><th style="padding:8px;text-align:left;border-bottom:1px solid var(--border);">Item</th><th style="padding:8px;text-align:right;border-bottom:1px solid var(--border);">Cost</th></tr></thead>
+            <tbody id="ibQuoteRows"></tbody>
+          </table>
+          <div style="display:flex;justify-content:space-between;padding:12px 8px;border-top:2px solid var(--primary);margin-top:8px;font-weight:700;"><span>Total Estimated Cost</span><span id="qTotal">$0</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 8px;font-size:.85rem;color:var(--text-secondary);"><span>Recommended Sell Price</span><span id="qSell">$0</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 8px;font-size:.85rem;color:var(--success);font-weight:600;"><span>Estimated Profit</span><span id="qProfit">$0</span></div>
+        </div>
+        <div class="quote-cover" style="margin-top:16px;"><div style="font-size:.7rem;color:var(--text-secondary);text-align:center;">SafariLink Tanzania • B2B Trade Platform • Valid for 14 days</div></div>
+      </div>
+      <div style="margin-top:20px;display:flex;justify-content:space-between;">
+        <button class="btn btn-secondary" onclick="ibGoTo(2)">← Back: Day-by-Day</button>
+        <button class="btn btn-secondary" onclick="ibReset()">🔄 Reset All</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Supplier Search Modal -->
+<div class="supplier-overlay" id="supplierModal">
+  <div class="supplier-modal">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--border);">
+      <div><div style="font-weight:700;font-size:1.1rem;">Supplier Search</div><div style="font-size:.8rem;color:var(--text-secondary);">Find accommodation, vehicles, or guides</div></div>
+      <button style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-secondary);" onclick="closeSupplierModal()">✕</button>
+    </div>
+    <div style="padding:20px 24px;">
+      <div style="display:flex;gap:12px;margin-bottom:16px;">
+        <div class="form-group" style="flex:1;"><label>Search by</label><select id="smType"><option>Accommodation</option><option>Safari Vehicle</option><option>Professional Guide</option></select></div>
+        <div class="form-group" style="flex:2;"><label>Destination / Keyword</label><input type="text" id="smKeyword" placeholder="e.g. Serengeti, Ngorongoro…"></div>
+        <div class="form-group" style="flex:1;"><label>Check-in</label><input type="date" id="smDate"></div>
+        <div style="display:flex;align-items:flex-end;"><button class="btn btn-primary" onclick="smSearch()">Search</button></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+        <button style="background:var(--bg);border:1px solid var(--border);padding:6px 14px;border-radius:20px;cursor:pointer;font-size:.8rem;" onclick="document.getElementById('smKeyword').value='Serengeti';smSearch()">Serengeti</button>
+        <button style="background:var(--bg);border:1px solid var(--border);padding:6px 14px;border-radius:20px;cursor:pointer;font-size:.8rem;" onclick="document.getElementById('smKeyword').value='Ngorongoro';smSearch()">Ngorongoro</button>
+        <button style="background:var(--bg);border:1px solid var(--border);padding:6px 14px;border-radius:20px;cursor:pointer;font-size:.8rem;" onclick="document.getElementById('smKeyword').value='Arusha';smSearch()">Arusha</button>
+        <button style="background:var(--bg);border:1px solid var(--border);padding:6px 14px;border-radius:20px;cursor:pointer;font-size:.8rem;" onclick="document.getElementById('smKeyword').value='Zanzibar';smSearch()">Zanzibar</button>
+      </div>
+      <div id="smResults" style="max-height:400px;overflow-y:auto;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // ===================== Data =====================
+  var ibDays = [];
+  var ibCosts = [];
+
+  // ===================== Navigation =====================
+  window.ibGoTo = function(step) {
+    [1,2,3].forEach(function(s) {
+      var el = document.getElementById('ibStep' + s);
+      if (el) el.style.display = s === step ? 'block' : 'none';
+      var ind = document.getElementById('ibInd' + s);
+      if (ind) {
+        ind.classList.toggle('active', s === step);
+        ind.classList.toggle('completed', s < step);
+      }
+    });
+    if (step === 2) { ibBuildDays(); }
+    if (step === 3) { ibBuildCosts(); ibCalcCosts(); }
+  };
+
+  // ===================== Day Cards =====================
+  function ibBuildDays() {
+    var arr = document.getElementById('ibArrival').value || '2024-09-15';
+    var dep = document.getElementById('ibDeparture').value || '2024-09-20';
+    var s = new Date(arr), e = new Date(dep);
+    var diff = Math.max(1, Math.round((e - s) / 864e5));
+    ibDays = [];
+    for (var i = 0; i < diff; i++) {
+      var d = new Date(s); d.setDate(d.getDate() + i);
+      ibDays.push({ label: 'Day ' + (i+1), date: d.toISOString().split('T')[0], location: '', accommodation: '', vehicle: '', guide: '', activities: '', notes: '' });
+    }
+    ibRenderDays();
+  }
+
+  function ibRenderDays() {
+    var c = document.getElementById('ibDayCards');
+    if (!c) return;
+    c.innerHTML = ibDays.map(function(day, i) {
+      return '<div class="day-card"><div class="day-card-header"><div style="display:flex;align-items:center;gap:12px;"><span style="font-size:1.2rem;cursor:grab;">⠿</span><strong style="color:var(--primary);">' + esc(day.label) + '</strong><span style="font-size:.8rem;color:var(--text-secondary);">' + esc(day.date) + '</span></div><div class="day-card-actions"><button onclick="ibDupDay(' + i + ')" title="Duplicate">📋</button><button onclick="ibDelDay(' + i + ')" title="Delete">🗑️</button></div></div><div class="day-card-body"><div class="form-row" style="grid-template-columns:1fr 1fr;"><div class="form-group" style="margin-bottom:8px;"><label style="font-size:.75rem;">Location</label><input type="text" value="' + esc(day.location) + '" onchange="ibDays[' + i + '].location=this.value" placeholder="e.g. Serengeti NP" style="font-size:.85rem;"></div><div class="form-group" style="margin-bottom:8px;"><label style="font-size:.75rem;">Accommodation</label><input type="text" value="' + esc(day.accommodation) + '" onchange="ibDays[' + i + '].accommodation=this.value" placeholder="Property name" style="font-size:.85rem;"></div></div><div class="form-row" style="grid-template-columns:1fr 1fr;"><div class="form-group" style="margin-bottom:8px;"><label style="font-size:.75rem;">Vehicle</label><input type="text" value="' + esc(day.vehicle) + '" onchange="ibDays[' + i + '].vehicle=this.value" placeholder="e.g. Land Cruiser" style="font-size:.85rem;"></div><div class="form-group" style="margin-bottom:8px;"><label style="font-size:.75rem;">Guide</label><input type="text" value="' + esc(day.guide) + '" onchange="ibDays[' + i + '].guide=this.value" placeholder="Guide name" style="font-size:.85rem;"></div></div><div class="form-group" style="margin-bottom:8px;"><label style="font-size:.75rem;">Activities / Notes</label><input type="text" value="' + esc(day.activities) + '" onchange="ibDays[' + i + '].activities=this.value" placeholder="Game drive, bush walk…" style="font-size:.85rem;"></div></div></div>';
+    }).join('');
+  }
+
+  function esc(s) { return (s||'').replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+
+  window.ibAddDay = function() {
+    var last = ibDays[ibDays.length - 1];
+    var n = last ? parseInt(last.label.replace('Day ', '')) : 0;
+    var ld = last ? new Date(last.date) : new Date();
+    var nd = new Date(ld); nd.setDate(nd.getDate() + 1);
+    ibDays.push({ label: 'Day ' + (n+1), date: nd.toISOString().split('T')[0], location: '', accommodation: '', vehicle: '', guide: '', activities: '', notes: '' });
+    ibRenderDays();
+    showToast('Day added');
+  };
+
+  window.ibDelDay = function(i) {
+    if (ibDays.length <= 1) { showToast('Must have at least 1 day'); return; }
+    ibDays.splice(i, 1);
+    ibDays.forEach(function(d, idx) { d.label = 'Day ' + (idx+1); });
+    ibRenderDays();
+    showToast('Day removed');
+  };
+
+  window.ibDupDay = function(i) {
+    var c = JSON.parse(JSON.stringify(ibDays[i]));
+    c.label = 'Day ' + (ibDays.length + 1);
+    ibDays.splice(i + 1, 0, c);
+    ibRenderDays();
+    showToast('Day duplicated');
+  };
+
+  // ===================== Costing =====================
+  function ibBuildCosts() {
+    if (ibCosts.length) return;
+    ibCosts = [
+      { name: 'Accommodation (Total)', amount: 2000 },
+      { name: 'Vehicle Rental', amount: 1200 },
+      { name: 'Guide Fee', amount: 500 },
+      { name: 'Park Entry Fees', amount: 600 },
+      { name: 'Transfers', amount: 300 },
+      { name: 'Meals & Drinks', amount: 400 },
+      { name: 'Miscellaneous', amount: 200 }
+    ];
+    ibRenderCosts();
+  }
+
+  function ibRenderCosts() {
+    var c = document.getElementById('ibCostItems');
+    if (!c) return;
+    c.innerHTML = ibCosts.map(function(item, i) {
+      return '<div style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--border);"><input type="text" value="' + esc(item.name) + '" onchange="ibCosts[' + i + '].name=this.value;ibCalcCosts()" style="flex:2;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:.85rem;"><span style="font-size:.85rem;color:var(--text-secondary);">$</span><input type="number" value="' + item.amount + '" onchange="ibCosts[' + i + '].amount=parseFloat(this.value)||0;ibCalcCosts()" style="flex:1;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:.85rem;"><button onclick="ibCosts.splice(' + i + ',1);ibRenderCosts();ibCalcCosts()" style="background:none;border:none;cursor:pointer;color:var(--danger);font-size:1.1rem;">✕</button></div>';
+    }).join('');
+  }
+
+  window.ibAddCost = function() { ibCosts.push({ name: 'New Item', amount: 0 }); ibRenderCosts(); };
+
+  function ibCalcCosts() {
+    var total = ibCosts.reduce(function(s, item) { return s + (parseFloat(item.amount) || 0); }, 0);
+    var sell = total * 1.25;
+    var profit = sell - total;
+    var margin = total > 0 ? ((profit / sell) * 100) : 0;
+    document.getElementById('ibTotalCost').textContent = '$' + total.toLocaleString();
+    document.getElementById('ibSellPrice').textContent = '$' + sell.toLocaleString();
+    document.getElementById('ibProfit').textContent = '$' + profit.toLocaleString();
+    document.getElementById('ibMargin').textContent = Math.round(margin) + '%';
+    document.getElementById('ibProfitBar').style.width = Math.min(margin, 50) + '%';
+    ibUpdateQuote(total);
+  }
+
+  function ibUpdateQuote(total) {
+    var client = document.getElementById('ibClient').value || '—';
+    var travelers = document.getElementById('ibTravelers').value || '—';
+    var arr = document.getElementById('ibArrival').value || '—';
+    var dep = document.getElementById('ibDeparture').value || '—';
+    var type = document.getElementById('ibType').value || '—';
+    document.getElementById('qClient').textContent = client;
+    document.getElementById('qTravelers').textContent = travelers;
+    document.getElementById('qDates').textContent = arr + ' to ' + dep;
+    document.getElementById('qType').textContent = type;
+    document.getElementById('qTotal').textContent = '$' + total.toLocaleString();
+    document.getElementById('qSell').textContent = '$' + (total * 1.25).toLocaleString();
+    document.getElementById('qProfit').textContent = '$' + (total * 0.25).toLocaleString();
+    var rows = document.getElementById('ibQuoteRows');
+    if (rows) {
+      rows.innerHTML = ibCosts.map(function(item) {
+        return '<tr><td style="padding:6px 8px;border-bottom:1px solid var(--border);">' + item.name + '</td><td style="padding:6px 8px;border-bottom:1px solid var(--border);text-align:right;">$' + (parseFloat(item.amount)||0).toLocaleString() + '</td></tr>';
+      }).join('');
+    }
+    var ref = 'ITN-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random()*999)+1).padStart(3,'0');
+    document.getElementById('ibQRef').textContent = 'REF: ' + ref;
+  }
+
+  window.ibReset = function() {
+    if (!confirm('Reset all itinerary data?')) return;
+    ibDays = [];
+    ibCosts = [];
+    document.querySelectorAll('#ibStep1 input, #ibStep1 select, #ibStep1 textarea').forEach(function(el) { if (el.type !== 'button') el.value = ''; });
+    showToast('Itinerary reset');
+    ibGoTo(1);
+  };
+
+  // ===================== Toast =====================
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = 'toast';
+      t.style.cssText = 'position:fixed;bottom:30px;right:30px;background:var(--primary);color:#fff;padding:14px 24px;border-radius:12px;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,.15);z-index:10000;animation:fadeUp .3s ease;';
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.style.display = 'block';
+    clearTimeout(t._ht);
+    t._ht = setTimeout(function() { t.style.display = 'none'; }, 2500);
+  }
+
+  // ===================== Supplier Modal =====================
+  window.openSupplierModal = function() {
+    document.getElementById('supplierModal').classList.add('active');
+  };
+
+  window.closeSupplierModal = function() {
+    document.getElementById('supplierModal').classList.remove('active');
+  };
+
+  window.smSearch = function() {
+    var type = document.getElementById('smType').value;
+    var kw = document.getElementById('smKeyword').value || 'Serengeti';
+    var container = document.getElementById('smResults');
+    var samples = {
+      'Accommodation': [
+        { name: kw + ' Heritage Camp', location: kw, detail: '12 rooms • Full Board', rate: 380, rateUnit: '/night', rating: 4.8, icon: '🏨' },
+        { name: kw + ' Safari Lodge', location: kw, detail: '8 rooms • Half Board', rate: 520, rateUnit: '/night', rating: 4.6, icon: '🏨' },
+        { name: kw + ' Tented Camp', location: kw, detail: '10 rooms • Full Board', rate: 295, rateUnit: '/night', rating: 4.4, icon: '🏨' },
+        { name: 'Luxury ' + kw + ' Resort', location: kw, detail: '6 rooms • All Inclusive', rate: 780, rateUnit: '/night', rating: 4.9, icon: '🏨' }
+      ],
+      'Safari Vehicle': [
+        { name: 'Toyota Land Cruiser', location: kw, detail: '7 seats • Driver included', rate: 200, rateUnit: '/day', rating: 4.7, icon: '🚗' },
+        { name: 'Safari Land Rover', location: kw, detail: '7 seats • Driver included', rate: 260, rateUnit: '/day', rating: 4.8, icon: '🚗' }
+      ],
+      'Professional Guide': [
+        { name: 'John Mollel', location: kw, detail: 'EN, DE • Big 5 Specialist', rate: 150, rateUnit: '/day', rating: 4.9, icon: '🧭' },
+        { name: 'Sarah Kilonzo', location: kw, detail: 'EN, FR • Photography Expert', rate: 130, rateUnit: '/day', rating: 4.7, icon: '🧭' }
+      ]
+    };
+    var items = samples[type] || samples['Accommodation'];
+    container.innerHTML = items.map(function(item) {
+      return '<div style="display:flex;align-items:center;gap:16px;padding:14px 16px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;background:#fff;"><div style="width:48px;height:48px;background:var(--bg);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;">' + item.icon + '</div><div style="flex:1;"><div style="font-weight:600;font-size:.9rem;color:var(--text);">' + item.name + '</div><div style="font-size:.78rem;color:var(--text-secondary);">📍 ' + item.location + ' • ' + item.detail + '</div></div><div style="text-align:right;"><div style="font-weight:700;font-size:1rem;color:var(--primary);">$' + item.rate + item.rateUnit + '</div><div style="font-size:.75rem;color:var(--text-secondary);">⭐ ' + item.rating + '</div></div><button class="btn btn-primary btn-sm" onclick="smAddToDay(\'' + item.name.replace(/'/g,"\\'") + '\',\'' + type + '\')">+ Add</button></div>';
+    }).join('');
+    showToast('Found ' + items.length + ' results for ' + kw);
+  };
+
+  window.smAddToDay = function(name, type) {
+    var target = null;
+    for (var i = 0; i < ibDays.length; i++) {
+      if (type === 'Accommodation' && !ibDays[i].accommodation) { target = ibDays[i]; break; }
+      if (type === 'Safari Vehicle' && !ibDays[i].vehicle) { target = ibDays[i]; break; }
+      if (type === 'Professional Guide' && !ibDays[i].guide) { target = ibDays[i]; break; }
+    }
+    if (!target) target = ibDays[0];
+    if (type === 'Accommodation') target.accommodation = name;
+    else if (type === 'Safari Vehicle') target.vehicle = name;
+    else target.guide = name;
+    ibRenderDays();
+    closeSupplierModal();
+    showToast(name + ' added to ' + target.label);
+  };
+
+  // ===================== Initialise on page show =====================
+  // We'll hook into the page switch if possible, but also auto-init on first load
+  document.addEventListener('DOMContentLoaded', function() {
+    // Populate default dates
+    var today = new Date();
+    var tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
+    var later = new Date(today); later.setDate(later.getDate() + 6);
+    if(!document.getElementById('ibArrival').value) document.getElementById('ibArrival').value = tomorrow.toISOString().split('T')[0];
+    if(!document.getElementById('ibDeparture').value) document.getElementById('ibDeparture').value = later.toISOString().split('T')[0];
+  });
+})();
+</script>
+        </div>
+
+<!-- ==========================================
+ACCOMMODATION PAGE
+========================================== -->
+<div id="accommodation-page" class="page">
+  <div class="page-header">
+    <div class="page-title">Accommodation Directory</div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span style="font-size:13px;color:var(--text-secondary);" id="accomCount">Showing 12 properties</span>
+      <button class="create-btn" onclick="switchPage('itinerary')">+ Add to Itinerary</button>
+    </div>
+  </div>
+
+  <!-- FILTER BAR -->
+  <div class="card" style="padding:16px 20px;margin-bottom:20px;">
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+      <div class="form-group" style="flex:1;min-width:160px;margin-bottom:0;">
+        <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-secondary);margin-bottom:4px;">Location</label>
+        <select id="accomFilterLocation" onchange="accomFilter()" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;width:100%;background:#fff;">
+          <option value="">All Locations</option>
+          <option value="Northern Serengeti">Northern Serengeti</option>
+          <option value="Central Serengeti">Central Serengeti</option>
+          <option value="Southern Serengeti">Southern Serengeti</option>
+          <option value="Ngorongoro">Ngorongoro</option>
+          <option value="Tarangire">Tarangire</option>
+          <option value="Karatu">Karatu</option>
+          <option value="Arusha">Arusha</option>
+          <option value="Kilimanjaro">Kilimanjaro</option>
+        </select>
+      </div>
+      <div class="form-group" style="flex:1;min-width:160px;margin-bottom:0;">
+        <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-secondary);margin-bottom:4px;">Property Type</label>
+        <select id="accomFilterType" onchange="accomFilter()" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;width:100%;background:#fff;">
+          <option value="">All Types</option>
+          <option value="Lodge">Lodge</option>
+          <option value="Camp">Camp</option>
+          <option value="Tented Camp">Tented Camp</option>
+          <option value="Hotel">Hotel</option>
+          <option value="Resort">Resort</option>
+        </select>
+      </div>
+      <div class="form-group" style="flex:1;min-width:160px;margin-bottom:0;">
+        <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-secondary);margin-bottom:4px;">Budget / Night</label>
+        <select id="accomFilterBudget" onchange="accomFilter()" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;width:100%;background:#fff;">
+          <option value="">Any Price</option>
+          <option value="budget">Under $300</option>
+          <option value="mid">$300 – $700</option>
+          <option value="high">$700 – $1,200</option>
+          <option value="luxury">$1,200+</option>
+        </select>
+      </div>
+      <div class="form-group" style="flex:1;min-width:160px;margin-bottom:0;">
+        <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-secondary);margin-bottom:4px;">Search</label>
+        <input type="text" id="accomFilterSearch" oninput="accomFilter()" placeholder="Property name…" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;width:100%;">
+      </div>
+      <button onclick="accomResetFilters()" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;font-size:12px;background:#fff;cursor:pointer;color:var(--text-secondary);white-space:nowrap;">Reset</button>
+    </div>
+    <!-- Active filter pills -->
+    <div id="accomActivePills" style="display:none;margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;"></div>
+  </div>
+
+  <!-- RESULTS GRID -->
+  <div id="accomGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;"></div>
+  
+  <!-- Empty State -->
+  <div id="accomEmpty" style="display:none;text-align:center;padding:60px 20px;">
+    <div style="font-size:3rem;margin-bottom:12px;">🏨</div>
+    <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:6px;">No properties found</div>
+    <div style="font-size:13px;color:var(--text-secondary);">Try adjusting your filters or search term</div>
+  </div>
+</div>
+
+<!-- ACCOMMODATION DETAIL MODAL -->
+<div class="modal" id="accomDetailModal">
+  <div class="modal-content" style="max-width:720px;">
+    <div class="modal-header">
+      <div class="modal-title" id="accomDetailTitle">Property Details</div>
+      <button class="close-btn" onclick="closeModal('accomDetailModal')">✕</button>
+    </div>
+    <div class="modal-body" id="accomDetailBody" style="padding:0;"></div>
+  </div>
+</div>
+
+<style>
+  .accom-card {
+    background: #fff;
+    border: 1px solid var(--border-light, #e8e5dd);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: default;
+    transition: all 0.25s ease;
+    display: flex;
+    flex-direction: column;
+  }
+  .accom-card:hover {
+    box-shadow: 0 8px 28px rgba(0,0,0,0.10);
+    transform: translateY(-2px);
+  }
+  .accom-card-img {
+    height: 160px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+  }
+  .accom-card-fav {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.9);
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .accom-card-fav:hover {
+    background: #fff;
+    transform: scale(1.1);
+  }
+  .accom-card-body {
+    padding: 14px 16px 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .accom-card-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--charcoal, #2c2c2c);
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+  .accom-card-location {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--text-secondary, #666);
+    margin-bottom: 8px;
+  }
+  .accom-card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+  .accom-tag {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: var(--bg-light, #f8f7f4);
+    color: var(--text-secondary, #666);
+    letter-spacing: .2px;
+    text-transform: uppercase;
+    border: 1px solid var(--border-light, #e8e5dd);
+  }
+  .accom-card-rating {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .accom-stars {
+    color: #f5a623;
+    font-size: 13px;
+    letter-spacing: 1px;
+  }
+  .accom-rating-num {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--charcoal, #2c2c2c);
+  }
+  .accom-rating-count {
+    font-size: 11px;
+    color: var(--text-secondary, #666);
+  }
+  .accom-card-rate {
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-light, #e8e5dd);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+  .accom-rate-amount {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--primary, #1a5a3a);
+  }
+  .accom-rate-label {
+    font-size: 11px;
+    color: var(--text-secondary, #666);
+  }
+  .accom-card-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .accom-btn {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 7px 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .accom-btn-view {
+    background: var(--bg-light, #f8f7f4);
+    border: 1px solid var(--border-light, #e8e5dd);
+    color: var(--charcoal, #2c2c2c);
+    flex: 1;
+  }
+  .accom-btn-view:hover {
+    background: var(--border-light, #e8e5dd);
+  }
+  .accom-btn-reserve {
+    background: var(--primary, #1a5a3a);
+    color: #fff;
+    flex: 1;
+  }
+  .accom-btn-reserve:hover {
+    background: #12462a;
+  }
+  .accom-avail-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+  .accom-avail-green { background: rgba(63,185,131,0.12); color: #1a8c5a; }
+  .accom-avail-amber { background: rgba(245,166,35,0.12); color: #b8860b; }
+  .accom-avail-red   { background: rgba(220,38,38,0.10);  color: #c0392b; }
+  .accom-detail-img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 12px 12px 0 0;
+  }
+  .accom-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 16px 0;
+  }
+  .accom-detail-field {
+    background: var(--bg-light, #f8f7f4);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .accom-detail-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: var(--text-secondary, #666);
+    margin-bottom: 4px;
+  }
+  .accom-detail-value {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--charcoal, #2c2c2c);
+  }
+  .accom-amenity-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 12px 0;
+  }
+  .accom-amenity {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: var(--bg-light, #f8f7f4);
+    border: 1px solid var(--border-light, #e8e5dd);
+    color: var(--charcoal, #2c2c2c);
+  }
+  .accom-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--charcoal, #2c2c2c);
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+  }
+  .accom-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+
+<script>
+(function() {
+  /* ── Sample Property Data ── */
+  var accommodations = [
+    { id:1, name:"Serengeti Heritage Camp",    location:"Central Serengeti",   type:"Tented Camp", rating:4.7, reviews:89,  img:"linear-gradient(135deg,#c9a96e,#8b6914)", rate:480,  budget:"mid",  meal:"Full Board",   avail:"Available", amen:"Restaurant,Bar,WiFi,Safari Desk,Laundry,Pool" },
+    { id:2, name:"Ngorongoro Highlands Lodge", location:"Ngorongoro",          type:"Lodge",       rating:4.9, reviews:124, img:"linear-gradient(135deg,#5b7a5b,#2d4a2d)", rate:750,  budget:"high", meal:"Full Board",   avail:"Available", amen:"Restaurant,Spa,WiFi,Bar,Fitness Room,Concierge" },
+    { id:3, name:"Lake Manyara Safari Camp",   location:"Tarangire",           type:"Camp",        rating:4.5, reviews:62,  img:"linear-gradient(135deg,#7a9bb5,#3a6a8a)", rate:320,  budget:"mid",  meal:"Half Board",   avail:"Available", amen:"Restaurant,Bar,WiFi,Tent,Laundry" },
+    { id:4, name:"Arusha Grand Hotel",          location:"Arusha",              type:"Hotel",       rating:4.3, reviews:210, img:"linear-gradient(135deg,#b5a47a,#8a7a5a)", rate:180,  budget:"budget",meal:"B&B",          avail:"Available", amen:"Restaurant,WiFi,Bar,Gym,Pool,Conference" },
+    { id:5, name:"Karatu Coffee Lodge",        location:"Karatu",              type:"Lodge",       rating:4.6, reviews:78,  img:"linear-gradient(135deg,#6b8a5a,#3a5a2a)", rate:290,  budget:"budget",meal:"Half Board",   avail:"Available", amen:"Restaurant,WiFi,Bar,Garden,Fireplace" },
+    { id:6, name:"Kilimanjaro View Resort",    location:"Kilimanjaro",          type:"Resort",      rating:4.8, reviews:156, img:"linear-gradient(135deg,#8ab5c9,#5a8aa5)", rate:650,  budget:"mid",  meal:"Full Board",   avail:"Limited",  amen:"Restaurant,Pool,Spa,WiFi,Bar,Tennis" },
+    { id:7, name:"Northern Serengeti Camp",    location:"Northern Serengeti",  type:"Tented Camp", rating:4.9, reviews:102, img:"linear-gradient(135deg,#d4a56a,#a57a3a)", rate:890,  budget:"high", meal:"Full Board",   avail:"Available", amen:"Restaurant,Bar,WiFi,Laundry,Safari Desk" },
+    { id:8, name:"Southern Serengeti Lodge",   location:"Southern Serengeti",  type:"Lodge",       rating:4.4, reviews:45,  img:"linear-gradient(135deg,#b59a6a,#8a7a4a)", rate:520,  budget:"mid",  meal:"Full Board",   avail:"Available", amen:"Restaurant,Bar,WiFi,Pool" },
+    { id:9, name:"Tarangire Treehouse Camp",   location:"Tarangire",           type:"Camp",        rating:4.7, reviews:93,  img:"linear-gradient(135deg,#7a8a5a,#4a5a2a)", rate:410,  budget:"mid",  meal:"Half Board",   avail:"Limited",  amen:"Restaurant,Bar,WiFi,Treehouse" },
+    { id:10,name:"Arusha Boutique Hotel",      location:"Arusha",              type:"Hotel",       rating:4.2, reviews:67,  img:"linear-gradient(135deg,#c9b58a,#a58a6a)", rate:140,  budget:"budget",meal:"B&B",          avail:"Available", amen:"WiFi,Restaurant,Bar,Laundry" },
+    { id:11,name:"Ngorongoro Crater Lodge",    location:"Ngorongoro",          type:"Lodge",       rating:5.0, reviews:198, img:"linear-gradient(135deg,#5a7a5a,#2a4a2a)", rate:1200,budget:"luxury",meal:"Full Board",   avail:"Available", amen:"Restaurant,Spa,WiFi,Bar,Butler,Concierge,Pool" },
+    { id:12,name:"Serengeti Migration Camp",   location:"Central Serengeti",   type:"Tented Camp", rating:4.8, reviews:134, img:"linear-gradient(135deg,#c9a56a,#9a7a3a)", rate:680,  budget:"high", meal:"Full Board",   avail:"Available", amen:"Restaurant,Bar,WiFi,Safari Desk,Pool" }
+  ];
+
+  /* ── Helpers ── */
+  function esc(s) { return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]||c;}); }
+  function stars(r) { var s=''; var n=Math.round(r); for(var i=0;i<5;i++) s+= i<n ? '★' : '☆'; return s; }
+  function showAccomToast(msg) {
+    var t=document.getElementById('accomToast');
+    if(!t){t=document.createElement('div');t.id='accomToast';t.className='accom-toast';document.body.appendChild(t);}
+    t.textContent=msg; t.classList.add('show');
+    clearTimeout(t._hide); t._hide=setTimeout(function(){t.classList.remove('show');},3000);
+  }
+
+  /* ── Render Cards ── */
+  window.accomRenderCards = function(data) {
+    var grid = document.getElementById('accomGrid');
+    var empty = document.getElementById('accomEmpty');
+    var count = document.getElementById('accomCount');
+    if (!grid) return;
+    if (data.length === 0) {
+      grid.innerHTML = '';
+      grid.style.display = 'none';
+      if (empty) empty.style.display = 'block';
+      if (count) count.textContent = 'Showing 0 properties';
+      return;
+    }
+    grid.style.display = 'grid';
+    if (empty) empty.style.display = 'none';
+    if (count) count.textContent = 'Showing ' + data.length + ' properties';
+    var html = '';
+    for (var i = 0; i < data.length; i++) {
+      var p = data[i];
+      var availClass = p.avail === 'Available' ? 'accom-avail-green' : (p.avail === 'Limited' ? 'accom-avail-amber' : 'accom-avail-red');
+      html +=
+        '<div class="accom-card">' +
+          '<div class="accom-card-img" style="background:' + p.img + ';">' +
+            '<button class="accom-card-fav" onclick="event.stopPropagation();accomToggleFav(this)">♡</button>' +
+          '</div>' +
+          '<div class="accom-card-body">' +
+            '<div class="accom-card-name">' + esc(p.name) + '</div>' +
+            '<div class="accom-card-location">📍 ' + esc(p.location) + ' · ' + esc(p.type) + '</div>' +
+            '<div class="accom-card-tags">' +
+              '<span class="accom-tag">' + esc(p.meal) + '</span>' +
+              '<span class="accom-tag ' + availClass + '">' + esc(p.avail) + '</span>' +
+            '</div>' +
+            '<div class="accom-card-rating">' +
+              '<span class="accom-stars">' + stars(p.rating) + '</span>' +
+              '<span class="accom-rating-num">' + p.rating + '</span>' +
+              '<span class="accom-rating-count">(' + p.reviews + ')</span>' +
+            '</div>' +
+            '<div class="accom-card-rate">' +
+              '<div><span class="accom-rate-amount">$' + p.rate + '</span> <span class="accom-rate-label">/night</span></div>' +
+            '</div>' +
+            '<div class="accom-card-actions">' +
+              '<button class="accom-btn accom-btn-view" onclick="accomViewDetail(' + p.id + ')">View Details</button>' +
+              '<button class="accom-btn accom-btn-reserve" onclick="accomReserve(' + p.id + ')">Make Reservation</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+    }
+    grid.innerHTML = html;
+  };
+
+  /* ── Filter Logic ── */
+  window.accomFilter = function() {
+    var loc = document.getElementById('accomFilterLocation').value;
+    var typ = document.getElementById('accomFilterType').value;
+    var bud = document.getElementById('accomFilterBudget').value;
+    var q   = (document.getElementById('accomFilterSearch').value || '').toLowerCase().trim();
+    var filtered = accommodations.filter(function(p) {
+      if (loc && p.location !== loc) return false;
+      if (typ && p.type !== typ) return false;
+      if (bud && p.budget !== bud) return false;
+      if (q && p.name.toLowerCase().indexOf(q) === -1 && p.location.toLowerCase().indexOf(q) === -1) return false;
+      return true;
+    });
+    accomRenderCards(filtered);
+    accomUpdatePills(loc, typ, bud, q);
+  };
+
+  window.accomResetFilters = function() {
+    document.getElementById('accomFilterLocation').value = '';
+    document.getElementById('accomFilterType').value = '';
+    document.getElementById('accomFilterBudget').value = '';
+    document.getElementById('accomFilterSearch').value = '';
+    document.getElementById('accomActivePills').style.display = 'none';
+    accomRenderCards(accommodations);
+  };
+
+  function accomUpdatePills(loc, typ, bud, q) {
+    var pills = document.getElementById('accomActivePills');
+    if (!loc && !typ && !bud && !q) { pills.style.display = 'none'; return; }
+    pills.style.display = 'flex';
+    var html = '';
+    if (loc) html += '<span class="accom-tag" style="background:var(--primary);color:#fff;border:none;cursor:pointer;" onclick="document.getElementById(\'accomFilterLocation\').value=\'\';accomFilter()">✕ ' + esc(loc) + '</span>';
+    if (typ) html += '<span class="accom-tag" style="background:var(--primary);color:#fff;border:none;cursor:pointer;" onclick="document.getElementById(\'accomFilterType\').value=\'\';accomFilter()">✕ ' + esc(typ) + '</span>';
+    if (bud) html += '<span class="accom-tag" style="background:var(--primary);color:#fff;border:none;cursor:pointer;" onclick="document.getElementById(\'accomFilterBudget\').value=\'\';accomFilter()">✕ ' + esc(bud) + '</span>';
+    if (q)   html += '<span class="accom-tag" style="background:var(--primary);color:#fff;border:none;cursor:pointer;" onclick="document.getElementById(\'accomFilterSearch\').value=\'\';accomFilter()">✕ "' + esc(q) + '"</span>';
+    pills.innerHTML = html;
+  }
+
+  /* ── View Detail Modal ── */
+  window.accomViewDetail = function(id) {
+    var p = accommodations.find(function(x) { return x.id === id; });
+    if (!p) return;
+    document.getElementById('accomDetailTitle').textContent = p.name;
+    var body = document.getElementById('accomDetailBody');
+    var amens = p.amen.split(',').map(function(a){ return '<span class="accom-amenity">' + esc(a.trim()) + '</span>'; }).join('');
+    body.innerHTML =
+      '<div class="accom-detail-img" style="background:' + p.img + ';border-radius:0;"></div>' +
+      '<div style="padding:20px 24px;">' +
+        '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">' +
+          '<div>' +
+            '<div style="font-size:12px;color:var(--text-secondary);margin-bottom:2px;">📍 ' + esc(p.location) + '</div>' +
+            '<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text-secondary);letter-spacing:.4px;">' + esc(p.type) + '</div>' +
+          '</div>' +
+          '<div style="text-align:right;">' +
+            '<div class="accom-stars" style="font-size:16px;">' + stars(p.rating) + '</div>' +
+            '<div style="font-size:12px;color:var(--text-secondary);">' + p.rating + ' (' + p.reviews + ' reviews)</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="accom-detail-grid">' +
+          '<div class="accom-detail-field"><div class="accom-detail-label">Rate</div><div class="accom-detail-value">$' + p.rate + ' / night</div></div>' +
+          '<div class="accom-detail-field"><div class="accom-detail-label">Meal Plan</div><div class="accom-detail-value">' + esc(p.meal) + '</div></div>' +
+          '<div class="accom-detail-field"><div class="accom-detail-label">Availability</div><div class="accom-detail-value">' + esc(p.avail) + '</div></div>' +
+          '<div class="accom-detail-field"><div class="accom-detail-label">Budget Tier</div><div class="accom-detail-value">' + esc(p.budget) + '</div></div>' +
+        '</div>' +
+        '<div class="accom-amenity-row">' + amens + '</div>' +
+        '<div style="display:flex;gap:8px;margin-top:20px;">' +
+          '<button class="accom-btn accom-btn-reserve" style="flex:1;justify-content:center;padding:12px 0;font-size:13px;" onclick="accomReserve(' + p.id + ')">Reserve This Property</button>' +
+          '<button class="accom-btn accom-btn-view" style="padding:12px 16px;font-size:13px;" onclick="showAccomToast(\'✅ ' + esc(p.name) + ' added to itinerary\')">+ Add to Itinerary</button>' +
+        '</div>' +
+      '</div>';
+    openModal('accomDetailModal');
+  };
+
+  /* ── Reserve ── */
+  window.accomReserve = function(id) {
+    var p = accommodations.find(function(x) { return x.id === id; });
+    showAccomToast('✅ Reservation request sent for ' + (p ? p.name : 'property'));
+  };
+
+  /* ── Favorite Toggle ── */
+  window.accomToggleFav = function(btn) {
+    if (btn.textContent === '♡') {
+      btn.textContent = '♥';
+      btn.style.color = '#e74c3c';
+      showAccomToast('Saved to favorites');
+    } else {
+      btn.textContent = '♡';
+      btn.style.color = '';
+      showAccomToast('Removed from favorites');
+    }
+  };
+
+  /* ── Initial Render ── */
+  if (document.getElementById('accomGrid')) {
+    accomRenderCards(accommodations);
+  }
+})();
+</script>
+        
+        <!-- ==========================================
+  FLEET PAGE
+  ========================================== -->
+<div id="fleet-page" class="page">
+  <div class="page-header">
+    <div class="page-title">Safari Fleet</div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span style="font-size:13px;color:var(--text-secondary);" id="fleetCount">Showing 12 vehicles</span>
+      <button class="create-btn" onclick="switchPage('itinerary')">+ Add to Itinerary</button>
+    </div>
+  </div>
+
+  <!-- FILTER BAR -->
+  <div class="card" style="padding:16px 20px;margin-bottom:20px;">
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+      <div class="form-group" style="flex:1;min-width:160px;margin-bottom:0;">
+        <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-secondary);margin-bottom:4px;">Vehicle Type</label>
+        <select id="fleetTypeFilter" onchange="fleetFilter()" style="width:100%;">
+          <option>All Vehicles</option>
+          <option>Land Cruiser</option>
+          <option>Luxury 4x4</option>
+          <option>4x4</option>
+          <option>Minivan</option>
+          <option>Safari Truck</option>
+          <option>Luxury</option>
+          <option>Truck</option>
+          <option>Compact 4x4</option>
+        </select>
+      </div>
+      <div class="form-group" style="flex:1;min-width:150px;margin-bottom:0;">
+        <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-secondary);margin-bottom:4px;">Location</label>
+        <select id="fleetLocFilter" onchange="fleetFilter()" style="width:100%;">
+          <option>All Locations</option>
+          <option>Arusha</option>
+          <option>Dar es Salaam</option>
+          <option>Serengeti</option>
+          <option>Kilimanjaro</option>
+          <option>Mwanza</option>
+          <option>Zanzibar</option>
+          <option>Dodoma</option>
+          <option>Mbeya</option>
+        </select>
+      </div>
+      <div class="form-group" style="flex:1;min-width:180px;margin-bottom:0;">
+        <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-secondary);margin-bottom:4px;">Search</label>
+        <input id="fleetSearch" type="text" placeholder="Search vehicles..." oninput="fleetFilter()" style="width:100%;">
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTS GRID -->
+  <div id="fleetGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;"></div>
+
+  <!-- Empty State -->
+  <div id="fleetEmpty" style="display:none;text-align:center;padding:60px 20px;">
+    <div style="font-size:3rem;margin-bottom:12px;">🚗</div>
+    <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:6px;">No vehicles found</div>
+    <div style="font-size:13px;color:var(--text-secondary);">Try adjusting your filters or search term</div>
+  </div>
+</div>
+
+<!-- FLEET DETAIL MODAL -->
+<div class="modal" id="fleetDetailModal">
+  <div class="modal-content" style="max-width:720px;">
+    <div class="modal-header">
+      <div class="modal-title" id="fleetDetailTitle">Vehicle Details</div>
+      <button class="close-btn" onclick="closeModal('fleetDetailModal')">✕</button>
+    </div>
+    <div class="modal-body" id="fleetDetailBody" style="padding:0;"></div>
+  </div>
+</div>
+
+<style>
+  .fleet-card {
+    background: #fff;
+    border: 1px solid var(--border-light, #e8e5dd);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: default;
+    transition: all 0.25s ease;
+    display: flex;
+    flex-direction: column;
+  }
+  .fleet-card:hover {
+    box-shadow: 0 8px 28px rgba(0,0,0,0.10);
+    transform: translateY(-2px);
+  }
+  .fleet-card-img {
+    height: 160px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+  }
+  .fleet-card-type-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: rgba(26,90,58,0.9);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    backdrop-filter: blur(4px);
+  }
+  .fleet-card-fav {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.9);
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .fleet-card-fav:hover { background: #fff; transform: scale(1.1); }
+  .fleet-card-body {
+    padding: 14px 16px 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .fleet-card-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--charcoal, #2c2c2c);
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+  .fleet-card-location {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--text-secondary, #666);
+    margin-bottom: 8px;
+  }
+  .fleet-card-specs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .fleet-spec {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: var(--bg-light, #f8f7f4);
+    color: var(--text-secondary, #666);
+    letter-spacing: .2px;
+    text-transform: uppercase;
+    border: 1px solid var(--border-light, #e8e5dd);
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .fleet-avail-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+  .fleet-avail-green { background: rgba(63,185,131,0.12); color: #1a8c5a; }
+  .fleet-avail-amber { background: rgba(245,166,35,0.12); color: #b8860b; }
+  .fleet-avail-red   { background: rgba(220,38,38,0.10);  color: #c0392b; }
+  .fleet-card-rate {
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-light, #e8e5dd);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+  .fleet-rate-amount { font-size: 17px; font-weight: 800; color: var(--primary, #1a5a3a); }
+  .fleet-rate-label  { font-size: 11px; color: var(--text-secondary, #666); }
+  .fleet-card-actions { display: flex; gap: 6px; margin-top: 10px; }
+  .fleet-btn {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 7px 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'Inter', sans-serif;
+  }
+  .fleet-btn-view {
+    background: var(--bg-light, #f8f7f4);
+    border: 1px solid var(--border-light, #e8e5dd);
+    color: var(--charcoal, #2c2c2c);
+    flex: 1;
+  }
+  .fleet-btn-view:hover { background: var(--border-light, #e8e5dd); }
+  .fleet-btn-lease { background: var(--primary, #1a5a3a); color: #fff; flex: 1; }
+  .fleet-btn-lease:hover { background: #12462a; }
+  .fleet-detail-img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 12px 12px 0 0;
+  }
+  .fleet-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 16px 0;
+  }
+  .fleet-detail-field { background: var(--bg-light, #f8f7f4); border-radius: 8px; padding: 10px 12px; }
+  .fleet-detail-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: var(--text-secondary, #666);
+    margin-bottom: 4px;
+  }
+  .fleet-detail-value { font-size: 14px; font-weight: 700; color: var(--charcoal, #2c2c2c); }
+  .fleet-highlight-row { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
+  .fleet-highlight {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: var(--bg-light, #f8f7f4);
+    border: 1px solid var(--border-light, #e8e5dd);
+    color: var(--charcoal, #2c2c2c);
+  }
+  .fleet-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--charcoal, #2c2c2c);
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+  }
+  .fleet-toast.show { opacity: 1; transform: translateY(0); }
+</style>
+
+<script>
+(function() {
+  /* ── Sample Fleet Data (schema unchanged) ── */
+  var fleet = [
+    { id:1, name:"Toyota Land Cruiser 79", type:"Land Cruiser", seats:7, location:"Arusha", rate:250, avail:"Available", img:"linear-gradient(135deg,#5a7a5a,#2d4a2d)", spec:"Pop-up roof, Radio, Fridge, Charging", highlight:"Extended range, off-road ready, pop-up roof for photography", year:2023, transmission:"Manual", fuel:"Diesel", driver:"Included" },
+    { id:2, name:"Toyota Land Cruiser 76", type:"Land Cruiser", seats:7, location:"Arusha", rate:230, avail:"Available", img:"linear-gradient(135deg,#6b8a6b,#3a5a3a)", spec:"Pop-up roof, Fridge, Charging", highlight:"Compact 4x4 workhorse, ideal for smaller groups", year:2022, transmission:"Manual", fuel:"Diesel", driver:"Included" },
+    { id:3, name:"Toyota Land Cruiser Prado", type:"Luxury 4x4", seats:7, location:"Dar es Salaam", rate:280, avail:"Limited", img:"linear-gradient(135deg,#8a7a5a,#4a3a2a)", spec:"Leather seats, AC, Fridge", highlight:"Premium comfort with full off-road capability", year:2023, transmission:"Automatic", fuel:"Diesel", driver:"Included" },
+    { id:4, name:"Land Rover Defender 110", type:"Luxury 4x4", seats:8, location:"Serengeti", rate:320, avail:"Limited", img:"linear-gradient(135deg,#5a6a8a,#2a3a5a)", spec:"Pop-top, AC, Charging", highlight:"Iconic safari vehicle, pop-top for game viewing", year:2022, transmission:"Automatic", fuel:"Diesel", driver:"Included" },
+    { id:5, name:"Nissan Patrol Safari", type:"4x4", seats:7, location:"Kilimanjaro", rate:210, avail:"Available", img:"linear-gradient(135deg,#7a7a5a,#3a3a2a)", spec:"Roof rack, Fridge, Radio", highlight:"Reliable long-distance tourer", year:2021, transmission:"Manual", fuel:"Petrol", driver:"Included" },
+    { id:6, name:"Toyota Hiace Minivan", type:"Minivan", seats:12, location:"Arusha", rate:120, avail:"Available", img:"linear-gradient(135deg,#8a8a8a,#4a4a4a)", spec:"AC, Roof rack, Audio", highlight:"Group transfers and budget safaris", year:2020, transmission:"Manual", fuel:"Diesel", driver:"No driver" },
+    { id:7, name:"Ford Ranger", type:"Safari Truck", seats:5, location:"Mwanza", rate:180, avail:"Available", img:"linear-gradient(135deg,#5a7a6a,#2a4a3a)", spec:"Canopy, Fridge, Charging", highlight:"Practical for supply and support runs", year:2022, transmission:"Manual", fuel:"Diesel", driver:"Included" },
+    { id:8, name:"Mercedes G-Wagon", type:"Luxury", seats:5, location:"Zanzibar", rate:380, avail:"Limited", img:"linear-gradient(135deg,#4a4a5a,#1a1a2a)", spec:"Leather, AC, Premium audio", highlight:"Top-tier luxury transfers", year:2023, transmission:"Automatic", fuel:"Petrol", driver:"Included" },
+    { id:9, name:"Isuzu F-Series Truck", type:"Truck", seats:3, location:"Dodoma", rate:140, avail:"Booked", img:"linear-gradient(135deg,#6a6a6a,#2a2a2a)", spec:"Cargo, Tarp, Towing", highlight:"Heavy logistics and equipment transport", year:2019, transmission:"Manual", fuel:"Diesel", driver:"No driver" },
+    { id:10, name:"Toyota Hilux Double Cab", type:"4x4", seats:5, location:"Arusha", rate:160, avail:"Available", img:"linear-gradient(135deg,#5a7a4a,#2a4a1a)", spec:"Canopy, Radio, Fridge", highlight:"Versatile everyday safari vehicle", year:2021, transmission:"Manual", fuel:"Diesel", driver:"Included" },
+    { id:11, name:"Land Rover Discovery", type:"Luxury 4x4", seats:7, location:"Arusha", rate:300, avail:"Booked", img:"linear-gradient(135deg,#5a5a7a,#2a2a4a)", spec:"Leather, AC, Panoramic roof", highlight:"Spacious premium family safari", year:2022, transmission:"Automatic", fuel:"Diesel", driver:"Included" },
+    { id:12, name:"Suzuki Jimny", type:"Compact 4x4", seats:4, location:"Mbeya", rate:90, avail:"Available", img:"linear-gradient(135deg,#8a8a5a,#4a4a2a)", spec:"4WD, Radio", highlight:"Lightweight, fuel-efficient 4x4", year:2023, transmission:"Manual", fuel:"Petrol", driver:"Included" }
+  ];
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function(c) {
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c] || c;
+    });
+  }
+
+  function showFleetToast(msg) {
+    var t = document.getElementById('fleetToast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = 'fleetToast';
+      t.className = 'fleet-toast';
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._hide);
+    t._hide = setTimeout(function() { t.classList.remove('show'); }, 3000);
+  }
+
+  /* Fallback modal helpers if the main dashboard doesn't define them */
+  if (typeof window.openModal !== 'function') {
+    window.openModal = function(id) {
+      var m = document.getElementById(id);
+      if (m) m.style.display = 'flex';
+    };
+  }
+  if (typeof window.closeModal !== 'function') {
+    window.closeModal = function(id) {
+      var m = document.getElementById(id);
+      if (m) m.style.display = 'none';
+    };
+  }
+
+  /* ── Render Cards ── */
+  window.fleetRenderCards = function(data) {
+    var grid = document.getElementById('fleetGrid');
+    var empty = document.getElementById('fleetEmpty');
+    var count = document.getElementById('fleetCount');
+    if (!grid) return;
+    if (data.length === 0) {
+      grid.innerHTML = '';
+      grid.style.display = 'none';
+      if (empty) empty.style.display = 'block';
+      if (count) count.textContent = 'Showing 0 vehicles';
+      return;
+    }
+    grid.style.display = 'grid';
+    if (empty) empty.style.display = 'none';
+    if (count) count.textContent = 'Showing ' + data.length + ' vehicles';
+    var html = '';
+    for (var i = 0; i < data.length; i++) {
+      var v = data[i];
+      var availClass = v.avail === 'Available' ? 'fleet-avail-green' : (v.avail === 'Limited' ? 'fleet-avail-amber' : 'fleet-avail-red');
+      html +=
+        '<div class="fleet-card">' +
+          '<div class="fleet-card-img" style="background:' + v.img + ';">' +
+            '<span class="fleet-card-type-badge">' + esc(v.type) + '</span>' +
+            '<button class="fleet-card-fav" onclick="event.stopPropagation();fleetToggleFav(this)">♡</button>' +
+          '</div>' +
+          '<div class="fleet-card-body">' +
+            '<div class="fleet-card-name">' + esc(v.name) + '</div>' +
+            '<div class="fleet-card-location">📍 ' + esc(v.location) + ' · ' + esc(v.year) + '</div>' +
+            '<div class="fleet-card-specs">' +
+              '<span class="fleet-spec">🪑 ' + v.seats + ' seats</span>' +
+              '<span class="fleet-spec">⛽ ' + esc(v.fuel) + '</span>' +
+              '<span class="fleet-spec">🔧 ' + esc(v.transmission) + '</span>' +
+              '<span class="fleet-spec ' + availClass + '">' + esc(v.avail) + '</span>' +
+            '</div>' +
+            '<div class="fleet-card-rate">' +
+              '<div><span class="fleet-rate-amount">$' + v.rate + '</span> <span class="fleet-rate-label">/day</span></div>' +
+              '<div style="font-size:11px;color:var(--text-secondary);">' + (v.driver === 'Included' ? '✅ Driver incl.' : '⚠️ No driver') + '</div>' +
+            '</div>' +
+            '<div class="fleet-card-actions">' +
+              '<button class="fleet-btn fleet-btn-view" onclick="fleetViewDetail(' + v.id + ')">👁 View Details</button>' +
+              '<button class="fleet-btn fleet-btn-lease" onclick="fleetLease(' + v.id + ')">🚗 Lease Vehicle</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+    }
+    grid.innerHTML = html;
+  };
+
+  /* ── Filter Logic ── */
+  window.fleetFilter = function() {
+    var typeEl = document.getElementById('fleetTypeFilter');
+    var locEl = document.getElementById('fleetLocFilter');
+    var qEl = document.getElementById('fleetSearch');
+    var type = typeEl ? typeEl.value : '';
+    var loc = locEl ? locEl.value : '';
+    var q = qEl ? qEl.value.toLowerCase() : '';
+    var filtered = fleet.filter(function(v) {
+      var okType = !type || type === 'All Vehicles' || v.type === type;
+      var okLoc = !loc || loc === 'All Locations' || v.location === loc;
+      var okQ = !q || v.name.toLowerCase().indexOf(q) !== -1 || v.location.toLowerCase().indexOf(q) !== -1;
+      return okType && okLoc && okQ;
+    });
+    fleetRenderCards(filtered);
+  };
+
+  /* ── View Detail ── */
+  window.fleetViewDetail = function(id) {
+    var v = fleet.find(function(x) { return x.id === id; });
+    if (!v) return;
+    var availClass = v.avail === 'Available' ? 'fleet-avail-green' : (v.avail === 'Limited' ? 'fleet-avail-amber' : 'fleet-avail-red');
+    document.getElementById('fleetDetailTitle').textContent = v.name;
+    document.getElementById('fleetDetailBody').innerHTML =
+      '<div class="fleet-card-img" style="height:220px;background:' + v.img + ';">' +
+        '<span class="fleet-card-type-badge">' + esc(v.type) + '</span>' +
+      '</div>' +
+      '<div style="padding:20px 24px 24px;">' +
+        '<div class="fleet-card-location">📍 ' + esc(v.location) + ' · ' + esc(v.year) + ' · <span class="fleet-avail-badge ' + availClass + '">' + esc(v.avail) + '</span></div>' +
+        '<div class="fleet-detail-grid">' +
+          '<div class="fleet-detail-field"><div class="fleet-detail-label">Seats</div><div class="fleet-detail-value">' + v.seats + '</div></div>' +
+          '<div class="fleet-detail-field"><div class="fleet-detail-label">Transmission</div><div class="fleet-detail-value">' + esc(v.transmission) + '</div></div>' +
+          '<div class="fleet-detail-field"><div class="fleet-detail-label">Fuel</div><div class="fleet-detail-value">' + esc(v.fuel) + '</div></div>' +
+          '<div class="fleet-detail-field"><div class="fleet-detail-label">Driver</div><div class="fleet-detail-value">' + esc(v.driver) + '</div></div>' +
+          '<div class="fleet-detail-field"><div class="fleet-detail-label">Rate</div><div class="fleet-detail-value">$' + v.rate + '/day</div></div>' +
+          '<div class="fleet-detail-field"><div class="fleet-detail-label">Equipment</div><div class="fleet-detail-value" style="font-size:12px;font-weight:500;">' + esc(v.spec) + '</div></div>' +
+        '</div>' +
+        '<div class="fleet-highlight-row"><span class="fleet-highlight">' + esc(v.highlight) + '</span></div>' +
+        '<div style="display:flex;gap:8px;margin-top:16px;">' +
+          '<button class="fleet-btn fleet-btn-view" style="padding:12px 16px;font-size:13px;flex:1;" onclick="closeModal(\'fleetDetailModal\')">Close</button>' +
+          '<button class="fleet-btn fleet-btn-lease" style="padding:12px 16px;font-size:13px;flex:1;" onclick="fleetAddToItinerary(' + v.id + ')">+ Add to Itinerary</button>' +
+        '</div>' +
+      '</div>';
+    openModal('fleetDetailModal');
+  };
+
+  /* ── Lease / Itinerary ── */
+  window.fleetLease = function(id) {
+    var v = fleet.find(function(x) { return x.id === id; });
+    showFleetToast('✅ Lease request sent for ' + (v ? v.name : 'vehicle'));
+  };
+  window.fleetAddToItinerary = function(id) {
+    var v = fleet.find(function(x) { return x.id === id; });
+    showFleetToast('✅ ' + (v ? v.name : 'Vehicle') + ' added to itinerary');
+  };
+
+  /* ── Favorite Toggle ── */
+  window.fleetToggleFav = function(btn) {
+    if (btn.textContent === '♡') {
+      btn.textContent = '♥';
+      btn.style.color = '#e74c3c';
+      showFleetToast('Saved to favorites');
+    } else {
+      btn.textContent = '♡';
+      btn.style.color = '';
+      showFleetToast('Removed from favorites');
+    }
+  };
+
+  /* ── Initial Render ── */
+  if (document.getElementById('fleetGrid')) {
+    fleetRenderCards(fleet);
+  }
+})();
+</script>
 
        <!-- ==========================================
   GUIDES PAGE
