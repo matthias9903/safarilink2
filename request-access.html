@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SafariLink — Request Early Access</title>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style>
+  :root {
+    --forest-green: #1a5a3a;
+    --forest-green-light: #2d7a52;
+    --accent-green: #3fb983;
+    --warm-off-white: #f8f7f4;
+    --khaki: #e8e5dd;
+    --charcoal: #2c2c2c;
+    --warm-gray: #a39e95;
+    --border-light: #d4cfc6;
+    --status-available: #10b981;
+    --status-pending: #f59e0b;
+    --status-unavailable: #dc2626;
+    --status-info: #0891b2;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 12px 24px rgba(0,0,0,0.12);
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+    background: var(--warm-off-white); color: var(--charcoal); line-height: 1.6;
+    -webkit-font-smoothing: antialiased; min-height: 100vh;
+  }
+
+  /* ── SPLIT LAYOUT ── */
+  .auth-wrapper { display: flex; min-height: 100vh; }
+
+  /* Left — form */
+  .auth-form-side {
+    flex: 1; display: flex; flex-direction: column; justify-content: center;
+    padding: 48px 40px; max-width: 580px; margin: 0 auto; width: 100%;
+    overflow-y: auto;
+  }
+  .auth-form-wrapper { max-width: 460px; margin: 0 auto; width: 100%; }
+
+  .auth-mobile-brand {
+    display: none; align-items: center; gap: 10px; margin-bottom: 24px;
+  }
+  .auth-mobile-brand .logo-icon {
+    width: 38px; height: 38px; background: var(--forest-green); border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center; color: #fff;
+    font-weight: 700; font-size: 16px;
+  }
+  .auth-mobile-brand .logo-text { font-size: 1.2rem; font-weight: 700; color: var(--forest-green); }
+  .auth-mobile-brand .logo-text span { color: var(--accent-green); }
+
+  .auth-back {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 0.82rem;
+    color: var(--warm-gray); text-decoration: none; margin-bottom: 24px; transition: 0.15s;
+  }
+  .auth-back:hover { color: var(--forest-green); }
+  .auth-back i { width: 16px; height: 16px; }
+
+  .auth-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 14px; background: #ecfdf5; color: var(--forest-green);
+    border-radius: 100px; font-size: 0.72rem; font-weight: 600; margin-bottom: 16px;
+  }
+  .auth-badge i { width: 14px; height: 14px; }
+
+  .auth-form-wrapper h2 {
+    font-size: 1.65rem; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.02em;
+  }
+  .auth-form-wrapper > .subtitle {
+    font-size: 0.88rem; color: var(--warm-gray); margin-bottom: 28px;
+  }
+
+  /* ── FORM ── */
+  .form-group { margin-bottom: 16px; }
+  .form-group label {
+    display: block; font-size: 0.8rem; font-weight: 600;
+    color: var(--charcoal); margin-bottom: 6px;
+  }
+  .form-group label .req { color: var(--status-unavailable); }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%; padding: 11px 14px; border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm); font-size: 0.88rem; font-family: inherit;
+    color: var(--charcoal); background: #fff; transition: border-color 0.2s;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    outline: none; border-color: var(--forest-green);
+    box-shadow: 0 0 0 3px rgba(26,90,58,0.1);
+  }
+  .form-group textarea { resize: vertical; min-height: 80px; }
+  .form-group select { cursor: pointer; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  /* ── BUSINESS TYPE CARDS ── */
+  .biz-type-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
+  .biz-type-card {
+    border: 1.5px solid var(--border-light); border-radius: var(--radius-md);
+    padding: 16px 10px; text-align: center; cursor: pointer; transition: 0.15s;
+    background: #fff; display: flex; flex-direction: column; align-items: center; gap: 8px;
+  }
+  .biz-type-card:hover { border-color: var(--accent-green); background: var(--warm-off-white); }
+  .biz-type-card.selected {
+    border-color: var(--forest-green); background: #ecfdf5;
+    box-shadow: 0 0 0 3px rgba(26,90,58,0.06);
+  }
+  .biz-type-card i { width: 26px; height: 26px; color: var(--warm-gray); }
+  .biz-type-card.selected i { color: var(--forest-green); }
+  .biz-type-card span { font-size: 0.75rem; font-weight: 600; color: var(--charcoal); }
+
+  /* ── CHECKBOX ── */
+  .checkbox-wrap {
+    display: flex; align-items: flex-start; gap: 10px; margin-bottom: 20px;
+    font-size: 0.78rem; color: var(--warm-gray); cursor: pointer;
+  }
+  .checkbox-wrap input[type="checkbox"] {
+    width: 16px; height: 16px; accent-color: var(--forest-green); cursor: pointer; margin-top: 2px; flex-shrink: 0;
+  }
+  .checkbox-wrap a { color: var(--forest-green); font-weight: 600; text-decoration: none; }
+
+  .btn-submit {
+    width: 100%; padding: 14px; background: var(--forest-green); color: #fff;
+    border: none; border-radius: var(--radius-sm); font-size: 0.92rem; font-weight: 700;
+    cursor: pointer; transition: 0.2s; font-family: inherit;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-submit:hover { background: var(--forest-green-light); box-shadow: var(--shadow-md); }
+  .btn-submit:active { transform: scale(0.98); }
+  .btn-submit i { width: 18px; height: 18px; }
+
+  .auth-switch {
+    text-align: center; font-size: 0.85rem; color: var(--warm-gray); margin-top: 22px;
+  }
+  .auth-switch a { color: var(--forest-green); font-weight: 600; text-decoration: none; }
+  .auth-switch a:hover { text-decoration: underline; }
+
+  /* ── RIGHT VISUAL PANEL ── */
+  .auth-visual {
+    flex: 1; background: linear-gradient(135deg, var(--forest-green) 0%, #0d3d24 100%);
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 60px 56px; color: #fff; position: relative; overflow: hidden;
+  }
+  .auth-visual::before {
+    content: ''; position: absolute; top: -40%; right: -15%;
+    width: 450px; height: 450px; border-radius: 50%;
+    background: rgba(63,185,131,0.08); pointer-events: none;
+  }
+  .auth-visual::after {
+    content: ''; position: absolute; bottom: -25%; left: -10%;
+    width: 380px; height: 380px; border-radius: 50%;
+    background: rgba(45,122,82,0.15); pointer-events: none;
+  }
+  .auth-visual-brand {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 40px;
+    position: relative; z-index: 1;
+  }
+  .auth-visual-brand .logo-icon {
+    width: 42px; height: 42px; background: rgba(255,255,255,0.12);
+    border-radius: var(--radius-sm); display: flex; align-items: center;
+    justify-content: center; color: #fff; font-weight: 700; font-size: 18px;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  .auth-visual-brand .logo-text { font-size: 1.3rem; font-weight: 700; color: #fff; }
+  .auth-visual-brand .logo-text span { color: var(--accent-green); }
+
+  .auth-visual-content { position: relative; z-index: 1; max-width: 400px; }
+  .auth-visual-content h1 {
+    font-size: 2rem; font-weight: 800; line-height: 1.2;
+    margin-bottom: 16px; letter-spacing: -0.02em;
+  }
+  .auth-visual-content > p {
+    font-size: 0.95rem; color: rgba(255,255,255,0.7); line-height: 1.7; margin-bottom: 32px;
+  }
+
+  /* ── STATS ── */
+  .visual-stats { display: flex; gap: 28px; margin-bottom: 36px; }
+  .visual-stat .num { font-size: 1.8rem; font-weight: 800; color: var(--accent-green); }
+  .visual-stat .label { font-size: 0.72rem; color: rgba(255,255,255,0.55); }
+
+  /* ── PROCESS STEPS ── */
+  .process-steps { display: flex; flex-direction: column; gap: 14px; }
+  .process-step {
+    display: flex; align-items: flex-start; gap: 12px;
+  }
+  .step-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 700; color: var(--accent-green); flex-shrink: 0;
+  }
+  .process-step h4 { font-size: 0.85rem; font-weight: 600; color: #fff; }
+  .process-step p { font-size: 0.75rem; color: rgba(255,255,255,0.55); margin: 0; }
+
+  .auth-visual-footer {
+    position: absolute; bottom: 32px; left: 56px; right: 56px;
+    font-size: 0.75rem; color: rgba(255,255,255,0.4); z-index: 1;
+    display: flex; justify-content: space-between;
+  }
+
+  /* ── SUCCESS STATE ── */
+  .success-state { display: none; text-align: center; padding: 40px 0; }
+  .success-state.show { display: block; }
+  .success-icon {
+    width: 72px; height: 72px; border-radius: 50%; background: #ecfdf5;
+    display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;
+    color: var(--status-available);
+  }
+  .success-icon i { width: 36px; height: 36px; }
+  .success-state h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 8px; }
+  .success-state p { font-size: 0.88rem; color: var(--warm-gray); margin-bottom: 24px; }
+  .success-next-steps {
+    background: var(--warm-off-white); border-radius: var(--radius-md);
+    padding: 20px; text-align: left; margin-bottom: 24px;
+  }
+  .success-next-steps h4 {
+    font-size: 0.82rem; font-weight: 700; margin-bottom: 12px;
+  }
+  .success-next-steps ol {
+    padding-left: 18px; font-size: 0.82rem; color: var(--warm-gray); line-height: 1.8;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .auth-visual { display: none; }
+    .auth-form-side { padding: 36px 24px; }
+    .auth-mobile-brand { display: flex; }
+  }
+  @media (max-width: 520px) {
+    .form-row { grid-template-columns: 1fr; }
+    .biz-type-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="auth-wrapper">
+
+  <!-- ═════════ LEFT FORM PANEL ═════════ -->
+  <div class="auth-form-side">
+    <div class="auth-form-wrapper">
+
+      <div class="auth-mobile-brand">
+        <div class="logo-icon">SL</div>
+        <div class="logo-text">Safari<span>Link</span></div>
+      </div>
+
+      <a href="login.html" class="auth-back">
+        <i data-lucide="arrow-left"></i> Back to login
+      </a>
+
+      <!-- ── FORM VIEW ── -->
+      <div id="formView">
+        <div class="auth-badge">
+          <i data-lucide="sparkles"></i> Early Access Program
+        </div>
+        <h2>Join SafariLink</h2>
+        <p class="subtitle">We're onboarding tourism partners across Tanzania. Tell us about your business and we'll get you set up.</p>
+
+        <form id="accessForm" onsubmit="return handleSubmit(event);">
+
+          <!-- Business type -->
+          <label style="font-size:0.8rem;font-weight:600;color:var(--charcoal);margin-bottom:8px;display:block;">
+            What best describes your business? <span class="req">*</span>
+          </label>
+          <div class="biz-type-grid" id="bizTypeGrid">
+            <div class="biz-type-card selected" data-type="accommodation">
+              <i data-lucide="building-2"></i>
+              <span>Accommodation</span>
+            </div>
+            <div class="biz-type-card" data-type="fleet">
+              <i data-lucide="car"></i>
+              <span>Fleet Owner</span>
+            </div>
+            <div class="biz-type-card" data-type="service">
+              <i data-lucide="compass"></i>
+              <span>Service Provider</span>
+            </div>
+          </div>
+
+          <!-- Company name -->
+          <div class="form-group">
+            <label for="companyName">Business / company name <span class="req">*</span></label>
+            <input type="text" id="companyName" placeholder="e.g. Serengeti Heritage Camp" required>
+          </div>
+
+          <!-- Contact name -->
+          <div class="form-group">
+            <label for="contactName">Your full name <span class="req">*</span></label>
+            <input type="text" id="contactName" placeholder="e.g. John Mollel" required>
+          </div>
+
+          <!-- Email + phone -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="email">Email address <span class="req">*</span></label>
+              <input type="email" id="email" placeholder="you@company.co.tz" required>
+            </div>
+            <div class="form-group">
+              <label for="phone">Phone number <span class="req">*</span></label>
+              <input type="tel" id="phone" placeholder="+255 7XX XXX XXX" required>
+            </div>
+          </div>
+
+          <!-- Region -->
+          <div class="form-group">
+            <label for="region">Primary region of operation <span class="req">*</span></label>
+            <select id="region" required>
+              <option value="" disabled selected>Select a region</option>
+              <option>Arusha</option>
+              <option>Dar es Salaam</option>
+              <option>Serengeti / Mara</option>
+              <option>Ngorongoro / Karatu</option>
+              <option>Tarangire / Manyara</option>
+              <option>Kilimanjaro</option>
+              <option>Zanzibar</option>
+              <option>Selous / Nyerere</option>
+              <option>Ruaha</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <!-- Description -->
+          <div class="form-group">
+            <label for="description">Tell us briefly about your business</label>
+            <textarea id="description" placeholder="e.g. We operate 22 tented rooms in central Serengeti, offering full-board packages to tour operators."></textarea>
+          </div>
+
+          <!-- Consent -->
+          <label class="checkbox-wrap">
+            <input type="checkbox" id="consent" required>
+            <span>I agree to SafariLink's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>, and consent to being contacted about my access request.</span>
+          </label>
+
+          <button type="submit" class="btn-submit">
+            <i data-lucide="send"></i> Submit access request
+          </button>
+        </form>
+
+        <div class="auth-switch">
+          Already have an account? <a href="login.html">Sign in →</a>
+        </div>
+      </div>
+
+      <!-- ── SUCCESS VIEW ── -->
+      <div class="success-state" id="successView">
+        <div class="success-icon">
+          <i data-lucide="check-circle"></i>
+        </div>
+        <h2>Request received!</h2>
+        <p>Thank you — our team will review your application and reach out within 2–3 business days.</p>
+
+        <div class="success-next-steps">
+          <h4>What happens next?</h4>
+          <ol>
+            <li>Our partnerships team reviews your application</li>
+            <li>You'll receive a verification email with next steps</li>
+            <li>We schedule a brief onboarding call (15 min)</li>
+            <li>Your dashboard goes live with your first inventory</li>
+          </ol>
+        </div>
+
+        <a href="login.html" class="btn-submit" style="text-decoration:none;">
+          <i data-lucide="log-in"></i> Go to login
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═════════ RIGHT VISUAL PANEL ═════════ -->
+  <div class="auth-visual">
+    <div class="auth-visual-brand">
+      <div class="logo-icon">SL</div>
+      <div class="logo-text">Safari<span>Link</span></div>
+    </div>
+    <div class="auth-visual-content">
+      <h1>Join Tanzania's fastest-growing B2B tourism network.</h1>
+      <p>SafariLink connects accommodation providers, fleet owners, and service providers with tour operators across the country — streamlining sourcing, booking, and payments.</p>
+
+      <div class="visual-stats">
+        <div class="visual-stat">
+          <div class="num">240+</div>
+          <div class="label">Partners onboarded</div>
+        </div>
+        <div class="visual-stat">
+          <div class="num">18</div>
+          <div class="label">Regions covered</div>
+        </div>
+        <div class="visual-stat">
+          <div class="num">1,200+</div>
+          <div class="label">Monthly bookings</div>
+        </div>
+      </div>
+
+      <div class="process-steps">
+        <div class="process-step">
+          <div class="step-num">1</div>
+          <div>
+            <h4>Submit your application</h4>
+            <p>Fill in the form — takes about 2 minutes.</p>
+          </div>
+        </div>
+        <div class="process-step">
+          <div class="step-num">2</div>
+          <div>
+            <h4>Verification & onboarding call</h4>
+            <p>We verify your business and walk you through the platform.</p>
+          </div>
+        </div>
+        <div class="process-step">
+          <div class="step-num">3</div>
+          <div>
+            <h4>Start receiving bookings</h4>
+            <p>Go live and connect with tour operators nationwide.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="auth-visual-footer">
+      <span>© 2026 SafariLink Tanzania</span>
+      <span>app.safarilink.co.tz</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  lucide.createIcons();
+
+  /* Business type selector */
+  var selectedType = 'accommodation';
+  document.querySelectorAll('.biz-type-card').forEach(function(card) {
+    card.addEventListener('click', function() {
+      document.querySelectorAll('.biz-type-card').forEach(function(c) { c.classList.remove('selected'); });
+      card.classList.add('selected');
+      selectedType = card.dataset.type;
+    });
+  });
+
+  /* Form submit handler */
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    /* Basic validation */
+    var companyName = document.getElementById('companyName').value;
+    var contactName = document.getElementById('contactName').value;
+    var email = document.getElementById('email').value;
+    var phone = document.getElementById('phone').value;
+    var region = document.getElementById('region').value;
+    var consent = document.getElementById('consent').checked;
+
+    if (!companyName || !contactName || !email || !phone || !region || !consent) {
+      return false;
+    }
+
+    /* Show success state */
+    document.getElementById('formView').style.display = 'none';
+    document.getElementById('successView').classList.add('show');
+    lucide.createIcons();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    return false;
+  }
+</script>
+
+</body>
+</html>
