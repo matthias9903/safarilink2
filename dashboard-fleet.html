@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SafariLink — Fleet Partner Dashboard</title>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style>
+  :root {
+    --forest-green: #1a5a3a; --forest-green-light: #2d7a52; --accent-green: #3fb983;
+    --warm-off-white: #f8f7f4; --khaki: #e8e5dd; --charcoal: #2c2c2c;
+    --warm-gray: #a39e95; --border-light: #d4cfc6;
+    --status-available: #10b981; --status-pending: #f59e0b; --status-unavailable: #dc2626;
+    --status-info: #0891b2; --status-maintenance: #8b5cf6;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05); --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 12px 24px rgba(0,0,0,0.12);
+    --radius-sm: 6px; --radius-md: 10px; --radius-lg: 16px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+    background: var(--warm-off-white); color: var(--charcoal); line-height: 1.6;
+    display: flex; min-height: 100vh;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 240px; min-height: 100vh; background: var(--charcoal); color: #ccc;
+    display: flex; flex-direction: column; flex-shrink: 0;
+  }
+  .sidebar-brand {
+    padding: 20px 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.08);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .sidebar-brand .logo-icon {
+    width: 34px; height: 34px; background: var(--forest-green);
+    border-radius: var(--radius-sm); display: flex; align-items: center;
+    justify-content: center; color: #fff; font-weight: 700; font-size: 16px;
+  }
+  .sidebar-brand .logo-text { font-size: 1.1rem; font-weight: 700; color: #fff; }
+  .sidebar-brand .logo-text span { color: var(--accent-green); }
+
+  .sidebar-nav { padding: 16px 12px; flex: 1; }
+  .sidebar-section { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.35); padding: 16px 8px 8px; font-weight: 600; }
+  .sidebar-link {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+    border-radius: var(--radius-sm); color: #bbb; text-decoration: none;
+    font-size: 0.9rem; transition: all 0.15s; cursor: pointer; margin-bottom: 2px;
+  }
+  .sidebar-link:hover, .sidebar-link.active {
+    background: rgba(255,255,255,0.08); color: #fff;
+  }
+  .sidebar-link.active { background: rgba(63,185,131,0.15); color: var(--accent-green); }
+  .sidebar-link i { width: 20px; height: 20px; flex-shrink: 0; }
+  .sidebar-badge {
+    margin-left: auto; background: var(--status-pending); color: #000;
+    font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; font-weight: 700;
+  }
+  .sidebar-footer {
+    padding: 16px; border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  .sidebar-user {
+    display: flex; align-items: center; gap: 10px; color: #ccc; font-size: 0.85rem;
+  }
+  .sidebar-user-avatar {
+    width: 32px; height: 32px; border-radius: 50%; background: var(--status-info);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 700; font-size: 13px;
+  }
+
+  /* ── MAIN ── */
+  .main-wrapper { flex: 1; display: flex; flex-direction: column; }
+  .topbar {
+    background: #fff; padding: 14px 28px; display: flex; align-items: center;
+    justify-content: space-between; border-bottom: 1px solid var(--border-light);
+    position: sticky; top: 0; z-index: 50;
+  }
+  .topbar-left h2 { font-size: 1.25rem; font-weight: 700; }
+  .topbar-left p { font-size: 0.8rem; color: var(--warm-gray); margin-top: 2px; }
+  .topbar-actions { display: flex; align-items: center; gap: 12px; }
+  .topbar-btn {
+    background: none; border: 1px solid var(--border-light); padding: 8px 16px;
+    border-radius: var(--radius-sm); cursor: pointer; font-size: 0.85rem;
+    display: flex; align-items: center; gap: 6px; color: var(--charcoal); transition: 0.15s;
+  }
+  .topbar-btn:hover { background: var(--khaki); }
+  .topbar-btn.primary {
+    background: var(--forest-green); color: #fff; border-color: var(--forest-green);
+  }
+  .topbar-btn.primary:hover { background: var(--forest-green-light); }
+
+  .dashboard-content { padding: 28px; flex: 1; }
+
+  /* ── STATS ── */
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+  .stat-card {
+    background: #fff; border-radius: var(--radius-md); padding: 20px;
+    box-shadow: var(--shadow-sm); border: 1px solid var(--border-light);
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .stat-card-header { display: flex; align-items: center; justify-content: space-between; }
+  .stat-card-icon {
+    width: 40px; height: 40px; border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .stat-card-icon.green { background: #d1fae5; color: var(--status-available); }
+  .stat-card-icon.amber { background: #fef3c7; color: var(--status-pending); }
+  .stat-card-icon.blue  { background: #dbeafe; color: var(--status-info); }
+  .stat-card-icon.purple { background: #ede9fe; color: var(--status-maintenance); }
+  .stat-card-value { font-size: 1.8rem; font-weight: 700; }
+  .stat-card-label { font-size: 0.8rem; color: var(--warm-gray); }
+  .stat-card-trend { font-size: 0.75rem; display: flex; align-items: center; gap: 4px; }
+  .stat-card-trend.up { color: var(--status-available); }
+  .stat-card-trend.down { color: var(--status-unavailable); }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px; }
+  .grid-3 { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 28px; }
+  .card {
+    background: #fff; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light); overflow: hidden;
+  }
+  .card-header {
+    padding: 16px 20px; border-bottom: 1px solid var(--border-light);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .card-header h3 { font-size: 0.95rem; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+  .card-body { padding: 20px; }
+  .card-body.no-padding { padding: 0; }
+
+  /* ── TABLE ── */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  table th {
+    background: var(--warm-off-white); text-align: left; padding: 10px 16px;
+    font-weight: 600; color: var(--warm-gray); font-size: 0.75rem;
+    text-transform: uppercase; letter-spacing: 0.04em; border-bottom: 1px solid var(--border-light);
+  }
+  table td { padding: 12px 16px; border-bottom: 1px solid var(--khaki); vertical-align: middle; }
+  table tr:last-child td { border-bottom: none; }
+  table tr:hover { background: rgba(63,185,131,0.03); }
+
+  .badge {
+    display: inline-block; padding: 3px 10px; border-radius: 12px;
+    font-size: 0.72rem; font-weight: 600;
+  }
+  .badge-available { background: #d1fae5; color: #065f46; }
+  .badge-booked    { background: #dbeafe; color: #1e40af; }
+  .badge-maintenance { background: #ede9fe; color: #5b21b6; }
+  .badge-on-request { background: #fef3c7; color: #92400e; }
+
+  /* ── VEHICLE CARDS ── */
+  .vehicle-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .vehicle-card {
+    background: var(--warm-off-white); border-radius: var(--radius-md);
+    padding: 18px; border: 1px solid var(--border-light); position: relative;
+  }
+  .vehicle-card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+  .vehicle-card h4 { font-size: 0.95rem; font-weight: 700; }
+  .vehicle-card .type { font-size: 0.72rem; color: var(--warm-gray); }
+  .vehicle-specs { display: flex; gap: 14px; margin-bottom: 12px; font-size: 0.78rem; }
+  .vehicle-specs span { display: flex; align-items: center; gap: 4px; color: var(--warm-gray); }
+  .vehicle-status-bar {
+    height: 4px; background: var(--khaki); border-radius: 2px; margin-bottom: 6px; overflow: hidden;
+  }
+  .vehicle-status-bar-fill { height: 100%; border-radius: 2px; }
+  .vehicle-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 0.78rem; font-weight: 600;
+  }
+
+  .quick-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .quick-action {
+    background: #fff; border: 1px solid var(--border-light); border-radius: var(--radius-md);
+    padding: 18px 14px; text-align: center; cursor: pointer; transition: 0.15s;
+    display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--charcoal);
+    font-size: 0.82rem; font-weight: 600; text-decoration: none;
+  }
+  .quick-action:hover { box-shadow: var(--shadow-md); border-color: var(--accent-green); }
+  .quick-action-icon {
+    width: 42px; height: 42px; border-radius: 50%; background: var(--warm-off-white);
+    display: flex; align-items: center; justify-content: center; color: var(--forest-green);
+  }
+
+  @media (max-width: 1100px) {
+    .sidebar { width: 200px; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .vehicle-grid { grid-template-columns: 1fr 1fr; }
+    .quick-actions { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .stats-row { grid-template-columns: 1fr; }
+    .vehicle-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ SIDEBAR ═══════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="logo-icon">SL</div>
+    <div class="logo-text">Safari<span>Link</span></div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="sidebar-section">Main</div>
+    <a class="sidebar-link active"><i data-lucide="layout-dashboard"></i>Dashboard</a>
+    <a class="sidebar-link"><i data-lucide="car"></i>My Fleet</a>
+    <a class="sidebar-link"><i data-lucide="calendar-days"></i>Bookings<span class="sidebar-badge">4</span></a>
+    <div class="sidebar-section">Operations</div>
+    <a class="sidebar-link"><i data-lucide="wrench"></i>Maintenance</a>
+    <a class="sidebar-link"><i data-lucide="map-pin"></i>Vehicle Locations</a>
+    <a class="sidebar-link"><i data-lucide="file-text"></i>Lease Agreements</a>
+    <a class="sidebar-link"><i data-lucide="message-square"></i>Messages<span class="sidebar-badge">2</span></a>
+    <div class="sidebar-section">Reports</div>
+    <a class="sidebar-link"><i data-lucide="bar-chart-3"></i>Revenue & Utilisation</a>
+    <a class="sidebar-link"><i data-lucide="activity"></i>Fleet Performance</a>
+    <div class="sidebar-section">Settings</div>
+    <a class="sidebar-link"><i data-lucide="settings"></i>Account</a>
+    <a class="sidebar-link"><i data-lucide="shield-check"></i>Verification</a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="sidebar-user-avatar">SF</div>
+      <div>
+        <div style="color:#fff;font-weight:600;font-size:0.85rem;">Safari Fleet Tanzania</div>
+        <div style="font-size:0.7rem;color:rgba(255,255,255,0.45);">Verified Fleet Partner</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══════════════ MAIN ═══════════════ -->
+<div class="main-wrapper">
+  <header class="topbar">
+    <div class="topbar-left">
+      <h2>Good morning, Safari Fleet Tanzania</h2>
+      <p>Arusha HQ • 12 vehicles in fleet • 2 due for service</p>
+    </div>
+    <div class="topbar-actions">
+      <button class="topbar-btn"><i data-lucide="bell"></i> Alerts</button>
+      <button class="topbar-btn primary"><i data-lucide="plus-circle"></i> Add Vehicle</button>
+    </div>
+  </header>
+
+  <div class="dashboard-content">
+
+    <!-- ── STAT ROW ── -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-card-label">Vehicles On Road</span>
+          <span class="stat-card-icon green"><i data-lucide="car"></i></span>
+        </div>
+        <div class="stat-card-value">9 / 12</div>
+        <div class="stat-card-trend up"><i data-lucide="trending-up"></i> 75% utilisation</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-card-label">Pending Bookings</span>
+          <span class="stat-card-icon amber"><i data-lucide="clock"></i></span>
+        </div>
+        <div class="stat-card-value">4</div>
+        <div class="stat-card-trend" style="color:var(--warm-gray);">Awaiting confirmation</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-card-label">Revenue This Month</span>
+          <span class="stat-card-icon blue"><i data-lucide="dollar-sign"></i></span>
+        </div>
+        <div class="stat-card-value">$14,500</div>
+        <div class="stat-card-trend up"><i data-lucide="trending-up"></i> +18% vs last month</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-card-label">In Maintenance</span>
+          <span class="stat-card-icon purple"><i data-lucide="wrench"></i></span>
+        </div>
+        <div class="stat-card-value">2</div>
+        <div class="stat-card-trend down"><i data-lucide="alert-triangle"></i> 1 overdue</div>
+      </div>
+    </div>
+
+    <!-- ── QUICK ACTIONS ── -->
+    <div class="quick-actions" style="margin-bottom:28px;">
+      <a class="quick-action"><span class="quick-action-icon"><i data-lucide="car-front"></i></span>Register Vehicle</a>
+      <a class="quick-action"><span class="quick-action-icon"><i data-lucide="calendar-range"></i></span>Set Availability</a>
+      <a class="quick-action"><span class="quick-action-icon"><i data-lucide="clipboard-check"></i></span>Log Maintenance</a>
+      <a class="quick-action"><span class="quick-action-icon"><i data-lucide="download"></i></span>Export Fleet Report</a>
+    </div>
+
+    <!-- ── TWO COLUMN: Bookings + Fleet Status ── -->
+    <div class="grid-2">
+
+      <!-- RECENT BOOKINGS -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i data-lucide="calendar-check" style="width:18px;height:18px;"></i>Recent Bookings</h3>
+          <a style="font-size:0.8rem;color:var(--forest-green);font-weight:600;cursor:pointer;text-decoration:none;">View All →</a>
+        </div>
+        <div class="card-body no-padding">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Operator</th><th>Vehicle</th><th>Dates</th><th>Rate</th><th>Status</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Dream Trails</strong><br><span style="font-size:0.72rem;color:var(--warm-gray);">Mathias M.</span></td>
+                  <td>Land Cruiser (7-seat)</td><td>15–20 Sep</td><td>$250/day</td>
+                  <td><span class="badge badge-booked">Booked</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Wild Africa Safaris</strong><br><span style="font-size:0.72rem;color:var(--warm-gray);">Anna K.</span></td>
+                  <td>Land Cruiser (5-seat)</td><td>28 Sep–05 Oct</td><td>$200/day</td>
+                  <td><span class="badge badge-on-request">On Request</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Serengeti Pride Tours</strong><br><span style="font-size:0.72rem;color:var(--warm-gray);">Grace N.</span></td>
+                  <td>Toyota Coaster</td><td>10–14 Oct</td><td>$180/day</td>
+                  <td><span class="badge badge-booked">Booked</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Kilimanjaro Adventures</strong><br><span style="font-size:0.72rem;color:var(--warm-gray);">Peter K.</span></td>
+                  <td>Land Cruiser (7-seat)</td><td>22–25 Sep</td><td>$250/day</td>
+                  <td><span class="badge badge-on-request">On Request</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- FLEET STATUS OVERVIEW -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i data-lucide="truck" style="width:18px;height:18px;"></i>Fleet Status Overview</h3>
+        </div>
+        <div class="card-body">
+          <div style="display:flex;gap:16px;margin-bottom:20px;">
+            <div style="flex:1;text-align:center;">
+              <div style="font-size:1.5rem;font-weight:700;color:var(--status-available);">6</div>
+              <div style="font-size:0.72rem;color:var(--warm-gray);">Available</div>
+            </div>
+            <div style="flex:1;text-align:center;">
+              <div style="font-size:1.5rem;font-weight:700;color:var(--status-info);">3</div>
+              <div style="font-size:0.72rem;color:var(--warm-gray);">Booked</div>
+            </div>
+            <div style="flex:1;text-align:center;">
+              <div style="font-size:1.5rem;font-weight:700;color:var(--status-pending);">1</div>
+              <div style="font-size:0.72rem;color:var(--warm-gray);">On Request</div>
+            </div>
+            <div style="flex:1;text-align:center;">
+              <div style="font-size:1.5rem;font-weight:700;color:var(--status-maintenance);">2</div>
+              <div style="font-size:0.72rem;color:var(--warm-gray);">Maintenance</div>
+            </div>
+          </div>
+          <div style="display:flex;border-radius:8px;overflow:hidden;height:8px;margin-bottom:20px;">
+            <div style="width:50%;background:var(--status-available);"></div>
+            <div style="width:25%;background:var(--status-info);"></div>
+            <div style="width:8%;background:var(--status-pending);"></div>
+            <div style="width:17%;background:var(--status-maintenance);"></div>
+          </div>
+          <div style="font-size:0.78rem;color:var(--warm-gray);">
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--khaki);">
+              <span>Avg. days booked / vehicle / month</span><strong>18 days</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--khaki);">
+              <span>Avg. daily rate achieved</span><strong>$237</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;">
+              <span>Next scheduled maintenance</span><strong>18 Sep — Coaster</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── FLEET VEHICLES ── -->
+    <div class="card" style="margin-bottom:28px;">
+      <div class="card-header">
+        <h3><i data-lucide="list" style="width:18px;height:18px;"></i>Your Fleet</h3>
+        <div style="display:flex;gap:8px;">
+          <select style="border:1px solid var(--border-light);border-radius:var(--radius-sm);padding:6px 10px;font-size:0.8rem;">
+            <option>All Vehicles</option><option>Available</option><option>Booked</option><option>Maintenance</option>
+          </select>
+          <button class="topbar-btn" style="font-size:0.8rem;"><i data-lucide="plus"></i> Add</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Vehicle</th><th>Type</th><th>Registration</th><th>Seats</th><th>Location</th><th>Daily Rate</th><th>Status</th><th>Next Service</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Toyota Land Cruiser</strong></td><td>Safari Vehicle</td><td>T 123 ABC</td><td>7</td><td>Arusha</td><td>$250</td>
+                <td><span class="badge badge-booked">Booked</span></td><td>5 Oct 2026</td>
+              </tr>
+              <tr>
+                <td><strong>Toyota Land Cruiser</strong></td><td>Safari Vehicle</td><td>T 456 DEF</td><td>5</td><td>Kilimanjaro</td><td>$200</td>
+                <td><span class="badge badge-available">Available</span></td><td>12 Nov 2026</td>
+              </tr>
+              <tr>
+                <td><strong>Toyota Coaster</strong></td><td>Mini Bus</td><td>T 789 GHI</td><td>12</td><td>Arusha</td><td>$180</td>
+                <td><span class="badge badge-available">Available</span></td><td>18 Sep 2026</td>
+              </tr>
+              <tr>
+                <td><strong>Toyota Land Cruiser</strong></td><td>Safari Vehicle</td><td>T 321 JKL</td><td>7</td><td>Arusha</td><td>$250</td>
+                <td><span class="badge badge-maintenance">Maintenance</span></td><td style="color:var(--status-unavailable);"><strong>Overdue</strong></td>
+              </tr>
+              <tr>
+                <td><strong>Toyota Hilux</strong></td><td>Support Vehicle</td><td>T 654 MNO</td><td>5</td><td>Serengeti</td><td>$150</td>
+                <td><span class="badge badge-available">Available</span></td><td>30 Jan 2027</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── MAINTENANCE SCHEDULE + REVENUE ── -->
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header">
+          <h3><i data-lucide="wrench" style="width:18px;height:18px;"></i>Maintenance Schedule</h3>
+        </div>
+        <div class="card-body no-padding">
+          <table>
+            <tbody>
+              <tr>
+                <td style="width:40px;"><span style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;background:#fee2e2;border-radius:50%;color:var(--status-unavailable);"><i data-lucide="alert-circle" style="width:18px;height:18px;"></i></span></td>
+                <td>
+                  <strong>Land Cruiser T 321 JKL — Overdue</strong>
+                  <div style="font-size:0.78rem;color:var(--warm-gray);">Oil change & brake inspection due 15 Aug 2026</div>
+                </td>
+                <td><span class="badge badge-maintenance">Urgent</span></td>
+              </tr>
+              <tr>
+                <td style="width:40px;"><span style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;background:#fef3c7;border-radius:50%;color:var(--status-pending);"><i data-lucide="clock" style="width:18px;height:18px;"></i></span></td>
+                <td>
+                  <strong>Toyota Coaster T 789 GHI</strong>
+                  <div style="font-size:0.78rem;color:var(--warm-gray);">Scheduled service — 18 Sep 2026</div>
+                </td>
+                <td><span class="badge badge-on-request">Upcoming</span></td>
+              </tr>
+              <tr>
+                <td style="width:40px;"><span style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;background:#d1fae5;border-radius:50%;color:var(--status-available);"><i data-lucide="check-circle" style="width:18px;height:18px;"></i></span></td>
+                <td>
+                  <strong>Land Cruiser T 123 ABC</strong>
+                  <div style="font-size:0.78rem;color:var(--warm-gray);">Last serviced: 5 Aug 2026 • Next: 5 Oct 2026</div>
+                </td>
+                <td><span class="badge badge-available">On Track</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3><i data-lucide="line-chart" style="width:18px;height:18px;"></i>Revenue by Vehicle Type</h3>
+        </div>
+        <div class="card-body">
+          <div style="display:flex;align-items:flex-end;gap:20px;height:150px;padding:8px 0;">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+              <div style="width:60%;background:var(--forest-green);border-radius:4px 4px 0 0;height:130px;"></div>
+              <span style="font-size:0.7rem;font-weight:600;">Land Cruiser 7-seat</span>
+              <span style="font-size:0.7rem;color:var(--warm-gray);">$8,750</span>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+              <div style="width:60%;background:var(--accent-green);border-radius:4px 4px 0 0;height:80px;"></div>
+              <span style="font-size:0.7rem;font-weight:600;">Land Cruiser 5-seat</span>
+              <span style="font-size:0.7rem;color:var(--warm-gray);">$3,400</span>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+              <div style="width:60%;background:var(--status-info);border-radius:4px 4px 0 0;height:50px;"></div>
+              <span style="font-size:0.7rem;font-weight:600;">Coaster</span>
+              <span style="font-size:0.7rem;color:var(--warm-gray);">$1,620</span>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+              <div style="width:60%;background:var(--warm-gray);border-radius:4px 4px 0 0;height:30px;"></div>
+              <span style="font-size:0.7rem;font-weight:600;">Hilux</span>
+              <span style="font-size:0.7rem;color:var(--warm-gray);">$730</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>lucide.createIcons();</script>
+</body>
+</html>
