@@ -570,6 +570,13 @@ tr:hover td { background: rgba(245,240,232,0.5); }
   })();
 </script>
    
+  <script>
+  function logout() {
+    sessionStorage.removeItem('safariLinkUser');
+    window.location.href = 'index.html';
+  }
+</script>
+   
    <body>
 
 <!-- ============================================
