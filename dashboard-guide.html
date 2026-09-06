@@ -237,6 +237,13 @@
   })();
 </script>
   
+ <script>
+  function logout() {
+    sessionStorage.removeItem('safariLinkUser');
+    window.location.href = 'index.html';
+  }
+</script>
+  
   <body>
 
 <!-- ═══════════════ SIDEBAR ═══════════════ -->
