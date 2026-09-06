@@ -1,0 +1,1607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SafariLink Dashboard</title>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+/* ============================================
+   CSS VARIABLES
+   ============================================ */
+:root {
+  --forest-green: #1B5E20;
+  --forest-green-light: #2E7D32;
+  --forest-green-dark: #0D3B0F;
+  --warm-sand: #D4A853;
+  --warm-sand-light: #E8C97A;
+  --warm-off-white: #F5F0E8;
+  --warm-gray: #8B7E6E;
+  --text-primary: #2C2416;
+  --text-secondary: #6B6052;
+  --border-color: #E0D5C1;
+  --card-bg: #FFFFFF;
+  --sidebar-bg: #1A1A14;
+  --sidebar-text: #C4BDA8;
+  --sidebar-active: #D4A853;
+  --status-available: #2E7D32;
+  --status-pending: #D4A853;
+  --status-warning: #C75B39;
+  --status-info: #4A7B9D;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --transition: 0.2s ease;
+}
+
+/* ============================================
+   RESET & BASE
+   ============================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--warm-off-white);
+  color: var(--text-primary);
+  line-height: 1.5;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ============================================
+   DASHBOARD LAYOUT
+   ============================================ */
+.dashboard {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ============================================
+   SIDEBAR
+   ============================================ */
+.sidebar {
+  width: 250px;
+  min-width: 250px;
+  background: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 100;
+  overflow-y: auto;
+  transition: transform var(--transition);
+}
+.sidebar-header {
+  padding: 20px 20px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+}
+.sidebar-logo i { color: var(--warm-sand); width: 24px; height: 24px; }
+.sidebar-nav { padding: 12px 0; flex: 1; }
+.nav-section { margin-bottom: 4px; }
+.nav-section-title {
+  padding: 12px 20px 6px;
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.35);
+  font-weight: 600;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: var(--sidebar-text);
+  transition: all var(--transition);
+  border-left: 3px solid transparent;
+}
+.nav-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
+.nav-item.active {
+  background: rgba(212,168,83,0.12);
+  color: var(--sidebar-active);
+  border-left-color: var(--sidebar-active);
+}
+.nav-item i { width: 18px; height: 18px; flex-shrink: 0; }
+
+/* ============================================
+   MAIN CONTENT
+   ============================================ */
+.main-content {
+  flex: 1;
+  margin-left: 250px;
+  padding: 28px 32px;
+  min-height: 100vh;
+  background: var(--warm-off-white);
+}
+
+/* ============================================
+   PAGES
+   ============================================ */
+.page { display: none; }
+.page.active { display: block; }
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.page-title { font-size: 1.625rem; font-weight: 700; color: var(--text-primary); }
+.page-subtitle { font-size: 0.875rem; color: var(--text-secondary); margin-top: 4px; }
+
+/* ============================================
+   CARDS
+   ============================================ */
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 20px;
+  border: 1px solid var(--border-color);
+}
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+.card-title { font-size: 1rem; font-weight: 600; color: var(--text-primary); }
+.card-body { padding: 20px; }
+
+/* ============================================
+   QUICK ACTIONS
+   ============================================ */
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  transition: all var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+.action-btn:hover { border-color: var(--forest-green); background: #F1F8F1; }
+.action-btn i { width: 20px; height: 20px; color: var(--forest-green); }
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+.create-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: var(--forest-green);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.create-btn:hover { background: var(--forest-green-dark); }
+.create-btn i { width: 16px; height: 16px; }
+
+/* ============================================
+   GRIDS
+   ============================================ */
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+/* ============================================
+   FORM ELEMENTS
+   ============================================ */
+.form-group { margin-bottom: 16px; }
+.form-group label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: var(--card-bg);
+  transition: border-color var(--transition);
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--forest-green);
+  box-shadow: 0 0 0 3px rgba(27,94,32,0.1);
+}
+
+/* ============================================
+   TABLES
+   ============================================ */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+th {
+  text-align: left;
+  padding: 12px 16px;
+  background: var(--warm-off-white);
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 2px solid var(--border-color);
+}
+td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+tr:hover td { background: rgba(245,240,232,0.5); }
+
+/* ============================================
+   BADGES
+   ============================================ */
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.badge-success { background: #E8F5E9; color: var(--status-available); }
+.badge-warning { background: #FFF8E1; color: #C79121; }
+.badge-info { background: #E3F2FD; color: var(--status-info); }
+.badge-danger { background: #FFEBEE; color: var(--status-warning); }
+.badge-pending { background: #FFF3E0; color: #C75B39; }
+
+/* ============================================
+   FLEET CARDS
+   ============================================ */
+.fleet-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+.fleet-card {
+  background: var(--card-bg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition);
+  position: relative;
+}
+.fleet-card:hover { box-shadow: var(--shadow-md); }
+.fleet-card-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  background: var(--warm-off-white);
+}
+.fleet-card-body { padding: 16px; }
+.fleet-card-title {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--text-primary);
+}
+.fleet-card-type {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+.fleet-card-stats {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+.fleet-card-stats span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.fleet-card-stats i { width: 14px; height: 14px; }
+.fleet-card-footer {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border-color);
+}
+.fleet-btn-view {
+  flex: 1;
+  padding: 8px 14px;
+  background: var(--forest-green);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.fleet-btn-view:hover { background: var(--forest-green-dark); }
+.fleet-btn-lease {
+  padding: 8px 12px;
+  background: var(--card-bg);
+  color: var(--forest-green);
+  border: 1.5px solid var(--forest-green);
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.fleet-btn-lease:hover { background: #F1F8F1; }
+.fleet-fav-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255,255,255,0.9);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ============================================
+   GUIDES CARDS
+   ============================================ */
+.guides-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+.guide-card {
+  background: var(--card-bg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition);
+  position: relative;
+}
+.guide-card:hover { box-shadow: var(--shadow-md); }
+.guide-card-img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  background: var(--warm-off-white);
+}
+.guide-card-body { padding: 16px; }
+.guide-card-name { font-size: 1rem; font-weight: 600; color: var(--text-primary); }
+.guide-card-spec { font-size: 0.8125rem; color: var(--text-secondary); margin: 4px 0 8px; }
+.guide-card-rating {
+  color: var(--warm-sand);
+  font-size: 0.875rem;
+  margin-bottom: 8px;
+}
+.guide-card-footer {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border-color);
+}
+
+/* ============================================
+   TOAST
+   ============================================ */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--forest-green-dark);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 500;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  z-index: 9999;
+  animation: toastIn 0.3s ease, toastOut 0.3s ease 2.5s forwards;
+  pointer-events: none;
+}
+@keyframes toastIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes toastOut { from { opacity: 1; } to { opacity: 0; } }
+
+/* ============================================
+   SIDEBAR TOGGLE (MOBILE)
+   ============================================ */
+.sidebar-toggle {
+  display: none;
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 200;
+  background: var(--forest-green);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-md);
+}
+.sidebar-toggle i { width: 22px; height: 22px; }
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 99;
+}
+
+/* ============================================
+   MESSAGES
+   ============================================ */
+.message-thread {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+.message-bubble {
+  max-width: 70%;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+.message-incoming {
+  align-self: flex-start;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+}
+.message-outgoing {
+  align-self: flex-end;
+  background: var(--forest-green);
+  color: #fff;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .sidebar-toggle { display: flex; }
+  .sidebar {
+    transform: translateX(-100%);
+    box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+  }
+  .sidebar.mobile-open { transform: translateX(0); }
+  .sidebar-overlay.active { display: block; }
+  .main-content { margin-left: 0; padding: 20px 16px; }
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+  .grid-2 { grid-template-columns: 1fr; }
+  .quick-actions { grid-template-columns: repeat(2, 1fr); }
+  .fleet-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+  .guides-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+  .page-header { flex-direction: column; }
+}
+
+@media (max-width: 480px) {
+  .grid-4 { grid-template-columns: 1fr; }
+  .grid-3 { grid-template-columns: 1fr; }
+  .quick-actions { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================
+     HOMEPAGE VIEW (placeholder for linking)
+     ============================================ -->
+<div id="homepage-view" style="display: none;">
+  <!-- Your homepage content goes here when linked -->
+</div>
+
+<!-- ============================================
+     DASHBOARD VIEW
+     ============================================ -->
+<div id="dashboard-view" class="dashboard">
+
+  <!-- Sidebar Toggle (mobile) -->
+  <button class="sidebar-toggle" onclick="toggleSidebar()">
+    <i data-lucide="menu"></i>
+  </button>
+
+  <!-- Overlay for mobile sidebar -->
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <a class="sidebar-logo" onclick="navigateTo('homepage'); return false;" href="#">
+        <i data-lucide="compass"></i>
+        <span>SafariLink</span>
+      </a>
+    </div>
+    <nav class="sidebar-nav">
+      <!-- Command Center -->
+      <div class="nav-section">
+        <div class="nav-section-title">Command Center</div>
+        <div class="nav-item active" onclick="switchPage('dashboard')">
+          <i data-lucide="layout-dashboard"></i>
+          Dashboard
+        </div>
+        <div class="nav-item" onclick="switchPage('itinerary')">
+          <i data-lucide="route"></i>
+          Itinerary Builder
+        </div>
+        <div class="nav-item" onclick="switchPage('accommodation')">
+          <i data-lucide="bed-double"></i>
+          Accommodation
+        </div>
+        <div class="nav-item" onclick="switchPage('fleet')">
+          <i data-lucide="car"></i>
+          Safari Fleet
+        </div>
+        <div class="nav-item" onclick="switchPage('guides')">
+          <i data-lucide="badge-check"></i>
+          Guides
+        </div>
+        <div class="nav-item" onclick="switchPage('quotes')">
+          <i data-lucide="file-text"></i>
+          Quotes
+        </div>
+        <div class="nav-item" onclick="switchPage('clients')">
+          <i data-lucide="users"></i>
+          Clients
+        </div>
+      </div>
+      <!-- Operations -->
+      <div class="nav-section">
+        <div class="nav-section-title">Operations</div>
+        <div class="nav-item" onclick="switchPage('messages')">
+          <i data-lucide="message-square"></i>
+          Messages
+        </div>
+        <div class="nav-item" onclick="switchPage('documents')">
+          <i data-lucide="file-text"></i>
+          Documents
+        </div>
+        <div class="nav-item" onclick="switchPage('invoices')">
+          <i data-lucide="credit-card"></i>
+          Invoices
+        </div>
+        <div class="nav-item" onclick="switchPage('tasks')">
+          <i data-lucide="clipboard-list"></i>
+          Tasks
+        </div>
+        <div class="nav-item" onclick="switchPage('favorites')">
+          <i data-lucide="star"></i>
+          Favorites
+        </div>
+      </div>
+      <!-- Analytics & Settings -->
+      <div class="nav-section">
+        <div class="nav-section-title">Analytics & Settings</div>
+        <div class="nav-item" onclick="switchPage('analytics')">
+          <i data-lucide="bar-chart-3"></i>
+          Reports & Analytics
+        </div>
+        <div class="nav-item" onclick="switchPage('company')">
+          <i data-lucide="building-2"></i>
+          Company
+        </div>
+        <div class="nav-item" onclick="switchPage('team')">
+          <i data-lucide="users"></i>
+          Team
+        </div>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+
+    <!-- ==========================================
+         DASHBOARD PAGE
+         ========================================== -->
+    <div id="dashboard-page" class="page active">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Dashboard</div>
+          <div class="page-subtitle">Welcome back, Mathias. Here's your operations overview.</div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="create-btn" onclick="switchPage('itinerary')">
+            <i data-lucide="route"></i> New Itinerary
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <div class="action-btn" onclick="switchPage('itinerary')">
+          <i data-lucide="route"></i>
+          Build Itinerary
+        </div>
+        <div class="action-btn" onclick="switchPage('accommodation')">
+          <i data-lucide="bed-double"></i>
+          Find Hotel
+        </div>
+        <div class="action-btn" onclick="switchPage('fleet')">
+          <i data-lucide="car"></i>
+          Find Vehicle
+        </div>
+        <div class="action-btn" onclick="switchPage('guides')">
+          <i data-lucide="badge-check"></i>
+          Find Guide
+        </div>
+      </div>
+
+      <!-- Performance Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">This Month's Performance</div>
+          <button class="create-btn" style="padding: 6px 14px; font-size: 0.8125rem;" onclick="switchPage('analytics')">
+            <i data-lucide="bar-chart-3"></i> View Full Reports
+          </button>
+        </div>
+        <div class="card-body">
+          <div class="grid-4">
+            <div style="padding: 16px; background: var(--warm-off-white); border-radius: var(--radius-sm); text-align: center;">
+              <div style="font-size: 0.6875rem; color: var(--warm-gray); margin-bottom: 8px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.04em;">Bookings</div>
+              <div style="font-size: 28px; font-weight: 700; color: var(--forest-green);">28</div>
+              <div style="font-size: 0.75rem; color: var(--status-available); margin-top: 4px;">
+                <span style="display:inline-flex; align-items:center; gap:3px;"><i data-lucide="trending-up" style="width:12px;height:12px;"></i> 15% vs last month</span>
+              </div>
+            </div>
+            <div style="padding: 16px; background: var(--warm-off-white); border-radius: var(--radius-sm); text-align: center;">
+              <div style="font-size: 0.6875rem; color: var(--warm-gray); margin-bottom: 8px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.04em;">Supplier Spend</div>
+              <div style="font-size: 28px; font-weight: 700; color: var(--forest-green);">$18.4K</div>
+              <div style="font-size: 0.75rem; color: var(--warm-gray); margin-top: 4px;">Avg $658/booking</div>
+            </div>
+            <div style="padding: 16px; background: var(--warm-off-white); border-radius: var(--radius-sm); text-align: center;">
+              <div style="font-size: 0.6875rem; color: var(--warm-gray); margin-bottom: 8px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.04em;">Active Itineraries</div>
+              <div style="font-size: 28px; font-weight: 700; color: var(--forest-green);">12</div>
+              <div style="font-size: 0.75rem; color: var(--status-available); margin-top: 4px;">
+                <span style="display:inline-flex; align-items:center; gap:3px;"><i data-lucide="trending-up" style="width:12px;height:12px;"></i> 3 new this week</span>
+              </div>
+            </div>
+            <div style="padding: 16px; background: var(--warm-off-white); border-radius: var(--radius-sm); text-align: center;">
+              <div style="font-size: 0.6875rem; color: var(--warm-gray); margin-bottom: 8px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.04em;">Pending Quotes</div>
+              <div style="font-size: 28px; font-weight: 700; color: #C79121;">7</div>
+              <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px;">Requires follow-up</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Recent Activity</div>
+        </div>
+        <div class="card-body">
+          <table>
+            <thead>
+              <tr><th>Action</th><th>Detail</th><th>Date</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>New Booking</td>
+                <td>7-day Serengeti Safari — Johnson Family</td>
+                <td>Sep 4, 2026</td>
+                <td><span class="badge badge-success">Confirmed</span></td>
+              </tr>
+              <tr>
+                <td>Quote Sent</td>
+                <td>3-day Ngorongoro Crater — Smith Group</td>
+                <td>Sep 3, 2026</td>
+                <td><span class="badge badge-pending">Awaiting Response</span></td>
+              </tr>
+              <tr>
+                <td>Guide Assigned</td>
+                <td>David Mwangi → Johnson Family Safari</td>
+                <td>Sep 2, 2026</td>
+                <td><span class="badge badge-info">Assigned</span></td>
+              </tr>
+              <tr>
+                <td>Vehicle Booked</td>
+                <td>Toyota Land Cruiser (TZ-456) → Kim Expedition</td>
+                <td>Sep 1, 2026</td>
+                <td><span class="badge badge-success">Ready</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         ITINERARY BUILDER PAGE
+         ========================================== -->
+    <div id="itinerary-page" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Itinerary Builder</div>
+          <div class="page-subtitle">Create and manage safari itineraries</div>
+        </div>
+        <button class="create-btn"><i data-lucide="plus"></i> New Itinerary</button>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Active Itineraries</div>
+        </div>
+        <div class="card-body">
+          <table>
+            <thead>
+              <tr><th>Name</th><th>Client</th><th>Duration</th><th>Start Date</th><th>Status</th><th></th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:600;">Serengeti Explorer</td>
+                <td>Johnson Family</td>
+                <td>7 Days</td>
+                <td>Oct 12, 2026</td>
+                <td><span class="badge badge-success">Confirmed</span></td>
+                <td><button class="create-btn" style="padding:4px 12px;font-size:0.75rem;">View</button></td>
+              </tr>
+              <tr>
+                <td style="font-weight:600;">Ngorongoro Short Safari</td>
+                <td>Smith Group</td>
+                <td>3 Days</td>
+                <td>Oct 18, 2026</td>
+                <td><span class="badge badge-warning">Draft</span></td>
+                <td><button class="create-btn" style="padding:4px 12px;font-size:0.75rem;">View</button></td>
+              </tr>
+              <tr>
+                <td style="font-weight:600;">Kilimanjaro Trek</td>
+                <td>Anderson Couple</td>
+                <td>9 Days</td>
+                <td>Nov 1, 2026</td>
+                <td><span class="badge badge-info">Planning</span></td>
+                <td><button class="create-btn" style="padding:4px 12px;font-size:0.75rem;">View</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         ACCOMMODATION PAGE
+         ========================================== -->
+    <div id="accommodation-page" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Accommodation</div>
+          <div class="page-subtitle">Browse and manage partner lodges and camps</div>
+        </div>
+        <button class="create-btn"><i data-lucide="plus"></i> Add Property</button>
+      </div>
+      <div class="card" style="padding:16px 20px;margin-bottom:20px;">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+          <div class="form-group" style="flex:1;min-width:160px;margin-bottom:0;">
+            <label>Search</label>
+            <input type="text" placeholder="Property name or location...">
+          </div>
+          <div class="form-group" style="min-width:140px;margin-bottom:0;">
+            <label>Type</label>
+            <select><option>All Types</option><option>Lodge</option><option>Tented Camp</option><option>Hotel</option></select>
+          </div>
+          <button class="create-btn">Search</button>
+        </div>
+      </div>
+      <div class="grid-3">
+        <div class="card" style="overflow:hidden;">
+          <div style="height:160px;background:var(--warm-off-white);display:flex;align-items:center;justify-content:center;color:var(--warm-gray);">
+            <i data-lucide="image" style="width:48px;height:48px;"></i>
+          </div>
+          <div style="padding:16px;">
+            <div style="font-weight:600;font-size:1rem;">Serengeti Safari Lodge</div>
+            <div style="font-size:0.8125rem;color:var(--text-secondary);margin:4px 0;">Central Serengeti, Tanzania</div>
+            <div style="display:flex;gap:8px;margin-top:8px;">
+              <span class="badge badge-success">4.8 ★</span>
+              <span style="font-size:0.8125rem;color:var(--text-secondary);">From $320/night</span>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="overflow:hidden;">
+          <div style="height:160px;background:var(--warm-off-white);display:flex;align-items:center;justify-content:center;color:var(--warm-gray);">
+            <i data-lucide="image" style="width:48px;height:48px;"></i>
+          </div>
+          <div style="padding:16px;">
+            <div style="font-weight:600;font-size:1rem;">Ngorongoro Crater Camp</div>
+            <div style="font-size:0.8125rem;color:var(--text-secondary);margin:4px 0;">Ngorongoro, Tanzania</div>
+            <div style="display:flex;gap:8px;margin-top:8px;">
+              <span class="badge badge-success">4.9 ★</span>
+              <span style="font-size:0.8125rem;color:var(--text-secondary);">From $450/night</span>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="overflow:hidden;">
+          <div style="height:160px;background:var(--warm-off-white);display:flex;align-items:center;justify-content:center;color:var(--warm-gray);">
+            <i data-lucide="image" style="width:48px;height:48px;"></i>
+          </div>
+          <div style="padding:16px;">
+            <div style="font-weight:600;font-size:1rem;">Tarangire River Camp</div>
+            <div style="font-size:0.8125rem;color:var(--text-secondary);margin:4px 0;">Tarangire, Tanzania</div>
+            <div style="display:flex;gap:8px;margin-top:8px;">
+              <span class="badge badge-success">4.7 ★</span>
+              <span style="font-size:0.8125rem;color:var(--text-secondary);">From $280/night</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         SAFARI FLEET PAGE
+         ========================================== -->
+    <div id="fleet-page" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Safari Fleet</div>
+          <div class="page-subtitle">Manage vehicles assigned to safaris</div>
+        </div>
+        <button class="create-btn"><i data-lucide="plus"></i> Add Vehicle</button>
+      </div>
+      <div class="fleet-grid" id="fleetGrid"></div>
+    </div>
+
+    <!-- ==========================================
+         GUIDES PAGE
+         ========================================== -->
+    <div id="guides-page" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Professional Guides</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span style="font-size:13px;color:var(--text-secondary);" id="guideCount">Showing 10 guides</span>
+          <button class="create-btn"><i data-lucide="plus"></i> Add Guide</button>
+        </div>
+      </div>
+      <div class="card" style="padding:16px 20px;margin-bottom:20px;">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+          <div class="form-group" style="flex:1;min-width:160px;margin-bottom:0;">
+            <label>Search</label>
+            <input type="text" placeholder="Guide name or specialty...">
+          </div>
+          <div class="form-group" style="min-width:140px;margin-bottom:0;">
+            <label>Language</label>
+            <select><option>All Languages</option><option>English</option><option>Swahili</option><option>French</option><option>German</option></select>
+          </div>
+          <button class="create-btn">Filter</button>
+        </div>
+      </div>
+      <div class="guides-grid" id="guidesGrid"></div>
+    </div>
+
+    <!-- ==========================================
+         QUOTES PAGE
+         ========================================== -->
+    <div id="quotes-page" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Quotes</div>
+          <div class="page-subtitle">Manage client quotes and proposals</div>
+        </div>
+        <button class="create-btn"><i data-lucide="plus"></i> New Quote</button>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <table>
+            <thead>
+              <tr><th>Quote #</th><th>Client</th><th>Itinerary</th><th>Amount</th><th>Date</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:600;">Q-2026-042</td>
+                <td>Johnson Family</td>
+                <td>Serengeti Explorer</td>
+                <td>$4,200</td>
+                <td>Sep 4, 2026</td>
+                <td><span class="badge badge-success">Accepted</span></td>
+              </tr>
+              <tr>
+                <td style="font-weight:600;">Q-2026-041</td>
+                <td>Smith Group</td>
+                <td>Ngorongoro Short Safari</td>
+                <td>$1,850</td>
+                <td>Sep 3, 2026</td>
+                <td><span class="badge badge-pending">Sent</span></td>
+              </tr>
+              <tr>
+                <td style="font-weight:600;">Q-2026-040</td>
+                <td>Anderson Couple</td>
+                <td>Kilimanjaro Trek</td>
+                <td>$6,800</td>
+                <td>Sep 1, 2026</td>
+                <td><span class="badge badge-info">Draft</span></td>
+              </tr>
+              <tr>
+                <td style="font-weight:600;">Q-2026-039</td>
+                <td>Kim Expedition</td>
+                <td>Tarangire Day Trip</td>
+                <td>$1,600</td>
+                <td>Aug 28, 2026</td>
+                <td><span class="badge badge-success">Accepted</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         CLIENTS PAGE
+         ========================================== -->
+    <div id="clients-page" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Clients</div>
+          <div class="page-subtitle">Manage your client database</div>
+        </div>
+        <button class="create-btn"><i data-lucide="user-plus"></i> Add Client</button>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <table>
+            <thead>
+              <tr><th>Name</th><th>Email</th><th>Phone</th><th>Country</th><th>Bookings</th><th>Total Spent</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:600;">Michael Johnson</td>
+                <td>mjohnson@email.com</td>
+                <td>+1 212-555-0182</td>
+                <td>United States</td>
+                <td>3</td>
+                <td>$12,400</td>
+              </tr>
+              <tr>
+                <td style="font-weight:600;">Sarah Smith</td>
+                <td>s.smith@email.com</td>
+                <td>+44 7700-900123</td>
+                <td>United Kingdom</td>
+                <td>1</td>
+                <td>$1,850</td>
+              </tr>
+              <tr>
+                <td style="font-weight:600;">Henrik Anderson</td>
+                <td>h.anderson@email.com</td>
+                <td>+46 70-123 45 67</td>
+                <td>Sweden</td>
+                <td>2</td>
+                <td>$9,200</td>
+              </tr>
+              <tr>
+                <td style="font-weight:600;">Ji-hyun Kim</td>
+                <td>jh.kim@email.com</td>
+                <td>+82 10-2345-6789</td>
+                <td>South Korea</td>
+                <td>1</td>
+                <td>$1,600</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         MESSAGES PAGE
+         ========================================== -->
+    <div id="messages-page" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Messages</div>
+          <div class="page-subtitle">Client and supplier communications</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Johnson Family — Serengeti Explorer</div>
+        </div>
+        <div class="card-body">
+          <div class="message-thread">
+            <div class="message-bubble message-incoming">
+              <div style="font-weight:600;font-size:0.75rem;color:var(--text-secondary);margin-bottom:4px;">Michael Johnson — Sep 3</div>
+              Hi Mathias, we're excited about the safari! Could we add an extra night at the Serengeti Lodge?
+            </div>
+            <div class="message-bubble message-outgoing">
+              <div style="font-weight:600;font-size:0.75rem;opacity:0.8;margin-bottom:4px;">You — Sep 3</div>
+              Absolutely Michael! I'll check availability and adjust the itinerary. Should be no problem — I'll confirm by tomorrow.
+            </div>
+            <div class="message-bubble message-incoming">
+              <div style="font-weight:600;font-size:0.75rem;color:var(--text-secondary);margin-bottom:4px;">Michael Johnson — Sep 4</div>
+              Perfect, thank you! Also, do you have vegetarian meal options for my daughter?
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         DOCUMENTS PAGE
+         ========================================== -->
+    <div id="documents-page" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Documents</div>
+          <div class="page-subtitle">Itineraries, invoices, permits, and contracts</div>
+        </div>
+        <button class="create-btn"><i data-lucide="upload"></i> Upload</button>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <table>
+            <thead>
+              <tr><th>Document</th><th>Type</th><th>Related To</th><th>Uploaded</th><th></th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:600;"><i data-lucide="file-text" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i> Serengeti Explorer — Final Itinerary</td>
+                <td>Itinerary</td>
+                <td>Johnson Family</td>
+                <td>Sep 4, 2026</td>
+                <td><button class="create-btn" style="padding:4px 12px;font-size:0.75rem;">Download</button></td>
+              </tr>
+              <tr>
+                <td style="font-weight:600;"><i data-lucide="file-text" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i> 2026 Q3 Supplier Contracts</td>
+                <td>Contract</td>
+                <td>—</td>
+                <td>Aug 15, 2026</td>
+                <td><button class="create-btn" style="padding:4px 12px;font-size:0.75rem;">Download</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         INVOICES PAGE
+         ========================================== -->
+    <div id="invoices-page" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Invoices</div>
+          <div class="page-subtitle">Track payments and billing</div>
+        </div>
+        <button class="create-btn"><i data-lucide="plus"></i> New Invoice</button>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <table>
+            <thead>
+              <tr><th>Invoice #</th><th>Client</th><th>Amount</th><th>Due Date</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:600;">INV-2026-089</td>
+                <td>Johnson Family</td>
+                <td>$4,200</td>
+                <td>Oct 5, 2026</td>
+                <td><span class="badge badge-success">Paid</span></td>
+              </tr>
+              <tr>
+                <td style="font-weight:600;">INV-2026-088</td>
+                <td>Smith Group</td>
+                <td>$1,850</td>
+                <td>Oct 10, 2026</td>
+                <td><span class="badge badge-warning">Pending</span></td>
+              </tr>
+              <tr>
+                <td style="font-weight:600;">INV-2026-087</td>
+                <td>Kim Expedition</td>
+                <td>$1,600</td>
+                <td>Sep 20, 2026</td>
+                <td><span class="badge badge-success">Paid</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         TASKS PAGE
+         ========================================== -->
+    <div id="tasks-page" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Tasks</div>
+          <div class="page-subtitle">Track to-dos and deadlines</div>
+        </div>
+        <button class="create-btn"><i data-lucide="plus"></i> New Task</button>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <table>
+            <thead>
+              <tr><th>Task</th><th>Assigned To</th><th>Priority</th><th>Due</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:600;">Confirm Serengeti Lodge extra night</td>
+                <td>Mathias</td>
+                <td><span class="badge badge-danger">High</span></td>
+                <td>Sep 6, 2026</td>
+                <td><span class="badge badge-pending">In Progress</span></td>
+              </tr>
+              <tr>
+                <td style="font-weight:600;">Send final quote to Smith Group</td>
+                <td>Mathias</td>
+                <td><span class="badge badge-warning">Medium</span></td>
+                <td>Sep 5, 2026</td>
+                <td><span class="badge badge-pending">In Progress</span></td>
+              </tr>
+              <tr>
+                <td style="font-weight:600;">Vehicle inspection — TZ-456</td>
+                <td>James</td>
+                <td><span class="badge badge-success">Low</span></td>
+                <td>Sep 8, 2026</td>
+                <td><span class="badge badge-info">Pending</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         FAVORITES PAGE
+         ========================================== -->
+    <div id="favorites-page" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Favorites</div>
+          <div class="page-subtitle">Saved lodges, vehicles, and guides</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body" style="text-align:center;padding:60px 20px;color:var(--text-secondary);">
+          <i data-lucide="star" style="width:48px;height:48px;margin-bottom:12px;color:var(--warm-sand);"></i>
+          <div style="font-weight:600;font-size:1rem;">Your favorites will appear here</div>
+          <div style="font-size:0.875rem;margin-top:4px;">Save lodges, vehicles, or guides by clicking the ♡ icon</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         REPORTS & ANALYTICS PAGE
+         ========================================== -->
+    <div id="analytics-page" class="page">
+      <div class="page-header">
+        <div class="page-title">Reports & Analytics</div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Business Overview</div>
+        </div>
+        <div class="card-body">
+          <div class="grid-4">
+            <div style="padding: 16px; background: var(--warm-off-white); border-radius: var(--radius-sm); text-align: center;">
+              <div style="font-size: 0.6875rem; color: var(--warm-gray); margin-bottom: 8px; text-transform: uppercase; font-weight: 700;">Bookings</div>
+              <div style="font-size: 28px; font-weight: 700; color: var(--forest-green);">28</div>
+              <div style="font-size: 0.75rem; color: var(--status-available); margin-top: 4px;">
+                <span style="display:inline-flex; align-items:center; gap:3px;"><i data-lucide="trending-up" style="width:12px;height:12px;"></i> 15% vs last month</span>
+              </div>
+            </div>
+            <div style="padding: 16px; background: var(--warm-off-white); border-radius: var(--radius-sm); text-align: center;">
+              <div style="font-size: 0.6875rem; color: var(--warm-gray); margin-bottom: 8px; text-transform: uppercase; font-weight: 700;">Supplier Spend</div>
+              <div style="font-size: 28px; font-weight: 700; color: var(--forest-green);">$18.4K</div>
+              <div style="font-size: 0.75rem; color: var(--warm-gray); margin-top: 4px;">Avg $658/booking</div>
+            </div>
+            <div style="padding: 16px; background: var(--warm-off-white); border-radius: var(--radius-sm); text-align: center;">
+              <div style="font-size: 0.6875rem; color: var(--warm-gray); margin-bottom: 8px; text-transform: uppercase; font-weight: 700;">Revenue</div>
+              <div style="font-size: 28px; font-weight: 700; color: var(--forest-green);">$24.6K</div>
+              <div style="font-size: 0.75rem; color: var(--status-available); margin-top: 4px;">
+                <span style="display:inline-flex; align-items:center; gap:3px;"><i data-lucide="trending-up" style="width:12px;height:12px;"></i> 22% vs last month</span>
+              </div>
+            </div>
+            <div style="padding: 16px; background: var(--warm-off-white); border-radius: var(--radius-sm); text-align: center;">
+              <div style="font-size: 0.6875rem; color: var(--warm-gray); margin-bottom: 8px; text-transform: uppercase; font-weight: 700;">Margin</div>
+              <div style="font-size: 28px; font-weight: 700; color: var(--forest-green);">25.2%</div>
+              <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px;">Industry avg: 22%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         COMPANY PAGE
+         ========================================== -->
+    <div id="company-page" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Company</div>
+          <div class="page-subtitle">SafariLink business details</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Company Information</div></div>
+        <div class="card-body">
+          <div class="grid-2">
+            <div class="form-group"><label>Company Name</label><input type="text" value="SafariLink Expeditions" readonly></div>
+            <div class="form-group"><label>Registration #</label><input type="text" value="TZ-2018-0042-SAF" readonly></div>
+            <div class="form-group"><label>Email</label><input type="text" value="info@safarilink.co.tz" readonly></div>
+            <div class="form-group"><label>Phone</label><input type="text" value="+255 767 123 456" readonly></div>
+            <div class="form-group" style="grid-column:span 2;"><label>Address</label>
+              <input type="text" value="Plot 42, Boma Road, Arusha, Tanzania" readonly>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         TEAM PAGE
+         ========================================== -->
+    <div id="team-page" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Team</div>
+          <div class="page-subtitle">SafariLink staff and guides</div>
+        </div>
+        <button class="create-btn"><i data-lucide="user-plus"></i> Add Member</button>
+      </div>
+      <div class="grid-3">
+        <div class="card" style="text-align:center;padding:24px;">
+          <div style="width:64px;height:64px;border-radius:50%;background:var(--warm-off-white);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;">
+            <i data-lucide="user" style="width:32px;height:32px;color:var(--warm-gray);"></i>
+          </div>
+          <div style="font-weight:600;">Mathias K.</div>
+          <div style="font-size:0.8125rem;color:var(--text-secondary);">Operations Manager</div>
+          <span class="badge badge-success" style="margin-top:8px;">Active</span>
+        </div>
+        <div class="card" style="text-align:center;padding:24px;">
+          <div style="width:64px;height:64px;border-radius:50%;background:var(--warm-off-white);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;">
+            <i data-lucide="user" style="width:32px;height:32px;color:var(--warm-gray);"></i>
+          </div>
+          <div style="font-weight:600;">James O.</div>
+          <div style="font-size:0.8125rem;color:var(--text-secondary);">Fleet Manager</div>
+          <span class="badge badge-success" style="margin-top:8px;">Active</span>
+        </div>
+        <div class="card" style="text-align:center;padding:24px;">
+          <div style="width:64px;height:64px;border-radius:50%;background:var(--warm-off-white);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;">
+            <i data-lucide="user" style="width:32px;height:32px;color:var(--warm-gray);"></i>
+          </div>
+          <div style="font-weight:600;">Grace M.</div>
+          <div style="font-size:0.8125rem;color:var(--text-secondary);">Bookings Coordinator</div>
+          <span class="badge badge-success" style="margin-top:8px;">Active</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /dashboard-view -->
+
+<!-- ============================================
+     SCRIPTS
+     ============================================ -->
+<script>
+(function() {
+
+  /* ============================================
+     NAVIGATE TO — switches between homepage & dashboard
+     ============================================ */
+  window.navigateTo = function(view) {
+    var homepage = document.getElementById('homepage-view');
+    var dashboard = document.getElementById('dashboard-view');
+
+    if (view === 'homepage') {
+      dashboard.style.display = 'none';
+      homepage.style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (view === 'dashboard') {
+      homepage.style.display = 'none';
+      dashboard.style.display = 'flex';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      refreshIcons();
+    }
+  };
+
+  /* ============================================
+     PAGE SWITCHING — Dashboard internal pages
+     ============================================ */
+  window.switchPage = function(page) {
+    var homepage = document.getElementById('homepage-view');
+    var dashboard = document.getElementById('dashboard-view');
+    homepage.style.display = 'none';
+    dashboard.style.display = 'flex';
+
+    var pages = document.querySelectorAll('.page');
+    pages.forEach(function(p) { p.classList.remove('active'); });
+
+    var targetPage = document.getElementById(page + '-page');
+    if (targetPage) { targetPage.classList.add('active'); }
+
+    var navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(function(item) { item.classList.remove('active'); });
+
+    navItems.forEach(function(item) {
+      var text = item.textContent.trim().toLowerCase();
+      if (text === page.toLowerCase() ||
+          (page === 'dashboard' && text === 'dashboard') ||
+          (page === 'itinerary' && text === 'itinerary builder') ||
+          (page === 'accommodation' && text === 'accommodation') ||
+          (page === 'fleet' && text === 'safari fleet') ||
+          (page === 'guides' && text === 'guides') ||
+          (page === 'quotes' && text === 'quotes') ||
+          (page === 'clients' && text === 'clients') ||
+          (page === 'messages' && text === 'messages') ||
+          (page === 'documents' && text === 'documents') ||
+          (page === 'invoices' && text === 'invoices') ||
+          (page === 'tasks' && text === 'tasks') ||
+          (page === 'favorites' && text === 'favorites') ||
+          (page === 'analytics' && text === 'reports & analytics') ||
+          (page === 'company' && text === 'company') ||
+          (page === 'team' && text === 'team')) {
+        item.classList.add('active');
+      }
+    });
+
+    closeSidebar();
+    refreshIcons();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  /* ============================================
+     SIDEBAR TOGGLE — Mobile
+     ============================================ */
+  window.toggleSidebar = function() {
+    var sidebar = document.getElementById('sidebar');
+    var overlay = document.getElementById('sidebar-overlay');
+    sidebar.classList.toggle('mobile-open');
+    overlay.classList.toggle('active');
+  };
+
+  window.closeSidebar = function() {
+    var sidebar = document.getElementById('sidebar');
+    var overlay = document.getElementById('sidebar-overlay');
+    sidebar.classList.remove('mobile-open');
+    overlay.classList.remove('active');
+  };
+
+  /* ============================================
+     TOAST UTILITY
+     ============================================ */
+  function showToast(message) {
+    var existing = document.querySelector('.toast');
+    if (existing) existing.remove();
+    var toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(function() { toast.remove(); }, 3000);
+  }
+  window.showFleetToast = showToast;
+  window.showGuideToast = showToast;
+
+  /* ============================================
+     FLEET DATA & RENDERING
+     ============================================ */
+  var fleet = [
+    { id: 'tz-001', name: 'Toyota Land Cruiser 79', type: 'Extended Safari', seats: 7, price: 180, status: 'available', image: '' },
+    { id: 'tz-002', name: 'Toyota Land Cruiser 76', type: 'Standard Safari', seats: 5, price: 150, status: 'available', image: '' },
+    { id: 'tz-003', name: 'Toyota Hiace 4x4', type: 'Group Transfer', seats: 10, price: 200, status: 'booked', image: '' },
+    { id: 'tz-004', name: 'Land Rover Defender', type: 'Luxury Safari', seats: 5, price: 250, status: 'available', image: '' },
+    { id: 'tz-005', name: 'Toyota Land Cruiser 79', type: 'Extended Safari', seats: 7, price: 180, status: 'maintenance', image: '' },
+    { id: 'tz-006', name: 'Nissan Patrol', type: 'Standard Safari', seats: 5, price: 160, status: 'available', image: '' }
+  ];
+
+  function fleetRenderCards(data) {
+    var grid = document.getElementById('fleetGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    data.forEach(function(v) {
+      var statusColors = { available: 'badge-success', booked: 'badge-warning', maintenance: 'badge-danger' };
+      var statusClass = statusColors[v.status] || 'badge-info';
+      var statusLabel = v.status.charAt(0).toUpperCase() + v.status.slice(1);
+
+      var card = document.createElement('div');
+      card.className = 'fleet-card';
+      card.innerHTML =
+        '<button class="fleet-fav-btn" onclick="fleetToggleFav(this)">♡</button>' +
+        '<div class="fleet-card-img" style="background:var(--warm-off-white);display:flex;align-items:center;justify-content:center;">' +
+          '<i data-lucide="car" style="width:56px;height:56px;color:var(--warm-gray);"></i>' +
+        '</div>' +
+        '<div class="fleet-card-body">' +
+          '<div class="fleet-card-title">' + v.name + '</div>' +
+          '<div class="fleet-card-type">' + v.type + '</div>' +
+          '<div class="fleet-card-stats">' +
+            '<span><i data-lucide="users"></i> ' + v.seats + ' seats</span>' +
+            '<span><i data-lucide="dollar-sign"></i> $' + v.price + '/day</span>' +
+          '</div>' +
+          '<span class="badge ' + statusClass + '">' + statusLabel + '</span>' +
+        '</div>' +
+        '<div class="fleet-card-footer">' +
+          '<button class="fleet-btn-view" onclick="fleetAddToItinerary(\'' + v.id + '\')">Add to Itinerary</button>' +
+          '<button class="fleet-btn-lease">Details</button>' +
+        '</div>';
+
+      grid.appendChild(card);
+    });
+
+    refreshIcons();
+  }
+
+  window.fleetAddToItinerary = function(id) {
+    var v = fleet.find(function(x) { return x.id === id; });
+    showToast((v ? v.name : 'Vehicle') + ' added to itinerary');
+  };
+
+  window.fleetToggleFav = function(btn) {
+    if (btn.textContent === '♡') {
+      btn.textContent = '♥';
+      btn.style.color = '#e74c3c';
+      showToast('Saved to favorites');
+    } else {
+      btn.textContent = '♡';
+      btn.style.color = '';
+      showToast('Removed from favorites');
+    }
+  };
+
+  /* ============================================
+     GUIDES DATA & RENDERING
+     ============================================ */
+  var guides = [
+    { id: 'g-001', name: 'David Mwangi', specialty: 'Big Cats & Predators', language: 'English, Swahili', rating: 4.9, experience: '12 years' },
+    { id: 'g-002', name: 'Amina Hassan', specialty: 'Birding & Photography', language: 'English, French, Swahili', rating: 4.8, experience: '8 years' },
+    { id: 'g-003', name: 'Joseph Tarimo', specialty: 'Cultural Tours', language: 'English, Swahili, Maasai', rating: 4.7, experience: '15 years' },
+    { id: 'g-004', name: 'Grace Kimaro', specialty: 'Botany & Ecology', language: 'English, German, Swahili', rating: 4.9, experience: '10 years' },
+    { id: 'g-005', name: 'Peter Ole-Saitoti', specialty: 'Walking Safaris', language: 'English, Swahili, Maasai', rating: 4.6, experience: '20 years' },
+    { id: 'g-006', name: 'Fatima Juma', specialty: 'Photography Safaris', language: 'English, Arabic, Swahili', rating: 4.8, experience: '6 years' }
+  ];
+
+  function guideRenderCards(data) {
+    var grid = document.getElementById('guidesGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    data.forEach(function(g) {
+      var stars = '';
+      for (var i = 0; i < Math.floor(g.rating); i++) { stars += '★'; }
+      if (g.rating % 1 >= 0.5) stars += '½';
+
+      var card = document.createElement('div');
+      card.className = 'guide-card';
+      card.innerHTML =
+        '<button class="fleet-fav-btn" onclick="guideToggleFav(this)">♡</button>' +
+        '<div class="guide-card-img" style="background:var(--warm-off-white);display:flex;align-items:center;justify-content:center;">' +
+          '<i data-lucide="badge-check" style="width:48px;height:48px;color:var(--warm-gray);"></i>' +
+        '</div>' +
+        '<div class="guide-card-body">' +
+          '<div class="guide-card-name">' + g.name + '</div>' +
+          '<div class="guide-card-spec">' + g.specialty + '</div>' +
+          '<div class="guide-card-rating">' + stars + ' <span style="color:var(--text-secondary);font-size:0.8125rem;">' + g.rating + '</span></div>' +
+          '<div style="font-size:0.8125rem;color:var(--text-secondary);">' + g.language + '</div>' +
+          '<div style="font-size:0.75rem;color:var(--warm-gray);">' + g.experience + ' experience</div>' +
+        '</div>' +
+        '<div class="guide-card-footer">' +
+          '<button class="fleet-btn-view" onclick="guideAddToItinerary(\'' + g.id + '\')">Add to Itinerary</button>' +
+          '<button class="fleet-btn-lease">Profile</button>' +
+        '</div>';
+
+      grid.appendChild(card);
+    });
+
+    var countEl = document.getElementById('guideCount');
+    if (countEl) countEl.textContent = 'Showing ' + data.length + ' guides';
+
+    refreshIcons();
+  }
+
+  window.guideAddToItinerary = function(id) {
+    var g = guides.find(function(x) { return x.id === id; });
+    showToast((g ? g.name : 'Guide') + ' added to itinerary');
+  };
+
+  window.guideToggleFav = function(btn) {
+    if (btn.textContent === '♡') {
+      btn.textContent = '♥';
+      btn.style.color = '#e74c3c';
+      showToast('Saved to favorites');
+    } else {
+      btn.textContent = '♡';
+      btn.style.color = '';
+      showToast('Removed from favorites');
+    }
+  };
+
+  /* ============================================
+     LUCIDE ICONS REFRESH
+     ============================================ */
+  function refreshIcons() {
+    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+      lucide.createIcons();
+    }
+  }
+  window.refreshIcons = refreshIcons;
+
+  /* ============================================
+     INITIAL RENDER
+     ============================================ */
+  if (document.getElementById('fleetGrid')) {
+    fleetRenderCards(fleet);
+  }
+  if (document.getElementById('guidesGrid')) {
+    guideRenderCards(guides);
+  }
+
+  /* Show dashboard by default */
+  var dashboardEl = document.getElementById('dashboard-view');
+  if (dashboardEl) {
+    dashboardEl.style.display = 'flex';
+    refreshIcons();
+  }
+
+})();
+</script>
+
+</body>
+</html>
