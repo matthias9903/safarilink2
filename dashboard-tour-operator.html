@@ -551,7 +551,26 @@ tr:hover td { background: rgba(245,240,232,0.5); }
 }
 </style>
 </head>
-<body>
+
+<script>
+  (function () {
+    const user = JSON.parse(sessionStorage.getItem('safariLinkUser') || 'null');
+    if (!user) { window.location.href = 'login.html'; return; }
+
+    const rolePageMap = {
+      'dashboard-fleet.html':            'fleet-owner',
+      'dashboard-accommodation.html':    'accommodation-provider',
+      'dashboard-tour-operator.html':    'tour-operator',
+      'dashboard-guide.html':            'guide'
+    };
+    const currentPage = window.location.pathname.split('/').pop();
+    if (rolePageMap[currentPage] && user.role !== rolePageMap[currentPage]) {
+      window.location.href = 'login.html';
+    }
+  })();
+</script>
+   
+   <body>
 
 <!-- ============================================
      HOMEPAGE VIEW (placeholder for linking)
