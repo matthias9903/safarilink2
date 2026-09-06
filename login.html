@@ -221,25 +221,6 @@
   }
 </style>
 </head>
-
- <script>
-  (function () {
-    const user = JSON.parse(sessionStorage.getItem('safariLinkUser') || 'null');
-    if (!user) { window.location.href = 'login.html'; return; }
-
-    const rolePageMap = {
-      'dashboard-fleet.html':            'fleet-owner',
-      'dashboard-accommodation.html':    'accommodation-provider',
-      'dashboard-tour-operator.html':    'tour-operator',
-      'dashboard-guide.html':            'guide'
-    };
-    const currentPage = window.location.pathname.split('/').pop();
-    if (rolePageMap[currentPage] && user.role !== rolePageMap[currentPage]) {
-      window.location.href = 'login.html';
-    }
-  })();
-</script> 
-  
   <body>
 
 <div class="auth-wrapper">
