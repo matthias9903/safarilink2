@@ -127,11 +127,13 @@
   }
 
   /* ── ROLE SELECTOR ── */
-  .role-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 24px; }
-  .role-option {
+    .role-selector { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; justify-content: center; }
+    .role-option {
+    flex: 0 0 calc((100% - 16px) / 3);
     border: 1.5px solid var(--border-light); border-radius: var(--radius-md);
     padding: 14px 8px; text-align: center; cursor: pointer; transition: 0.15s;
     background: #fff; display: flex; flex-direction: column; align-items: center; gap: 6px;
+    font-size: 0.78rem; white-space: nowrap;
   }
   .role-option:hover { border-color: var(--accent-green); background: var(--warm-off-white); }
   .role-option.selected {
@@ -153,8 +155,8 @@
     position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
     width: 18px; height: 18px; color: var(--warm-gray); pointer-events: none;
   }
-  .form-group input {
-    width: 100%; padding: 12px 14px 12px 42px; border: 1px solid var(--border-light);
+      .form-group input {
+    width: 100%; padding: 12px 44px 12px 42px; border: 1px solid var(--border-light);
     border-radius: var(--radius-sm); font-size: 0.9rem; font-family: inherit;
     color: var(--charcoal); background: #fff; transition: border-color 0.2s;
   }
@@ -162,16 +164,18 @@
     outline: none; border-color: var(--forest-green);
     box-shadow: 0 0 0 3px rgba(26,90,58,0.1);
   }
-  .password-toggle {
-    position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+        .password-toggle {
+    position: absolute; right: 8px; top: 70%; transform: translateY(-50%);
     background: none; border: none; cursor: pointer; color: var(--warm-gray);
-    display: flex; align-items: center;
+    display: flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px; padding: 0;
   }
-  .password-toggle i { width: 18px; height: 18px; position: static; transform: none; }
-
-  .form-row-between {
-    display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;
+      .form-row-between {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 24px; gap: 10px; flex-wrap: wrap;
   }
+  .form-row-between .checkbox-wrap { flex-shrink: 0; }
+  .form-row-between .forgot-link { flex-shrink: 0; white-space: nowrap; }
   .checkbox-wrap {
     display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.82rem;
     color: var(--charcoal);
@@ -192,12 +196,7 @@
   .btn-login:active { transform: scale(0.98); }
   .btn-login i { width: 18px; height: 18px; }
 
-  .auth-divider {
-    display: flex; align-items: center; gap: 14px; margin: 28px 0; font-size: 0.78rem; color: var(--warm-gray);
-  }
-  .auth-divider::before, .auth-divider::after {
-    content: ''; flex: 1; height: 1px; background: var(--border-light);
-  }
+  .auth-divider { display: none; }
 
   .auth-switch {
     text-align: center; font-size: 0.85rem; color: var(--warm-gray); margin-top: 24px;
@@ -253,14 +252,14 @@
           <div class="auth-feature-icon"><i data-lucide="user-check"></i></div>
           <div>
             <h4>Service Providers</h4>
-            <p>Manage guide schedules, service offerings, ratings and operator requests.</p>
+            <p>Manage operator requests, guide schedules, ratings and other service offerings.</p>
           </div>
         </div>
       </div>
     </div>
     <div class="auth-visual-footer">
       <span>© 2026 SafariLink Tanzania</span>
-      <span>app.safarilink.co.tz</span>
+      <span>www.safarilink.co.tz</span>
     </div>
   </div>
 
@@ -273,9 +272,9 @@
         <div class="logo-text">Safari<span>Link</span></div>
       </div>
 
-      <a href="#" class="auth-back" onclick="window.history.back(); return false;">
-        <i data-lucide="arrow-left"></i> Back to homepage
-      </a>
+      <a href="index.html" class="auth-back">
+  <i data-lucide="arrow-left"></i> Back to home page
+</a>
 
       <h2>Sign in to your dashboard</h2>
       <p>Enter your credentials to access your partner portal.</p>
@@ -291,11 +290,18 @@
           <i data-lucide="car"></i>
           <span>Fleet Owner</span>
         </div>
-        <div class="role-option" data-role="service">
-          <i data-lucide="compass"></i>
-          <span>Service Provider</span>
+                <div class="role-option" data-role="guide">
+  <i data-lucide="compass"></i>
+  <span>Guide</span>
         </div>
-      </div>
+        <div class="role-option" data-role="tour-operator">
+  <i data-lucide="briefcase"></i>
+  <span>Tour Operator</span>
+        </div>
+        <div class="role-option" data-role="service-offering">
+  <i data-lucide="wrench"></i>
+  <span>Service Offering</span>
+        </div>
 
       <!-- Error banner -->
       <div class="auth-error" id="loginError">
@@ -389,10 +395,12 @@
     }
 
     /* Redirect to the appropriate dashboard based on selected role */
-    var dashboards = {
+        var dashboards = {
       accommodation: 'accommodation-dashboard.html',
       fleet: 'fleet-dashboard.html',
-      service: 'service-provider-dashboard.html'
+      guide: 'guide-dashboard.html',
+      'tour-operator': 'tour-operator-dashboard.html',
+      'service-offering': 'service-offering-dashboard.html'
     };
     window.location.href = dashboards[selectedRole];
     return false;
