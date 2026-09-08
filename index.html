@@ -692,16 +692,17 @@
 
     /* ── Trust Grid ── */
   .trust-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 24px;
-    margin: 40px 0;
-    flex-wrap: nowrap; 
-  }
-  .trust-item {
-    text-align: center;
-    padding: 24px 16px;
-  }
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 24px;
+  margin: 40px 0;
+}
+.trust-item {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  padding: 24px 16px;
+}
   .trust-item-icon {
     width: 48px;
     height: 48px;
