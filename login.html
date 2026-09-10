@@ -354,57 +354,91 @@
 </div>
 
 <script>
-  lucide.createIcons();
+const API = 'http://localhost:3000';
 
-  /* Role selector */
-  var selectedRole = 'accommodation';
-  document.querySelectorAll('.role-option').forEach(function(opt) {
-    opt.addEventListener('click', function() {
-      document.querySelectorAll('.role-option').forEach(function(o) { o.classList.remove('selected'); });
-      opt.classList.add('selected');
-      selectedRole = opt.dataset.role;
-    });
+/* Role selector — keep existing */
+var selectedRole = 'accommodation';
+document.querySelectorAll('.role-option').forEach(function(opt) {
+  opt.addEventListener('click', function() {
+    document.querySelectorAll('.role-option').forEach(function(o) { o.classList.remove('selected'); });
+    opt.classList.add('selected');
+    selectedRole = opt.dataset.role;
   });
+});
 
-  /* Password toggle */
-  function togglePassword() {
-    var pwd = document.getElementById('password');
-    var icon = document.getElementById('eyeIcon');
-    if (pwd.type === 'password') {
-      pwd.type = 'text';
-      icon.setAttribute('data-lucide', 'eye-off');
-    } else {
-      pwd.type = 'password';
-      icon.setAttribute('data-lucide', 'eye');
-    }
-    lucide.createIcons();
+/* Password toggle — keep existing */
+function togglePassword() {
+  var pwd = document.getElementById('password');
+  var icon = document.getElementById('eyeIcon');
+  if (pwd.type === 'password') {
+    pwd.type = 'text';
+    icon.setAttribute('data-lucide', 'eye-off');
+  } else {
+    pwd.type = 'password';
+    icon.setAttribute('data-lucide', 'eye');
   }
+  lucide.createIcons();
+}
 
-  /* Login handler */
-  function handleLogin(e) {
-    e.preventDefault();
-    var email = document.getElementById('email').value;
-    var password = document.getElementById('password').value;
-    var errorBox = document.getElementById('loginError');
+/* Updated login — calls real backend */
+function handleLogin(e) {
+  e.preventDefault();
+  var email    = document.getElementById('email').value.trim();
+  var password = document.getElementById('password').value;
+  var errorBox = document.getElementById('loginError');
 
-    /* Demo logic — replace with real API call */
-    if (!email || !password || password.length < 6) {
-      errorBox.classList.add('show');
-      lucide.createIcons();
-      return false;
-    }
-
-    /* Redirect to the appropriate dashboard based on selected role */
-        var dashboards = {
-      accommodation: 'accommodation-dashboard.html',
-      fleet: 'fleet-dashboard.html',
-      guide: 'guide-dashboard.html',
-      'tour-operator': 'tour-operator-dashboard.html',
-      'service-offering': 'service-offering-dashboard.html'
-    };
-    window.location.href = dashboards[selectedRole];
+  if (!email || !password) {
+    errorBox.classList.add('show');
+    lucide.createIcons();
     return false;
   }
+
+  var btn = document.querySelector('.btn-login');
+  btn.innerHTML = '<i data-lucide="loader"></i> Signing in...';
+  btn.disabled = true;
+  errorBox.classList.remove('show');
+
+  fetch(API + '/api/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: email, password: password, role: selectedRole })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    if (data.success) {
+      // Store user info
+      localStorage.setItem('safarilink_user', JSON.stringify({
+        email: email, role: data.role, companyName: data.companyName
+      }));
+
+      // Redirect to role-specific dashboard
+      var dashboards = {
+        'accommodation':    'accommodation-dashboard.html',
+        'fleet':            'fleet-dashboard.html',
+        'guide':            'guide-dashboard.html',
+        'tour-operator':    'tour-operator-dashboard.html',
+        'service-offering': 'service-offering-dashboard.html'
+      };
+      window.location.href = dashboards[data.role] || 'accommodation-dashboard.html';
+    } else {
+      errorBox.querySelector('span').textContent = data.error || 'Invalid credentials.';
+      errorBox.classList.add('show');
+      lucide.createIcons();
+    }
+  })
+  .catch(function(err) {
+    errorBox.querySelector('span').textContent = 'Server unreachable. Is the backend running?';
+    errorBox.classList.add('show');
+    lucide.createIcons();
+  })
+  .finally(function() {
+    btn.innerHTML = '<i data-lucide="log-in"></i> Sign in to dashboard';
+    btn.disabled = false;
+    lucide.createIcons();
+  });
+
+  return false;
+}
 </script>
 
 </body>
