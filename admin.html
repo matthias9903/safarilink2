@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SafariLink — Admin Dashboard</title>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <style>
+    :root {
+      --forest: #1a5a3a; --forest-light: #2d7a52; --accent: #3fb983;
+      --bg: #f8f7f4; --charcoal: #2c2c2c; --gray: #a39e95;
+      --pending: #f59e0b; --approved: #10b981; --rejected: #dc2626;
+      --radius: 10px; --shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--charcoal); min-height: 100vh; }
+    .topbar {
+      background: var(--forest); color: #fff; padding: 16px 32px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .topbar h1 { font-size: 1.2rem; display: flex; align-items: center; gap: 10px; }
+    .topbar .logo { background: rgba(255,255,255,0.15); padding: 6px 10px; border-radius: 6px; font-weight: 800; letter-spacing: 0.05em; }
+    .topbar button { background: rgba(255,255,255,0.15); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-family: inherit; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
+    .stat-card { background: #fff; border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
+    .stat-card .num { font-size: 2rem; font-weight: 800; }
+    .stat-card .label { font-size: 0.82rem; color: var(--gray); margin-top: 4px; }
+    .stat-card.pending .num { color: var(--pending); }
+    .stat-card.approved .num { color: var(--approved); }
+    .stat-card.users .num { color: var(--forest); }
+    .filter-bar { display: flex; gap: 8px; margin-bottom: 20px; }
+    .filter-bar button {
+      padding: 8px 16px; border: 1px solid #d4cfc6; border-radius: 20px;
+      background: #fff; cursor: pointer; font-family: inherit; font-size: 0.85rem;
+    }
+    .filter-bar button.active { background: var(--forest); color: #fff; border-color: var(--forest); }
+    .request-card {
+      background: #fff; border-radius: var(--radius); padding: 20px;
+      margin-bottom: 12px; box-shadow: var(--shadow); display: flex;
+      align-items: center; gap: 20px; flex-wrap: wrap;
+    }
+    .request-card .badge {
+      padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;
+      text-transform: uppercase; white-space: nowrap;
+    }
+    .badge.pending { background: #fef3c7; color: #92400e; }
+    .badge.approved { background: #d1fae5; color: #065f46; }
+    .badge.rejected { background: #fee2e2; color: #991b1b; }
+    .request-info { flex: 1; min-width: 200px; }
+    .request-info h3 { font-size: 1rem; margin-bottom: 2px; }
+    .request-info .meta { font-size: 0.8rem; color: var(--gray); }
+    .request-actions { display: flex; gap: 8px; }
+    .btn-approve, .btn-reject {
+      padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer;
+      font-family: inherit; font-size: 0.85rem; font-weight: 600; color: #fff;
+    }
+    .btn-approve { background: var(--approved); }
+    .btn-reject { background: var(--rejected); }
+    .btn-approve:hover, .btn-reject:hover { opacity: 0.9; }
+    .password-reveal {
+      background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px;
+      padding: 8px 14px; font-size: 0.8rem; margin-top: 8px; display: none;
+    }
+    .empty { text-align: center; padding: 60px 20px; color: var(--gray); }
+    @media (max-width: 768px) { .stats { grid-template-columns: 1fr; } .request-card { flex-direction: column; align-items: flex-start; } }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <h1><span class="logo">SL</span> Admin Dashboard</h1>
+    <button onclick="logout()"><i data-lucide="log-out"></i> Logout</button>
+  </div>
+  <div class="container">
+    <!-- Stats -->
+    <div class="stats">
+      <div class="stat-card pending"><div class="num" id="statPending">—</div><div class="label">Pending Requests</div></div>
+      <div class="stat-card approved"><div class="num" id="statApproved">—</div><div class="label">Approved</div></div>
+      <div class="stat-card users"><div class="num" id="statUsers">—</div><div class="label">Active Users</div></div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-bar">
+      <button class="active" data-filter="all">All</button>
+      <button data-filter="pending">Pending</button>
+      <button data-filter="approved">Approved</button>
+      <button data-filter="rejected">Rejected</button>
+    </div>
+
+    <!-- Requests list -->
+    <div id="requestsList"></div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    const API = 'http://localhost:3000';
+    const TOKEN = 'safarilink-admin-2026';
+    const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${TOKEN}` };
+
+    let allRequests = [];
+    let currentFilter = 'all';
+
+    // Protect the page
+    if (!localStorage.getItem('admin_auth')) {
+      const pw = prompt('Enter admin password:');
+      if (pw !== TOKEN) { document.body.innerHTML = '<h2 style="text-align:center;padding:60px;">Access denied</h2>'; throw new Error('Unauthorized'); }
+      localStorage.setItem('admin_auth', '1');
+    }
+
+    async function loadData() {
+      try {
+        const [reqRes, statsRes] = await Promise.all([
+          fetch(`${API}/api/admin/access-requests`, { headers }),
+          fetch(`${API}/api/admin/stats`, { headers })
+        ]);
+        allRequests = await reqRes.json();
+        const stats = await statsRes.json();
+        document.getElementById('statPending').textContent = stats.pending;
+        document.getElementById('statApproved').textContent = stats.approved;
+        document.getElementById('statUsers').textContent = stats.totalUsers;
+        renderRequests();
+      } catch (err) {
+        document.getElementById('requestsList').innerHTML =
+          '<div class="empty">Could not connect to server. Make sure server.js is running.</div>';
+      }
+    }
+
+    function renderRequests() {
+      const filtered = currentFilter === 'all' ? allRequests : allRequests.filter(r => r.status === currentFilter);
+      const container = document.getElementById('requestsList');
+
+      if (!filtered.length) {
+        container.innerHTML = '<div class="empty">No requests found.</div>';
+        return;
+      }
+
+      container.innerHTML = filtered.map(r => `
+        <div class="request-card">
+          <span class="badge ${r.status}">${r.status}</span>
+          <div class="request-info">
+            <h3>${r.company_name} — <small style="font-weight:400;">${r.business_type.replace('-',' ')}</small></h3>
+            <div class="meta">${r.contact_name} · ${r.email} · ${r.phone} · ${r.region}</div>
+            ${r.description ? `<div class="meta" style="margin-top:4px;">${r.description}</div>` : ''}
+            <div class="meta">Submitted: ${new Date(r.created_at + 'Z').toLocaleDateString()}</div>
+            ${r.reviewed_at ? `<div class="meta">Reviewed: ${new Date(r.reviewed_at + 'Z').toLocaleDateString()}</div>` : ''}
+          </div>
+          ${r.status === 'pending' ? `
+            <div class="request-actions">
+              <button class="btn-approve" onclick="approve(${r.id})">Approve</button>
+              <button class="btn-reject" onclick="reject(${r.id})">Reject</button>
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+    }
+
+    async function approve(id) {
+      if (!confirm('Approve this request? A login account will be created.')) return;
+      try {
+        const res = await fetch(`${API}/api/admin/approve/${id}`, { method: 'POST', headers });
+        const data = await res.json();
+        if (data.success) {
+          alert(`Approved!\n\nTemporary password for ${data.email}:\n${data.tempPassword}\n\nShare this with the partner securely.`);
+          loadData();
+        } else {
+          alert('Error: ' + data.error);
+        }
+      } catch (e) { alert('Server error: ' + e.message); }
+    }
+
+    async function reject(id) {
+      if (!confirm('Reject this request?')) return;
+      try {
+        const res = await fetch(`${API}/api/admin/reject/${id}`, { method: 'POST', headers });
+        const data = await res.json();
+        if (data.success) { loadData(); } else { alert('Error: ' + data.error); }
+      } catch (e) { alert('Server error: ' + e.message); }
+    }
+
+    function logout() { localStorage.removeItem('admin_auth'); location.reload(); }
+
+    // Filter buttons
+    document.querySelectorAll('.filter-bar button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-bar button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        renderRequests();
+      });
+    });
+
+    loadData();
+  </script>
+</body>
+</html>
