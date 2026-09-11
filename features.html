@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Features — SafariLink Tanzania</title>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style>
+  :root {
+    --forest-green: #1a5a3a;
+    --forest-green-light: #2d7a52;
+    --accent-green: #3fb983;
+    --warm-off-white: #f8f7f4;
+    --khaki: #e8e5dd;
+    --charcoal: #2c2c2c;
+    --warm-gray: #a39e95;
+    --border-light: #d4cfc6;
+    --status-available: #10b981;
+    --status-pending: #f59e0b;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 12px 24px rgba(0,0,0,0.12);
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+  }
+
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+    background: var(--warm-off-white);
+    color: var(--charcoal);
+    line-height: 1.6;
+  }
+
+  /* ── Topbar ── */
+  .sl-topbar {
+    position: sticky; top:0; z-index:100;
+    background: #fff;
+    border-bottom: 1px solid var(--border-light);
+    padding: 0 24px;
+  }
+  .sl-topbar-inner {
+    max-width: 1200px; margin:0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px;
+  }
+  .sl-topbar-brand {
+    display: flex; align-items: center; gap: 8px;
+    font-weight: 800; font-size: 17px; color: var(--forest-green);
+    text-decoration: none; letter-spacing: -0.3px;
+  }
+  .sl-topbar-brand-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: var(--forest-green);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 800; font-size: 14px;
+  }
+  .sl-topbar-links { display: flex; gap: 24px; align-items: center; }
+  .sl-topbar-links a {
+    color: var(--charcoal); text-decoration: none; font-size: 14px; font-weight: 500;
+    transition: color 0.2s;
+  }
+  .sl-topbar-links a:hover { color: var(--forest-green); }
+  .sl-topbar-cta {
+    background: var(--forest-green); color: #fff;
+    padding: 8px 18px; border-radius: var(--radius-sm);
+    font-size: 13px; font-weight: 600; text-decoration: none;
+    transition: background 0.2s;
+  }
+  .sl-topbar-cta:hover { background: var(--forest-green-light); }
+
+  /* ── Hero ── */
+  .sl-hero {
+    background: linear-gradient(135deg, var(--forest-green) 0%, #0e4028 100%);
+    padding: 64px 24px 72px; text-align: center; color: #fff;
+  }
+  .sl-hero-inner { max-width: 800px; margin: 0 auto; }
+  .sl-hero-label {
+    display: inline-block;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 100px; padding: 6px 16px;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.6px;
+    text-transform: uppercase; margin-bottom: 20px;
+  }
+  .sl-hero h1 {
+    font-size: 42px; font-weight: 800; line-height: 1.2; margin-bottom: 16px;
+    letter-spacing: -0.5px;
+  }
+  .sl-hero p {
+    font-size: 17px; color: rgba(255,255,255,0.8); line-height: 1.7;
+    max-width: 620px; margin: 0 auto;
+  }
+
+  /* ── Back Link ── */
+  .sl-back {
+    max-width: 1200px; margin: 0 auto; padding: 24px;
+  }
+  .sl-back a {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: var(--forest-green); text-decoration: none;
+    font-size: 14px; font-weight: 600;
+    transition: color 0.2s;
+  }
+  .sl-back a:hover { color: var(--forest-green-light); }
+
+  /* ── Content Section ── */
+  .sl-content {
+    max-width: 1200px; margin: 0 auto 64px; padding: 0 24px;
+  }
+  .sl-content-intro {
+    text-align: center; margin-bottom: 48px;
+  }
+  .sl-content-intro h2 {
+    font-size: 28px; font-weight: 800; color: var(--charcoal);
+    margin-bottom: 12px; letter-spacing: -0.3px;
+  }
+  .sl-content-intro p {
+    font-size: 15px; color: var(--warm-gray); max-width: 640px; margin: 0 auto; line-height: 1.7;
+  }
+
+  /* ── Feature Grid ── */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 20px;
+  }
+
+  .feature-card {
+    background: #fff;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 28px;
+    transition: box-shadow 0.25s, transform 0.25s, border-color 0.25s;
+  }
+  .feature-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    border-color: var(--accent-green);
+  }
+
+  .feature-card-num {
+    display: inline-flex;
+    align-items: center; justify-content: center;
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    background: rgba(26,90,58,0.08);
+    color: var(--forest-green);
+    font-weight: 800; font-size: 15px;
+    margin-bottom: 16px;
+  }
+
+  .feature-card h3 {
+    font-size: 18px; font-weight: 700; color: var(--charcoal);
+    margin-bottom: 8px; letter-spacing: -0.2px;
+  }
+
+  .feature-card-desc {
+    font-size: 14px; color: var(--warm-gray);
+    line-height: 1.65; margin-bottom: 16px;
+  }
+
+  .feature-card-list {
+    list-style: none; padding: 0; margin: 0;
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .feature-card-list li {
+    font-size: 12px; font-weight: 500;
+    color: var(--forest-green);
+    background: rgba(26,90,58,0.05);
+    border: 1px solid rgba(26,90,58,0.1);
+    padding: 4px 10px; border-radius: 100px;
+    white-space: nowrap;
+  }
+
+  /* ── Spotlight Section ── */
+  .sl-spotlight {
+    background: #fff;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    margin-top: 56px;
+    text-align: center;
+  }
+  .sl-spotlight h3 {
+    font-size: 22px; font-weight: 800; color: var(--charcoal);
+    margin-bottom: 8px;
+  }
+  .sl-spotlight p {
+    font-size: 15px; color: var(--warm-gray);
+    max-width: 560px; margin: 0 auto 20px; line-height: 1.7;
+  }
+  .sl-spotlight-highlight {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--forest-green) 0%, var(--forest-green-light) 100%);
+    color: #fff;
+    padding: 10px 24px; border-radius: 100px;
+    font-size: 14px; font-weight: 600;
+  }
+
+  /* ── Footer ── */
+  .sl-footer {
+    background: var(--charcoal);
+    color: #999;
+    border-top: 3px solid var(--forest-green);
+    padding: 40px 24px 24px;
+    text-align: center;
+    font-size: 13px;
+  }
+  .sl-footer-inner {
+    max-width: 1200px; margin: 0 auto;
+  }
+  .sl-footer-brand {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    margin-bottom: 12px;
+  }
+  .sl-footer-brand span {
+    font-size: 16px; font-weight: 800; color: #fff; letter-spacing: -0.3px;
+  }
+  .sl-footer p { line-height: 1.8; }
+  .sl-footer a { color: #ccc; text-decoration: none; transition: color 0.2s; }
+  .sl-footer a:hover { color: #fff; }
+  .sl-footer-links {
+    display: flex; flex-wrap: wrap; justify-content: center;
+    gap: 16px; margin-top: 12px;
+  }
+  .sl-footer-divider { color: #555; }
+</style>
+</head>
+<body>
+
+  <!-- ============ TOP BAR ============ -->
+  <header class="sl-topbar">
+    <div class="sl-topbar-inner">
+      <a href="index.html" class="sl-topbar-brand">
+        <div class="sl-topbar-brand-icon">S</div>
+        <span>SafariLink</span>
+      </a>
+      <div class="sl-topbar-links">
+        <a href="index.html">Home</a>
+        <a href="features.html">Features</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="about.html">About</a>
+        <a href="index.html#dashboard" class="sl-topbar-cta">Dashboard</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ HERO ============ -->
+  <section class="sl-hero">
+    <div class="sl-hero-inner">
+      <span class="sl-hero-label">Platform Features</span>
+      <h1>Powerful Tools for Tanzania<br>Tourism Operations</h1>
+      <p>SafariLink brings the major operational functions of a tourism business into one connected workspace.</p>
+    </div>
+  </section>
+
+  <!-- ============ BACK LINK ============ -->
+  <div class="sl-back">
+    <a href="index.html">← Back to SafariLink Home</a>
+  </div>
+
+  <!-- ============ FEATURES CONTENT ============ -->
+  <div class="sl-content">
+    <div class="sl-content-intro">
+      <h2>15 Integrated Tools. One Platform.</h2>
+      <p>From global search to AI-powered intelligence — every feature is designed to make the operator faster without taking control away from the operator.</p>
+    </div>
+
+    <div class="features-grid">
+
+      <!-- 1. Global Search -->
+      <div class="feature-card">
+        <div class="feature-card-num">01</div>
+        <h3>Global Search</h3>
+        <p class="feature-card-desc">Search across the entire network using names, locations, references, booking numbers, or other relevant information.</p>
+        <ul class="feature-card-list">
+          <li>Properties</li><li>Rooms</li><li>STO Rates</li><li>Vehicles</li>
+          <li>Guides</li><li>Activities</li><li>Suppliers</li><li>Clients</li>
+          <li>Trips</li><li>Itineraries</li><li>Reservations</li>
+          <li>Invoices</li><li>Documents</li>
+        </ul>
+      </div>
+
+      <!-- 2. Itinerary Builder -->
+      <div class="feature-card">
+        <div class="feature-card-num">02</div>
+        <h3>Itinerary Builder</h3>
+        <p class="feature-card-desc">Build detailed day-by-day trips with drag-and-drop planning and integrated costing.</p>
+        <ul class="feature-card-list">
+          <li>Drag-and-drop</li><li>Day-by-day</li><li>Accommodation</li>
+          <li>Vehicles</li><li>Guides</li><li>Activities</li>
+          <li>Route planning</li><li>Trip notes</li>
+          <li>Optional activities</li><li>Cost integration</li>
+          <li>Client-ready output</li>
+        </ul>
+      </div>
+
+      <!-- 3. Accommodation Network -->
+      <div class="feature-card">
+        <div class="feature-card-num">03</div>
+        <h3>Accommodation Network</h3>
+        <p class="feature-card-desc">Search and manage properties across hotels, lodges, safari camps, tented camps, villas, and guesthouses.</p>
+        <ul class="feature-card-list">
+          <li>Hotels</li><li>Lodges</li><li>Safari camps</li><li>Tented camps</li>
+          <li>Villas</li><li>Guesthouses</li>
+          <li>B2B/STO rates</li><li>Meal plans</li>
+          <li>Cancellation policies</li>
+        </ul>
+      </div>
+
+      <!-- 4. Fleet Network -->
+      <div class="feature-card">
+        <div class="feature-card-num">04</div>
+        <h3>Fleet Network</h3>
+        <p class="feature-card-desc">Find vehicles based on operational requirements — filtered by location, date, capacity, type, and safari configuration.</p>
+        <ul class="feature-card-list">
+          <li>Location</li><li>Capacity</li><li>4×4 capability</li>
+          <li>Safari configuration</li>
+          <li>Lease duration</li><li>Driver requirements</li>
+          <li>Maintenance tracking</li><li>Insurance</li>
+        </ul>
+      </div>
+
+      <!-- 5. Guide Network -->
+      <div class="feature-card">
+        <div class="feature-card-num">05</div>
+        <h3>Guide Network</h3>
+        <p class="feature-card-desc">Find professional guides by language, experience, destination, specialisation, and rate.</p>
+        <ul class="feature-card-list">
+          <li>Wildlife</li><li>Birding</li><li>Kilimanjaro</li>
+          <li>Cultural tourism</li>
+          <li>Photography</li><li>Family safaris</li>
+          <li>Luxury safaris</li><li>Walking safaris</li>
+        </ul>
+      </div>
+
+      <!-- 6. B2B / STO Rate Management -->
+      <div class="feature-card">
+        <div class="feature-card-num">06</div>
+        <h3>B2B / STO Rate Management</h3>
+        <p class="feature-card-desc">Suppliers publish controlled commercial rates. Operators only see rates they are authorized to access.</p>
+        <ul class="feature-card-list">
+          <li>Season</li><li>Validity period</li><li>Room type</li>
+          <li>Meal plan</li><li>Single supplement</li><li>Child policy</li>
+          <li>Cancellation terms</li><li>Special conditions</li>
+        </ul>
+      </div>
+
+      <!-- 7. Costing & Markups -->
+      <div class="feature-card">
+        <div class="feature-card-num">07</div>
+        <h3>Costing &amp; Markups</h3>
+        <p class="feature-card-desc">Know your numbers before you quote — see supplier cost, markup, commission, gross profit, and margin percentage.</p>
+        <ul class="feature-card-list">
+          <li>Supplier cost</li><li>Operational cost</li>
+          <li>Markup</li><li>Commission</li>
+          <li>Gross profit</li><li>Margin %</li>
+          <li>Per-person cost</li><li>Selling price</li>
+        </ul>
+      </div>
+
+      <!-- 8. Reservation Management -->
+      <div class="feature-card">
+        <div class="feature-card-num">08</div>
+        <h3>Reservation Management</h3>
+        <p class="feature-card-desc">Manage every booking from one place — track reference, supplier, service, date, cost, status, and confirmation.</p>
+        <ul class="feature-card-list">
+          <li>Booking reference</li><li>Supplier</li><li>Status</li>
+          <li>Confirmation</li><li>Cancellation</li>
+          <li>Documents</li><li>Communication</li>
+        </ul>
+      </div>
+
+      <!-- 9. Supplier Messaging -->
+      <div class="feature-card">
+        <div class="feature-card-num">09</div>
+        <h3>Supplier Messaging</h3>
+        <p class="feature-card-desc">Keep business communication connected to the reservation. No more searching through WhatsApp conversations — see operational messages alongside the booking.</p>
+        <ul class="feature-card-list">
+          <li>In-platform messaging</li><li>Reservation-linked</li><li>Document sharing</li>
+          <li>Communication history</li>
+        </ul>
+      </div>
+
+      <!-- 10. Client Management -->
+      <div class="feature-card">
+        <div class="feature-card-num">10</div>
+        <h3>Client Management</h3>
+        <p class="feature-card-desc">Maintain organized client information — from contact details and preferences to previous trips and documents.</p>
+        <ul class="feature-card-list">
+          <li>Contact info</li><li>Traveller info</li><li>Preferences</li>
+          <li>Previous trips</li><li>Quotes</li><li>Reservations</li><li>Documents</li><li>Notes</li>
+        </ul>
+      </div>
+
+      <!-- 11. Documents -->
+      <div class="feature-card">
+        <div class="feature-card-num">11</div>
+        <h3>Documents</h3>
+        <p class="feature-card-desc">Centralize operational documents — quotations, invoices, vouchers, confirmations, contracts, rate sheets, and trip documents.</p>
+        <ul class="feature-card-list">
+          <li>Quotations</li><li>Invoices</li><li>Vouchers</li>
+          <li>Confirmations</li><li>Contracts</li><li>Rate sheets</li><li>Client documents</li><li>Trip documents</li>
+        </ul>
+      </div>
+
+      <!-- 12. Tasks -->
+      <div class="feature-card">
+        <div class="feature-card-num">12</div>
+        <h3>Tasks</h3>
+        <p class="feature-card-desc">Assign operational tasks to team members — confirm lodges, request vehicles, assign guides, send quotes, and more.</p>
+        <ul class="feature-card-list">
+          <li>Confirm lodge</li><li>Request vehicle</li><li>Assign guide</li>
+          <li>Send quote</li><li>Follow up supplier</li><li>Collect payment</li>
+          <li>Send voucher</li><li>Confirm pickup</li>
+        </ul>
+      </div>
+
+      <!-- 13. Notifications -->
+      <div class="feature-card">
+        <div class="feature-card-num">13</div>
+        <h3>Notifications</h3>
+        <p class="feature-card-desc">Receive alerts for important events — new reservation requests, supplier responses, expiring availability, payments due, and task deadlines.</p>
+        <ul class="feature-card-list">
+          <li>New reservations</li><li>Supplier responses</li><li>Confirmations</li>
+          <li>Expiring availability</li><li>Payment due</li><li>Cancellation</li><li>Task deadline</li><li>Client action</li>
+        </ul>
+      </div>
+
+      <!-- 14. Analytics -->
+      <div class="feature-card">
+        <div class="feature-card-num">14</div>
+        <h3>Analytics</h3>
+        <p class="feature-card-desc">Understand the business behind the trips — track revenue, costs, margins, supplier usage, booking conversion, and team activity.</p>
+        <ul class="feature-card-list">
+          <li>Trips</li><li>Revenue</li><li>Costs</li><li>Margins</li>
+          <li>Supplier usage</li><li>Conversion</li>
+          <li>Cancellations</li><li>Team activity</li>
+        </ul>
+      </div>
+
+      <!-- 15. AI Intelligence -->
+      <div class="feature-card" style="border: 2px solid var(--accent-green); background: linear-gradient(180deg, #fff 0%, rgba(63,185,131,0.04) 100%);">
+        <div class="feature-card-num" style="background: var(--accent-green); color: #fff;">15</div>
+        <h3>AI Intelligence</h3>
+        <p class="feature-card-desc">SafariLink Intelligence assists with search, itinerary planning, supplier matching, costing, quotes, communication, translation, follow-ups, and document extraction — making the operator faster without taking control away from the operator.</p>
+        <ul class="feature-card-list">
+          <li>Search</li><li>Itinerary planning</li><li>Supplier matching</li>
+          <li>Costing</li><li>Quotes</li><li>Communication</li>
+          <li>Translation</li><li>Follow-ups</li>
+          <li>Operational alerts</li><li>Document extraction</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Spotlight -->
+    <div class="sl-spotlight">
+      <h3>Built for Tanzania Tourism Operations</h3>
+      <p>Every feature in SafariLink is purpose-built for the realities of planning, costing, and managing safari trips, Kilimanjaro climbs, Zanzibar beach holidays, and cultural experiences across Tanzania.</p>
+      <span class="sl-spotlight-highlight">Explore the Dashboard →</span>
+    </div>
+  </div>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="sl-footer">
+    <div class="sl-footer-inner">
+      <div class="sl-footer-brand">
+        <div class="sl-topbar-brand-icon" style="margin:0 auto;">S</div>
+        <span>SafariLink</span>
+      </div>
+      <p>The operating network for Tanzania tourism. Connecting tour operators with verified suppliers.</p>
+      <div class="sl-footer-links">
+        <a href="about.html">About</a>
+        <span class="sl-footer-divider">·</span>
+        <a href="features.html">Features</a>
+        <span class="sl-footer-divider">·</span>
+        <a href="pricing.html">Pricing</a>
+        <span class="sl-footer-divider">·</span>
+        <a href="how-it-works.html">How It Works</a>
+        <span class="sl-footer-divider">·</span>
+        <a href="roadmap.html">Roadmap</a>
+        <span class="sl-footer-divider">·</span>
+        <a href="security.html">Security</a>
+        <span class="sl-footer-divider">·</span>
+        <a href="terms.html">Terms</a>
+        <span class="sl-footer-divider">·</span>
+        <a href="privacy.html">Privacy</a>
+        <span class="sl-footer-divider">·</span>
+        <a href="cookie-policy.html">Cookies</a>
+      </div>
+      <p style="margin-top:12px;font-size:12px;color:#666;">&copy; 2026 SafariLink Tanzania B2B. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>lucide.createIcons();</script>
+</body>
+</html>
