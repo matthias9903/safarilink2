@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supplier Guide | SafariLink Tanzania</title>
+  <style>
+    :root {
+      --forest-green: #23613f;
+      --dark-green: #17452d;
+      --charcoal: #2c2c2c;
+      --light-bg: #f8faf9;
+      --white: #ffffff;
+      --text: #25332b;
+      --muted: #68756d;
+      --border: #dce5de;
+      --accent-gold: #c78b3c;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, sans-serif;
+      color: var(--text);
+      background: var(--light-bg);
+      line-height: 1.6;
+    }
+
+    .navbar {
+      background: var(--charcoal);
+      padding: 16px 6%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--white);
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 20px;
+    }
+
+    .brand-mark {
+      background: var(--forest-green);
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      border-radius: 6px;
+    }
+
+    .hero {
+      background: linear-gradient(rgba(23, 69, 45, 0.9), rgba(23, 69, 45, 0.9)), url('assets/safari-bg.jpg') center/cover;
+      color: white;
+      padding: 80px 6%;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: clamp(32px, 5vw, 48px);
+      margin-bottom: 16px;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      max-width: 700px;
+      margin: 0 auto;
+      color: #dce5de;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 60px auto;
+      padding: 0 24px;
+    }
+
+    .section-intro {
+      margin-bottom: 48px;
+    }
+
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+      margin-bottom: 60px;
+    }
+
+    .category-card {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .category-card h3 {
+      color: var(--forest-green);
+      margin-top: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .category-card ul {
+      list-style: none;
+      padding: 0;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .category-card li {
+      margin-bottom: 8px;
+      padding-left: 18px;
+      position: relative;
+    }
+
+    .category-card li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--accent-gold);
+    }
+
+    .step-list {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      margin-top: 40px;
+    }
+
+    .step-item {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 24px;
+      background: white;
+      padding: 32px;
+      border-radius: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+
+    .step-number {
+      width: 60px;
+      height: 60px;
+      background: var(--dark-green);
+      color: white;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 24px;
+    }
+
+    .step-content h2 {
+      margin: 0 0 12px 0;
+      color: var(--dark-green);
+    }
+
+    .info-box {
+      background: #eef3f0;
+      padding: 20px;
+      border-left: 4px solid var(--forest-green);
+      margin: 16px 0;
+      font-size: 14px;
+    }
+
+    .performance-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .perf-metric {
+      background: #fff;
+      padding: 12px 20px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .support-cta {
+      background: var(--charcoal);
+      color: white;
+      padding: 48px;
+      border-radius: 16px;
+      text-align: center;
+      margin-top: 80px;
+    }
+
+    .btn-support {
+      display: inline-block;
+      background: var(--forest-green);
+      color: white;
+      padding: 14px 32px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 700;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .step-item { grid-template-columns: 1fr; text-align: center; }
+      .step-number { margin: 0 auto; }
+      .performance-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="brand">
+      <div class="brand-mark">S</div>
+      <span>SafariLink</span>
+    </a>
+    <a href="index.html" style="color:#ccc; font-size:14px; text-decoration:none;">Back to Portal</a>
+  </nav>
+
+  <header class="hero">
+    <h1>Supplier Guide</h1>
+    <p>Connect your tourism business with operators selling Tanzania through our structured B2B network.</p>
+  </header>
+
+  <div class="container">
+    <div class="section-intro">
+      <h2>Who Can Become a Supplier?</h2>
+      <p>SafariLink supports verified providers across four core sectors of the industry.</p>
+    </div>
+
+    <div class="category-grid">
+      <div class="category-card">
+        <h3>Accommodation</h3>
+        <ul>
+          <li>Hotels & Resorts</li>
+          <li>Safari & Tented Camps</li>
+          <li>Luxury Villas</li>
+          <li>Boutique Guesthouses</li>
+        </ul>
+      </div>
+      <div class="category-card">
+        <h3>Fleet Providers</h3>
+        <ul>
+          <li>4x4 Safari Fleets</li>
+          <li>Transfer & Luxury Vehicles</li>
+          <li>Specialised Transport</li>
+          <li>Daily & Monthly Lease</li>
+        </ul>
+      </div>
+      <div class="category-card">
+        <h3>Professional Guides</h3>
+        <ul>
+          <li>Safari & Mountain Guides</li>
+          <li>Cultural Specialists</li>
+          <li>Language Specialists</li>
+          <li>Birding Experts</li>
+        </ul>
+      </div>
+      <div class="category-card">
+        <h3>Activities</h3>
+        <ul>
+          <li>Excursions & Day Trips</li>
+          <li>Cultural Experiences</li>
+          <li>Marine & Adventure</li>
+          <li>Nature Experiences</li>
+        </ul>
+      </div>
+    </div>
+
+    <hr style="border:0; border-top:1px solid var(--border); margin: 60px 0;">
+
+    <h2>Onboarding & Operational Workflow</h2>
+    
+    <div class="step-list">
+      <!-- Step 1 -->
+      <div class="step-item">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <h2>Apply</h2>
+          <p>Provide your core business information to begin the onboarding process.</p>
+          <div class="info-box">
+            <strong>Required:</strong> Registration details, business licenses, contact person, website, and operating locations.
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="step-item">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <h2>Verification</h2>
+          <p>SafariLink reviews your application to ensure platform quality and security. This may include verifying business identity, insurance, and professional qualifications.</p>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="step-item">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <h2>Build Your Profile</h2>
+          <p>Accurate profiles improve conversion. Depending on your sector, you will provide descriptions, facilities, vehicle specs, or guide experience.</p>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="step-item">
+        <div class="step-number">4</div>
+        <div class="step-content">
+          <h2>Manage Rates & Availability</h2>
+          <p>Upload your STO (trade) rates and maintain accurate availability. High-accuracy availability reduces failed requests and operational friction.</p>
+        </div>
+      </div>
+
+      <!-- Step 5 -->
+      <div class="step-item">
+        <div class="step-number">5</div>
+        <div class="step-content">
+          <h2>Respond & Confirm</h2>
+          <p>Receive requests from operators. The platform distinguishes between <strong>Requested</strong> and <strong>Confirmed</strong> statuses—a critical distinction for operational safety.</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:80px; padding:40px; background:white; border-radius:14px; border:1px solid var(--border);">
+      <h2 style="margin-top:0;">Supplier Performance & Best Practices</h2>
+      <p>To maintain a high-quality network, SafariLink monitors key reliability indicators:</p>
+      <div class="performance-grid">
+        <div class="perf-metric">✓ Response Time</div>
+        <div class="perf-metric">✓ Confirmation Rate</div>
+        <div class="perf-metric">✓ Availability Accuracy</div>
+        <div class="perf-metric">✓ Operator Feedback</div>
+      </div>
+      <p style="font-size:14px; color:var(--muted); margin-top:24px;">
+        <strong>Best Practice:</strong> Communicate early. If an operational issue occurs with a confirmed booking, inform the operator immediately through the platform.
+      </p>
+    </div>
+
+    <div class="support-cta">
+      <h2>Need help setting up your profile?</h2>
+      <p>Our dedicated Supplier Support team is available to assist with onboarding and technical queries.</p>
+      <a href="support.html" class="btn-support">Contact Supplier Support</a>
+    </div>
+  </div>
+
+  <footer style="background: var(--charcoal); color: #ccc; padding: 40px 6%; text-align: center; font-size: 13px;">
+    © 2026 SafariLink Tanzania B2B. Built for the industry, in Tanzania.
+  </footer>
+
+</body>
+</html>
