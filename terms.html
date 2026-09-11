@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms &amp; Conditions — SafariLink Tanzania B2B</title>
+<style>
+  :root{
+    --forest:#1a5a3a; --forest-dark:#12462a; --accent:#2d8c5f;
+    --khaki:#e8e5dd; --bg:#f8f7f4; --ink:#2c2c2c; --muted:#6f6a5e;
+    --line:#e8e5dd; --white:#fff; --radius-lg:16px; --radius-md:10px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;font-size:15px;}
+  a{color:var(--forest);text-decoration:none;}
+  a:hover{text-decoration:underline;}
+
+  /* Top bar */
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
+  .topbar-inner{max-width:860px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--forest);font-size:15px;}
+  .brand-mark{width:34px;height:34px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,#2d8c5f,#1a5a3a);display:flex;align-items:center;justify-content:center;color:#fff;}
+  .back-link{font-size:13px;font-weight:600;color:var(--forest);border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 16px;white-space:nowrap;}
+  .back-link:hover{background:var(--bg);text-decoration:none;}
+
+  /* Hero */
+  .hero{background:linear-gradient(135deg,#123b26 0%,#1a5a3a 55%,#2d8c5f 100%);color:#fff;padding:56px 24px 44px;text-align:center;}
+  .hero small{display:inline-block;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#cfe5d8;margin-bottom:10px;border:1px solid rgba(255,255,255,.25);padding:5px 14px;border-radius:999px;background:rgba(255,255,255,.08);}
+  .hero h1{font-size:clamp(26px,4vw,40px);font-weight:800;letter-spacing:.3px;}
+  .hero p{color:#cfe5d8;font-size:14px;margin-top:10px;}
+  .hero p strong{color:#fff;font-weight:600;}
+
+  /* Layout */
+  .wrap{max-width:860px;margin:0 auto;padding:40px 24px 80px;}
+  .toc{background:#fff;border:1px solid var(--line);border-radius:var(--radius-lg);padding:22px 24px;margin-bottom:34px;}
+  .toc h3{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+  .toc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:6px;}
+  .toc-grid a{font-size:13px;color:var(--ink);padding:6px 10px;border-radius:6px;display:flex;gap:8px;align-items:baseline;}
+  .toc-grid a:hover{background:var(--bg);text-decoration:none;color:var(--forest);}
+  .toc-grid .num{font-weight:800;color:var(--forest);font-size:12px;min-width:22px;}
+  .toc-grid a.missing{color:#a89c80;cursor:default;}
+  .toc-grid a.missing .num{color:#a89c80;}
+  .toc-grid a.missing:hover{background:transparent;}
+
+  /* Sections */
+  .terms-section{background:#fff;border:1px solid var(--line);border-radius:var(--radius-lg);padding:26px 28px;margin-bottom:16px;display:flex;gap:18px;}
+  .section-num{flex-shrink:0;width:44px;height:44px;border-radius:12px;background:var(--bg);border:1px solid var(--line);color:var(--forest);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;}
+  .section-body{flex:1;min-width:0;}
+  .section-body h2{font-size:17px;font-weight:800;margin-bottom:10px;letter-spacing:.2px;}
+  .section-body p{margin-bottom:10px;color:#3d3d3d;}
+  .section-body ul{margin:0 0 10px;padding-left:0;list-style:none;}
+  .section-body ul li{padding:5px 0 5px 26px;position:relative;color:#3d3d3d;font-size:14.5px;}
+  .section-body ul li::before{content:"";position:absolute;left:6px;top:13px;width:7px;height:7px;border-radius:50%;background:var(--accent);opacity:.55;}
+
+  /* Placeholders for anything not captured in the uploaded excerpt */
+  .placeholder{background:#fffbeb;border:1px dashed #d8b45a;border-radius:10px;padding:12px 14px;font-size:13px;color:#8a6d1d;margin:8px 0 12px;}
+  .terms-section.is-placeholder{background:#fffbeb;border-style:dashed;border-color:#d8b45a;}
+  .terms-section.is-placeholder .section-num{background:#fff7dd;border-color:#d8b45a;color:#8a6d1d;}
+
+  /* Footer of terms page */
+  .doc-footer{margin-top:40px;background:var(--forest-dark);color:#cfe5d8;border-radius:var(--radius-lg);padding:28px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px;}
+  .doc-footer h4{color:#fff;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:10px;}
+  .doc-footer p,.doc-footer a{font-size:13.5px;line-height:1.8;color:#cfe5d8;}
+  .doc-footer a:hover{color:#fff;}
+  .copyright{border-top:1px solid rgba(255,255,255,.15);margin-top:26px;padding-top:16px;text-align:center;font-size:12.5px;color:rgba(255,255,255,.55);}
+
+  @media (max-width:640px){
+    .terms-section{flex-direction:column;gap:10px;padding:20px;}
+    .section-num{width:38px;height:38px;}
+    .wrap{padding:24px 16px 60px;}
+    .hero{padding:40px 18px 32px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c4-4 8-7.5 8-12a8 8 0 1 0-16 0c0 4.5 4 8 8 12z"/><circle cx="12" cy="10" r="3"/></svg>
+      </span>
+      SafariLink Tanzania B2B
+    </a>
+    <a class="back-link" href="#" onclick="if(document.referrer){history.back();return false;}window.location.href='index.html';return false;">&larr; Back</a>
+  </div>
+</header>
+
+<div class="hero">
+  <small>Legal</small>
+  <h1>Terms &amp; Conditions</h1>
+  <p><strong>Last Updated:</strong> [Insert Date]</p>
+</div>
+
+<main class="wrap">
+
+  <!-- ============ CONTENTS ============ -->
+  <div class="toc">
+    <h3>Contents</h3>
+    <div class="toc-grid">
+      <a href="#s16"><span class="num">16</span>Supplier Responsibilities</a>
+      <a href="#s17"><span class="num">17</span>Operator Responsibilities</a>
+      <a href="#s18"><span class="num">18</span>Vehicle Leasing</a>
+      <a href="#s19"><span class="num">19</span>Guiding Services</a>
+      <a href="#s20"><span class="num">20</span>Activities &amp; Experiences</a>
+      <a href="#s21"><span class="num">21</span>Platform Content</a>
+      <a href="#s22"><span class="num">22</span>User Content</a>
+      <a href="#s23"><span class="num">23</span>Intellectual Property</a>
+      <a href="#s24"><span class="num">24</span>Prohibited Use</a>
+      <a href="#s25"><span class="num">25</span>Platform Availability</a>
+      <a href="#s26"><span class="num">26</span>Third-Party Services</a>
+      <a href="#s27"><span class="num">27</span>AI Features</a>
+      <a href="#s28"><span class="num">28</span>Communications</a>
+      <a href="#s29"><span class="num">29</span>Confidentiality</a>
+      <a href="#s30"><span class="num">30</span>Privacy &amp; Personal Data</a>
+      <a href="#s31"><span class="num">31</span>Disclaimers</a>
+      <a class="missing" href="#s32"><span class="num">32</span>&mdash; (insert &sect;32&ndash;&sect;35)</a>
+      <a href="#s36"><span class="num">36</span>Dispute Resolution</a>
+      <a href="#s37"><span class="num">37</span>Force Majeure</a>
+      <a href="#s38"><span class="num">38</span>Changes to These Terms</a>
+      <a href="#s39"><span class="num">39</span>Severability</a>
+      <a href="#s40"><span class="num">40</span>Entire Agreement</a>
+      <a href="#s41"><span class="num">41</span>Contact</a>
+    </div>
+  </div>
+
+  <!-- ============ SECTIONS 1-15 (not shown in the excerpt) ============ -->
+  <section class="terms-section is-placeholder">
+    <div class="section-num">1&ndash;15</div>
+    <div class="section-body">
+      <h2>Sections 1&ndash;15</h2>
+      <p>Your Terms file starts before the excerpt shown here (definitions, accounts, reservations, cancellations, etc.).</p>
+      <div class="placeholder">Insert the text of Sections 1&ndash;15 here. Copy an existing section above or below and fill in the number, title and content.</div>
+    </div>
+  </section>
+
+  <!-- Note carried over from the end of Section 15 -->
+  <section class="terms-section is-placeholder">
+    <div class="section-num">Note</div>
+    <div class="section-body">
+      <h2>Changes</h2>
+      <p>A change is not confirmed until the relevant Supplier or Platform confirms it. Changes may be subject to additional fees.</p>
+    </div>
+  </section>
+
+  <!-- ============ 16. SUPPLIER RESPONSIBILITIES ============ -->
+  <section class="terms-section" id="s16">
+    <div class="section-num">16</div>
+    <div class="section-body">
+      <h2>Supplier Responsibilities</h2>
+      <p>Each Supplier is solely responsible for:</p>
+      <ul>
+        <li>providing the Service as described;</li>
+        <li>maintaining required licenses and permits;</li>
+        <li>maintaining appropriate insurance where applicable;</li>
+        <li>ensuring staff and professionals are properly qualified;</li>
+        <li>maintaining vehicles in appropriate operating condition;</li>
+        <li>maintaining accurate availability;</li>
+        <li>honoring confirmed commercial terms;</li>
+        <li>communicating material changes;</li>
+        <li>complying with applicable laws; and</li>
+        <li>addressing complaints concerning its Service.</li>
+      </ul>
+      <p>SafariLink does not replace the Supplier's legal or operational responsibilities.</p>
+    </div>
+  </section>
+
+  <!-- ============ 17. OPERATOR RESPONSIBILITIES ============ -->
+  <section class="terms-section" id="s17">
+    <div class="section-num">17</div>
+    <div class="section-body">
+      <h2>Operator Responsibilities</h2>
+      <p>Operators are responsible for:</p>
+      <ul>
+        <li>providing accurate traveler information;</li>
+        <li>selecting appropriate Services;</li>
+        <li>checking Reservation details;</li>
+        <li>communicating relevant client requirements;</li>
+        <li>ensuring travelers meet applicable requirements;</li>
+        <li>making payments on time;</li>
+        <li>complying with Supplier cancellation policies;</li>
+        <li>using private commercial information appropriately; and</li>
+        <li>ensuring their employees comply with these Terms.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 18. VEHICLE LEASING ============ -->
+  <section class="terms-section" id="s18">
+    <div class="section-num">18</div>
+    <div class="section-body">
+      <h2>Vehicle Leasing</h2>
+      <p>Where Fleet Providers offer vehicles through SafariLink, such arrangements may constitute vehicle leasing rather than ordinary consumer car rental.</p>
+      <p>The applicable lease terms may specify:</p>
+      <ul>
+        <li>vehicle type;</li>
+        <li>duration;</li>
+        <li>daily, weekly, or monthly rate;</li>
+        <li>driver arrangements;</li>
+        <li>fuel responsibilities;</li>
+        <li>insurance;</li>
+        <li>security deposit;</li>
+        <li>mileage restrictions;</li>
+        <li>maintenance;</li>
+        <li>permitted use;</li>
+        <li>geographic restrictions;</li>
+        <li>breakdown procedures; and</li>
+        <li>cancellation conditions.</li>
+      </ul>
+      <p>The Fleet Provider remains responsible for the vehicle and applicable legal requirements.</p>
+    </div>
+  </section>
+
+  <!-- ============ 19. GUIDING SERVICES ============ -->
+  <section class="terms-section" id="s19">
+    <div class="section-num">19</div>
+    <div class="section-body">
+      <h2>Guiding Services</h2>
+      <p>Guides listed on SafariLink are independent professionals or representatives of Supplier businesses unless otherwise expressly stated.</p>
+      <p>Guide profiles may include:</p>
+      <ul>
+        <li>languages;</li>
+        <li>experience;</li>
+        <li>areas of specialization;</li>
+        <li>park expertise;</li>
+        <li>qualifications;</li>
+        <li>availability;</li>
+        <li>rates; and</li>
+        <li>reviews.</li>
+      </ul>
+      <p>SafariLink does not guarantee a guide's professional performance, qualifications, conduct, or availability unless expressly agreed under a separate contract.</p>
+    </div>
+  </section>
+
+  <!-- ============ 20. ACTIVITIES AND EXPERIENCES ============ -->
+  <section class="terms-section" id="s20">
+    <div class="section-num">20</div>
+    <div class="section-body">
+      <h2>Activities and Experiences</h2>
+      <p>Activities and experiences are provided by independent Suppliers.</p>
+      <p>Users must review applicable:</p>
+      <ul>
+        <li>age requirements;</li>
+        <li>physical requirements;</li>
+        <li>safety requirements;</li>
+        <li>operating conditions;</li>
+        <li>weather limitations;</li>
+        <li>cancellation conditions;</li>
+        <li>equipment requirements; and</li>
+        <li>other Supplier-specific terms.</li>
+      </ul>
+      <p>Certain activities may involve inherent risks.</p>
+      <p>Users and travelers are responsible for following applicable safety instructions and lawful directions from qualified personnel.</p>
+    </div>
+  </section>
+
+  <!-- ============ 21. PLATFORM CONTENT ============ -->
+  <section class="terms-section" id="s21">
+    <div class="section-num">21</div>
+    <div class="section-body">
+      <h2>Platform Content</h2>
+      <p>SafariLink aims to maintain accurate and useful Platform Content but does not guarantee that all information will always be complete, current, error-free, or available.</p>
+      <p>Content may be provided by:</p>
+      <ul>
+        <li>SafariLink;</li>
+        <li>Suppliers;</li>
+        <li>third-party service providers;</li>
+        <li>Users; or</li>
+        <li>integrated systems.</li>
+      </ul>
+      <p>Supplier-provided information remains the responsibility of the Supplier.</p>
+    </div>
+  </section>
+
+  <!-- ============ 22. USER CONTENT ============ -->
+  <section class="terms-section" id="s22">
+    <div class="section-num">22</div>
+    <div class="section-body">
+      <h2>User Content</h2>
+      <p>Users may submit:</p>
+      <ul>
+        <li>company information;</li>
+        <li>property information;</li>
+        <li>photographs;</li>
+        <li>documents;</li>
+        <li>descriptions;</li>
+        <li>reviews;</li>
+        <li>messages;</li>
+        <li>quotations;</li>
+        <li>itineraries; and</li>
+        <li>other content.</li>
+      </ul>
+      <p>You retain ownership of content you submit.</p>
+      <p>By submitting content to SafariLink, you grant SafariLink a non-exclusive, worldwide, royalty-free license to host, store, reproduce, display, process, and use that content as reasonably necessary to operate, improve, secure, and promote the Platform.</p>
+      <p>You represent that you have the necessary rights to submit the content.</p>
+    </div>
+  </section>
+
+  <!-- ============ 23. INTELLECTUAL PROPERTY ============ -->
+  <section class="terms-section" id="s23">
+    <div class="section-num">23</div>
+    <div class="section-body">
+      <h2>Intellectual Property</h2>
+      <p>The SafariLink name, brand, logo, software, Platform design, databases, interface, technology, documentation, and original content are owned by or licensed to SafariLink unless otherwise stated.</p>
+      <p>Nothing in these Terms transfers ownership of SafariLink intellectual property to a User.</p>
+      <p>Users may not:</p>
+      <ul>
+        <li>copy the Platform;</li>
+        <li>reproduce its design;</li>
+        <li>reverse engineer its software;</li>
+        <li>scrape its databases;</li>
+        <li>reproduce proprietary workflows;</li>
+        <li>create competing products using protected Platform materials; or</li>
+        <li>use SafariLink trademarks without written authorization.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 24. PROHIBITED USE ============ -->
+  <section class="terms-section" id="s24">
+    <div class="section-num">24</div>
+    <div class="section-body">
+      <h2>Prohibited Use</h2>
+      <p>Users must not use SafariLink to:</p>
+      <ul>
+        <li>commit fraud;</li>
+        <li>impersonate another person or business;</li>
+        <li>submit false information;</li>
+        <li>distribute malware;</li>
+        <li>attempt unauthorized access;</li>
+        <li>scrape or harvest data without authorization;</li>
+        <li>manipulate availability;</li>
+        <li>misuse private STO Rates;</li>
+        <li>circumvent Platform security;</li>
+        <li>interfere with Platform operations;</li>
+        <li>violate applicable law;</li>
+        <li>abuse another User;</li>
+        <li>distribute unlawful content; or</li>
+        <li>use the Platform for purposes unrelated to legitimate business activity.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 25. PLATFORM AVAILABILITY ============ -->
+  <section class="terms-section" id="s25">
+    <div class="section-num">25</div>
+    <div class="section-body">
+      <h2>Platform Availability</h2>
+      <p>SafariLink aims to maintain reliable Platform availability but does not guarantee uninterrupted access.</p>
+      <p>The Platform may occasionally be unavailable due to:</p>
+      <ul>
+        <li>maintenance;</li>
+        <li>upgrades;</li>
+        <li>technical failures;</li>
+        <li>cybersecurity incidents;</li>
+        <li>telecommunications problems;</li>
+        <li>third-party service interruptions;</li>
+        <li>force majeure events; or</li>
+        <li>circumstances beyond SafariLink's reasonable control.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 26. THIRD-PARTY SERVICES ============ -->
+  <section class="terms-section" id="s26">
+    <div class="section-num">26</div>
+    <div class="section-body">
+      <h2>Third-Party Services</h2>
+      <p>SafariLink may integrate with third-party services including:</p>
+      <ul>
+        <li>payment providers;</li>
+        <li>mapping services;</li>
+        <li>communication providers;</li>
+        <li>cloud infrastructure;</li>
+        <li>analytics services;</li>
+        <li>authentication providers;</li>
+        <li>AI services; and</li>
+        <li>other technology providers.</li>
+      </ul>
+      <p>Third-party services may have separate terms and privacy policies.</p>
+      <p>SafariLink is not responsible for failures caused solely by independent third-party services.</p>
+    </div>
+  </section>
+
+  <!-- ============ 27. ARTIFICIAL INTELLIGENCE FEATURES ============ -->
+  <section class="terms-section" id="s27">
+    <div class="section-num">27</div>
+    <div class="section-body">
+      <h2>Artificial Intelligence Features</h2>
+      <p>SafariLink may provide AI-powered functionality including:</p>
+      <ul>
+        <li>natural-language search;</li>
+        <li>itinerary assistance;</li>
+        <li>supplier matching;</li>
+        <li>quote drafting;</li>
+        <li>document extraction;</li>
+        <li>reservation follow-up assistance;</li>
+        <li>translation;</li>
+        <li>operational recommendations;</li>
+        <li>analytics;</li>
+        <li>risk detection; and</li>
+        <li>business intelligence.</li>
+      </ul>
+      <p>AI-generated information is provided as an assistance tool and may contain errors.</p>
+      <p>AI does not replace human verification.</p>
+      <p>In particular, Users must independently verify:</p>
+      <ul>
+        <li>availability;</li>
+        <li>pricing;</li>
+        <li>reservation status;</li>
+        <li>supplier terms;</li>
+        <li>legal requirements;</li>
+        <li>financial calculations; and</li>
+        <li>other material business information before relying upon it.</li>
+      </ul>
+      <p>SafariLink will not intentionally represent AI-generated information as confirmed inventory when the underlying Platform data does not support that conclusion.</p>
+    </div>
+  </section>
+
+  <!-- ============ 28. COMMUNICATIONS ============ -->
+  <section class="terms-section" id="s28">
+    <div class="section-num">28</div>
+    <div class="section-body">
+      <h2>Communications</h2>
+      <p>The Platform may facilitate communication between Operators and Suppliers.</p>
+      <p>Users agree that communications may be stored and associated with Reservations, Accounts, and operational records for legitimate Platform purposes.</p>
+      <p>Users remain responsible for the accuracy and appropriateness of information they communicate.</p>
+    </div>
+  </section>
+
+  <!-- ============ 29. CONFIDENTIALITY ============ -->
+  <section class="terms-section" id="s29">
+    <div class="section-num">29</div>
+    <div class="section-body">
+      <h2>Confidentiality</h2>
+      <p>Users may receive confidential commercial information through SafariLink, including:</p>
+      <ul>
+        <li>STO Rates;</li>
+        <li>Supplier contracts;</li>
+        <li>negotiated prices;</li>
+        <li>commissions;</li>
+        <li>internal notes;</li>
+        <li>business information;</li>
+        <li>customer information; and</li>
+        <li>operational information.</li>
+      </ul>
+      <p>Users must protect confidential information and must not disclose it except where authorized or legally required.</p>
+      <p>This obligation survives termination of an Account to the extent permitted by law.</p>
+    </div>
+  </section>
+
+  <!-- ============ 30. PRIVACY AND PERSONAL DATA ============ -->
+  <section class="terms-section" id="s30">
+    <div class="section-num">30</div>
+    <div class="section-body">
+      <h2>Privacy and Personal Data</h2>
+      <p>SafariLink processes personal information in accordance with its Privacy Policy.</p>
+      <p>By using the Platform, you acknowledge that your information may be collected, used, stored, and processed as described in the Privacy Policy.</p>
+    </div>
+  </section>
+
+  <!-- ============ 31. DISCLAIMERS ============ -->
+  <section class="terms-section" id="s31">
+    <div class="section-num">31</div>
+    <div class="section-body">
+      <h2>Disclaimers</h2>
+      <p>To the maximum extent permitted by applicable law, SafariLink provides the Platform on an "as available" and "as is" basis.</p>
+      <p>SafariLink does not guarantee:</p>
+      <ul>
+        <li>continuous availability;</li>
+        <li>uninterrupted access; [insert remaining items from your file &mdash; the rest of &sect;31 was not shown in the excerpt]</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 32-35 (not shown in the excerpt) ============ -->
+  <section class="terms-section is-placeholder" id="s32">
+    <div class="section-num">32&ndash;35</div>
+    <div class="section-body">
+      <h2>Sections 32&ndash;35</h2>
+      <p>These sections (in your file) were not shown in the uploaded excerpt. The visible tail of Section 35 reads:</p>
+      <ul>
+        <li>outstanding obligations remain enforceable;</li>
+        <li>confirmed Reservations may remain subject to their applicable terms; and</li>
+        <li>confidentiality, intellectual property, liability, dispute, and other provisions intended to survive termination will continue.</li>
+      </ul>
+      <div class="placeholder">Insert Sections 32, 33, 34, and 35 here using the same section format as above.</div>
+    </div>
+  </section>
+
+  <!-- ============ 36. DISPUTE RESOLUTION ============ -->
+  <section class="terms-section" id="s36">
+    <div class="section-num">36</div>
+    <div class="section-body">
+      <h2>Dispute Resolution</h2>
+      <p>Users should first attempt to resolve disputes directly and in good faith.</p>
+      <p>Where SafariLink is a party to a dispute, the parties should first attempt good-faith negotiation.</p>
+      <p>If the dispute cannot be resolved through negotiation, it shall be handled through the dispute-resolution mechanism and jurisdiction specified in the applicable SafariLink commercial agreement or, where no separate agreement applies, under the laws and courts of the United Republic of Tanzania, subject to applicable mandatory legal requirements.</p>
+      <p>SafariLink reserves the right to seek urgent injunctive or protective relief where necessary to protect confidential information, intellectual property, security, or Platform integrity.</p>
+    </div>
+  </section>
+
+  <!-- ============ 37. FORCE MAJEURE ============ -->
+  <section class="terms-section" id="s37">
+    <div class="section-num">37</div>
+    <div class="section-body">
+      <h2>Force Majeure</h2>
+      <p>SafariLink will not be responsible for failure or delay caused by circumstances beyond its reasonable control, including:</p>
+      <ul>
+        <li>natural disasters;</li>
+        <li>epidemics or pandemics;</li>
+        <li>war;</li>
+        <li>terrorism;</li>
+        <li>civil unrest;</li>
+        <li>government action;</li>
+        <li>telecommunications failure;</li>
+        <li>internet outages;</li>
+        <li>power failures;</li>
+        <li>cyber incidents;</li>
+        <li>strikes;</li>
+        <li>transportation disruptions; or</li>
+        <li>other force majeure events.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 38. CHANGES TO THESE TERMS ============ -->
+  <section class="terms-section" id="s38">
+    <div class="section-num">38</div>
+    <div class="section-body">
+      <h2>Changes to These Terms</h2>
+      <p>SafariLink may update these Terms from time to time.</p>
+      <p>Material changes may be communicated through the Platform, email, or other reasonable means.</p>
+      <p>The updated Terms will become effective on the stated effective date.</p>
+      <p>Continued use of the Platform after the effective date constitutes acceptance of the updated Terms, to the extent permitted by law.</p>
+    </div>
+  </section>
+
+  <!-- ============ 39. SEVERABILITY ============ -->
+  <section class="terms-section" id="s39">
+    <div class="section-num">39</div>
+    <div class="section-body">
+      <h2>Severability</h2>
+      <p>If any provision of these Terms is determined to be invalid or unenforceable, the remaining provisions will continue in effect.</p>
+    </div>
+  </section>
+
+  <!-- ============ 40. ENTIRE AGREEMENT ============ -->
+  <section class="terms-section" id="s40">
+    <div class="section-num">40</div>
+    <div class="section-body">
+      <h2>Entire Agreement</h2>
+      <p>These Terms, together with applicable Supplier terms, commercial agreements, Platform policies, and the Privacy Policy, constitute the agreement governing use of the Platform unless a separate written agreement expressly overrides a provision.</p>
+    </div>
+  </section>
+
+  <!-- ============ 41. CONTACT ============ -->
+  <section class="terms-section" id="s41">
+    <div class="section-num">41</div>
+    <div class="section-body">
+      <h2>Contact</h2>
+      <p>For questions regarding these Terms:</p>
+      <ul>
+        <li><strong>SafariLink Tanzania B2B</strong></li>
+        <li>Email: [Insert Official Email]</li>
+        <li>Website: [Insert Website]</li>
+        <li>Address: [Insert Registered Business Address]</li>
+        <li>United Republic of Tanzania</li>
+      </ul>
+      <p><strong>Last Updated:</strong> [Insert Date]</p>
+    </div>
+  </section>
+
+  <!-- ============ PAGE FOOTER ============ -->
+  <div class="doc-footer">
+    <div>
+      <h4>SafariLink Tanzania B2B</h4>
+      <p>United Republic of Tanzania</p>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <p>Email: [Insert Official Email]<br>Website: [Insert Website]</p>
+    </div>
+    <div>
+      <h4>Legal</h4>
+      <a href="javascript:window.print()">Print / Save PDF</a><br>
+      <a href="index.html">Back to Dashboard</a>
+    </div>
+  </div>
+  <p class="copyright">&copy; <span id="year"></span> SafariLink Tanzania B2B. All rights reserved.</p>
+
+</main>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
