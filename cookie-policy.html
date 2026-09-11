@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SafariLink — Cookie Policy</title>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style>
+  :root {
+    --forest-green: #1a5a3a;
+    --forest-green-light: #2d7a52;
+    --accent-green: #3fb983;
+    --warm-off-white: #f8f7f4;
+    --khaki: #e8e5dd;
+    --charcoal: #2c2c2c;
+    --warm-gray: #a39e95;
+    --border-light: #d4cfc6;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --radius-sm: 6px;
+    --radius-md: 10px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+    background: var(--warm-off-white);
+    color: var(--charcoal);
+    line-height: 1.7;
+  }
+
+  /* ===== TOPBAR ===== */
+  .topbar {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border-light);
+  }
+  .topbar-inner {
+    max-width: 1060px; margin: 0 auto; padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 1.125rem; font-weight: 800; color: var(--forest-green);
+    text-decoration: none;
+  }
+  .brand i { width: 22px; height: 22px; color: var(--accent-green); }
+  .topbar-links {
+    display: flex; align-items: center; gap: 22px;
+    font-size: 0.875rem; font-weight: 500;
+  }
+  .topbar-links a {
+    color: var(--warm-gray); text-decoration: none;
+    transition: color 0.15s;
+  }
+  .topbar-links a:hover { color: var(--forest-green); }
+  .topbar-cta {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; background: var(--forest-green); color: #fff !important;
+    border-radius: var(--radius-sm); font-weight: 600;
+  }
+  .topbar-cta:hover { background: var(--forest-green-light); }
+  .topbar-cta i { width: 15px; height: 15px; }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    background: linear-gradient(135deg, #0f3d26 0%, var(--forest-green) 55%, var(--forest-green-light) 100%);
+    color: #fff; padding: 56px 24px 48px;
+    border-bottom: 4px solid var(--accent-green);
+  }
+  .hero-inner { max-width: 1060px; margin: 0 auto; }
+  .back-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: rgba(255,255,255,0.85); text-decoration: none;
+    font-size: 0.875rem; font-weight: 500; margin-bottom: 20px;
+    padding: 6px 12px; border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 100px; transition: all 0.15s;
+  }
+  .back-link:hover { background: rgba(255,255,255,0.12); color: #fff; }
+  .back-link i { width: 15px; height: 15px; }
+  .hero h1 { font-size: 2.25rem; font-weight: 800; letter-spacing: -0.02em; }
+  .hero p {
+    margin-top: 10px; font-size: 1.05rem;
+    color: rgba(255,255,255,0.85); max-width: 640px;
+  }
+  .hero-meta {
+    display: inline-flex; flex-wrap: wrap; gap: 16px;
+    margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.25);
+    font-size: 0.825rem; color: rgba(255,255,255,0.75);
+  }
+  .hero-meta strong { color: #fff; font-weight: 600; }
+
+  /* ---------- DOCUMENT BODY ---------- */
+  .doc-body { max-width: 1060px; margin: 0 auto; padding: 48px 24px 72px; }
+  .doc-intro {
+    background: #fff; border: 1px solid var(--border-light);
+    border-left: 4px solid var(--accent-green);
+    border-radius: var(--radius-md); padding: 20px 24px;
+    font-size: 0.95rem; color: #4b4b4b; margin-bottom: 40px;
+  }
+  .section {
+    background: #fff; border: 1px solid var(--border-light);
+    border-radius: var(--radius-md); padding: 24px 28px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow-sm);
+  }
+  .section h2 {
+    display: flex; align-items: baseline; gap: 12px;
+    font-size: 1.05rem; font-weight: 800; color: var(--forest-green);
+    margin-bottom: 12px; padding-bottom: 10px;
+    border-bottom: 1px solid var(--khaki);
+  }
+  .section h2 .num {
+    flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 50%;
+    background: #ecfdf5; color: var(--forest-green);
+    font-size: 0.8rem; font-weight: 800; transform: translateY(4px);
+  }
+  .section h3 {
+    font-size: 0.95rem; font-weight: 700; color: var(--charcoal);
+    margin: 18px 0 8px;
+  }
+  .section p { font-size: 0.92rem; color: #3d3d3d; margin-bottom: 10px; }
+  .section ul { margin: 8px 0 12px 24px; }
+  .section li { font-size: 0.92rem; color: #3d3d3d; margin-bottom: 6px; }
+  .section a { color: var(--forest-green); }
+  .muted { color: var(--warm-gray); font-size: 0.85rem; }
+  .contact-box {
+    background: var(--warm-off-white); border: 1px dashed var(--border-light);
+    border-radius: var(--radius-sm); padding: 14px 18px; margin-top: 8px;
+    font-size: 0.9rem;
+  }
+  .contact-box p { margin-bottom: 4px; }
+
+  /* ---------- FOOTER ---------- */
+  .footer {
+    background: var(--forest-green); color: rgba(255,255,255,0.8);
+    padding: 48px 24px 24px; font-size: 0.85rem;
+  }
+  .footer-inner { max-width: 1060px; margin: 0 auto; }
+  .footer-grid {
+    display: grid; grid-template-columns: 2fr 1fr; gap: 32px;
+    padding-bottom: 28px; border-bottom: 1px solid rgba(255,255,255,0.2);
+  }
+  .footer-brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.1rem; color: #fff; margin-bottom: 10px; }
+  .footer-brand i { width: 22px; height: 22px; color: var(--accent-green); }
+  .footer-links { display: flex; flex-direction: column; gap: 8px; }
+  .footer-links a { color: rgba(255,255,255,0.8); text-decoration: none; }
+  .footer-links a:hover { color: #fff; }
+  .footer-bottom {
+    max-width: 1060px; margin: 20px auto 0;
+    font-size: 0.78rem; color: rgba(255,255,255,0.6);
+    display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px;
+  }
+
+  @media (max-width: 720px) {
+    .topbar-links { display: none; }
+    .hero h1 { font-size: 1.7rem; }
+    .footer-grid { grid-template-columns: 1fr; }
+    .doc { padding: 32px 16px 56px; }
+    .section { padding: 20px 18px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== TOPBAR ===== -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <i data-lucide="compass"></i>
+      <span>SafariLink</span>
+    </a>
+    <nav class="topbar-links">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="terms.html">Terms</a>
+      <a href="privacy.html">Privacy</a>
+      <a class="topbar-cta" href="index.html">
+        <i data-lucide="arrow-left"></i> Back to Dashboard
+      </a>
+    </nav>
+  </div>
+</header>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="hero-inner">
+    <a class="back-link" href="index.html">
+      <i data-lucide="chevron-left"></i> Back to Homepage
+    </a>
+    <h1>Cookie Policy</h1>
+    <p>How SafariLink Tanzania B2B uses cookies and similar technologies across its website and Platform.</p>
+    <div class="hero-meta">
+      <span><strong>Effective Date:</strong> [Insert Date]</span>
+      <span><strong>Last Updated:</strong> [Insert Date]</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== DOCUMENT BODY ===== -->
+<main class="doc">
+
+  <div class="doc-intro">
+    This Cookie Policy explains how <strong>SafariLink Tanzania B2B</strong> (“<strong>SafariLink</strong>”, “<strong>we</strong>”, “<strong>us</strong>”, or “<strong>our</strong>”) uses cookies and similar technologies when you visit our website or use the SafariLink Platform.
+    <br><br>
+    This Policy should be read together with our <strong>Privacy Policy</strong> and <strong>Terms &amp; Conditions</strong>.
+  </div>
+
+  <div class="section">
+    <h2><span class="no-n">1</span> What Are Cookies?</h2>
+    <p>Cookies are small text files placed on your device when you visit a website.</p>
+    <p>They allow websites to remember information about your visit, maintain sessions, improve security, understand how the website is used, and provide a better user experience.</p>
+    <p>SafariLink may also use similar technologies such as:</p>
+    <ul>
+      <li>session storage;</li>
+      <li>local storage;</li>
+      <li>pixels;</li>
+      <li>web beacons;</li>
+      <li>device identifiers; and</li>
+      <li>other technologies that perform similar functions.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="no-n">2</span> Why SafariLink Uses Cookies</h2>
+    <p>SafariLink uses cookies and similar technologies to:</p>
+    <ul>
+      <li>keep users securely logged in;</li>
+      <li>remember user preferences;</li>
+      <li>maintain Platform sessions;</li>
+      <li>protect Accounts;</li>
+      <li>prevent fraudulent activity;</li>
+      <li>understand how visitors use the website;</li>
+      <li>improve Platform performance;</li>
+      <li>measure product usage;</li>
+      <li>troubleshoot technical problems;</li>
+      <li>improve search and navigation;</li>
+      <li>remember selected settings;</li>
+      <li>support communication functionality; and</li>
+      <li>improve our services and products.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="no-n">3</span> Types of Cookies We May Use</h2>
+    <p>SafariLink may use the following categories of cookies.</p>
+    <h3>3.1 Strictly Necessary Cookies</h3>
+    <p>These cookies are required for the website or Platform to function properly. They may be used for:</p>
+    <ul>
+      <li>authentication;</li>
+      <li>account sessions;</li>
+      <li>security;</li>
+      <li>fraud prevention;</li>
+      <li>load balancing;</li>
+      <li>navigation;</li>
+      <li>maintaining user preferences required for Platform functionality; and</li>
+      <li>other essential technical functions.</li>
+    </ul>
+    <p>These cookies generally cannot be disabled through our cookie preference tool because the Platform may not function properly without them.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="no-n">4</span> Functional Cookies</h2>
+    <p>Functional cookies allow SafariLink to remember choices you make. For example, they may remember:</p>
+    <ul>
+      <li>language preferences;</li>
+      <li>currency preferences;</li>
+      <li>dashboard settings;</li>
+      <li>search preferences;</li>
+      <li>display preferences;</li>
+      <li>recently selected filters; and</li>
+      <li>other personalization settings.</li>
+    </ul>
+    <p>These cookies help provide a smoother experience without requiring you to repeatedly enter the same information.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="no-n">5</span> Analytics and Performance Cookies</h2>
+    <p>Where enabled and permitted, SafariLink may use analytics technologies to understand how the website and Platform are used. These technologies may help us understand:</p>
+    <ul>
+      <li>which pages are visited;</li>
+      <li>which Platform features are used;</li>
+      <li>how users navigate the Platform;</li>
+      <li>how long users spend on particular areas;</li>
+      <li>technical errors;</li>
+      <li>device and browser performance;</li>
+      <li>general traffic patterns; and</li>
+      <li>how we can improve the Platform.</li>
+    </ul>
+    <p>Analytics information may be aggregated or otherwise processed to understand Platform performance.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="no-n">6</span> Security Cookies</h2>
+    <p>Security-related cookies and similar technologies may be used to:</p>
+    <ul>
+      <li>authenticate users;</li>
+      <li>detect suspicious activity;</li>
+      <li>prevent unauthorized access;</li>
+      <li>protect accounts;</li>
+      <li>identify abnormal sessions;</li>
+      <li>prevent fraud; and</li>
+      <li>protect the Platform and its users.</li>
+    </ul>
+    <p>These technologies may operate automatically as part of our security systems.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="no-n">7</span> Marketing Cookies</h2>
+    <p>SafariLink may use marketing or advertising technologies in the future to understand the effectiveness of marketing campaigns or display relevant business-related communications.</p>
+    <p>Where required by applicable law, we will obtain consent before using non-essential marketing cookies.</p>
+    <p>You may be able to reject or withdraw consent for these cookies through our cookie preference controls.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="no-n">8</span> Third-Party Cookies</h2>
+    <p>Some cookies or similar technologies may be placed or operated by third-party service providers that help us provide our Platform. These may include providers supporting:</p>
+    <ul>
+      <li>analytics;</li>
+      <li>cloud infrastructure;</li>
+      <li>authentication;</li>
+      <li>payment processing;</li>
+      <li>maps;</li>
+      <li>communication;</li>
+      <li>cybersecurity;</li>
+      <li>customer support;</li>
+      <li>marketing; and</li>
+      <li>other Platform services.</li>
+    </ul>
+    <p>Third parties may process information according to their own privacy policies and contractual arrangements with SafariLink.</p>
+    <p>SafariLink does not control every cookie or technology operated by an independent third party.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="no-n">9</span> Cookies Used by the B2B Platform</h2>
+    <p>When you log into the SafariLink B2B Platform, cookies or similar technologies may be required to maintain your secure session. For example, they may help the Platform remember:</p>
+    <ul>
+      <li>that you are authenticated;</li>
+      <li>your authorized account;</li>
+      <li>your selected company;</li>
+      <li>your role and permissions;</li>
+      <li>your dashboard preferences;</li>
+      <li>selected search filters; and</li>
+      <li>other temporary session information.</li>
+    </ul>
+    <p>These technologies are important for maintaining secure access to business information.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="no-n">10</span> Private STO Rates and Cookies</h2>
+    <p>SafariLink may use session and authentication technologies to ensure that private commercial information, including <strong>STO Rates</strong>, is shown only to appropriately authorized users.</p>
+    <p>Cookies themselves do not determine commercial eligibility.</p>
+    <p>Access to private STO Rates is controlled through the Platform's account, authorization, and permission systems.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="no-n">11</span> AI Features</h2>
+    <p>SafariLink may introduce AI-powered features such as:</p>
+    <ul>
+      <li>intelligent search;</li>
+      <li>itinerary assistance;</li>
+      <li>supplier matching;</li>
+      <li>quote assistance;</li>
+      <li>operational recommendations; and</li>
+      <li>business intelligence.</li>
+    </ul>
+    <p>Cookies and similar technologies may be used to remember relevant user preferences or maintain the technical session required to provide these features.</p>
+    <p>AI processing and personal-data processing are governed separately by our Privacy Policy and applicable agreements.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="no-n">12</span> Cookie Consent</h2>
+    <p>Where required by applicable law, SafariLink will ask for your consent before placing non-essential cookies on your device. You may be presented with options such as:</p>
+    <ul>
+      <li><strong>Accept All</strong> — Allows all categories of cookies that are available through the consent mechanism.</li>
+      <li><strong>Reject Non-Essential</strong> — Allows only cookies necessary for the website or Platform to function.</li>
+      <li><strong>Cookie Settings</strong> — Allows you to choose individual categories.</li>
+    </ul>
+    <p>Your choices may be stored so that you do not have to provide them repeatedly.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="no-n">13</span> Withdrawing or Changing Your Consent</h2>
+    <p>Where applicable, you may change your cookie preferences at any time through SafariLink's cookie settings.</p>
+    <p>Changing your preferences does not necessarily delete cookies that have already been placed on your device.</p>
+    <p>You may also delete cookies through your browser settings.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="no-n">14</span> Browser Controls</h2>
+    <p>Most modern browsers allow you to:</p>
+    <ul>
+      <li>view cookies;</li>
+      <li>delete cookies;</li>
+      <li>block cookies;</li>
+      <li>allow cookies;</li>
+      <li>block third-party cookies; or</li>
+      <li>receive warnings before cookies are stored.</li>
+    </ul>
+    <p>However, disabling necessary cookies may cause some SafariLink features to stop functioning correctly.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="no-n">15</span> Do-Not-Track Signals</h2>
+    <p>Some browsers provide "Do Not Track" or similar privacy signals.</p>
+    <p>SafariLink will respond to such signals where required by applicable law or where technically appropriate.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="no-n">16</span> Information Collected Through Cookies</h2>
+    <p>Depending on the type of technology used, information collected may include:</p>
+    <ul>
+      <li>IP address;</li>
+      <li>browser type;</li>
+      <li>device type;</li>
+      <li>operating system;</li>
+      <li>session identifiers;</li>
+      <li>pages visited;</li>
+      <li>Platform features used;</li>
+      <li>approximate location;</li>
+      <li>referral information;</li>
+      <li>timestamps;</li>
+      <li>language preferences;</li>
+      <li>security information; and</li>
+      <li>other technical or usage information.</li>
+    </ul>
+    <p>SafariLink will process information in accordance with our Privacy Policy and applicable law.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="no-n">17</span> Cookies and Personal Information</h2>
+    <p>Some cookies may be associated with information that can identify or relate to an individual.</p>
+    <p>Where cookie information constitutes personal data, SafariLink will process it in accordance with applicable data-protection requirements.</p>
+    <p>Our Privacy Policy explains more about:</p>
+    <ul>
+      <li>what personal information we collect;</li>
+      <li>why we process it;</li>
+      <li>how we share it;</li>
+      <li>how we protect it; and</li>
+      <li>your applicable data-protection rights.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="no-n">18</span> Cookie Retention</h2>
+    <h3>Session Cookies</h3>
+    <p>These generally expire when you close your browser or when the relevant session ends.</p>
+    <h3>Persistent Cookies</h3>
+    <p>These remain on your device for a defined period or until they are deleted.</p>
+    <p>The retention period depends on the purpose of the cookie and the technology provider.</p>
+    <p>SafariLink aims to retain cookies only for as long as reasonably necessary for their intended purpose.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="no-n">19</span> Changes to This Cookie Policy</h2>
+    <p>SafariLink may update this Cookie Policy from time to time to reflect:</p>
+    <ul>
+      <li>changes to the Platform;</li>
+      <li>new technologies;</li>
+      <li>new services;</li>
+      <li>changes in third-party providers;</li>
+      <li>changes in our cookie practices; or</li>
+      <li>changes in applicable law.</li>
+    </ul>
+    <p>When we make changes, we will update the "Last Updated" date.</p>
+    <p>Where required, we may provide additional notice or request renewed consent.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="no-n">20</span> Contact Us</h2>
+    <p>If you have questions about SafariLink's use of cookies or similar technologies, contact:</p>
+    <div class="contact-box">
+      <strong>SafariLink Tanzania B2B</strong>
+      <p>Email: [Insert Privacy Email]</p>
+      <p>Website: [Insert Website]</p>
+      <p>Address: [Insert Registered Business Address]</p>
+      <p>United Republic of Tanzania</p>
+    </div>
+    <p class="muted" style="margin-top:12px;"><strong>Last Updated:</strong> [Insert Date]</p>
+  </div>
+
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand"><i data-lucide="compass"></i> SafariLink</div>
+        <p style="max-width:420px; color:rgba(255,255,255,0.75); font-size:0.85rem;">
+          Tanzania's B2B travel operating network — connecting tour operators with accommodation, fleet, and guiding partners.
+        </p>
+      </div>
+      <div class="footer-links">
+        <strong style="color:#fff; font-size:0.85rem;">Legal</strong>
+        <a href="terms.html">Terms &amp; Conditions</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="cookie-policy.html">Cookie Policy</a>
+        <a href="about.html">About SafariLink</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2024 SafariLink Tanzania B2B. All rights reserved.</span>
+    <span>Valid for trading within the United Republic of Tanzania.</span>
+  </div>
+</footer>
+
+<script>
+  lucide.createIcons();
+</script>
+</body>
+</html>
