@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentation | SafariLink Tanzania</title>
+
+  <style>
+    :root {
+      --forest-green: #23613f;
+      --dark-green: #17452d;
+      --charcoal: #2c2c2c;
+      --light-bg: #f8faf9;
+      --white: #ffffff;
+      --text: #25332b;
+      --muted: #68756d;
+      --border: #dce5de;
+      --soft-green: #eef3f0;
+      --accent-gold: #c78b3c;
+      --code-bg: #1e2923;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      color: var(--text);
+      background: var(--light-bg);
+      line-height: 1.65;
+    }
+
+    a { color: var(--forest-green); }
+    h1, h2, h3 { line-height: 1.25; }
+
+    /* ---------- Navbar ---------- */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 6%;
+      background: var(--charcoal);
+      border-bottom: 3px solid var(--forest-green);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #fff;
+      text-decoration: none;
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: -.3px;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--forest-green);
+      color: #fff;
+      font-weight: 800;
+    }
+
+    .nav-link {
+      color: #d8dedb;
+      font-size: 14px;
+      text-decoration: none;
+    }
+    .nav-link:hover { color: #fff; }
+
+    /* ---------- Hero ---------- */
+    .hero {
+      padding: 72px 6% 78px;
+      color: #fff;
+      text-align: center;
+      background:
+        linear-gradient(rgba(23, 69, 45, 0.93), rgba(23, 69, 45, 0.93)),
+        url("assets/safari-bg.jpg") center/cover;
+    }
+
+    .hero .sl-label {
+      display: inline-block;
+      padding: 6px 14px;
+      border: 1px solid rgba(255,255,255,.35);
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #dce5de;
+      margin-bottom: 18px;
+    }
+
+    .hero h1 {
+      margin: 0 0 14px;
+      font-size: clamp(32px, 5vw, 48px);
+    }
+
+    .hero p {
+      max-width: 720px;
+      margin: 0 auto;
+      color: #dce5de;
+      font-size: 1.1rem;
+    }
+
+    /* ---------- Search ---------- */
+    .search-box {
+      display: flex;
+      max-width: 660px;
+      margin: 34px auto 0;
+      overflow: hidden;
+      border-radius: 10px;
+      background: #fff;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+    }
+
+    .search-box input {
+      flex: 1;
+      min-width: 0;
+      padding: 15px 18px;
+      border: 0;
+      outline: 0;
+      color: var(--text);
+      font: inherit;
+      font-size: 14px;
+    }
+
+    .search-box button {
+      padding: 0 26px;
+      border: 0;
+      background: var(--accent-gold);
+      color: #fff;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    /* ---------- Layout ---------- */
+    .layout {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      gap: 44px;
+      max-width: 1180px;
+      margin: 56px auto;
+      padding: 0 24px;
+    }
+
+    .sidebar {
+      align-self: start;
+      position: sticky;
+      top: 84px;
+      padding: 20px 18px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      max-height: calc(100vh - 110px);
+      overflow-y: auto;
+    }
+
+    .sidebar h3 {
+      margin: 0 0 12px;
+      color: var(--dark-green);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+    }
+
+    .sidebar a {
+      display: block;
+      padding: 7px 0;
+      color: var(--muted);
+      font-size: 13.5px;
+      text-decoration: none;
+      border-left: 2px solid transparent;
+      padding-left: 10px;
+      margin-left: -12px;
+    }
+
+    .sidebar a:hover {
+      color: var(--forest-green);
+      border-left-color: var(--accent-gold);
+    }
+
+    /* ---------- Content ---------- */
+    .content > .doc-intro { margin-bottom: 46px; }
+    .content > .doc-intro h2 { font-size: 30px; color: var(--dark-green); margin: 0 0 14px; }
+    .content > .doc-intro p { max-width: 780px; color: var(--muted); }
+
+    .doc-note {
+      margin-top: 20px;
+      padding: 18px 20px;
+      border-left: 4px solid var(--forest-green);
+      background: var(--soft-green);
+      color: var(--muted);
+      font-size: 14.5px;
+      border-radius: 0 10px 10px 0;
+    }
+
+    .doc-note strong { color: var(--dark-green); }
+
+    .doc-section {
+      margin-bottom: 58px;
+      padding: 34px 34px 30px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #fff;
+      scroll-margin-top: 92px;
+    }
+
+    .doc-section > h2 {
+      margin: 0 0 6px;
+      color: var(--dark-green);
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .doc-section > h2 .hash {
+      color: var(--accent-gold);
+      font-weight: 700;
+      font-size: 20px;
+    }
+
+    .doc-section > p {
+      margin: 6px 0 18px;
+      color: var(--muted);
+      font-size: 14.5px;
+      max-width: 760px;
+    }
+
+    .doc-section h3 {
+      margin: 26px 0 8px;
+      color: var(--dark-green);
+      font-size: 16.5px;
+    }
+
+    .doc-section h3:first-of-type { margin-top: 14px; }
+
+    /* ---------- Expandable topic groups ---------- */
+    details.topic-group {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--soft-green);
+      margin: 14px 0;
+      overflow: hidden;
+    }
+
+    details.topic-group summary {
+      cursor: pointer;
+      list-style: none;
+      padding: 14px 18px;
+      font-weight: 700;
+      font-size: 14.5px;
+      color: var(--dark-green);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    details.topic-group summary::-webkit-details-marker { display: none; }
+
+    details.topic-group summary::after {
+      content: "＋";
+      color: var(--accent-gold);
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    details.topic-group[open] summary::after { content: "−"; }
+
+    .topic-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 6px 20px;
+      margin: 0;
+      padding: 6px 20px 16px;
+      list-style: none;
+      background: #fff;
+    }
+
+    .topic-list li {
+      position: relative;
+      padding: 7px 0 7px 22px;
+      font-size: 13.5px;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .topic-list li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: var(--accent-gold);
+      font-weight: 800;
+      font-size: 12px;
+      top: 8px;
+    }
+
+    /* ---------- Role / status grids ---------- */
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(205px, 1fr));
+      gap: 12px;
+      margin: 16px 0 20px;
+    }
+
+    .mini-card {
+      padding: 16px 18px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    .mini-card strong {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--forest-green);
+      font-size: 14px;
+    }
+
+    .mini-card span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* ---------- Rate definition rows ---------- */
+    .def-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0 8px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fff;
+      font-size: 13.5px;
+    }
+
+    .def-table th,
+    .def-table td {
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .def-table th {
+      background: var(--soft-green);
+      color: var(--dark-green);
+      width: 180px;
+      white-space: nowrap;
+    }
+
+    .def-table tr:last-child td,
+    .def-table tr:last-child th { border-bottom: 0; }
+
+    .def-table td { color: var(--muted); }
+
+    /* ---------- Status chips / lifecycle ---------- */
+    .chip-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 16px 0 6px;
+    }
+
+    .chip {
+      padding: 8px 14px;
+      border-radius: 20px;
+      background: var(--soft-green);
+      color: var(--dark-green);
+      font-size: 13px;
+      font-weight: 700;
+      border: 1px solid var(--border);
+    }
+
+    .chip.chip-warn { background: #fdf3e3; color: #8a6119; }
+    .chip.chip-danger { background: #fbeaea; color: #984040; }
+
+    .lifecycle {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin: 18px 0 6px;
+      font-size: 13px;
+    }
+
+    .lifecycle span {
+      padding: 8px 13px;
+      border-radius: 20px;
+      background: var(--soft-green);
+      color: var(--dark-green);
+      font-weight: 700;
+      font-size: 12.5px;
+    }
+
+    .lifecycle b { color: var(--accent-gold); }
+
+    /* ---------- Code blocks ---------- */
+    .code-block {
+      margin: 16px 0;
+      padding: 20px 22px;
+      overflow-x: auto;
+      border-radius: 10px;
+      background: var(--code-bg);
+      color: #d9eee1;
+      font-family: 'SFMono-Regular', Consolas, Menlo, monospace;
+      font-size: 13.5px;
+      line-height: 1.85;
+    }
+
+    .code-block .dim { color: #70a78b; }
+
+    /* ---------- Status code cards ---------- */
+    .status-grid .mini-card {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .status-grid .code {
+      font-family: 'SFMono-Regular', Consolas, monospace;
+      font-size: 13px;
+      color: var(--accent-gold);
+      font-weight: 700;
+    }
+
+    /* ---------- Support CTA ---------- */
+    .support-cta {
+      margin-top: 20px;
+      padding: 44px 30px;
+      border-radius: 14px;
+      background: var(--charcoal);
+      color: #fff;
+      text-align: center;
+    }
+
+    .support-cta h2 { color: #fff; margin: 0 0 8px; }
+    .support-cta p { color: #d8dedb; margin: 0 auto; max-width: 520px; }
+
+    .btn {
+      display: inline-block;
+      margin-top: 18px;
+      padding: 13px 28px;
+      border-radius: 8px;
+      background: var(--forest-green);
+      color: #fff;
+      font-weight: 700;
+      font-size: 14px;
+      text-decoration: none;
+    }
+    .btn:hover { background: var(--dark-green); }
+
+    /* ---------- Footer ---------- */
+    footer {
+      background: var(--charcoal);
+      color: #999;
+      margin-top: 70px;
+      border-top: 3px solid var(--forest-green);
+      font-size: 13px;
+    }
+
+    .footer-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 44px 24px 34px;
+      display: grid;
+      grid-template-columns: 1.4fr repeat(3, 1fr);
+      gap: 32px;
+    }
+
+    .footer-brand { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+    .footer-brand .brand-mark { width: 32px; height: 32px; }
+    .footer-brand span { font-size: 17px; font-weight: 800; color: #fff; }
+
+    .footer-col h4 {
+      margin: 0 0 12px;
+      color: #fff;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+    }
+
+    .footer-col a {
+      display: block;
+      color: #999;
+      text-decoration: none;
+      padding: 4px 0;
+      font-size: 13px;
+    }
+    .footer-col a:hover { color: #fff; }
+
+    .footer-bottom {
+      border-top: 1px solid #3a3a3a;
+      padding: 18px 24px;
+      text-align: center;
+      font-size: 12.5px;
+      color: #777;
+    }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; margin-top: 36px; }
+      .sidebar { position: static; max-height: none; }
+      .sidebar a { display: inline-block; margin: 0 14px 4px 0; border: 0; padding: 4px 0; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 540px) {
+      .navbar { padding: 13px 20px; }
+      .hero { padding: 56px 20px; }
+      .search-box { display: block; background: transparent; box-shadow: none; }
+      .search-box input, .search-box button { width: 100%; min-height: 50px; border-radius: 8px; }
+      .search-box button { margin-top: 8px; }
+      .layout { padding: 0 16px; }
+      .doc-section { padding: 26px 20px 6px; }
+      .def-table th { white-space: normal; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .lifecycle b { display: none; }
+      .lifecycle { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">S</span>
+      <span>SafariLink</span>
+    </a>
+    <a href="index.html" class="nav-link">← Back to Portal</a>
+  </nav>
+
+  <header class="hero">
+    <span class="sl-label">Documentation</span>
+    <h1>SafariLink Documentation</h1>
+    <p>The technical and operational reference for the platform. Documentation provides detailed information about how SafariLink works.</p>
+
+    <form class="search-box" id="documentationSearch">
+      <input id="searchInput" type="search" placeholder="Search the documentation…" aria-label="Search documentation">
+      <button type="submit">Search</button>
+    </form>
+  </header>
+
+  <main class="layout">
+
+    <!-- ===== Sidebar ===== -->
+    <aside class="sidebar" aria-label="Documentation navigation">
+      <h3>On this page</h3>
+      <a href="#getting-started">Getting Started</a>
+      <a href="#account">Account Documentation</a>
+      <a href="#suppliers">Supplier Documentation</a>
+      <a href="#rates">Rates &amp; Pricing</a>
+      <a href="#availability">Availability</a>
+      <a href="#reservations">Reservations</a>
+      <a href="#itineraries">Itinerary &amp; Costing</a>
+      <a href="#api">API Documentation</a>
+      <a href="#ai">AI Documentation</a>
+      <a href="#privacy">Data &amp; Privacy</a>
+      <a href="#errors">Status &amp; Error Codes</a>
+      <a href="#philosophy">Documentation Philosophy</a>
+    </aside>
+
+    <!-- ===== Content ===== -->
+    <section class="content">
+
+      <div class="doc-intro">
+        <h2>Documentation Structure</h2>
+        <p>
+          Unlike the <strong>Help Centre</strong>, which answers common user questions, this
+          Documentation hub explains the platform's workflows, rules, terminology and
+          technical concepts in greater depth — from account roles and supplier inventory
+          to availability states, reservation lifecycles, API structure and cost calculations.
+        </p>
+        <div class="doc-note">
+          <strong>Where to start:</strong> new platform users should begin with
+          <a href="#getting-started">Getting Started</a>, then follow the sections in order.
+        </div>
+      </div>
+
+      <!-- ===== 1. GETTING STARTED ===== -->
+      <article class="doc-section" id="getting-started">
+        <h2><span class="hash">#</span> Getting Started</h2>
+        <p>Introduction to SafariLink — what it is, who it is for, how the network works, and the core terminology used across the platform.</p>
+
+        <details class="topic-group" open>
+          <summary>Introduction to SafariLink</summary>
+          <ul class="topic-list">
+            <li>What SafariLink is</li>
+            <li>Who it is for</li>
+            <li>How the network works</li>
+            <li>Core terminology</li>
+            <li>User roles</li>
+          </ul>
+        </details>
+      </article>
+
+      <!-- ========= 2. ACCOUNT DOCUMENTATION ========= -->
+      <article class="doc-section" id="account">
+        <h2><span class="hash">#</span> Account Documentation</h2>
+        <p>How company accounts, users, roles and permissions work.</p>
+
+        <h3>Company Account</h3>
+        <details class="topic-group" open>
+          <summary>Learn how to manage your company account</summary>
+          <ul class="topic-list">
+            <li>Create an account</li>
+            <li>Verify a company</li>
+            <li>Manage company information</li>
+            <li>Add users</li>
+            <li>Assign roles</li>
+            <li>Manage permissions</li>
+          </ul>
+        </details>
+
+        <h3>User Roles</h3>
+        <p>Documentation should explain each role available on the platform.</p>
+
+        <div class="mini-grid">
+          <div class="mini-card">
+            <strong>Administrator</strong>
+            <span>Manages company-level settings and users.</span>
+          </div>
+          <div class="mini-card">
+            <strong>Manager</strong>
+            <span>Oversees operational and team activities.</span>
+          </div>
+          <div class="mini-card">
+            <strong>Sales</strong>
+            <span>Manages clients, trips, itineraries and quotes.</span>
+          </div>
+          <div class="mini-card">
+            <strong>Reservations</strong>
+            <span>Manages supplier requests and confirmations.</span>
+          </div>
+          <div class="mini-card">
+            <strong>Finance</strong>
+            <span>Manages costs, invoices and payments.</span>
+          </div>
+          <div class="mini-card">
+            <strong>Operations</strong>
+            <span>Manages active trips and operational tasks.</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- ========= 3. SUPPLIER DOCUMENTATION ========= -->
+      <article class="doc-section" id="suppliers">
+        <h2><span class="hash">#</span> Supplier Documentation</h2>
+        <p>How supplier inventory and profiles work across Accommodation, Fleet and Guides.</p>
+
+        <h3>Accommodation</h3>
+        <details class="topic-group">
+          <summary>How accommodation inventory works</summary>
+          <ul class="topic-list">
+            <li>Property profiles</li>
+            <li>Room types</li>
+            <li>Availability</li>
+            <li>Allotments</li>
+            <li>STO rates</li>
+            <li>Seasons</li>
+            <li>Meal plans</li>
+            <li>Single supplements</li>
+            <li>Child policies</li>
+            <li>Cancellation policies</li>
+            <li>Blackout dates</li>
+          </ul>
+        </details>
+
+        <h3>Fleet</h3>
+        <details class="topic-group">
+          <summary>How vehicle inventory works</summary>
+          <ul class="topic-list">
+            <li>Vehicle profiles</li>
+            <li>Vehicle categories</li>
+            <li>Availability</li>
+            <li>Leasing</li>
+            <li>Driver arrangements</li>
+            <li>Fuel</li>
+            <li>Mileage</li>
+            <li>Security deposits</li>
+            <li>Insurance</li>
+            <li>Maintenance</li>
+            <li>Replacement vehicles</li>
+          </ul>
+        </details>
+
+        <h3>Guides</h3>
+        <details class="topic-group">
+          <summary>How guide profiles work</summary>
+          <ul class="topic-list">
+            <li>Guide profiles</li>
+            <li>Languages</li>
+            <li>Qualifications</li>
+            <li>Specialisations</li>
+            <li>Availability</li>
+            <li>Rates</li>
+            <li>Assignment</li>
+            <li>Guide confirmation</li>
+          </ul>
+        </details>
+      </article>
+
+      <!-- ========= 4. RATES & PRICING ========= -->
+      <article class="doc-section" id="rates">
+        <h2><span class="hash">#</span> Rates &amp; Pricing</h2>
+        <p>Core pricing terminology used across the platform and supplier network.</p>
+
+        <table class="def-table">
+          <tr>
+            <th>Rack Rate</th>
+            <td>The standard public or published rate where applicable.</td>
+          </tr>
+          <tr>
+            <th>STO Rate</th>
+            <td>A private B2B commercial rate available to eligible users.</td>
+          </tr>
+          <tr>
+            <th>Supplier Cost</th>
+            <td>The amount payable to the supplier under the applicable commercial arrangement.</td>
+          </tr>
+          <tr>
+            <th>Markup</th>
+            <td>The amount added to the operational cost.</td>
+          </tr>
+          <tr>
+            <th>Gross Margin</th>
+            <td>The difference between the selling price and the relevant cost.</td>
+          </tr>
+        </table>
+      </article>
+
+      <!-- ========= 5. AVAILABILITY ========= -->
+      <article class="doc-section" id="availability">
+        <h2><span class="hash">#</span> Availability Documentation</h2>
+        <p>Availability should have clear, consistent states so operators and suppliers share the same understanding.</p>
+
+        <div class="chip-list">
+          <span class="chip">Available — Service appears available</span>
+          <span class="chip chip-warn">On Request — Supplier confirmation is required</span>
+          <span class="chip chip-warn">Requested — A request has been submitted</span>
+          <span class="chip">Confirmed — Supplier has confirmed</span>
+          <span class="chip chip-danger">Unavailable — The requested service cannot be provided</span>
+        </div>
+      </article>
+
+      <!-- ========= 6. RESERVATIONS ========= -->
+      <article class="doc-section" id="reservations">
+        <h2><span class="hash">#</span> Reservation Documentation</h2>
+        <p>What a reservation record should contain, and how reservation states progress.</p>
+
+        <h3>Reservation Record</h3>
+        <ul class="topic-list" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));">
+          <li>Booking reference</li>
+          <li>Supplier</li>
+          <li>Operator</li>
+          <li>Service</li>
+          <li>Traveller details</li>
+          <li>Dates</li>
+          <li>Quantity</li>
+          <li>Rate</li>
+          <li>Currency</li>
+          <li>Status</li>
+          <li>Cancellation terms</li>
+          <li>Confirmation</li>
+          <li>Documents</li>
+          <li>Communication history</li>
+        </ul>
+
+        <h3>Reservation Lifecycle</h3>
+        <div class="lifecycle">
+          <span>Draft</span><b>→</b>
+          <span>Requested</span><b>→</b>
+          <span>On Request</span><b>→</b>
+          <span>Confirmed</span><b>→</b>
+          <span>Modified</span><b>→</b>
+          <span>Completed</span>
+        </div>
+        <p style="font-size:13.5px;">…or <strong>Cancelled</strong> at any permitted stage, subject to supplier and commercial terms.</p>
+      </article>
+
+      <!-- ========= 7. ITINERARY & COSTING ========= -->
+      <article class="doc-section" id="itineraries">
+        <h2><span class="hash">#</span> Itinerary &amp; Costing Documentation</h2>
+        <p>What the itinerary builder supports and how costing is calculated.</p>
+
+        <h3>Itinerary Builder</h3>
+        <ul class="topic-list" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));">
+          <li>Trip setup</li>
+          <li>Daily activities</li>
+          <li>Accommodation</li>
+          <li>Transport</li>
+          <li>Guides</li>
+          <li>Activities</li>
+          <li>Routes</li>
+          <li>Notes</li>
+          <li>Alternatives</li>
+          <li>Costing</li>
+        </ul>
+
+        <h3>Costing Example</h3>
+        <div class="code-block">
+Accommodation: $1,200
+Vehicle:      $1,000
+Guide:          $450
+Activities:     $300
+Transfers:      $150
+Other costs:    $100
+--------------------
+Total Cost:   $3,200
+
+If the operator applies a 20% markup:
+Selling Price: $3,840
+        </div>
+        <div class="doc-note">
+          The exact calculation method should be <strong>configurable</strong> according to each
+          company's pricing model, currency and margin rules.
+        </div>
+      </article>
+
+      <!-- ========= 8. API DOCUMENTATION ========= -->
+      <article class="doc-section" id="api">
+        <h2><span class="hash">#</span> API Documentation</h2>
+        <p>For approved technical users and integrations. API access should use authentication, authorization, rate limits, tokens, request validation, logging and versioning.</p>
+
+        <h3>Potential API Areas</h3>
+        <ul class="topic-list" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr));">
+          <li>Authentication</li>
+          <li>Companies</li>
+          <li>Users</li>
+          <li>Suppliers</li>
+          <li>Properties</li>
+          <li>Rooms</li>
+          <li>Vehicles</li>
+          <li>Guides</li>
+          <li>Activities</li>
+          <li>Availability</li>
+          <li>Rates</li>
+          <li>Itineraries</li>
+          <li>Reservations</li>
+          <li>Clients</li>
+          <li>Documents</li>
+          <li>Notifications</li>
+        </ul>
+
+        <h3>Example Future Structure — API v1</h3>
+        <div class="code-block">
+<span class="dim">GET</span>  /api/v1/suppliers
+<span class="dim">GET</span>  /api/v1/properties
+<span class="dim">GET</span>  /api/v1/vehicles
+<span class="dim">GET</span>  /api/v1/guides
+<span class="dim">GET</span>  /api/v1/availability
+<span class="dim">POST</span> /api/v1/reservations
+        </div>
+
+        <h3>Webhooks</h3>
+        <p style="margin-bottom:0;">Future integrations may allow external systems to respond automatically to platform events:</p>
+        <div class="chip-list" style="margin-top:12px;">
+          <span class="chip">reservation.created</span>
+          <span class="chip">reservation.confirmed</span>
+          <span class="chip">reservation.cancelled</span>
+          <span class="chip">availability.updated</span>
+          <span class="chip">supplier.updated</span>
+          <span class="chip">payment.received</span>
+          <span class="chip">trip.completed</span>
+        </div>
+      </article>
+
+      <!-- ========= 9. AI DOCUMENTATION ========= -->
+      <article class="doc-section" id="ai">
+        <h2><span class="hash">#</span> AI Documentation</h2>
+        <p>SafariLink Intelligence is documented separately from core platform features.</p>
+
+        <h3>AI can assist with</h3>
+        <div class="chip-list">
+          <span class="chip">Search</span>
+          <span class="chip">Planning</span>
+          <span class="chip">Matching</span>
+          <span class="chip">Costing</span>
+          <span class="chip">Communication</span>
+          <span class="chip">Translation</span>
+          <span class="chip">Summaries</span>
+          <span class="chip">Document extraction</span>
+          <span class="chip">Operational recommendations</span>
+        </div>
+
+        <h3>AI cannot independently guarantee</h3>
+        <ul class="topic-list" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));">
+          <li>Supplier availability</li>
+          <li>Booking confirmation</li>
+          <li>Price validity</li>
+          <li>Payment completion</li>
+          <li>Service delivery</li>
+        </ul>
+
+        <div class="doc-note">
+          The platform's <strong>authoritative operational records remain the source of truth</strong>.
+          AI-generated information should always be verified before material business decisions.
+        </div>
+      </article>
+
+      <!-- ========= 10. DATA & PRIVACY ========= -->
+      <article class="doc-section" id="privacy">
+        <h2><span class="hash">#</span> Data &amp; Privacy Documentation</h2>
+        <p>Documentation should explain how information is handled across the platform.</p>
+
+        <div class="mini-grid">
+          <div class="mini-card"><strong>What is stored</strong><span>Information entered into accounts, profiles, itineraries and reservations.</span></div>
+          <div class="mini-card"><strong>Why it is stored</strong><span>To operate the platform and connect operators with suppliers.</span></div>
+          <div class="mini-card"><strong>Who can access it</strong><span>Restricted by role-based permissions.</span></div>
+          <div class="mini-card"><strong>Permissions</strong><span>Access is granted by role and company settings.</span></div>
+          <div class="mini-card"><strong>Retention</strong><span>Stored for as long as necessary for operations and compliance.</span></div>
+          <div class="mini-card"><strong>User requests</strong><span>Users can request changes or correction through support.</span></div>
+        </div>
+
+        <div class="doc-note">
+          Users should also review SafariLink's
+          <a href="privacy.html">Privacy Policy</a>,
+          <a href="terms.html">Terms of Service</a>,
+          <a href="supplier-terms.html">Supplier Terms</a> and
+          <a href="cookie-policy.html">Cookie Policy</a>.
+        </div>
+      </article>
+
+      <!-- ========= 11. STATUS & ERROR CODES ========= -->
+      <article class="doc-section" id="errors">
+        <h2><span class="hash">#</span> Status &amp; Error Codes</h2>
+        <p>Future technical documentation should explain common system responses.</p>
+
+        <div class="mini-grid status-grid">
+          <div class="mini-card"><span class="code">200 — Success</span><span>Request completed successfully.</span></div>
+          <div class="mini-card"><span class="code">400 — Bad Request</span><span>Request information is invalid.</span></div>
+          <div class="mini-card"><span class="code">401 — Unauthorized</span><span>Authentication is required.</span></div>
+          <div class="mini-card"><span class="code">403 — Forbidden</span><span>The user does not have permission.</span></div>
+          <div class="mini-card"><span class="code">404 — Not Found</span><span>Requested resource does not exist.</span></div>
+          <div class="mini-card"><span class="code">409 — Conflict</span><span>Request conflicts with the current state.</span></div>
+          <div class="mini-card"><span class="code">422 — Validation Error</span><span>Provided information does not meet requirements.</span></div>
+          <div class="mini-card"><span class="code">429 — Too Many Requests</span><span>Rate limit exceeded.</span></div>
+          <div class="mini-card"><span class="code">500 — Internal Server Error</span><span>Unexpected server error.</span></div>
+          <div class="mini-card"><span class="code">503 — Service Unavailable</span><span>Service temporarily unavailable.</span></div>
+        </div>
+      </article>
+
+      <!-- ========= 12. PHILOSOPHY ========= -->
+      <article class="doc-section" id="philosophy">
+        <h2><span class="hash">#</span> Documentation Philosophy</h2>
+        <p>SafariLink documentation follows three principles.</p>
+
+        <div class="mini-grid">
+          <div class="mini-card">
+            <strong>Clear</strong>
+            <span>Users should understand what a function does without technical knowledge.</span>
+          </div>
+          <div class="mini-card">
+            <strong>Practical</strong>
+            <span>Every article should help the user complete a real task.</span>
+          </div>
+          <div class="mini-card">
+            <strong>Current</strong>
+            <span>Documentation should reflect the actual version and functionality of SafariLink.</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- ========= SUPPORT CTA ========= -->
+      <section class="support-cta" id="support">
+        <h2>Need more support?</h2>
+        <p>Visit the Help Centre for quick answers, or contact the SafariLink team directly for operational, technical or integration questions.</p>
+        <a class="btn" href="support.html">Contact Support</a>
+      </section>
+
+    </section>
+  </main>
+
+  <!-- ========= FOOTER ========= -->
+  <footer>
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">
+          <div class="brand-mark">S</div>
+          <span>SafariLink</span>
+        </div>
+        <p style="margin:0; max-width:280px; line-height:1.6;">
+          The B2B tourism platform connecting tour operators, accommodation, fleet,
+          guides and activities across Tanzania.
+        </p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Platform</h4>
+        <a href="features.html">Features</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="roadmap.html">Roadmap</a>
+        <a href="how-it-works.html">How It Works</a>
+        <a href="security.html">Security</a>
+        <a href="status.html">System Status</a>
+      </div>
+
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="terms.html">Terms of Service</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="cookie-policy.html">Cookie Policy</a>
+        <a href="supplier-terms.html">Supplier Terms</a>
+      </div>
+
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <a href="documentation.html">Documentation</a>
+        <a href="help-centre.html">Help Centre</a>
+        <a href="supplier-guide.html">Supplier Guide</a>
+        <a href="support.html">Contact Support</a>
+        <a href="about.html">About SafariLink</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      © 2026 SafariLink Tanzania B2B · Built for the industry, in Tanzania
+    </div>
+  </footer>
+
+  <script>
+    // ============ Documentation search ============
+    (function () {
+      var form = document.getElementById('documentationSearch');
+      var input = document.getElementById('searchInput');
+
+      form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        var query = (input.value || '').trim().toLowerCase();
+        if (!query) return;
+
+        var sections = document.querySelectorAll('.doc-section');
+        var found = false;
+        var firstMatch = null;
+
+        sections.forEach(function (section) {
+          var matches = section.textContent.toLowerCase().indexOf(query) !== -1;
+          section.style.outline = matches ? '2px solid var(--accent-gold)' : '';
+          if (matches && !firstMatch) firstMatch = section;
+        });
+
+        if (firstMatch) {
+          firstMatch.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          found = true;
+          setTimeout(function () {
+            sections.forEach(function (s) {
+              s.style.outline = s === firstMatch ? '2px solid var(--accent-gold)' : '';
+            });
+            setTimeout(function () { firstMatch.style.outline = ''; }, 2600);
+          }, 600);
+        }
+
+        if (!found) alert('No documentation section matched your search.');
+      });
+    })();
+  </script>
+</body>
+</html>
