@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System Status — SafariLink Tanzania</title>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style>
+  :root {
+    --forest-green: #1a5a3a;
+    --forest-green-light: #2d7a52;
+    --accent-green: #3fb983;
+    --warm-off-white: #f8f7f4;
+    --khaki: #e8e5dd;
+    --charcoal: #2c2c2c;
+    --warm-gray: #a39e95;
+    --border-light: #d4cfc6;
+    --status-operational: #10b981;
+    --status-degraded: #f59e0b;
+    --status-outage: #dc2626;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+  }
+
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+    background: var(--warm-off-white);
+    color: var(--charcoal);
+    line-height: 1.6;
+  }
+
+  /* ── Topbar ── */
+  .sl-topbar {
+    position: sticky; top:0; z-index:100;
+    background: #fff; border-bottom: 1px solid var(--border-light);
+    padding: 0 24px;
+  }
+  .sl-topbar-inner {
+    max-width: 1200px; margin:0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px;
+  }
+  .sl-topbar-brand {
+    display: flex; align-items: center; gap: 8px;
+    font-weight: 800; font-size: 17px; color: var(--forest-green);
+    text-decoration: none;
+  }
+  .sl-topbar-brand-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: var(--forest-green);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 800; font-size: 14px;
+  }
+
+  /* ── Hero ── */
+  .sl-hero {
+    background: linear-gradient(135deg, var(--forest-green) 0%, #0e4028 100%);
+    padding: 64px 24px 48px; text-align: center; color: #fff;
+  }
+  .sl-hero h1 { font-size: 36px; font-weight: 800; margin-bottom: 12px; }
+  .sl-hero p { font-size: 17px; color: rgba(255,255,255,0.8); max-width: 600px; margin: 0 auto; }
+
+  /* ── Status Banner ── */
+  .status-banner {
+    max-width: 900px; margin: -30px auto 40px;
+    background: #fff; border: 1px solid var(--border-light);
+    border-radius: var(--radius-md); padding: 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+  .status-indicator { display: flex; align-items: center; gap: 12px; }
+  .status-dot { width: 12px; height: 12px; background: var(--status-operational); border-radius: 50%; box-shadow: 0 0 0 4px rgba(16,185,129,0.2); }
+  .status-text { font-size: 18px; font-weight: 700; color: var(--forest-green); }
+  .status-time { font-size: 13px; color: var(--warm-gray); }
+
+  /* ── Services Grid ── */
+  .sl-content { max-width: 900px; margin: 0 auto 64px; padding: 0 24px; }
+  .services-list {
+    background: #fff; border: 1px solid var(--border-light);
+    border-radius: var(--radius-md); overflow: hidden;
+  }
+  .service-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 24px; border-bottom: 1px solid var(--border-light);
+  }
+  .service-item:last-child { border-bottom: none; }
+  .service-info h3 { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+  .service-info p { font-size: 13px; color: var(--warm-gray); }
+  .service-status { font-size: 13px; font-weight: 600; color: var(--status-operational); }
+
+  /* ── Incident History ── */
+  .history-section { margin-top: 48px; }
+  .history-title { font-size: 20px; font-weight: 800; margin-bottom: 24px; }
+  .incident-card {
+    background: #fff; border: 1px solid var(--border-light);
+    border-radius: var(--radius-md); padding: 20px; margin-bottom: 16px;
+  }
+  .incident-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+  .incident-date { font-weight: 700; font-size: 14px; }
+  .incident-badge { font-size: 11px; text-transform: uppercase; font-weight: 700; color: var(--status-operational); }
+  .incident-body { font-size: 14px; color: var(--charcoal); }
+
+  /* ── Footer ── */
+  .sl-footer {
+    background: var(--charcoal); color: #999;
+    padding: 40px 24px; text-align: center; font-size: 13px;
+  }
+  .sl-footer a { color: #ccc; text-decoration: none; margin: 0 8px; }
+</style>
+</head>
+<body>
+
+  <header class="sl-topbar">
+    <div class="sl-topbar-inner">
+      <a href="index.html" class="sl-topbar-brand">
+        <div class="sl-topbar-brand-icon">S</div>
+        <span>SafariLink</span>
+      </a>
+    </div>
+  </header>
+
+  <section class="sl-hero">
+    <h1>System Status</h1>
+    <p>Real-time visibility into platform availability and performance.</p>
+  </section>
+
+  <div class="sl-content">
+    <div class="status-banner">
+      <div class="status-indicator">
+        <div class="status-dot"></div>
+        <span class="status-text">All Systems Operational</span>
+      </div>
+      <span class="status-time">Last checked: Sep 11, 2026 — 07:45 UTC</span>
+    </div>
+
+    <div class="services-list">
+      <div class="service-item">
+        <div class="service-info"><h3>SafariLink Platform</h3><p>Core dashboard and user access</p></div>
+        <div class="service-status">Operational</div>
+      </div>
+      <div class="service-item">
+        <div class="service-info"><h3>Search & Discovery</h3><p>Supplier and platform search indexing</p></div>
+        <div class="service-status">Operational</div>
+      </div>
+      <div class="service-item">
+        <div class="service-info"><h3>Itinerary Builder</h3><p>Trip planning and cost calculation</p></div>
+        <div class="service-status">Operational</div>
+      </div>
+      <div class="service-item">
+        <div class="service-info"><h3>Messaging & Notifications</h3><p>B2B communication and system alerts</p></div>
+        <div class="service-status">Operational</div>
+      </div>
+      <div class="service-item">
+        <div class="service-info"><h3>Document Vault</h3><p>Storage and retrieval of PDF quotes/vouchers</p></div>
+        <div class="service-status">Operational</div>
+      </div>
+    </div>
+
+    <div class="history-section">
+      <h2 class="history-title">Incident History</h2>
+      <div class="incident-card">
+        <div class="incident-header">
+          <span class="incident-date">12 September 2026</span>
+          <span class="incident-badge">Resolved</span>
+        </div>
+        <div class="incident-body">
+          <strong>Reservation service interruption:</strong> Duration 18 minutes. Impact: Some reservation confirmations were delayed.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="sl-footer">
+    <div class="sl-footer-links">
+      <a href="about.html">About</a> · 
+      <a href="features.html">Features</a> · 
+      <a href="status.html">System Status</a> · 
+      <a href="terms.html">Terms</a>
+    </div>
+    <p style="margin-top:16px;">&copy; 2026 SafariLink Tanzania B2B.</p>
+  </footer>
+
+</body>
+</html>
