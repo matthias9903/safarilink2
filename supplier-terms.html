@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Supplier Terms &amp; Conditions — SafariLink Tanzania</title>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style>
+  :root {
+    --forest-green: #1a5a3a;
+    --forest-green-light: #2d7a52;
+    --accent-green: #3fb983;
+    --warm-off-white: #f8f7f4;
+    --khaki: #e8e5dd;
+    --charcoal: #2c2c2c;
+    --warm-gray: #a39e95;
+    --border-light: #d4cfc6;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 12px 24px rgba(0,0,0,0.12);
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+    background: var(--warm-off-white);
+    color: var(--charcoal);
+    line-height: 1.7;
+  }
+
+  /* ── Sticky Top Bar ── */
+  .topbar {
+    position: sticky; top: 0; z-index: 1000;
+    background: #fff;
+    border-bottom: 1px solid var(--border-light);
+    box-shadow: var(--shadow-sm);
+  }
+  .topbar-inner {
+    max-width: 1080px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 24px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .brand-icon {
+    width: 36px; height: 36px; border-radius: 9px;
+    background: var(--forest-green); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .brand-icon i { width: 20px; height: 20px; }
+  .brand-text { font-size: 1.125rem; font-weight: 800; color: var(--forest-green); letter-spacing: -0.01em; }
+  .brand-text small { display: block; font-size: 0.65rem; font-weight: 600; color: var(--warm-gray); letter-spacing: 0.08em; text-transform: uppercase; }
+  .topbar-links { display: flex; align-items: center; gap: 20px; }
+  .topbar-links a { font-size: 0.85rem; font-weight: 600; color: var(--warm-gray); text-decoration: none; transition: color 0.15s; }
+  .topbar-links a:hover { color: var(--forest-green); }
+  .btn-dashboard {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--forest-green); color: #fff;
+    padding: 8px 16px; border-radius: var(--radius-sm);
+    font-size: 0.85rem; font-weight: 600; text-decoration: none;
+    transition: background 0.2s;
+  }
+  .btn-dashboard:hover { background: var(--forest-green-light); }
+  .btn-dashboard i { width: 15px; height: 15px; }
+
+  /* ── Hero ── */
+  .hero {
+    background: linear-gradient(135deg, var(--forest-green) 0%, var(--forest-green-light) 55%, #3b8a5f 100%);
+    color: #fff;
+    padding: 56px 24px 48px;
+  }
+  .hero-inner { max-width: 1080px; margin: 0 auto; }
+  .hero-kicker {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.25);
+    padding: 6px 14px; border-radius: 100px; margin-bottom: 18px;
+  }
+  .hero-kicker i { width: 14px; height: 14px; }
+  .hero h1 { font-size: 2rem; font-weight: 800; letter-spacing: -0.02em; max-width: 720px; }
+  .hero p { margin-top: 10px; font-size: 1rem; color: rgba(255,255,255,0.85); max-width: 640px; }
+  .hero-meta { margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .meta-chip {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 7px 14px; border-radius: var(--radius-sm);
+    font-size: 0.8rem; font-weight: 600;
+  }
+  .meta-chip i { width: 14px; height: 14px; }
+
+  /* ── Breadcrumb / Back link ── */
+  .breadcrumb { max-width: 1080px; margin: 24px auto 0; padding: 0 24px; }
+  .breadcrumb a {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: var(--forest-green); font-size: 0.875rem; font-weight: 600; text-decoration: none;
+  }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb i { width: 15px; height: 15px; }
+
+  /* ── Layout ── */
+  .layout {
+    max-width: 1080px; margin: 0 auto;
+    padding: 32px 24px 60px;
+    display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+  }
+  @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } .toc { display: none; } }
+
+  /* ── TOC ── */
+  .toc {
+    position: sticky; top: 90px; align-self: start;
+    background: #fff; border: 1px solid var(--border-light);
+    border-radius: var(--radius-md); box-shadow: var(--shadow-sm);
+    padding: 18px 20px;
+    max-height: calc(100vh - 120px); overflow-y: auto;
+  }
+  .toc-title { font-size: 0.7rem; font-weight: 800; letter-spacing: 0.09em; text-transform: uppercase; color: var(--warm-gray); margin-bottom: 12px; }
+  .toc-list { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+  .toc-list a {
+    display: block; padding: 5px 8px; border-radius: 5px;
+    font-size: 0.8rem; color: var(--charcoal); text-decoration: none;
+    border-left: 2px solid transparent;
+  }
+  .toc-list a:hover { background: var(--warm-off-white); color: var(--forest-green); border-left-color: var(--accent-green); }
+  .toc-list a.active { background: #ecfdf5; color: var(--forest-green); font-weight: 600; border-left-color: var(--forest-green); }
+
+  /* ── Section cards ── */
+  .section-block { margin-bottom: 28px; }
+  .section-card-hidden { display: none; }
+  .section-card {
+    background: #fff; border: 1px solid var(--border-light);
+    border-radius: var(--radius-md); box-shadow: var(--shadow-sm);
+    overflow: hidden; margin-bottom: 18px;
+  }
+  .section-head {
+    display: flex; align-items: center; gap: 14px;
+    padding: 16px 22px;
+    border-bottom: 1px solid var(--border-light);
+    background: var(--warm-off-white);
+  }
+  .section-num {
+    width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0;
+    background: var(--forest-green); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; font-weight: 800;
+  }
+  .section-title { font-size: 1.02rem; font-weight: 700; color: var(--charcoal); }
+  .section-body { padding: 18px 22px 20px; font-size: 0.925rem; }
+  .section-body p { margin-bottom: 10px; }
+  .section-body p:last-child { margin-bottom: 0; }
+  .section-body ul { margin: 8px 0 10px; padding-left: 22px; }
+  .section-body li { margin-bottom: 6px; }
+  .section-body ul.simple { list-style: disc; }
+
+  /* Callout */
+  .intro-callout {
+    background: #fff; border: 1px solid var(--border-light); border-left: 4px solid var(--forest-green);
+    border-radius: var(--radius-md); box-shadow: var(--shadow-sm);
+    padding: 22px 24px; margin-bottom: 32px; font-size: 0.95rem;
+  }
+  .intro-callout strong { color: var(--forest-green); }
+
+  /* ── Footer ── */
+  .site-footer { background: var(--forest-green); color: rgba(255,255,255,0.85); padding: 44px 24px 36px; }
+  .footer-inner { max-width: 1080px; margin: 0 auto; }
+  .footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 32px; }
+  @media (max-width: 760px) { .footer-grid { grid-template-columns: 1fr; } }
+  .footer-brand { font-size: 1.2rem; font-weight: 800; color: #fff; margin-bottom: 8px; letter-spacing: -0.01em; }
+  .footer-brand small { display: block; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(255,255,255,0.6); }
+  .footer-desc { font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-top: 10px; max-width: 320px; }
+  .footer-col-title { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.09em; text-transform: uppercase; color: var(--accent-green); margin-bottom: 14px; }
+  .footer-links { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+  .footer-links a { color: rgba(255,255,255,0.8); text-decoration: none; font-size: 0.875rem; transition: color 0.15s; }
+  .footer-links a:hover { color: #fff; text-decoration: underline; }
+  .footer-bottom {
+    margin-top: 36px; padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.15);
+    font-size: 0.8rem; color: rgba(255,255,255,0.6);
+    display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  }
+
+  .back-to-top {
+    position: fixed; bottom: 24px; right: 24px; z-index: 900;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--forest-green); color: #fff; border: none;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow-lg); cursor: pointer;
+    opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  }
+  .back-to-top.show { opacity: 1; pointer-events: auto; }
+  .back-to-top i { width: 20px; height: 20px; }
+  .back-to-top:hover { background: var(--forest-green-light); }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ TOP BAR ═══════════ -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-icon"><i data-lucide="compass"></i></span>
+      <span class="brand-text">SafariLink<small>Tanzania B2B Network</small></span>
+    </a>
+    <nav class="topbar-links">
+      <a href="index.html">Dashboard</a>
+      <a class="btn-dashboard" href="index.html"><i data-lucide="arrow-right"></i> Go to App</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ═══════════ HERO ═══════════ -->
+<section class="hero">
+  <div class="hero-inner">
+    <span class="hero-kicker"><i data-lucide="file-check"></i> Legal Document</span>
+    <h1>SafariLink Tanzania B2B Supplier Terms &amp; Conditions</h1>
+    <p>Terms governing the relationship between SafariLink and Accommodation &amp; Fleet Providers listed on the SafariLink B2B travel operating network in Tanzania.</p>
+    <div class="hero-meta">
+      <span class="meta-chip"><i data-lucide="calendar"></i> Effective Date: [Insert Date]</span>
+      <span class="meta-chip"><i data-lucide="refresh-cw"></i> Last Updated: [Insert Date]</span>
+      <span class="meta-chip"><i data-lucide="users"></i> Applicable to: Accommodation &amp; Fleet Providers</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ BACK LINK ═══════════ -->
+<nav class="backcrumb">
+  <a href="index.html"><i data-lucide="arrow-left"></i> Back to Dashboard</a>
+</nav>
+
+<!-- ═══════════ PAGE CONTENT ═══════════ -->
+<div class="layout">
+
+  <!-- Table of Contents -->
+  <aside class="toc">
+    <div class="toc-title">Contents</div>
+    <ul class="toc-list" id="tocList"></ul>
+  </aside>
+
+  <!-- Sections -->
+  <main class="section-block" id="sections">
+
+    <div class="callout-callout">
+      <p><strong>Acceptance.</strong> By accessing or using the SafariLink platform, the Supplier acknowledges that it has read, understood, and agreed to be bound by these Supplier Terms &amp; Conditions. If the Supplier does not agree, it should not use the Platform or its services.</p>
+    </div>
+
+    <!-- SECTION 1 -->
+    <article class="section-card" id="sec-1">
+      <div class="section-head"><span class="section-num">1</span><div class="section-title">Purpose of SafariLink</div></div>
+      <div class="section-body">
+        <p>SafariLink is a B2B travel operating network that connects tour Operators with tourism Suppliers in Tanzania. The Platform supports discovery, booking communication, and management of accommodation and fleet services between SafariLink verified users (Operators) and Suppliers (Accommodation and Fleet Providers).</p>
+      </div>
+    </article>
+
+    <!-- SECTION 2 -->
+    <article class="section-card" id="sec-2">
+      <div class="section-head"><span class="section-num">2</span><div class="section-title">Supplier Eligibility</div></div>
+      <div class="section-body">
+        <p>To appear on SafariLink, a Supplier must be legally registered and licensed to operate its accommodation, camp, lodge, vehicle, or related services in Tanzania, and able to commit to fulfilling its listed services. The Supplier is responsible for ensuring it meets all legal, regulatory, and licensing requirements applicable to its operations and employees.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 3 -->
+    <article class="section-card" id="sec-3">
+      <div class="section-head"><span class="section-num">3</span><div class="section-title">Supplier Verification</div></div>
+      <div class="section-body">
+        <p>SafariLink may request and verify business information and documentation, including registration, licenses, insurance, and premises details required to confirm a Supplier profile. The Supplier agrees to cooperate with verification requests and to promptly provide any updated or additional information when reasonably requested.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 4 -->
+    <article class="section-card" id="sec-4">
+      <div class="section-head"><span class="section-num">4</span><div class="section-title">Accuracy of Supplier Information</div></div>
+      <div class="section-body">
+        <p>Suppliers must maintain accurate, current, and complete information on the platform, including descriptions, rates, availability, facilities, and contact details. SafariLink may request corrections where information appears materially inaccurate or outdated, and the Supplier must update its information without undue delay.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 5 -->
+    <article class="section-card" id="sec-5">
+      <div class="section-head"><span class="section-num">5</span><div class="section-title">Accommodation Inventory</div></div>
+      <div class="section-body">
+        <p>Accommodation Suppliers must maintain accurate inventory information for their rooms, camps, lodges, or other accommodation units, providing current availability, rates, and property details so that Operators can plan Safari itineraries with reliable knowledge of the units available on the requested dates.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 6 -->
+    <article class="section-card" id="sec-6">
+      <div class="section-head"><span class="section-num">6</span><div class="section-title">Fleet Inventory</div></div>
+      <div class="section-body">
+        <p>Fleet Suppliers must maintain accurate inventory information for their vehicles, including vehicle type, seating capacity, condition, equipment, and availability schedules. The Supplier ensures that such inventory is truthful and that fleet listings are active only for vehicles legitimately available in its fleet.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 7 -->
+    <article class="section-card" id="sec-7">
+      <div class="section-head"><span class="section-num">7</span><div class="section-title">Private STO Rates</div></div>
+      <div class="section-body">
+        <p>SafariLink Tour Operator (STO) Rates may be agreed between the Operator and the Supplier. They are private lines, negotiated terms accessible only to Reservation agents on the SafariLink or Operators. Suppliers must not publish, share, or distribute these rates outside the agreed confidential channel.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 8 -->
+    <article class="section-card" id="sec-8">
+      <div class="section-head"><span class="section-num">8</span><div class="section-title">Rate Validity</div></div>
+      <div class="section-body">
+        <p>Reported rates describe the period of validity during which they may be quoted. Suppliers should ensure rates reflect their applicable seasons and validity periods, and communicated changes according to the operation, as set out in the commercial agreement between the parties.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 9 -->
+    <article class="section-card" id="sec-9">
+      <div class="section-head"><span class="section-num">9</span><div class="section-title">Rate Parity and Rate Accuracy</div></div>
+      <div class="section-body">
+        <p>Rates displayed to Operators should be accurate by providing complete rate information, with any mandatory supplements or conditions disclosed. Where comparisons available in the market, the Supplier should avoid structural misrepresentation of its own published rates so that Operators can plan effectively.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 10 -->
+    <article class="section-card" id="sec-10">
+      <div class="section-head"><span class="section-num">10</span><div class="section-title">Availability</div></div>
+      <div class="section-body">
+        <p>Suppliers are responsible for maintaining accurate availability of the accommodation, rooms, and vehicles. Availability is acknowledged as the basis on which Operators rely on when planning itineraries and managing their client experience.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 11 -->
+    <article class="section-card" id="sec-11">
+      <div class="section-head"><span class="section-num">11</span><div class="section-title">Reservation Requests</div></div>
+      <div class="section-body">
+        <p>Operators send Reservation Requests against availability displayed on the platform. Suppliers must respond to these requests in good faith, with accurate information about their capacity, rates, and pricing policies for the requested dates and traveler requirements.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 12 -->
+    <article class="section-card" id="sec-12">
+      <div class="section-head"><span class="section-num">12</span><div class="section-title">Confirmed Reservations</div></div>
+      <div class="section-body">
+        <p>Once a Reservation is confirmed, the Supplier is obligated to honor it in accordance with the agreed terms, rates, and itinerary details. Any material change, including changes to service levels or pricing previously confirmed, must be communicated before the effective date and, where necessary, consented to.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 13 -->
+    <article class="section-card" id="sec-13">
+      <div class="section-head"><span class="section-num">13</span><div class="section-title">Overbooking</div></div>
+      <div class="section-body">
+        <p>Suppliers should use reasonable efforts to avoid overbooking and to protect confirmed Reservations. Where permitted, overbooking should be managed without avoidable disruption, with prompt re-aterming or re-accommodation agreed and communicated with the Operator.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 14 -->
+    <article class="section-card" id="sec-14">
+      <div class="section-head"><span class="section-num">14</span><div class="section-title">Supplier Response Times</div></div>
+      <div class="section-body">
+        <p>Suppliers are expected to respond to Reservation requests and operational inquiries within a reasonable defined window so that Operators can maintain itinerary accuracy and respond to their clients in a timely manner. Repeated failure to respond when applicable may affect the Supplier's search visibility.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 15 -->
+    <article class="section-card" id="sec-15">
+      <div class="section-head"><span class="section-num">15</span><div class="section-title">Supplier Reliability</div></div>
+      <div class="section-body">
+        <p>Suppliers are responsible for fulfilling Confirmed Reservations in the standard expected of professional tourism businesses, including providing the accommodation, vehicles, and run services consistent with their marketing profile and the operator's reasonable expectations.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 16 -->
+    <article class="section-card" id="sec-16">
+      <div class="section-head"><span class="section-num">16</span><div class="section-title">Cancellation by Supplier</div></div>
+      <div class="section-body">
+        <p>Where a Supplier must cancel a confirmed Reservation, it must promptly notify the Operator and use all reasonable efforts to provide a suitable alternative or re-accommodation of an equal or better standard at no additional, where required by the commercial agreement or applicable law.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 17 -->
+    <article class="section-card" id="sec-17">
+      <div class="section-head"><span class="section-num">17</span><div class="section-title">Supplier Cancellation Policies</div></div>
+      <div class="section-body">
+        <p>Suppliers may maintain their public cancellation policies, provided the policies are accurately stated on the platform and applied consistently. Where a platform standard applies, the applicable policy published to the Supplier's profile governs.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 18 -->
+    <article class="section-card" id="sec-18">
+      <div class="section-head"><span class="section-num">18</span><div class="section-title">Payments</div></div>
+      <div class="section-body">
+        <p>Payments are settled between Operators and the Supplier in accordance with the applicable commercial agreement and the platform's settlement processes. The terms of collection, invoicing, and payment timing are as described in the commercial or payment agreement established by the parties.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 19 -->
+    <article class="section-card" id="sec-19">
+      <div class="section-head"><span class="section-num">19</span><div class="section-title">SafariLink Fees and Commission</div></div>
+      <div class="section-body">
+        <p>Where SafariLink charges fees or commissions the relevant fee structure is described in the applicable commercial agreement. Fees are applied at the point at which the parties agree, and the Supplier remains his pay obligations described in those agreements.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 20 -->
+    <article class="section-card" id="sec-20">
+      <div class="section-head"><span class="section-num">20</span><div class="section-title">Taxes</div></div>
+      <div class="section-body">
+        <p>Suppliers are responsible for the correct declaration of taxes and duties applicable to their services and rates, including any VAT or similar levies. Where applicable, taxes should be provided transparently to the Operator so that the invoicing is accurate and compliant.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 21 -->
+    <article class="section-card" id="sec-21">
+      <div class="section-head"><span class="section-num">21</span><div class="section-title">Accommodation Quality</div></div>
+      <div class="section-body">
+        <p>Accommodation Suppliers must offer accommodation, facilities, and services that satisfy health, safety, and quality standards applicable to their license in Tanzania, and that are at the standard represented on the platform, including when the accommodation is performed.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 22 -->
+    <article class="section-card" id="sec-22">
+      <div class="section-head"><span class="section-num">22</span><div class="section-title">Vehicle Safety and Condition</div></div>
+      <div class="section-body">
+        <p>Fleet Suppliers must provide roadworthy, safe vehicles that are maintained in a proper and appropriate condition, with all necessary valid licensing, insurance, and safety equipment required by Tanzanian law, and described accurately on the platform.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 23 -->
+    <article class="section-card" id="sec-23">
+      <div class="section-head"><span class="section-num">23</span><div class="section-title">Drivers</div></div>
+      <div class="section-body">
+        <p>Where drivers are provided with fleet services, they must be qualified, licensed, experienced, and fit to operate the assigned vehicle, and must comply with applicable road safety rules and the operator's reasonable instructions where communicated.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 24 -->
+    <article class="section-card" id="sec-24">
+      <div class="section-head"><span class="section-num">24</span><div class="section-title">Breakdowns and Operational Incidents</div></div>
+      <div class="section-body">
+        <p>The Supplier must notify the Operator of any breakdown, incident, or interruption affecting a confirmed service as soon as reasonably possible, and must act in makeup efforts to provide alternatives, replacements, or advisory guidance consistent with operational standards and applicable law.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 25 -->
+    <article class="section-card" id="sec-25">
+      <div class="section-head"><span class="section-num">25</span><div class="section-title">Supplier Communication</div></div>
+      <div class="section-body">
+        <p>The Supplier must maintain a single, reachable point of contact and respond to legitimate safariLink and Operator communication through the platform channels. All communications concerning Reservations and rates should be maintained so there is a proper record for operational and reporting purposes.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 26 -->
+    <article class="section-card" id="sec-26">
+      <div class="section-head"><span class="section-num">26</span><div class="section-title">Documents</div></div>
+      <div class="section-body">
+        <p>Suppliers must maintain and, where requested, submit the legal, license-related and operational documents required for platform verification, including business registration, operating licenses, driver documentation and vehicle documentation, and must keep such records current.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 27 -->
+    <article class="section-card" id="sec-27">
+      <div class="section-head"><span class="section-num">27</span><div class="section-title">Supplier Confidential Information</div></div>
+      <div class="section-body">
+        <p>SafariLink may receive confidential Supplier information including:</p>
+        <ul>
+          <li>negotiated rates;</li>
+          <li>STO Rates;</li>
+          <li>supplier contracts;</li>
+          <li>commission structures;</li>
+          <li>inventory;</li>
+          <li>internal policies;</li>
+          <li>financial information;</li>
+          <li>business contacts; and</li>
+          <li>operational data.</li>
+        </ul>
+        <p>SafariLink will use such information only for legitimate Platform, contractual, operational, analytical, security, or legal purposes, subject to applicable agreements and law.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 28 -->
+    <article class="section-card" id="sec-28">
+      <div class="section-head"><span class="section-num">28</span><div class="section-title">Data Protection</div></div>
+      <div class="section-body">
+        <p>Suppliers must comply with applicable data-protection and privacy requirements when submitting or receiving personal information through SafariLink.</p>
+        <p>Suppliers must not upload unnecessary personal information.</p>
+        <p>Where a Supplier provides traveler information to SafariLink, the Supplier represents that it has a lawful basis and appropriate authority to provide that information.</p>
+        <p>Where necessary, SafariLink and the Supplier may enter into a separate Data Processing Agreement.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 29 -->
+    <article class="section-card" id="sec-29">
+      <div class="section-head"><span class="section-num">29</span><div class="section-title">Artificial Intelligence</div></div>
+      <div class="section-body">
+        <p>SafariLink may use AI to assist with:</p>
+        <ul>
+          <li>Supplier matching;</li>
+          <li>search;</li>
+          <li>rate-sheet extraction;</li>
+          <li>inventory organization;</li>
+          <li>itinerary creation;</li>
+          <li>reservation assistance;</li>
+          <li>operational recommendations;</li>
+          <li>document processing;</li>
+          <li>analytics; and</li>
+          <li>communication drafting.</li>
+        </ul>
+        <p>AI-generated information does not replace Supplier confirmation. A Supplier's actual inventory, availability, rate, and reservation status remain the authoritative commercial information.</p>
+        <p>Suppliers must review and correct information where necessary. SafariLink will not intentionally use AI to create false availability or rates.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 30 -->
+    <article class="section-card" id="sec-30">
+      <div class="section-head"><span class="section-num">30</span><div class="section-title">Supplier Content and Intellectual Property</div></div>
+      <div class="section-body">
+        <p>Suppliers retain ownership of content they provide to SafariLink, including:</p>
+        <ul>
+          <li>photographs;</li>
+          <li>logos;</li>
+          <li>descriptions;</li>
+          <li>videos;</li>
+          <li>documents;</li>
+          <li>property information; and</li>
+          <li>other Supplier materials.</li>
+        </ul>
+        <p>By submitting such content, the Supplier grants SafariLink a non-exclusive, worldwide, royalty-free license to host, reproduce, display, format, distribute, and use the content as reasonably necessary to operate and promote the Platform and the Supplier's listed Services. The Supplier confirms that it has the necessary rights to provide the content.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 31 -->
+    <article class="section-card" id="sec-31">
+      <div class="section-head"><span class="section-num">31</span><div class="section-title">Photographs and Marketing Material</div></div>
+      <div class="section-body">
+        <p>Suppliers must not upload photographs or other materials that:</p>
+        <ul>
+          <li>infringe third-party rights;</li>
+          <li>contain misleading representations;</li>
+          <li>materially misrepresent the Service;</li>
+          <li>contain unlawful content; or</li>
+          <li>were obtained without appropriate authorization.</li>
+        </ul>
+        <p>SafariLink may remove or request replacement of unsuitable materials.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 32 -->
+    <article class="section-card" id="sec-32">
+      <div class="section-head"><span class="section-num">32</span><div class="section-title">Prohibited Supplier Conduct</div></div>
+      <div class="section-body">
+        <p>Suppliers must not:</p>
+        <ul>
+          <li>provide false information;</li>
+          <li>manipulate availability;</li>
+          <li>deliberately publish misleading prices;</li>
+          <li>misuse another Supplier's information;</li>
+          <li>distribute private STO Rates publicly;</li>
+          <li>attempt to circumvent SafariLink security;</li>
+          <li>use Platform data for unauthorized purposes;</li>
+          <li>engage in fraudulent bookings;</li>
+          <li>discriminate unlawfully;</li>
+          <li>interfere with other Suppliers;</li>
+          <li>submit false documents;</li>
+          <li>create duplicate accounts to manipulate Platform performance; or</li>
+          <li>use the Platform for unlawful activity.</li>
+        </ul>
+      </div>
+    </article>
+
+    <!-- SECTION 33 -->
+    <article class="section-card" id="sec-33">
+      <div class="section-head"><span class="section-num">33</span><div class="section-title">Direct Dealing and Circumvention</div></div>
+      <div class="section-body">
+        <p>SafariLink is intended to facilitate legitimate commercial relationships between Operators and Suppliers.</p>
+        <p>Unless otherwise agreed in writing, a Supplier must not intentionally use confidential information obtained exclusively through SafariLink to circumvent agreed Platform commercial arrangements.</p>
+        <p>This does not prevent legitimate business relationships that existed independently before the Supplier's use of SafariLink or relationships otherwise permitted under a separate agreement.</p>
+        <p>Where SafariLink charges transaction-based fees or commissions, the applicable commercial agreement will determine when such fees apply.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 34 -->
+    <article class="section-card" id="sec-34">
+      <div class="section-head"><span class="section-num">34</span><div class="section-title">Supplier Reviews and Feedback</div></div>
+      <div class="section-body">
+        <p>Operators may provide feedback concerning Supplier performance. Feedback may relate to:</p>
+        <ul>
+          <li>service quality;</li>
+          <li>response time;</li>
+          <li>availability accuracy;</li>
+          <li>communication;</li>
+          <li>pricing accuracy;</li>
+          <li>reservation fulfillment; and</li>
+          <li>operational reliability.</li>
+        </ul>
+        <p>SafariLink may moderate feedback that is fraudulent, abusive, unlawful, irrelevant, or otherwise inappropriate.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 35 -->
+    <article class="section-card" id="sec-35">
+      <div class="section-head"><span class="section-num">35</span><div class="section-title">Platform Data and Analytics</div></div>
+      <div class="section-body">
+        <p>SafariLink may generate aggregated or anonymized operational analytics based on Platform activity. Such analytics may include:</p>
+        <ul>
+          <li>booking trends;</li>
+          <li>response times;</li>
+          <li>Supplier performance;</li>
+          <li>availability patterns;</li>
+          <li>reservation volumes;</li>
+          <li>operational trends; and</li>
+          <li>Platform usage.</li>
+        </ul>
+        <p>SafariLink will not publicly identify confidential Supplier information unless authorized or legally required.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 36 -->
+    <article class="section-card" id="sec-36">
+      <div class="section-head"><span class="section-num">36</span><div class="section-title">Platform Access</div></div>
+      <div class="section-body">
+        <p>SafariLink may provide Supplier access through:</p>
+        <ul>
+          <li>web dashboards;</li>
+          <li>mobile interfaces;</li>
+          <li>APIs;</li>
+          <li>integrations; or</li>
+          <li>other technology.</li>
+        </ul>
+        <p>SafariLink may modify or discontinue features as the Platform develops.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 37 -->
+    <article class="section-card" id="sec-37">
+      <div class="section-head"><span class="section-num">37</span><div class="section-title">Service Interruptions</div></div>
+      <div class="section-body">
+        <p>SafariLink does not guarantee uninterrupted Platform availability. Temporary interruptions may occur because of:</p>
+        <ul>
+          <li>maintenance;</li>
+          <li>upgrade,;</li>
+          <li>technical failures;</li>
+          <li>cybersecurity incidents;</li>
+          <li>internet or telecommunications failures;</li>
+          <li>third-party service interruptions; or</li>
+          <li>circumstances outside SafariLink's reasonable control.</li>
+        </ul>
+      </div>
+    </article>
+
+    <!-- SECTION 38 -->
+    <article class="section-card" id="sec-38">
+      <div class="section-head"><span class="section-num">38</span><div class="section-title">Limitation of SafariLink's Responsibility</div></div>
+      <div class="section-body">
+        <p>SafariLink provides technology and connectivity between tourism businesses. Unless expressly agreed otherwise, SafariLink is not the provider of:</p>
+        <ul>
+          <li>accommodation;</li>
+          <li>vehicle services;</li>
+          <li>driving services;</li>
+          <li>guiding services;</li>
+          <li>activities;</li>
+          <li>transfers; or</li>
+          <li>other Supplier Services.</li>
+        </ul>
+        <p>The Supplier remains responsible for fulfilling its confirmed Services.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 39 -->
+    <article class="section-card" id="sec-39">
+      <div class="section-head"><span class="section-num">39</span><div class="section-title">Supplier Indemnification</div></div>
+      <div class="section-body">
+        <p>The Supplier agrees to indemnify SafariLink, its directors, employees, officers, contractors, and affiliates against claims, losses, damages, liabilities, costs, and expenses arising from:</p>
+        <ul>
+          <li>the Supplier's Services;</li>
+          <li>breach of these Supplier Terms;</li>
+          <li>inaccurate information;</li>
+          <li>unlawful conduct;</li>
+          <li>failure to maintain required licenses;</li>
+          <li>vehicle-related incidents caused by the Supplier;</li>
+          <li>infringement of third-party intellectual-property rights;</li>
+          <li>misuse of personal information; or</li>
+          <li>Supplier negligence or misconduct.</li>
+        </ul>
+        <p>This provision applies to the extent permitted by applicable law.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 40 -->
+    <article class="section-card" id="sec-40">
+      <div class="section-head"><span class="section-num">40</span><div class="section-title">Suspension</div></div>
+      <div class="section-body">
+        <p>SafariLink may temporarily suspend a Supplier's Account or listing where:</p>
+        <ul>
+          <li>information is materially inaccurate;</li>
+          <li>required documentation has expired;</li>
+          <li>repeated cancellations occur;</li>
+          <li>availability is consistently inaccurate;</li>
+          <li>payment obligations are overdue;</li>
+          <li>fraudulent activity is suspected;</li>
+          <li>security risks exist;</li>
+          <li>the Supplier breaches these Terms; or</li>
+          <li>continued Platform access creates material risk to Users or SafariLink.</li>
+        </ul>
+        <p>Where reasonably practicable, SafariLink will notify the Supplier and provide an opportunity to resolve the issue.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 41 -->
+    <article class="section-card" id="sec-41">
+      <div class="section-head"><span class="section-num">41</span><div class="section-title">Termination</div></div>
+      <div class="section-body">
+        <p>Either party may terminate the Supplier relationship in accordance with the applicable commercial agreement.</p>
+        <p>SafariLink may terminate immediately where reasonably necessary because of:</p>
+        <ul>
+          <li>fraud;</li>
+          <li>serious misconduct;</li>
+          <li>unlawful activity;</li>
+          <li>material breach;</li>
+          <li>misuse of confidential information;</li>
+          <li>repeated failure to honor confirmed Reservations;</li>
+          <li>serious safety concerns; or</li>
+          <li>significant risk to the Platform or its Users.</li>
+        </ul>
+        <p>Termination does not automatically cancel existing confirmed Reservations unless the applicable circumstances require otherwise.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 42 -->
+    <article class="section-card" id="sec-42">
+      <div class="section-head"><span class="section-num">42</span><div class="section-title">Effect of Termination</div></div>
+      <div class="section-body">
+        <p>Upon termination:</p>
+        <ul>
+          <li>Supplier access may be disabled;</li>
+          <li>listing may be removed;</li>
+          <li>private STO Rates may no longer be accessible;</li>
+          <li>outstanding financial obligations remain payable;</li>
+          <li>applicable confirmed Reservations remain subject to their agreed terms; and</li>
+          <li>confidentiality, intellectual property, data protection, liability, dispute resolution, and other provisions intended to survive termination will continue.</li>
+        </ul>
+      </div>
+    </article>
+
+    <!-- SECTION 43 -->
+    <article class="section-card" id="sec-43">
+      <div class="section-head"><span class="section-num">43</span><div class="section-title">Dispute Resolution</div></div>
+      <div class="section-body">
+        <p>SafariLink and the Supplier will first attempt to resolve disputes through good-faith communication.</p>
+        <p>Where a dispute cannot be resolved through negotiation, it shall be handled according to the applicable commercial agreement.</p>
+        <p>Unless otherwise agreed in writing, disputes shall be governed by the applicable laws of the United Republic of Tanzania and subject to the jurisdiction of the competent courts of Tanzania, subject to mandatory legal requirements.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 44 -->
+    <article class="section-card" id="sec-44">
+      <div class="section-head"><span class="section-num">44</span><div class="section-title">Force Majeure</div></div>
+      <div class="section-body">
+        <p>Neither party shall be responsible for failure or delay caused by circumstances reasonably beyond its control, including:</p>
+        <ul>
+          <li>natural disasters;</li>
+          <li>epidemics or pandemics;</li>
+          <li>war;</li>
+          <li>civil unrest;</li>
+          <li>government action;</li>
+          <li>telecommunications failure;</li>
+          <li>internet outages;</li>
+          <li>power failure;</li>
+          <li>strikes;</li>
+          <li>transportation disruptions; or</li>
+          <li>other force majeure events.</li>
+        </ul>
+      </div>
+    </article>
+
+    <!-- SECTION 45 -->
+    <article class="section-card" id="sec-45">
+      <div class="section-head"><span class="section-num">45</span><div class="section-title">Changes to Supplier Terms</div></div>
+      <div class="section-body">
+        <p>SafariLink may update these Supplier Terms as the Platform and business model develop.</p>
+        <p>Material changes will be communicated through reasonable means.</p>
+        <p>Continued use of the Platform after the effective date of updated Terms constitutes acceptance, subject to applicable law.</p>
+      </div>
+    </article>
+
+    <!-- SECTION 46 -->
+    <article class="section-card" id="sec-46">
+      <div class="section-head"><span class="section-num">46</span><div class="section-title">Governing Law</div></div>
+      <div class="section-body">
+        <p>These Supplier Terms shall be governed by the laws of the United Republic of Tanzania, unless a separate written commercial agreement provides otherwise.</p>
+      </div>
+    </article>
+
+    <p style="font-size:0.8rem;color:var(--warm-gray);margin-top:28px;">
+      This page reproduces the SafariLink Tanzania B2B Supplier Terms &amp; Conditions for the SafariLink B2B travel platform. The information provided on this page does not constitute legal advice.
+    </p>
+  </main>
+</div>
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">SafariLink<small>Tanzania B2B Travel Operating Network</small></div>
+        <p class="footer-desc">Connecting tour operators with verified accommodation and fleet suppliers across Tanzania. Built for the way the industry works.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Legal</div>
+        <ul class="footer-links">
+          <li><a href="terms.html">Terms &amp; Conditions</a></li>
+          <li><a href="privacy.html">Privacy Policy</a></li>
+          <li><a href="cookie-policy.html">Cookie Policy</a></li>
+          <li><a href="supplier-terms.html">Supplier Terms</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Company</div>
+        <ul class="footer-links">
+          <li><a href="about.html">About SafariLink</a></li>
+          <li><a href="index.html">Dashboard</a></li>
+          <li><a href="index.html">Back to App</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 SafariLink Tanzania. All rights reserved.</span>
+      <span>Arusha, United Republic of Tanzania</span>
+    </div>
+  </div>
+</footer>
+
+<button class="back-to-top" id="backToTop" title="Back to top"><i data-lucide="arrow-up"></i></button>
+
+<script>
+  // Build table of contents from section cards
+  var cards = document.querySelectorAll('.section-card');
+  var toc = document.getElementById('tocList');
+  cards.forEach(function (card) {
+    var num = card.querySelector('.section-num').textContent;
+    var title = card.querySelector('.section-title').textContent;
+    var li = document.createElement('li');
+    var a = document.createElement('a');
+    a.href = '#' + card.id;
+    a.textContent = num + '. ' + title;
+    li.appendChild(a);
+    toc.appendChild(li);
+  });
+
+  // Active TOC item on scroll
+  var tocLinks = toc.querySelectorAll('a');
+  function onScroll() {
+    var pos = window.scrollY + 140;
+    var current = null;
+    cards.forEach(function (card) {
+      if (card.offsetTop <= pos) current = card.id;
+    });
+    tocLinks.forEach(function (link) {
+      link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+    });
+    document.getElementById('backToTop').classList.toggle('show', window.scrollY > 600);
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // Back to top
+  document.getElementById('backToTop').addEventListener('click', function () {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // Lucide icons
+  if (window.lucide) lucide.createIcons();
+</script>
+</body>
+</html>
