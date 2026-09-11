@@ -36,17 +36,22 @@
   }
 
   /* ── SPLIT LAYOUT ── */
-  .auth-wrapper { display: flex; min-height: 100vh; }
+  .auth-wrapper {
+  display: flex;
+  flex-direction: row-reverse; /* visual panel now on the left, form on the right */
+  min-height: 100vh;
+}
 
   /* Left — form */
-  .auth-form-side {
-    flex: 1; display: flex; flex-direction: column; justify-content: center;
-    padding: 48px 40px; max-width: 580px; margin: 0 auto; width: 100%;
-    overflow-y: auto;
-  }
-  .auth-form-wrapper { max-width: 460px; margin: 0 auto; width: 100%; }
-
-  .auth-mobile-brand {
+            .auth-form-side {
+  flex: 0 0 50%; width: 50%; min-width: 0;
+  display: flex; flex-direction: column;
+  padding: 48px 40px;
+  overflow-y: auto;   /* form scrolls inside its panel instead of clipping */
+  order: 2;           /* form → RIGHT */
+}
+.auth-form-wrapper { max-width: 460px; margin: auto; width: 100%; }
+   .auth-mobile-brand {
     display: none; align-items: center; gap: 10px; margin-bottom: 24px;
   }
   .auth-mobile-brand .logo-icon {
@@ -103,11 +108,13 @@
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
   /* ── BUSINESS TYPE CARDS ── */
-  .biz-type-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
-  .biz-type-card {
+      .biz-type-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; justify-content: center; }
+      .biz-type-card {
+    flex: 0 0 calc((100% - 16px) / 3);
     border: 1.5px solid var(--border-light); border-radius: var(--radius-md);
     padding: 16px 10px; text-align: center; cursor: pointer; transition: 0.15s;
     background: #fff; display: flex; flex-direction: column; align-items: center; gap: 8px;
+    font-size: 0.75rem; white-space: nowrap;
   }
   .biz-type-card:hover { border-color: var(--accent-green); background: var(--warm-off-white); }
   .biz-type-card.selected {
@@ -145,7 +152,7 @@
   .auth-switch a:hover { text-decoration: underline; }
 
   /* ── RIGHT VISUAL PANEL ── */
-  .auth-visual {
+           .auth-visual {
     flex: 1; background: linear-gradient(135deg, var(--forest-green) 0%, #0d3d24 100%);
     display: flex; flex-direction: column; justify-content: center;
     padding: 60px 56px; color: #fff; position: relative; overflow: hidden;
@@ -182,9 +189,10 @@
     font-size: 0.95rem; color: rgba(255,255,255,0.7); line-height: 1.7; margin-bottom: 32px;
   }
 
+
   /* ── STATS ── */
-  .visual-stats { display: flex; gap: 28px; margin-bottom: 36px; }
-  .visual-stat .num { font-size: 1.8rem; font-weight: 800; color: var(--accent-green); }
+.visual-stats { gap: 24px; margin-bottom: 28px; }
+.visual-stat .num { font-size: 1.5rem; }
   .visual-stat .label { font-size: 0.72rem; color: rgba(255,255,255,0.55); }
 
   /* ── PROCESS STEPS ── */
@@ -202,10 +210,10 @@
   .process-step p { font-size: 0.75rem; color: rgba(255,255,255,0.55); margin: 0; }
 
   .auth-visual-footer {
-    position: absolute; bottom: 32px; left: 56px; right: 56px;
-    font-size: 0.75rem; color: rgba(255,255,255,0.4); z-index: 1;
-    display: flex; justify-content: space-between;
-  }
+  position: static; margin-top: 24px; z-index: 1;
+  display: flex; justify-content: space-between;
+  font-size: 0.72rem; color: rgba(255,255,255,0.4);
+}
 
   /* ── SUCCESS STATE ── */
   .success-state { display: none; text-align: center; padding: 40px 0; }
@@ -230,15 +238,17 @@
   }
 
   /* ── RESPONSIVE ── */
-  @media (max-width: 900px) {
-    .auth-visual { display: none; }
-    .auth-form-side { padding: 36px 24px; }
-    .auth-mobile-brand { display: flex; }
-  }
-  @media (max-width: 520px) {
-    .form-row { grid-template-columns: 1fr; }
-    .biz-type-grid { grid-template-columns: 1fr; }
-  }
+ @media (max-width: 640px) {
+  .auth-wrapper { flex-direction: column; }
+  .auth-form-side { order: 2; flex: none; width: 100%; padding: 32px 20px; }
+  .auth-visual { order: 1; flex: none; width: 100%; padding: 24px 20px; }
+  .auth-visual-content { flex: none; }
+  .auth-visual-content > p, .visual-stats, .process-steps, .auth-visual-footer { display: none; }
+}
+@media (max-width: 520px) {
+  .form-row { grid-template-columns: 1fr; }
+  .biz-type-card { flex: 0 0 100%; width: 100%; }
+}
 </style>
 </head>
 <body>
@@ -281,11 +291,18 @@
               <i data-lucide="car"></i>
               <span>Fleet Owner</span>
             </div>
-            <div class="biz-type-card" data-type="service">
-              <i data-lucide="compass"></i>
-              <span>Service Provider</span>
-            </div>
-          </div>
+                 <div class="biz-type-card" data-type="guide">
+   <i data-lucide="compass"></i>
+   <span>Guide</span>
+   </div>
+   <div class="biz-type-card" data-type="tour-operator">
+   <i data-lucide="briefcase"></i>
+   <span>Tour Operator</span>
+   </div>
+   <div class="biz-type-card" data-type="service-offering">
+   <i data-lucide="wrench"></i>
+   <span>Service Offering</span>
+   </div>
 
           <!-- Company name -->
           <div class="form-group">
@@ -428,7 +445,7 @@
     </div>
     <div class="auth-visual-footer">
       <span>© 2026 SafariLink Tanzania</span>
-      <span>app.safarilink.co.tz</span>
+      <span>www.safarilink.co.tz</span>
     </div>
   </div>
 
