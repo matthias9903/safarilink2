@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How It Works — SafariLink Tanzania B2B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --forest-green:#1A5A3A;
+    --forest-dark:#0F3D26;
+    --accent-green:#2E9E5B;
+    --charcoal:#2C2C2C;
+    --warm-gray:#6B6B6B;
+    --text:#1F2937;
+    --bg:#F7F9F8;
+    --card:#FFFFFF;
+    --border:#E5E7EB;
+    --success:#16A34A;
+    --amber:#D97706;
+    --blue:#2563EB;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;}
+  a{text-decoration:none;color:inherit;}
+
+  /* ── Sticky top bar ─────────────────────────── */
+  .topbar{
+    position:sticky;top:0;z-index:50;
+    background:#fff;border-bottom:1px solid var(--border);
+    padding:0 24px;height:64px;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand-logo{
+    width:34px;height:34px;border-radius:8px;background:var(--forest-green);
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-weight:800;font-size:17px;
+  }
+  .brand-name{font-weight:800;font-size:16px;letter-spacing:-.3px;color:var(--charcoal);}
+  .brand-tag{display:block;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--warm-gray);}
+  .topbar-links{display:flex;align-items:center;gap:22px;font-size:13px;font-weight:600;color:var(--warm-gray);}
+  .topbar-links a:hover{color:var(--forest-green);}
+  .topbar-links a.active{color:var(--forest-green);}
+  .topbar-back{
+    font-size:13px;font-weight:600;color:#fff;background:var(--forest-green);
+    padding:8px 16px;border-radius:8px;
+  }
+  .topbar-back:hover{background:var(--forest-dark);}
+
+  /* ── Hero ──────────────────────────────────── */
+  .hero{
+    background:linear-gradient(135deg,var(--forest-dark) 0%,var(--forest-green) 55%,#2E7D54 100%);
+    padding:64px 24px 56px;text-align:center;color:#fff;
+  }
+  .hero-label{
+    display:inline-block;font-size:11px;font-weight:700;letter-spacing:.14em;
+    text-transform:uppercase;color:#BFE8CD;background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:6px 16px;margin-bottom:18px;
+  }
+  .hero h1{font-size:2.1rem;font-weight:800;letter-spacing:-.02em;margin-bottom:12px;}
+  .hero p{max-width:660px;margin:0 auto;color:rgba(255,255,255,.85);font-size:1rem;}
+
+  .container{max-width:1080px;margin:0 auto;padding:48px 24px;}
+  .section-head{text-align:center;margin-bottom:40px;}
+  .section-head .label{
+    display:inline-block;font-size:11px;font-weight:700;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--forest-green);margin-bottom:10px;
+  }
+  .section-head h2{font-size:1.6rem;font-weight:800;letter-spacing:-.01em;color:var(--charcoal);}
+  .section-head p{color:var(--warm-gray);font-size:.95rem;max-width:660px;margin:10px auto 0;}
+
+  .intro-banner{
+    background:rgba(26,90,58,.06);border:1px solid rgba(26,90,58,.2);
+    border-left:4px solid var(--forest-green);border-radius:10px;
+    padding:16px 20px;font-size:.9rem;color:var(--charcoal);margin-bottom:44px;
+  }
+
+  /* ── Phase pills ───────────────────────────── */
+  .phase-pills{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:52px;}
+  .phase-pill{
+    background:var(--card);border:1px solid var(--border);border-radius:24px;
+    padding:10px 20px;font-size:.85rem;font-weight:700;color:var(--charcoal);
+    display:flex;align-items:center;gap:8px;
+  }
+  .phase-pill .dot{width:8px;height:8px;border-radius:50%;}
+  .phase-pill small{font-weight:600;color:var(--warm-gray);font-size:.72rem;}
+
+  /* ── Step cards ────────────────────────────── */
+  .step{
+    background:var(--card);border:1px solid var(--border);border-radius:16px;
+    padding:32px 30px;margin-bottom:20px;
+    display:flex;gap:26px;align-items:flex-start;
+  }
+  .step-num{
+    flex-shrink:0;width:56px;height:56px;border-radius:14px;
+    background:var(--forest-green);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:1.25rem;
+  }
+  .step:nth-child(odd) .step-num{background:var(--forest-dark);}
+  .step-body{flex:1;}
+  .step-phase-tag{
+    display:inline-block;font-size:.66rem;font-weight:700;letter-spacing:.1em;
+    text-transform:uppercase;padding:3px 10px;border-radius:12px;margin-bottom:8px;
+  }
+  .phase-1{background:rgba(37,99,235,.08);color:var(--blue);}
+  .phase-2{background:rgba(217,119,6,.1);color:var(--amber);}
+  .phase-3{background:rgba(26,90,58,.1);color:var(--forest-green);}
+  .step-body h3{font-size:1.12rem;font-weight:800;color:var(--charcoal);margin-bottom:6px;}
+  .step-body > p{font-size:.9rem;color:var(--warm-gray);margin-bottom:16px;}
+  .step-body a{color:var(--forest-green);}
+  .step-col{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;}
+  .step-col > div{flex:1;min-width:220px;}
+  .mini-label{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--warm-gray);margin-bottom:8px;}
+  .chip{
+    display:inline-block;font-size:.8rem;background:var(--bg);
+    border:1px solid var(--border);border-radius:8px;padding:5px 12px;
+    margin:0 6px 6px 0;color:#374151;font-weight:500;
+  }
+  .chip.outline{background:#fff;border-color:var(--accent-green);color:var(--forest-green);font-weight:600;}
+
+  /* ── Day itinerary sample ──────────────────── */
+  .days{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;}
+  .day{
+    background:rgba(26,90,58,.06);border:1px dashed rgba(26,90,58,.3);
+    border-radius:10px;padding:10px 14px;font-size:.82rem;color:var(--charcoal);
+  }
+  .day b{color:var(--forest-green);display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;}
+
+  /* ── Costing formula ───────────────────────── */
+  .formula{
+    background:var(--bg);border:1px solid var(--border);border-radius:12px;
+    padding:20px;margin:12px 0;
+  }
+  .formula .row{display:flex;justify-content:space-between;padding:5px 0;font-size:.86rem;border-bottom:1px dashed var(--border);}
+  .formula .row:last-child{border-bottom:none;}
+  .formula .row span:first-child{color:var(--warm-gray);}
+  .formula .row span:last-child{font-weight:700;color:var(--charcoal);}
+  .formula .total{
+    background:#fff;border:1px solid var(--accent-green);border-radius:8px;
+    padding:8px 12px;margin-top:8px;display:flex;justify-content:space-between;
+    font-weight:800;color:var(--forest-green);font-size:.9rem;
+  }
+  .formula-sep{text-align:center;font-size:1.3rem;color:var(--accent-green);font-weight:800;padding:8px 0;}
+
+  /* ── Margin metrics ────────────────────────── */
+  .metric-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0;}
+  .metric{
+    background:var(--bg);border:1px solid var(--border);border-radius:10px;
+    padding:14px 16px;
+  }
+  .metric .m-label{font-size:.7rem;font-weight:700;text-transform:uppercase;color:var(--warm-gray);letter-spacing:.05em;}
+  .metric .m-value{font-size:1.05rem;font-weight:800;color:var(--charcoal);margin-top:4px;}
+  .metric.green{background:rgba(22,163,74,.07);border-color:rgba(22,163,74,.25);}
+  .metric.green .m-value{color:var(--success);}
+
+  /* ── Status badges ─────────────────────────── */
+  .status-chip{
+    display:inline-block;font-size:.74rem;font-weight:700;padding:4px 12px;
+    border-radius:14px;margin:3px 4px 3px 0;
+  }
+  .s-draft{background:rgba(107,107,107,.1);color:#555;}
+  .s-req{background:rgba(37,99,235,.08);color:var(--blue);}
+  .s-on{background:rgba(217,119,6,.1);color:var(--amber);}
+  .s-conf{background:rgba(22,163,74,.1);color:var(--success);}
+  .s-alt{background:rgba(124,58,237,.08);color:#7C3AED;}
+  .s-canc{background:rgba(220,38,38,.08);color:#DC2626;}
+  .s-comp{background:rgba(8,145,178,.1);color:#0891B2;}
+
+  /* ── Final workflow pipeline ───────────────── */
+  .pipeline{display:grid;grid-template-columns:repeat(7,1fr);gap:12px;margin-bottom:8px;}
+  .pipe-node{
+    background:var(--card);border:1px solid var(--border);border-radius:12px;
+    padding:14px 10px;text-align:center;
+  }
+  .pipe-node .pipe-i{
+    width:30px;height:30px;border-radius:8px;margin:0 auto 8px;
+    background:rgba(26,90,58,.1);color:var(--forest-green);
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.75rem;
+  }
+  .pipe-node h5{font-size:.74rem;font-weight:800;color:var(--charcoal);}
+  .pipeline-note{
+    text-align:center;color:var(--warm-gray);font-size:.8rem;margin-top:12px;
+  }
+
+  /* ── Footer ────────────────────────────────── */
+  footer{
+    background:var(--charcoal);color:#BBB;margin-top:56px;
+    padding:36px 24px;text-align:center;border-top:3px solid var(--forest-green);
+  }
+  footer .links{display:flex;justify-content:center;gap:22px;flex-wrap:wrap;margin-bottom:14px;font-size:.82rem;}
+  footer .links a{color:#DDD;}
+  footer .links a:hover{color:#fff;}
+  footer small{font-size:.75rem;color:#999;}
+
+  /* ── Responsive ────────────────────────────── */
+  @media(max-width:900px){
+    .step{flex-direction:column;gap:14px;padding:24px 20px;}
+    .metric-grid{grid-template-columns:repeat(2,1fr);}
+    .pipeline{grid-template-columns:repeat(4,1fr);}
+    .topbar a:not(.topbar-back){display:none;}
+  }
+  @media(max-width:600px){
+    .pipeline{grid-template-columns:repeat(2,1fr);}
+    .metric-grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ STICKY TOP BAR ============ -->
+<header class="topbar">
+  <a href="index.html" class="brand">
+    <div class="brand-logo">S</div>
+    <div>
+      <span class="brand-name">SafariLink</span>
+      <span class="brand-tag">Tanzania B2B Network</span>
+    </div>
+  </a>
+  <nav class="topbar-links">
+    <a href="index.html">Home</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="about.html">About</a>
+    <a href="how-it-works.html" class="active">How It Works</a>
+    <a href="security.html">Security</a>
+    <a class="topbar-back" href="index.html">← Back to Dashboard</a>
+  </nav>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <span class="hero-label">How It Works</span>
+  <h1>From client inquiry to confirmed Tanzania trip.</h1>
+  <p>SafariLink connects the entire operational workflow in one place — sourcing, planning, costing, quoting, reserving, operating and closing each trip through a single linked B2B platform.</p>
+</section>
+
+<div class="container">
+
+  <div class="intro-banner">
+    <strong>One workflow, three phases.</strong> Plan the trip (Steps 1–5), price and sell it (Steps 6–9),
+    then operate and close it (Steps 10–11) — everything tracked in one connected workspace.
+  </div>
+
+  <!-- ============ PHASE PILLS ============ -->
+  <div class="phase-pills">
+    <div class="phase-pill"><span class="dot" style="background:var(--blue);"></span> Plan <small>Steps 1–5</small></div>
+    <div class="phase-pill"><span class="dot" style="background:var(--amber);"></span> Price &amp; Sell <small>Steps 6–9</small></div>
+    <div class="phase-pill"><span class="dot" style="background:var(--forest-green);"></span> Operate &amp; Close <small>Steps 10–11</small></div>
+  </div>
+
+  <!-- ============ STEPS 1–5: PLAN ============ -->
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <span class="step-phase-tag phase-1">Phase 1 — Plan</span>
+      <h3>Create Your Trip</h3>
+      <p>Start with the basic trip information. Enter the details that define the trip before you search for anything:</p>
+      <div class="mini-label">What you enter</div>
+      <div>
+        <span class="chip">Client name</span><span class="chip">Number of travellers</span>
+        <span class="chip">Arrival date</span><span class="chip">Departure date</span>
+        <span class="chip">Duration</span><span class="chip">Destinations</span>
+        <span class="chip">Trip type</span><span class="chip">Accommodation level</span>
+        <span class="chip">Special requirements</span><span class="chip">Budget</span>
+        <span class="chip">Preferred language</span><span class="chip">Activities</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <span class="step-phase-tag phase-1">Phase 1 — Plan</span>
+      <h3>Search the Network</h3>
+      <p>Search for the services you need across <strong>accommodation, vehicles and professional guides</strong> — all from one place.</p>
+      <div class="step-col">
+        <div>
+          <div class="mini-label">Accommodation — search by</div>
+          <span class="chip">Destination</span><span class="chip">Dates</span>
+          <span class="chip">Property type</span><span class="chip">Room type</span>
+          <span class="chip">Meal plan</span><span class="chip">Availability</span>
+          <span class="chip">Price</span><span class="chip">STO rate</span>
+        </div>
+        <div>
+          <div class="mini-label">Vehicles — search by</div>
+          <span class="chip">Location</span><span class="chip">Dates</span>
+          <span class="chip">Capacity</span><span class="chip">Vehicle type</span>
+          <span class="chip">Lease period</span><span class="chip">Availability</span>
+        </div>
+        <div>
+          <div class="mini-label">Guides — search by</div>
+          <span class="chip">Language</span><span class="chip">Destination</span>
+          <span class="chip">Specialisation</span><span class="chip">Experience</span>
+          <span class="chip">Availability</span><span class="chip">Rate</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <span class="step-phase-tag phase-1">Phase 1 — Plan</span>
+      <h3>Check Availability</h3>
+      <p>Instead of contacting suppliers individually, submit availability requests through SafariLink. The system records each request and its response:</p>
+      <div>
+        <span class="chip chip-outline">Supplier</span><span class="chip chip-outline">Service</span>
+        <span class="chip chip-outline">Date</span><span class="chip chip-outline">Requirement</span>
+        <span class="chip chip-outline">Request time</span><span class="chip chip-outline">Response</span>
+        <span class="chip chip-outline">Expiry</span><span class="chip chip-outline">Status</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <span class="step-phase-tag phase-1">Phase 1 — Plan</span>
+      <h3>Access B2B Rates</h3>
+      <p>Eligible verified businesses can access applicable supplier <strong>B2B/STO rates</strong>. The system can show you:</p>
+      <div>
+        <span class="chip">Supplier rate</span><span class="chip">Meal plan</span>
+        <span class="chip">Room type</span><span class="chip">Validity</span>
+        <span class="chip">Cancellation terms</span><span class="chip">Single supplement</span>
+        <span class="chip">Child policy</span><span class="chip">Special conditions</span>
+      </div>
+      <p style="margin-top:12px;">Private STO rates are restricted to verified business users, protecting the supplier's commercial information.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-body">
+      <span class="step-phase-tag phase-1">Phase 1 — Plan</span>
+      <h3>Build the Itinerary</h3>
+      <p>Add confirmed or requested services to the itinerary and build the trip day by day. For example:</p>
+      <div class="days">
+        <div class="day"><b>Day 1</b>Arrival in Arusha</div>
+        <div class="day"><b>Day 2</b>Arusha → Tarangire</div>
+        <div class="day"><b>Day 3</b>Tarangire → Ngorongoro</div>
+        <div class="day"><b>Day 4</b>Ngorongoro → Serengeti</div>
+        <div class="day"><b>Day 5</b>Serengeti</div>
+      </div>
+      <p>The itinerary can include:</p>
+      <div>
+        <span class="chip">Accommodation</span><span class="chip">Vehicle</span>
+        <span class="chip">Guide</span><span class="chip">Activities</span>
+        <span class="chip">Meals</span><span class="chip">Transfers</span>
+        <span class="chip">Flight information</span><span class="chip">Notes</span>
+        <span class="chip">Pickup details</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ STEPS 6–9 ============ -->
+
+  <div class="step">
+    <div class="step-num">6</div>
+    <div class="step-body">
+      <span class="step-phase-tag phase-2">Phase 2 — Price &amp; Sell</span>
+      <h3>Calculate the Cost</h3>
+      <p>SafariLink calculates the operational cost of the trip.</p>
+      <div class="formula">
+        <div class="row"><span>Supplier cost</span><span>$ —</span></div>
+        <div class="row"><span>Transport cost</span><span>$ —</span></div>
+        <div class="row"><span>Guide cost</span><span>$ —</span></div>
+        <div class="row"><span>Activities</span><span>$ —</span></div>
+        <div class="row"><span>Transfers</span><span>$ —</span></div>
+        <div class="row"><span>Other costs</span><span>$ —</span></div>
+        <div class="total"><span>Total Operational Cost</span><span>$ —</span></div>
+      </div>
+      <div class="formula-segment">＋</div>
+      <div class="formula">
+        <div class="row"><span>Markup / Commission / Margin</span><span>$ —</span></div>
+        <div class="total"><span>Client Selling Price</span><span>$ —</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">7</div>
+    <div class="step-body">
+      <span class="step-phase-tag phase-2">Phase 2 — Price &amp; Sell</span>
+      <h3>Review the Margin</h3>
+      <p>Before sending the quote, the operator can see the full pricing picture — this helps prevent accidental underpricing:</p>
+      <div class="metric-grid">
+        <div class="metric"><div class="l-label">Total supplier cost</div><div class="m-value">$ —</div></div>
+        <div class="metric"><div class="l-label">Selling price</div><div class="m-value">$ —</div></div>
+        <div class="metric green-value"><div class="l-label">Gross margin</div><div class="m-value">$ —</div></div>
+        <div class="metric green-value"><div class="l-label">Margin percentage</div><div class="m-value">— %</div></div>
+        <div class="metric"><div class="l-label">Cost per person</div><div class="m-value">$ —</div></div>
+        <div class="metric"><div class="l-label">Selling price per person</div><div class="m-value">$ —</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">8</div>
+    <div class="step-body">
+      <span class="step-phase-tag phase-2">Phase 2 — Price &amp; Sell</span>
+      <h3>Send the Client Quote</h3>
+      <p>Create a professional, client-ready quotation. The quote may include:</p>
+      <div>
+        <span class="chip">Trip overview</span><span class="chip">Daily itinerary</span>
+        <span class="chip">Accommodation</span><span class="chip">Activities</span>
+        <span class="chip">Transport</span><span class="chip">Inclusions</span>
+        <span class="chip">Exclusions</span><span class="chip">Price</span>
+        <span class="chip">Terms</span><span class="chip">Cancellation policy</span>
+        <span class="chip">Payment requirements</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">9</div>
+    <div class="step-body">
+      <span class="step-phase-tag phase-2">Phase 2 — Price &amp; Sell</span>
+      <h3>Reserve</h3>
+      <p>Once the client approves, the reservation moves through a clear flow:</p>
+      <div style="margin:10px 0;font-size:.86rem;font-weight:700;color:var(--charcoal);">
+        Request → Supplier Response → Confirmation
+      </div>
+      <p>Each reservation receives a status:</p>
+      <div>
+        <span class="status-chip s-draft">Draft</span>
+        <span class="status-chip s-req">Requested</span>
+        <span class="status-chip s-on">On Request</span>
+        <span class="status-chip s-conf">Confirmed</span>
+        <span class="status-chip s-alt">Alternative Offered</span>
+        <span class="status-chip s-canc">Cancelled</span>
+        <span class="status-chip s-comp">Completed</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ STEPS 10–11 ============ -->
+
+  <div class="step">
+    <div class="step-num">10</div>
+    <div class="step-body">
+      <span class="step-phase-tag phase-3">Phase 3 — Operate &amp; Close</span>
+      <h3>Operate the Trip</h3>
+      <p>After confirmation, SafariLink becomes the operational workspace. Track:</p>
+      <div>
+        <span class="chip">Pickup</span><span class="chip">Accommodation</span>
+        <span class="chip">Vehicle</span><span class="chip">Guide</span>
+        <span class="chip">Activities</span><span class="chip">Transfers</span>
+        <span class="chip">Payments</span><span class="chip">Documents</span>
+        <span class="chip">Supplier communication</span><span class="chip">Client requirements</span>
+        <span class="chip">Operational tasks</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">11</div>
+    <div class="step-body">
+      <span class="step-phase-tag phase-3">Phase 3 — Operate &amp; Close</span>
+      <h3>Close the Trip</h3>
+      <p>After the journey, close out the trip systematically:</p>
+      <div>
+        <span class="chip">Complete reservations</span><span class="chip">Record final costs</span>
+        <span class="chip">Reconcile payments</span><span class="chip">Store documents</span>
+        <span class="chip">Review supplier performance</span><span class="chip">Record operational issues</span>
+        <span class="chip">Capture client feedback</span>
+      </div>
+      <p style="margin-top:14px;">The trip becomes part of the company's <strong>operational history and analytics</strong>.</p>
+    </div>
+  </div>
+
+  <!-- ============ COMPLETE WORKFLOW ============ -->
+  <div class="section-head" style="margin-top:64px;">
+    <span class="label">The Complete Pipeline</span>
+    <h2>The Complete SafariLink Workflow</h2>
+    <p>From the first inquiry to post-trip reporting — the full journey of a trip through the platform.</p>
+  </div>
+
+  <div class="pipeline">
+    <div class="pipe-node"><div class="pipe-i">1</div><b>Inquiry</b></div>
+    <div class="pipe-node"><div class="pipe-i">2</div><b>Trip Setup</b></div>
+    <div class="pipe-node"><div class="pipe-i">3</div><b>Supplier Search</b></div>
+    <div class="pipe-node"><div class="pipe-i">4</div><b>Availability</b></div>
+    <div class="pipe-node"><div class="pipe-i">5</div><b>STO Rates</b></div>
+    <div class="pipe-node"><div class="pipe-i">6</div><b>Itinerary</b></div>
+    <div class="pipe-node"><div class="pipe-i">7</div><b>Costing</b></div>
+    <div class="pipe-node"><div class="pipe-i">8</div><b>Margin</b></div>
+    <div class="pipe-node"><div class="pipe-i">9</div><b>Client Quote</b></div>
+    <div class="pipe-node"><div class="pipe-i">10</div><b>Reservation</b></div>
+    <div class="pipe-node"><div class="pipe-i">11</div><b>Supplier Confirmation</b></div>
+    <div class="pipe-node"><div class="pipe-i">12</div><b>Trip Operation</b></div>
+    <div class="pipe-node"><div class="pipe-i">13</div><b>Completion</b></div>
+    <div class="pipe-node"><div class="pipe-i">14</div><b>Reporting</b></div>
+  </div>
+  <p class="pipeline-note">Inquiry → Trip Setup → Supplier Search → Availability → STO Rates → Itinerary → Costing → Margin → Client Quote → Reservation → Supplier Confirmation → Trip Operation → Completion → Reporting</p>
+
+</div>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="links">
+    <a href="index.html">Home</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="about.html">About</a>
+    <a href="roadmap.html">Roadmap</a>
+    <a href="how-it-works.html">How It Works</a>
+    <a href="terms.html">Terms</a>
+    <a href="supplier-terms.html">Supplier Terms</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="cookie-policy.html">Cookie Policy</a>
+    <a href="security.html">Security</a>
+  </div>
+  <p>© 2026 SafariLink Tanzania. All rights reserved.</p>
+  <small>Arusha, United Republic of Tanzania</small>
+</footer>
+
+</body>
+</html>
