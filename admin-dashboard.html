@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SafariLink — Admin Dashboard</title>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style>
+  :root {
+    --forest-green: #1a5a3a; --forest-green-light: #2d7a52; --accent-green: #3fb983;
+    --warm-off-white: #f8f7f4; --khaki: #e8e5dd; --charcoal: #2c2c2c;
+    --warm-gray: #a39e95; --border-light: #d4cfc6;
+    --status-available: #10b981; --status-pending: #f59e0b; --status-unavailable: #dc2626;
+    --radius-md: 10px; --radius-lg: 16px; --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+    background: var(--warm-off-white); color: var(--charcoal); line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── Login screen ── */
+  .login-screen {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: linear-gradient(135deg, var(--forest-green) 0%, #0d3d24 100%);
+  }
+  .login-card {
+    background: white; border-radius: var(--radius-lg); padding: 48px 40px;
+    width: 100%; max-width: 420px; box-shadow: var(--shadow-md);
+  }
+  .login-card h1 { font-size: 1.6rem; color: var(--forest-green); margin-bottom: 4px; }
+  .login-card p { color: var(--warm-gray); margin-bottom: 24px; font-size: 0.95rem; }
+  .login-card input[type="password"] {
+    width: 100%; padding: 12px 16px; border: 2px solid var(--border-light);
+    border-radius: var(--radius-md); font-size: 1rem; font-family: inherit; outline: none;
+  }
+  .login-card input:focus { border-color: var(--forest-green); }
+  .login-card button {
+    width: 100%; margin-top: 16px; padding: 12px;
+    background: var(--forest-green); color: white; border: none;
+    border-radius: var(--radius-md); font-size: 1rem; font-weight: 600; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .login-card button:hover { background: var(--forest-green-light); }
+  .login-error { color: var(--status-unavailable); font-size: 0.9rem; margin-top: 12px; display: none; }
+
+  /* ── Dashboard screen ── */
+  .dashboard-screen { display: none; min-height: 100vh; }
+  .topbar {
+    background: var(--forest-green); color: white; padding: 16px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .topbar h2 { font-size: 1.2rem; font-weight: 600; }
+  .topbar button {
+    background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3);
+    padding: 8px 16px; border-radius: var(--radius-md); cursor: pointer; font-family: inherit;
+    display: flex; align-items: center; gap: 6px; font-size: 0.9rem;
+  }
+  .topbar button:hover { background: rgba(255,255,255,0.25); }
+  .content { max-width: 1100px; margin: 0 auto; padding: 32px; }
+
+  /* Stats */
+  .stats { display: flex; gap: 20px; margin-bottom: 32px; flex-wrap: wrap; }
+  .stat-card {
+    flex: 1; min-width: 180px; background: white; border-radius: var(--radius-md);
+    padding: 20px 24px; box-shadow: var(--shadow-md); border-left: 4px solid;
+  }
+  .stat-card .label { font-size: 0.85rem; color: var(--warm-gray); }
+  .stat-card .number { font-size: 2rem; font-weight: 700; }
+  .stat-card.pending { border-left-color: var(--status-pending); }
+  .stat-card.pending .number { color: var(--status-pending); }
+  .stat-card.approved { border-left-color: var(--status-available); }
+  .stat-card.approved .number { color: var(--status-available); }
+  .stat-card.rejected { border-left-color: var(--status-unavailable); }
+  .stat-card.rejected .number { color: var(--status-unavailable); }
+
+  /* Table */
+  .table-wrap { background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; }
+  th { background: var(--khaki); padding: 14px 16px; text-align: left; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--charcoal); }
+  td { padding: 14px 16px; border-bottom: 1px solid var(--border-light); font-size: 0.95rem; }
+  tr:last-child td { border-bottom: none; }
+  .badge {
+    display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;
+  }
+  .badge.pending { background: #fef3c7; color: #92400e; }
+  .badge.approved { background: #d1fae5; color: #065f46; }
+  .badge.rejected { background: #fee2e2; color: #991b1b; }
+  .btn-sm {
+    padding: 6px 14px; border-radius: 20px; border: none; font-size: 0.8rem; font-weight: 600;
+    cursor: pointer; font-family: inherit;
+  }
+  .btn-approve { background: #d1fae5; color: #065f46; margin-right: 6px; }
+  .btn-approve:hover { background: #a7f3d0; }
+  .btn-reject { background: #fee2e2; color: #991b1b; }
+  .btn-reject:hover { background: #fecaca; }
+
+  /* Modal */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: white; border-radius: var(--radius-lg); padding: 32px; max-width: 440px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.2); text-align: center;
+  }
+  .modal h3 { margin-bottom: 8px; }
+  .modal .temp-pass {
+    display: inline-block; background: var(--khaki); padding: 10px 20px; border-radius: var(--radius-md);
+    font-size: 1.3rem; font-weight: 700; letter-spacing: 2px; margin: 16px 0; font-family: monospace;
+  }
+  .modal button {
+    padding: 10px 24px; background: var(--forest-green); color: white; border: none;
+    border-radius: var(--radius-md); cursor: pointer; font-family: inherit; font-size: 0.9rem; margin-top: 8px;
+  }
+  .empty-state { text-align: center; padding: 40px; color: var(--warm-gray); }
+  .refresh-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+  .refresh-bar button { background: white; border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 8px 16px; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 6px; }
+  .refresh-bar button:hover { background: var(--khaki); }
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN SCREEN ── -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <h1>SafariLink Admin</h1>
+    <p>Enter your admin password to manage access requests.</p>
+    <input type="password" id="adminPass" placeholder="Admin password" onkeydown="if(event.key==='Enter')adminLogin()">
+    <button onclick="adminLogin()"><i data-lucide="shield-check"></i> Sign in</button>
+    <div class="login-error" id="loginError">Invalid password.</div>
+  </div>
+</div>
+
+<!-- ── DASHBOARD SCREEN ── -->
+<div class="dashboard-screen" id="dashboardScreen">
+  <div class="topbar">
+    <h2>SafariLink Admin — Access Requests</h2>
+    <button onclick="logout()"><i data-lucide="log-out"></i> Logout</button>
+  </div>
+  <div class="content">
+    <div class="refresh-bar">
+      <button onclick="loadRequests()"><i data-lucide="refresh-cw"></i> Refresh</button>
+    </div>
+
+    <div class="stats" id="stats"></div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Type</th>
+            <th>Contact</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Region</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="requestsBody">
+          <tr><td colspan="9" class="empty-state">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ── APPROVAL MODAL ── -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h3>Request Approved!</h3>
+    <p>Copy this temporary password and send it to the user:</p>
+    <div class="temp-pass" id="tempPass"></div>
+    <p style="font-size:0.85rem;color:var(--warm-gray)">User email: <strong id="modalEmail"></strong></p>
+    <button onclick="closeModal()">Done</button>
+  </div>
+</div>
+
+<script>
+  var token = '';
+  lucide.createIcons();
+
+  function adminLogin() {
+    var pass = document.getElementById('adminPass').value;
+    var err = document.getElementById('loginError');
+
+    fetch('/api/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pass })
+    })
+    .then(function(r) {
+      if (!r.ok) { err.style.display = 'block'; return null; }
+      return r.json();
+    })
+    .then(function(data) {
+      if (!data) return;
+      token = data.token;
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('dashboardScreen').style.display = 'block';
+      loadRequests();
+    });
+  }
+
+  function logout() {
+    token = '';
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('dashboardScreen').style.display = 'none';
+    document.getElementById('adminPass').value = '';
+  }
+
+  function loadRequests() {
+    fetch('/api/admin/requests', {
+      headers: { 'Authorization': token }
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) { renderRequests(data); });
+  }
+
+  function renderRequests(requests) {
+    var tbody = document.getElementById('requestsBody');
+    var stats = document.getElementById('stats');
+
+    if (!requests.length) {
+      tbody.innerHTML = '<tr><td colspan="9" class="empty-state">No access requests yet.</td></tr>';
+      stats.innerHTML = '';
+      return;
+    }
+
+    var pending = requests.filter(function(r) { return r.status === 'pending'; }).length;
+    var approved = requests.filter(function(r) { return r.status === 'approved'; }).length;
+    var rejected = requests.filter(function(r) { return r.status === 'rejected'; }).length;
+
+    stats.innerHTML =
+      '<div class="stat-card pending"><div class="label">Pending</div><div class="number">' + pending + '</div></div>' +
+      '<div class="stat-card approved"><div class="label">Approved</div><div class="number">' + approved + '</div></div>' +
+      '<div class="stat-card rejected"><div class="label">Rejected</div><div class="number">' + rejected + '</div></div>';
+
+    var rows = '';
+    requests.forEach(function(r) {
+      var badge = '<span class="badge ' + r.status + '">' + r.status.charAt(0).toUpperCase() + r.status.slice(1) + '</span>';
+      var actions = '';
+      if (r.status === 'pending') {
+        actions = '<button class="btn-sm btn-approve" onclick="approveRequest(' + r.id + ')">Approve</button>' +
+                  '<button class="btn-sm btn-reject" onclick="rejectRequest(' + r.id + ')">Reject</button>';
+      } else {
+        actions = '—';
+      }
+      rows += '<tr>' +
+        '<td><strong>' + esc(r.company_name) + '</strong></td>' +
+        '<td>' + esc(r.business_type) + '</td>' +
+        '<td>' + esc(r.contact_name) + '</td>' +
+        '<td>' + esc(r.email) + '</td>' +
+        '<td>' + esc(r.phone) + '</td>' +
+        '<td>' + esc(r.region) + '</td>' +
+        '<td>' + esc(r.created_at || '') + '</td>' +
+        '<td>' + badge + '</td>' +
+        '<td>' + actions + '</td>' +
+        '</tr>';
+    });
+
+    tbody.innerHTML = rows;
+    lucide.createIcons();
+  }
+
+  function approveRequest(id) {
+    fetch('/api/admin/approve/' + id, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': token }
+    })
+    .then(function(r) {
+      if (!r.ok) return r.json().then(function(e) { alert(e.error); return null; });
+      return r.json();
+    })
+    .then(function(data) {
+      if (!data) return;
+      document.getElementById('tempPass').textContent = data.tempPassword;
+      document.getElementById('modalEmail').textContent = data.email;
+      document.getElementById('modalOverlay').classList.add('show');
+      loadRequests();
+    });
+  }
+
+  function rejectRequest(id) {
+    if (!confirm('Reject this request?')) return;
+    fetch('/api/admin/reject/' + id, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': token }
+    })
+    .then(function(r) { return r.json(); })
+    .then(function() { loadRequests(); });
+  }
+
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('show');
+  }
+
+  function esc(s) {
+    var d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+</script>
+</body>
+</html>
