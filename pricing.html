@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pricing — SafariLink Tanzania B2B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- ????  PRICING PAGE — PUBLISHING CHECKLIST  ????
+  Before publishing pricing.html, confirm and replace:
+  1. [PRICE]        → actual monthly prices (Starter / Professional)
+  2. [MODEL]        → supplier & guide commercial model
+                     (e.g. Free / Starting price / Commission %)
+  3. [Trial wording]→ free trial, pilot or early-access terms
+  4. [Effective Date] if printed on the page
+  5. VAT / tax note → adjust wording to your jurisdiction
+  6. [Email]        → sales@safarilink.tz (or real sales address)
+  7. Confirm the "No Hidden Fees" list matches the final contracts
+  8. Only list features as "included" once they exist (AI, API,
+     integrations & advanced analytics are marked as planned here)
+-->
+
+<style>
+  :root{
+    --forest-green:#1A5A3A;
+    --forest-dark:#0F3D26;
+    --accent-green:#2E9E5B;
+    --charcoal:#2C2C2C;
+    --warm-gray:#6B6B6B;
+    --text:#1F2937;
+    --bg:#F7F9F8;
+    --card:#FFFFFF;
+    --border:#E5E7EB;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;}
+  a{text-decoration:none;color:inherit;}
+
+  /* ── Sticky top bar ─────────────────────────── */
+  .topbar{
+    position:sticky;top:0;z-index:50;
+    background:#ffffff;border-bottom:1px solid var(--border);
+    padding:0 24px;height:64px;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand-logo{
+    width:34px;height:34px;border-radius:8px;background:var(--forest-green);
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-weight:800;font-size:17px;
+  }
+  .brand-name{font-weight:800;font-size:16px;letter-spacing:-.3px;color:var(--charcoal);}
+  .brand-tag{display:block;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--warm-gray);}
+  .topbar-links{display:flex;align-items:center;gap:22px;font-size:13px;font-weight:600;color:var(--warm-gray);}
+  .topbar-links a:hover{color:var(--forest-green);}
+  .topbar-links a.active{color:var(--forest-green);}
+  .topbar-back{
+    font-size:13px;font-weight:600;color:#fff;background:var(--forest-green);
+    padding:8px 16px;border-radius:8px;
+  }
+  .topbar-back:hover{background:var(--forest-dark);}
+
+  /* ── Hero ──────────────────────────────────── */
+  .hero{
+    background:linear-gradient(135deg,var(--forest-dark) 0%,var(--forest-green) 55%,#2E7D54 100%);
+    padding:64px 24px 56px;text-align:center;color:#fff;
+  }
+  .hero-label{
+    display:inline-block;font-size:11px;font-weight:700;letter-spacing:.14em;
+    text-transform:uppercase;color:#BFE8CD;background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:6px 16px;margin-bottom:18px;
+  }
+  .hero h1{font-size:2.1rem;font-weight:800;letter-spacing:-.02em;margin-bottom:12px;}
+  .hero p{max-width:640px;margin:0 auto;color:rgba(255,255,255,.85);font-size:1rem;}
+
+  /* ── Layout ────────────────────────────────── */
+  .container{max-width:1040px;margin:0 auto;padding:48px 24px;}
+  .section-head{text-align:center;margin-bottom:40px;}
+  .section-head .label{
+    display:inline-block;font-size:11px;font-weight:700;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--forest-green);margin-bottom:10px;
+  }
+  .section-head h2{font-size:1.6rem;font-weight:800;letter-spacing:-.01em;color:var(--charcoal);}
+  .section-head p{color:var(--warm-gray);font-size:.95rem;max-width:640px;margin:10px auto 0;}
+
+  .intro-note{
+    background:rgba(46,158,91,.08);border:1px solid rgba(46,158,91,.25);
+    border-left:4px solid var(--accent-green);border-radius:10px;
+    padding:14px 18px;font-size:.9rem;color:var(--charcoal);margin-bottom:40px;
+  }
+
+  /* ── Plan cards ────────────────────────────── */
+  .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:20px;}
+  .plan{
+    background:var(--card);border:1px solid var(--border);border-radius:14px;
+    padding:28px 24px;display:flex;flex-direction:column;position:relative;
+    box-shadow:0 1px 3px rgba(0,0,0,.04);
+  }
+  .plan.featured{border:2px solid var(--forest-green);box-shadow:0 8px 24px rgba(26,90,58,.12);}
+  .plan-badge{
+    position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+    background:var(--forest-green);color:#fff;font-size:10px;font-weight:700;
+    letter-spacing:.08em;text-transform:uppercase;padding:4px 14px;border-radius:14px;
+  }
+  .plan-name{font-size:1.05rem;font-weight:800;color:var(--charcoal);}
+  .plan-desc{font-size:.8rem;color:var(--warm-gray);margin-top:4px;min-height:38px;}
+  .plan-price{margin:18px 0 4px;}
+  .plan-price .amount{font-size:1.45rem;font-weight:800;color:var(--forest-green);}
+  .plan-price .period{font-size:.8rem;color:var(--warm-gray);}
+  .plan-tax{font-size:.72rem;color:var(--warm-gray);margin-bottom:14px;}
+  .plan-features{list-style:none;font-size:.86rem;margin:8px 0 18px;flex:1;}
+  .plan-features li{padding:5px 0 5px 22px;position:relative;}
+  .plan-features li::before{
+    content:"";position:absolute;left:2px;top:10px;width:9px;height:5px;
+    border-left:2px solid var(--accent-green);border-bottom:2px solid var(--accent-green);
+    transform:rotate(-45deg);
+  }
+  .plan-best{
+    font-size:.78rem;font-weight:600;color:var(--warm-gray);
+    border-top:1px dashed var(--border);padding-top:12px;margin-bottom:14px;
+  }
+  .plan-best strong{color:var(--forest-green);}
+  .plan .btn{
+    display:block;text-align:center;font-weight:700;font-size:.9rem;
+    padding:12px 16px;border-radius:9px;
+  }
+  .btn-primary{background:var(--forest-green);color:#fff;}
+  .btn-primary:hover{background:var(--forest-dark);}
+  .btn-outline{border:1px solid var(--forest-green);color:var(--forest-green);}
+  .btn-outline:hover{background:rgba(26,90,58,.06);}
+
+  /* ── Comparison table ──────────────────────── */
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+  .table-wrap{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-size:.85rem;}
+  th,td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--border);}
+  thead th{background:rgba(26,90,58,.05);font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--forest-green);}
+  tbody tr:last-child td{border-bottom:none;}
+  td.feature-name{font-weight:600;color:var(--charcoal);}
+  .center{text-align:center;}
+  .check{color:var(--accent-green);font-weight:800;}
+  .dash{color:#C0C5C0;}
+  .planned{font-size:.72rem;color:var(--warm-gray);}
+  .table-note{font-size:.78rem;color:var(--warm-gray);padding:12px 16px;border-top:1px solid var(--border);background:#FAFBFA;}
+
+  /* ── Supplier cards ────────────────────────── */
+  .supplier-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+  .supplier-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;}
+  .supplier-card h3{font-size:1rem;font-weight:800;color:var(--charcoal);margin-bottom:4px;}
+  .supplier-card .role{font-size:.75rem;color:var(--warm-gray);margin-bottom:12px;}
+  .supplier-card ul{list-style:none;font-size:.84rem;}
+  .supplier-card ul li{padding:5px 0 5px 20px;position:relative;color:#374151;}
+  .supplier-card ul li::before{content:"•";position:absolute;left:4px;color:var(--accent-green);font-weight:800;}
+  .supplier-price{margin-top:14px;font-size:.82rem;font-weight:700;color:var(--forest-green);border-top:1px dashed var(--border);padding-top:12px;}
+
+  /* ── Fees / no-hidden-fees ─────────────────── */
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:36px;}
+  .info-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;}
+  .info-card h3{font-size:1.02rem;font-weight:800;color:var(--charcoal);margin-bottom:10px;}
+  .info-card ul{list-style:none;font-size:.86rem;}
+  .info-card ul li{padding:4px 0 4px 20px;position:relative;color:#374151;}
+  .info-card ul li::before{content:"✓";position:absolute;left:0;color:var(--accent-green);font-weight:800;}
+  .info-card p{font-size:.85rem;color:var(--warm-gray);margin-top:8px;}
+
+  /* ── FAQ ───────────────────────────────────── */
+  .faq{max-width:760px;margin:0 auto;}
+  details{
+    background:var(--card);border:1px solid var(--border);border-radius:12px;
+    margin-bottom:12px;padding:16px 20px;
+  }
+  summary{
+    cursor:pointer;font-weight:700;font-size:.93rem;color:var(--charcoal);
+    display:flex;justify-content:space-between;align-items:center;gap:12px;
+  }
+  summary::after{content:"+";font-size:1.1rem;color:var(--forest-green);font-weight:800;}
+  details[open] summary::after{content:"−";}
+  details p{font-size:.86rem;color:var(--warm-gray);margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+
+  /* ── CTA ───────────────────────────────────── */
+  .cta{
+    background:linear-gradient(135deg,var(--forest-dark),var(--forest-green));
+    border-radius:16px;padding:48px 32px;text-align:center;color:#fff;margin-top:48px;
+  }
+  .cta h2{font-size:1.5rem;font-weight:800;margin-bottom:8px;}
+  .cta p{color:rgba(255,255,255,.85);max-width:520px;margin:0 auto 22px;font-size:.95rem;}
+  .cta a{
+    display:inline-block;background:#fff;color:var(--forest-green);
+    font-weight:700;font-size:.95rem;padding:13px 28px;border-radius:10px;
+  }
+  .cta a:hover{background:#EAF5EE;}
+
+  /* ── Footer ────────────────────────────────── */
+  footer{
+    background:var(--charcoal);color:#BBB;margin-top:56px;
+    padding:36px 24px;text-align:center;border-top:3px solid var(--forest-green);
+  }
+  footer .links{display:flex;justify-content:center;gap:22px;flex-wrap:wrap;margin-bottom:14px;font-size:.82rem;}
+  footer .links a{color:#DDD;}
+  footer .links a:hover{color:#fff;}
+  footer small{font-size:.75rem;color:#999;}
+
+  /* ── Responsive ────────────────────────────── */
+  @media(max-width:900px){
+    .plans{grid-template-columns:1fr;}
+    .supplier-grid{grid-template-columns:1fr;}
+    .two-col{grid-template-columns:1fr;}
+    .topbar a:not(.topbar-back){display:none;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ STICKY TOP BAR ============ -->
+<header class="topbar">
+  <a href="index.html" class="brand">
+    <div class="brand-logo">S</div>
+    <div>
+      <span class="brand-name">SafariLink</span>
+      <span class="brand-tag">Tanzania B2B Network</span>
+    </div>
+  </a>
+  <nav class="topbar-links">
+    <a href="index.html">Home</a>
+    <a href="pricing.html" class="active">Pricing</a>
+    <a href="about.html">About</a>
+    <a href="terms.html">Terms</a>
+    <a class="topbar-back" href="index.html">← Back to Dashboard</a>
+  </nav>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <span class="hero-label">Pricing</span>
+  <h1>Simple Pricing for Tourism Businesses</h1>
+  <p>Start with the tools you need. Scale as your operation grows.</p>
+</section>
+
+<div class="container">
+
+  <div class="intro-note">
+    <strong>SafariLink is designed for tourism businesses — not individual consumers.</strong>
+    Pricing reflects the value of the platform to each business while keeping entry simple for smaller operators.
+  </div>
+
+  <!-- ============ TOUR OPERATOR PLANS ============ -->
+  <div class="section-head">
+    <span class="label">Tour Operator Plans</span>
+    <h2>Choose the plan that fits your operation</h2>
+  </div>
+
+  <div class="plans">
+
+    <!-- Starter -->
+    <div class="plan">
+      <div class="plan-name">Starter</div>
+      <div class="plan-desc">For small operators building their digital operating system.</div>
+      <div class="plan-price"><span class="amount">TZS [PRICE]</span> <span class="period">/ month</span></div>
+      <div class="plan-tax-note">Prices exclude applicable taxes unless otherwise stated.</div>
+      <ul class="plan-features">
+        <li>1 company workspace</li>
+        <li>Up to 3 users</li>
+        <li>Global supplier search</li>
+        <li>Accommodation sourcing</li>
+        <li>Vehicle sourcing</li>
+        <li>Guide sourcing</li>
+        <li>Basic itinerary builder</li>
+        <li>Basic costing</li>
+        <li>Client management</li>
+        <li>Quote management</li>
+        <li>Reservation management</li>
+        <li>Supplier messaging</li>
+        <li>Documents</li>
+        <li>Basic reporting</li>
+        <li>Email support</li>
+      </ul>
+      <div class="plan-best"><strong>Best for:</strong> Small and emerging Tanzania tour operators.</div>
+      <a class="btn btn-outline" href="#cta">Choose Starter</a>
+    </div>
+
+    <!-- Professional -->
+    <div class="plan featured">
+      <div class="plan-badge">Most Popular</div>
+      <div class="plan-name">Professional</div>
+      <div class="plan-desc">For growing operators managing multiple trips and suppliers.</div>
+      <div class="plan-price"><span class="amount">TZS [PRICE]</span> <span class="period">/ month</span></div>
+      <div class="plan-tax-note">Prices exclude applicable taxes unless otherwise stated.</div>
+      <ul class="plan-features">
+        <li>Everything in Starter, plus:</li>
+        <li>Up to 10 users</li>
+        <li>Advanced itinerary builder</li>
+        <li>Advanced costing</li>
+        <li>Markup and margin controls</li>
+        <li>Advanced supplier search</li>
+        <li>STO rate management</li>
+        <li>Reservation workflows</li>
+        <li>Automated follow-ups</li>
+        <li>Team task management</li>
+        <li>Advanced reporting</li>
+        <li>Operational dashboard</li>
+        <li>Supplier performance information</li>
+        <li>Advanced document management</li>
+        <li>Priority support</li>
+        <li>AI productivity features</li>
+      </ul>
+      <div class="plan-best"><strong>Best for:</strong> Established operators, DMCs and growing businesses.</div>
+      <a class="btn btn-primary" href="#cta">Choose Professional</a>
+    </div>
+
+    <!-- Business -->
+    <div class="plan">
+      <div class="plan-name">Business</div>
+      <div class="plan-desc">For established operators with larger teams and complex operations.</div>
+      <div class="plan-price"><span class="amount">Custom pricing</span></div>
+      <div class="plan-tax-note">Quoted per company based on requirements.</div>
+      <ul class="plan-features">
+        <li>Everything in Professional, plus:</li>
+        <li>Custom user limits</li>
+        <li>Advanced permissions</li>
+        <li>Multiple teams</li>
+        <li>Advanced analytics</li>
+        <li>Custom workflows</li>
+        <li>API access</li>
+        <li>Integrations</li>
+        <li>Advanced AI capabilities</li>
+        <li>Dedicated onboarding</li>
+        <li>Priority operational support</li>
+        <li>Custom reporting</li>
+        <li>Account management</li>
+      </ul>
+      <div class="plan-best"><strong>Best for:</strong> Large tourism companies and enterprises.</div>
+      <a class="btn btn-outline" href="mailto:sales@safarilink.tz">Talk to Sales →</a>
+    </div>
+  </div>
+
+  <!-- Feature availability note -->
+  <div style="font-size:.8rem;color:var(--warm-gray);border:1px dashed var(--border);border-radius:10px;padding:12px 16px;">
+    <strong style="color:var(--charcoal);">Feature availability:</strong> Features may vary by plan and will become
+    available as SafariLink capabilities are released. Planned capabilities — including AI features, API access,
+    integrations, automated follow-ups and advanced analytics — are shown for planning purposes and are not yet live.
+  </div>
+
+  <!-- ============ COMPARISON TABLE ============ -->
+  <div style="margin-top:48px;">
+    <div class="section-head">
+      <span class="label">Compare Plans</span>
+      <h2>Find your fit at a glance</h2>
+    </div>
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th class="center">Starter</th>
+              <th class="center">Professional</th>
+              <th class="center">Business</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="feature-name">Users</td><td class="center">Up to 3</td><td class="center">Up to 10</td><td class="center">Custom</td></tr>
+            <tr><td class="feature-name">Global supplier search</td><td class="center check">✓</td><td class="center check">✓</td><td class="center check">✓</td></tr>
+            <tr><td class="feature-name">Supplier search depth</td><td class="center">Basic</td><td class="center">Advanced</td><td class="center">Advanced</td></tr>
+            <tr><td class="feature-name">Itinerary builder</td><td class="center">Basic</td><td class="center">Advanced</td><td class="center">Custom</td></tr>
+            <tr><td class="feature-name">Costing</td><td class="center">Basic</td><td class="center">Advanced</td><td class="center">Custom</td></tr>
+            <tr><td class="feature-name">Markup &amp; margin controls</td><td class="center dash">—</td><td class="center check">✓</td><td class="center check">✓</td></tr>
+            <tr><td class="feature-name">STO rate management</td><td class="center dash">—</td><td class="center check">✓</td><td class="center check">✓</td></tr>
+            <tr><td class="feature-name">Reservation workflows</td><td class="center">Basic</td><td class="center">Advanced</td><td class="center">Advanced</td></tr>
+            <tr><td class="feature-name">Automated follow-ups</td><td class="center dash">—</td><td class="center planned">Planned</td><td class="center planned">Planned</td></tr>
+            <tr><td class="feature-name">Team task management</td><td class="center dash">—</td><td class="center check">✓</td><td class="center check">✓</td></tr>
+            <tr><td class="feature-name">Reporting</td><td class="center">Basic</td><td class="center">Advanced</td><td class="center">Custom</td></tr>
+            <tr><td class="feature-name">AI productivity features</td><td class="center dash">—</td><td class="center planned">Planned</td><td class="center planned">Advanced (Planned)</td></tr>
+            <tr><td class="feature-name">API access</td><td class="center dash">—</td><td class="center dash">—</td><td class="center planned">Planned</td></tr>
+            <tr><td class="feature-name">Integrations</td><td class="center dash">—</td><td class="center dash">—</td><td class="center planned">Planned</td></tr>
+            <tr><td class="feature-name">Advanced analytics</td><td class="center dash">—</td><td class="center dash">—</td><td class="center planned">Planned</td></tr>
+            <tr><td class="feature-name">Support</td><td class="center">Email</td><td class="center">Priority</td><td class="center">Dedicated</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="planner-note">
+        Features indicated as “Planned” are under development and have not been published — they will become available as
+        SafariLink capabilities are released. Check the relevant plan terms before relying on any feature.
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SUPPLIER PLANS ============ -->
+  <div style="margin-top:56px;">
+    <div class="section-head">
+      <span class="label">Supplier Plans</span>
+      <h2>Built for the businesses supplying Tanzania tourism</h2>
+      <p>SafariLink suppliers may include accommodation providers, fleet providers and professional guides.</p>
+    </div>
+
+    <div class="supplier-grid">
+      <div class="supplier-card">
+        <h3>Accommodation Providers</h3>
+        <div class="role">Hotels, lodges, camps and tented camps</div>
+        <ul>
+          <li>Property profile</li>
+          <li>Room inventory</li>
+          <li>Rate management</li>
+          <li>STO rates</li>
+          <li>Availability management</li>
+          <li>Reservation management</li>
+          <li>Booking confirmations</li>
+          <li>Supplier dashboard</li>
+          <li>Performance reporting</li>
+        </ul>
+        <div class="supplier-price">Supplier pricing: [FREE / STARTING PRICE / COMMISSION MODEL]</div>
+      </div>
+
+      <div class="supplier-card">
+        <h3>Fleet Providers</h3>
+        <div class="role">Safari vehicles, transfers and specialised transport</div>
+        <ul>
+          <li>Fleet management</li>
+          <li>Vehicle profiles</li>
+          <li>Availability calendar</li>
+          <li>Leasing rates</li>
+          <li>Driver information</li>
+          <li>Maintenance information</li>
+          <li>Reservation management</li>
+          <li>Booking requests</li>
+        </ul>
+        <div class="supplier-price">Supplier pricing: [MODEL]</div>
+      </div>
+
+      <div class="supplier-card">
+        <h3>Professional Guides</h3>
+        <div class="role">Licensed Tanzania safari &amp; tour guides</div>
+        <ul>
+          <li>Profile</li>
+          <li>Languages</li>
+          <li>Specialisations</li>
+          <li>Experience</li>
+          <li>Availability</li>
+          <li>Qualifications</li>
+          <li>Daily rates</li>
+          <li>Assigned trips</li>
+        </ul>
+        <div class="supplier-price">Guide access: [MODEL]</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ NETWORK FEES + NO HIDDEN FEES ============ -->
+  <div class="two-col">
+    <div class="info-card">
+      <h3>Network Fees</h3>
+      <p style="margin-bottom:10px;">Depending on the final commercial model, SafariLink may generate revenue through:</p>
+      <ul>
+        <li>Subscription fees</li>
+        <li>Supplier listing fees</li>
+        <li>Booking fees</li>
+        <li>Transaction fees</li>
+        <li>Commission</li>
+        <li>Premium features</li>
+        <li>Enterprise contracts</li>
+        <li>Integration fees</li>
+      </ul>
+      <p>Any applicable fee will be clearly displayed before a transaction or subscription is confirmed.</p>
+    </div>
+
+    <div class="info-card">
+      <h3>No Hidden Platform Fees</h3>
+      <p style="margin-bottom:10px;">SafariLink is committed to communicating clearly:</p>
+      <ul>
+        <li>What a subscription includes</li>
+        <li>What additional services cost</li>
+        <li>Any transaction fee</li>
+        <li>Any supplier commission</li>
+        <li>Any payment-processing fee</li>
+        <li>Applicable taxes</li>
+      </ul>
+      <p>Users should never have to discover important fees only after completing a booking.</p>
+    </div>
+  </div>
+
+  <!-- ============ FAQ ============ -->
+  <div style="margin-top:56px;">
+    <div class="section-head">
+      <span class="label">Pricing FAQ</span>
+      <h2>Common questions, answered</h2>
+    </div>
+    <div class="faq">
+      <details>
+        <summary>Can I try SafariLink before paying?</summary>
+        <p>SafariLink may offer a free trial, pilot programme or early-access arrangement to selected tourism businesses. Availability and eligibility may vary — contact the SafariLink team to discuss access.</p>
+      </details>
+      <details>
+        <summary>Can I change plans?</summary>
+        <p>Yes. Businesses can upgrade or downgrade according to the applicable plan terms.</p>
+      </details>
+      <details>
+        <summary>Do suppliers and operators pay the same price?</summary>
+        <p>Not necessarily. SafariLink uses different commercial models depending on the role and services used.</p>
+      </details>
+      <details>
+        <summary>Are STO rates included?</summary>
+        <p>STO rates are supplier-controlled commercial rates available only to eligible verified B2B users.</p>
+      </details>
+      <details>
+        <summary>Is there an enterprise plan?</summary>
+        <p>Yes. Larger tourism companies can request a custom plan.</p>
+      </details>
+      <details>
+        <summary>Can I cancel?</summary>
+        <p>Subscription cancellation is subject to the applicable plan terms.</p>
+      </details>
+    </div>
+  </div>
+
+  <!-- ============ CTA ============ -->
+  <div class="cta" id="cta">
+    <h2>Find the right plan for your business</h2>
+    <p>Tell us about your operation and we will help you choose the most suitable SafariLink plan.</p>
+    <a href="mailto:sales@safarilink.tz">Talk to Sales →</a>
+  </div>
+
+</div>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="links">
+    <a href="index.html">Home</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="about.html">About</a>
+    <a href="roadmap.html">Roadmap</a>
+    <a href="terms.html">Terms</a>
+    <a href="supplier-terms.html">Supplier Terms</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="cookie-policy.html">Cookie Policy</a>
+  </div>
+  <p>© 2026 SafariLink Tanzania. All rights reserved.</p>
+  <text>Arusha, United Republic of Tanzania</text>
+</footer>
+
+</body>
+</html>
