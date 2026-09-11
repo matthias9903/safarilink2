@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Security — SafariLink Tanzania B2B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- 🔐  SECURITY PAGE — PUBLISHING CHECKLIST  🔐
+  Before publishing security.html, confirm and replace:
+  1. [Insert Security Email] → real security@ address
+  2. [Insert General Email]  → real general contact
+  3. [Insert Website]        → your domain
+  4. [Insert Registered Business Address] → physical address
+  5. [Effective Date] if printed on page
+  6. Mark any controls currently planned but not yet live
+     as "Planned" in the corresponding sections
+  7. Confirm that incident-response SLA times (if any)
+     match your operational reality
+  8. Ensure the "AI Security" section aligns with
+     your actual AI permission model
+-->
+
+<style>
+  :root{
+    --forest-green:#1A5A3A;
+    --forest-dark:#0F3D26;
+    --accent-green:#2E9E5B;
+    --charcoal:#2C2C2C;
+    --warm-gray:#6B6B6B;
+    --text:#1F2937;
+    --bg:#F7F9F8;
+    --card:#FFFFFF;
+    --border:#E5E7EB;
+    --success:#16A34A;
+    --amber:#D97706;
+    --red:#DC2626;
+    --blue:#2563EB;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;}
+  a{text-decoration:none;color:inherit;}
+
+  /* ── Sticky top bar ─────────────────────────── */
+  .topbar{
+    position:sticky;top:0;z-index:50;
+    background:#ffffff;border-bottom:1px solid var(--border);
+    padding:0 24px;height:64px;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand-logo{
+    width:34px;height:34px;border-radius:8px;background:var(--forest-green);
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-weight:800;font-size:17px;
+  }
+  .brand-name{font-weight:800;font-size:16px;letter-spacing:-.3px;color:var(--charcoal);}
+  .brand-tag{display:block;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--warm-gray);}
+  .topbar-links{display:flex;align-items:center;gap:22px;font-size:13px;font-weight:600;color:var(--warm-gray);}
+  .topbar-links a:hover{color:var(--forest-green);}
+  .topbar-links a.active{color:var(--forest-green);}
+  .topbar-back{
+    font-size:13px;font-weight:600;color:#fff;background:var(--forest-green);
+    padding:8px 16px;border-radius:8px;
+  }
+  .topbar-back:hover{background:var(--forest-dark);}
+
+  /* ── Hero ──────────────────────────────────── */
+  .hero{
+    background:linear-gradient(135deg,var(--forest-dark) 0%,var(--forest-green) 55%,#2E7D54 100%);
+    padding:64px 24px 56px;text-align:center;color:#fff;
+  }
+  .hero-label{
+    display:inline-block;font-size:11px;font-weight:700;letter-spacing:.14em;
+    text-transform:uppercase;color:#BFE8CD;background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:6px 16px;margin-bottom:18px;
+  }
+  .hero h1{font-size:2.1rem;font-weight:800;letter-spacing:-.02em;margin-bottom:12px;}
+  .hero p{max-width:640px;margin:0 auto;color:rgba(255,255,255,.85);font-size:1rem;}
+
+  /* ── Layout ────────────────────────────────── */
+  .container{max-width:1040px;margin:0 auto;padding:48px 24px;}
+  .section-head{text-align:center;margin-bottom:40px;}
+  .section-head .label{
+    display:inline-block;font-size:11px;font-weight:700;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--forest-green);margin-bottom:10px;
+  }
+  .section-head h2{font-size:1.6rem;font-weight:800;letter-spacing:-.01em;color:var(--charcoal);}
+  .section-head p{color:var(--warm-gray);font-size:.95rem;max-width:640px;margin:10px auto 0;}
+
+  .intro-note{
+    background:rgba(26,90,58,.06);border:1px solid rgba(26,90,58,.2);
+    border-left:4px solid var(--forest-green);border-radius:10px;
+    padding:16px 20px;font-size:.9rem;color:var(--charcoal);margin-bottom:40px;
+  }
+
+  /* ── Cards ─────────────────────────────────── */
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px 24px;}
+  .card h3{font-size:1.05rem;font-weight:800;color:var(--charcoal);margin-bottom:12px;}
+
+  /* ── What We Protect grid ──────────────────── */
+  .protect-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:48px;
+  }
+  .protect-item{
+    background:var(--card);border:1px solid var(--border);border-radius:10px;
+    padding:14px 16px;font-size:.85rem;font-weight:600;color:var(--charcoal);
+    display:flex;align-items:center;gap:8px;
+  }
+  .protect-item .icon{font-size:1.1rem;}
+
+  /* ── Account Security grid ─────────────────── */
+  .control-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:48px;
+  }
+  .control-item{
+    background:var(--card);border:1px solid var(--border);border-radius:10px;
+    padding:18px 20px;
+  }
+  .control-item h4{font-size:.9rem;font-weight:700;color:var(--charcoal);margin-bottom:4px;}
+  .control-item p{font-size:.8rem;color:var(--warm-gray);}
+  .control-item .status{
+    display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.05em;
+    text-transform:uppercase;padding:2px 8px;border-radius:10px;margin-top:8px;
+  }
+  .status-live{background:rgba(22,163,74,.12);color:var(--success);}
+  .status-planned{background:rgba(217,119,6,.1);color:var(--amber);}
+
+  /* ── Role-based access cards ───────────────── */
+  .role-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:48px;
+  }
+  .role-card{
+    background:var(--card);border:1px solid var(--border);border-radius:12px;
+    padding:22px 20px;text-align:center;
+  }
+  .role-card .role-icon{
+    width:44px;height:44px;border-radius:10px;margin:0 auto 12px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.2rem;font-weight:800;
+  }
+  .role-card h4{font-size:.92rem;font-weight:800;color:var(--charcoal);margin-bottom:4px;}
+  .role-card p{font-size:.78rem;color:var(--warm-gray);}
+
+  /* ── STO Protection section ────────────────── */
+  .sto-banner{
+    background:linear-gradient(135deg,rgba(26,90,58,.06),rgba(26,90,58,.02));
+    border:1px solid rgba(26,90,58,.18);border-radius:14px;
+    padding:32px 28px;margin-bottom:48px;display:flex;gap:24px;align-items:flex-start;
+  }
+  .sto-banner .sto-icon{
+    flex-shrink:0;width:48px;height:48px;border-radius:12px;
+    background:var(--forest-green);display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:1.2rem;font-weight:800;
+  }
+  .sto-banner h3{font-size:1.05rem;font-weight:800;color:var(--charcoal);margin-bottom:6px;}
+  .sto-banner p{font-size:.85rem;color:var(--warm-gray);}
+
+  /* ── Data Protection section ───────────────── */
+  .data-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:48px;}
+  .data-card{
+    background:var(--card);border:1px solid var(--border);border-radius:12px;
+    padding:24px;
+  }
+  .data-card h4{font-size:.95rem;font-weight:800;color:var(--charcoal);margin-bottom:10px;}
+  .data-card ul{list-style:none;font-size:.84rem;}
+  .data-card ul li{padding:4px 0 4px 20px;position:relative;color:#374151;}
+  .data-card ul li::before{content:"•";position:absolute;left:4px;color:var(--accent-green);font-weight:800;}
+
+  /* ── Incident Response timeline ─────────────── */
+  .ir-timeline{
+    display:flex;justify-content:space-between;align-items:flex-start;
+    gap:8px;margin-bottom:48px;position:relative;
+  }
+  .ir-timeline::before{
+    content:"";position:absolute;top:28px;left:6%;right:6%;
+    height:2px;background:var(--border);z-index:0;
+  }
+  .ir-step{
+    flex:1;text-align:center;position:relative;z-index:1;
+  }
+  .ir-step .ir-num{
+    width:56px;height:56px;border-radius:50%;margin:0 auto 12px;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:1.1rem;color:#fff;
+  }
+  .ir-step:nth-child(1) .ir-num{background:var(--red);}
+  .ir-step:nth-child(2) .ir-num{background:var(--amber);}
+  .ir-step:nth-child(3) .ir-num{background:var(--blue);}
+  .ir-step:nth-child(4) .ir-num{background:#7C3AED;}
+  .ir-step:nth-child(5) .ir-num{background:var(--success);}
+  .ir-step:nth-child(6) .ir-num{background:var(--forest-green);}
+  .ir-step h4{font-size:.85rem;font-weight:800;color:var(--charcoal);margin-bottom:4px;}
+  .ir-step p{font-size:.75rem;color:var(--warm-gray);}
+
+  /* ── AI Security ───────────────────────────── */
+  .ai-principles{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:48px;}
+  .ai-card{
+    background:var(--card);border:1px solid var(--border);border-radius:12px;
+    padding:22px 20px;display:flex;gap:14px;align-items:flex-start;
+  }
+  .ai-card .ai-num{
+    flex-shrink:0;width:34px;height:34px;border-radius:8px;
+    background:rgba(26,90,58,.1);display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:.85rem;color:var(--forest-green);
+  }
+  .ai-card h4{font-size:.9rem;font-weight:800;color:var(--charcoal);margin-bottom:4px;}
+  .ai-card p{font-size:.8rem;color:var(--warm-gray);}
+
+  /* ── Reporting CTA ──────────────────────────── */
+  .report-cta{
+    background:linear-gradient(135deg,var(--forest-dark),var(--forest-green));
+    border-radius:16px;padding:44px 32px;text-align:center;color:#fff;margin-bottom:8px;
+  }
+  .report-cta h3{font-size:1.25rem;font-weight:800;margin-bottom:8px;}
+  .report-cta p{color:rgba(255,255,255,.85);max-width:560px;margin:0 auto 18px;font-size:.9rem;}
+  .report-cta .email-box{
+    display:inline-block;background:#fff;color:var(--forest-green);
+    font-weight:700;font-size:.95rem;padding:13px 28px;border-radius:10px;
+    margin-bottom:10px;
+  }
+  .report-cta small{display:block;color:rgba(255,255,255,.65);font-size:.78rem;}
+
+  /* ── Footer ────────────────────────────────── */
+  footer{
+    background:var(--charcoal);color:#BBB;margin-top:56px;
+    padding:36px 24px;text-align:center;border-top:3px solid var(--forest-green);
+  }
+  footer .links{display:flex;justify-content:center;gap:22px;flex-wrap:wrap;margin-bottom:14px;font-size:.82rem;}
+  footer .links a{color:#DDD;}
+  footer .links a:hover{color:#fff;}
+  footer small{font-size:.75rem;color:#999;}
+
+  /* ── Responsive ────────────────────────────── */
+  @media(max-width:900px){
+    .protect-grid{grid-template-columns:repeat(2,1fr);}
+    .control-grid{grid-template-columns:1fr;}
+    .role-grid{grid-template-columns:repeat(2,1fr);}
+    .data-grid{grid-template-columns:1fr;}
+    .ai-principles{grid-template-columns:1fr;}
+    .ir-timeline{flex-direction:column;gap:16px;align-items:stretch;}
+    .ir-timeline::before{display:none;}
+    .ir-step{text-align:left;display:flex;align-items:center;gap:12px;}
+    .ir-step .ir-num{width:40px;height:40px;font-size:.9rem;margin:0;}
+    .sto-banner{flex-direction:column;}
+    .topbar a:not(.topbar-back){display:none;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ STICKY TOP BAR ============ -->
+<header class="topbar">
+  <a href="index.html" class="brand">
+    <div class="brand-logo">S</div>
+    <div>
+      <span class="brand-name">SafariLink</span>
+      <span class="brand-tag">Tanzania B2B Network</span>
+    </div>
+  </a>
+  <nav class="topbar-links">
+    <a href="index.html">Home</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="about.html">About</a>
+    <a href="security.html" class="active">Security</a>
+    <a class="topbar-back" href="index.html">← Back to Dashboard</a>
+  </nav>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <span class="hero-label">Security</span>
+  <h1>Security at SafariLink</h1>
+  <p>Tourism operations depend on trust. SafariLink handles business information, supplier commercial information, client information, reservations, rates and operational data. Security is therefore not an optional feature — it is part of the platform foundation.</p>
+</section>
+
+<div class="container">
+
+  <!-- ============ INTRO NOTE ============ -->
+  <div class="intro-note">
+    <strong>Security is shared between SafariLink and you.</strong> This page describes the security principles,
+    controls and practices that underpin the platform. Users remain responsible for account security, credential
+    protection, endpoint security and secure handling of their own access.
+  </div>
+
+  <!-- ============ WHAT WE PROTECT ============ -->
+  <div class="section-head">
+    <span class="label">What We Protect</span>
+    <h2>SafariLink is designed to protect</h2>
+  </div>
+
+  <div class="protect-grid">
+    <div class="protect-item"><span class="icon">🏢</span> Company information</div>
+    <div class="protect-item"><span class="icon">👤</span> User accounts</div>
+    <div class="protect-item"><span class="icon">🧑‍💼</span> Client information</div>
+    <div class="protect-item"><span class="icon">🏨</span> Supplier information</div>
+    <div class="protect-item"><span class="icon">🔒</span> STO rates</div>
+    <div class="protect-item"><span class="icon">📋</span> Reservation information</div>
+    <div class="protect-item"><span class="icon">💰</span> Financial information</div>
+    <div class="protect-item"><span class="icon">📄</span> Documents</div>
+    <div class="protect-item"><span class="icon">💬</span> Internal communications</div>
+    <div class="protect-item"><span class="icon">⚙️</span> Operational data</div>
+    <div class="protect-item"><span class="icon">🔑</span> API credentials</div>
+    <div class="protect-item"><span class="icon">🔐</span> Authentication information</div>
+  </div>
+
+  <!-- ============ ACCOUNT SECURITY ============ -->
+  <div class="section-head">
+    <span class="label">Account Security</span>
+    <h2>Controls that protect your account</h2>
+    <p>SafariLink implements strong account-security controls. Features marked as "Planned" are under development and not yet live.</p>
+  </div>
+
+  <div class="control-grid">
+    <div class="control-item">
+      <h4>Secure authentication</h4>
+      <p>Password-based authentication with secure credential handling.</p>
+      <span class="status status-live">Live</span>
+    </div>
+    <div class="control-item">
+      <h4>Password protection</h4>
+      <p>Passwords stored using strong hashing; never stored in plain text.</p>
+      <span class="status status-live">Live</span>
+    </div>
+    <div class="control-item">
+      <h4>Session management</h4>
+      <p>Secure session tokens with configurable expiration.</p>
+      <span class="status status-live">Live</span>
+    </div>
+    <div class="control-item">
+      <h4>Account verification</h4>
+      <p>Business-identity verification for eligible roles and STO-rate access.</p>
+      <span class="status status-live">Live</span>
+    </div>
+    <div class="control-item">
+      <h4>Role-based access</h4>
+      <p>Permissions scoped to each user's role and company.</p>
+      <span class="status status-live">Live</span>
+    </div>
+    <div class="control-item">
+      <h4>Permission controls</h4>
+      <p>Granular access rules for sensitive operations and data.</p>
+      <span class="status status-planned">Planned</span>
+    </div>
+    <div class="control-item">
+      <h4>Login monitoring</h4>
+      <p>Tracking of authentication events for unusual-activity detection.</p>
+      <span class="status status-planned">Planned</span>
+    </div>
+    <div class="control-item">
+      <h4>Account recovery</h4>
+      <p>Secure password-reset and account-recovery flows.</p>
+      <span class="status status-live">Live</span>
+    </div>
+    <div class="control-item">
+      <h4>Session expiration</h4>
+      <p>Automatic session expiry after configured idle periods.</p>
+      <span class="status status-planned">Planned</span>
+    </div>
+    <div class="control-item">
+      <h4>Suspicious-activity detection</h4>
+      <p>Automated flagging of anomalous login patterns and access attempts.</p>
+      <span class="status status-planned">Planned</span>
+    </div>
+  </div>
+
+  <!-- ============ ROLE-BASED ACCESS ============ -->
+  <div class="section-head">
+    <span class="label">Role-Based Access</span>
+    <h2>Not every employee should have access to everything</h2>
+    <p>SafariLink supports controlled permissions — each role sees only what it needs.</p>
+  </div>
+
+  <div class="role-grid">
+    <div class="role-card">
+      <div class="role-icon" style="background:var(--forest-green);color:#fff;">A</div>
+      <h4>Administrator</h4>
+      <p>Full company access — manage users, settings, billing and all platform features.</p>
+    </div>
+    <div class="role-card">
+      <div class="role-icon" style="background:rgba(26,90,58,.12);color:var(--forest-green);">M</div>
+      <h4>Manager</h4>
+      <p>Operational and team management — oversee trips, reservations and team workflows.</p>
+    </div>
+    <div class="role-card">
+      <div class="role-icon" style="background:rgba(37,99,235,.1);color:var(--blue);">S</div>
+      <h4>Sales</h4>
+      <p>Clients, itineraries, quotes and supplier communication — the sales pipeline.</p>
+    </div>
+    <div class="role-card">
+      <div class="role-icon" style="background:rgba(217,119,6,.1);color:var(--amber);">R</div>
+      <h4>Reservations</h4>
+      <p>Supplier requests, confirmations, availability checks and reservation management.</p>
+    </div>
+    <div class="role-card">
+      <div class="role-icon" style="background:rgba(124,58,237,.1);color:#7C3AED;">F</div>
+      <h4>Finance</h4>
+      <p>Costing, invoices, payments and margin reporting — financial operations.</p>
+    </div>
+    <div class="role-card">
+      <div class="role-icon" style="background:rgba(8,145,178,.1);color:#0891B2;">O</div>
+      <h4>Operations</h4>
+      <p>Trips, suppliers, guides, vehicles and day-to-day operational tasks.</p>
+    </div>
+    <div class="role-card">
+      <div class="role-icon" style="background:rgba(107,107,107,.1);color:var(--warm-gray);">R</div>
+      <h4>Read Only</h4>
+      <p>View selected information — itineraries, reservations and reports — without editing.</p>
+    </div>
+    <div class="role-card" style="border-style:dashed;background:#FAFBFA;">
+      <div class="role-icon" style="background:rgba(217,119,6,.1);color:var(--amber);">+</div>
+      <h4>Custom Roles</h4>
+      <p>Custom permission sets for larger teams — define exactly what each role can access.</p>
+      <span style="font-size:.68rem;font-weight:700;color:var(--amber);text-transform:uppercase;">Planned</span>
+    </div>
+  </div>
+
+  <!-- ============ STO RATE PROTECTION ============ -->
+  <div class="section-head">
+    <span class="label">STO Rate Protection</span>
+    <h2>Private B2B rates are commercially sensitive</h2>
+  </div>
+
+  <div class="sto-banner">
+    <div class="sto-icon">🔒</div>
+    <div>
+      <h3>STO rates are protected by layered access controls</h3>
+      <p>
+        SafariLink restricts access to private B2B/STO rates based on verified company status, user role,
+        supplier permissions, commercial agreements and platform access rules. STO rates are not publicly
+        searchable or visible to unauthorized users. Users must also comply with supplier confidentiality
+        requirements — disclosing or redistributing private rates without authorization is a breach of
+        platform terms.
+      </p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:14px;">
+        <span style="font-size:.78rem;background:rgba(26,90,58,.08);color:var(--forest-green);padding:4px 12px;border-radius:14px;font-weight:600;">Verified company status</span>
+        <span style="font-size:.78rem;background:rgba(26,90,58,.08);color:var(--forest-green);padding:4px 12px;border-radius:14px;font-weight:600;">User role checks</span>
+        <span style="font-size:.78rem;background:rgba(26,90,58,.08);color:var(--forest-green);padding:4px 12px;border-radius:14px;font-weight:600;">Supplier permissions</span>
+        <span style="font-size:.78rem;background:rgba(26,90,58,.08);color:var(--forest-green);padding:4px 12px;border-radius:14px;font-weight:600;">Commercial agreements</span>
+        <span style="font-size:.78rem;background:rgba(26,90,58,.08);color:var(--forest-green);padding:4px 12px;border-radius:14px;font-weight:600;">Platform access rules</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ DATA PROTECTION ============ -->
+  <div class="section-head">
+    <span class="label">Data Protection</span>
+    <h2>Safeguards for personal and business information</h2>
+    <p>SafariLink applies appropriate safeguards to protect the information processed through the platform.</p>
+  </div>
+
+  <div class="data-grid">
+    <div class="data-card">
+      <h4>Access &amp; Storage Controls</h4>
+      <ul>
+        <li>Role-based access controls</li>
+        <li>Data minimisation principles</li>
+        <li>Secure storage architecture</li>
+        <li>Encryption where appropriate</li>
+        <li>Audit logging of sensitive operations</li>
+      </ul>
+    </div>
+    <div class="data-card">
+      <h4>Transmission &amp; Resilience</h4>
+      <ul>
+        <li>HTTPS/TLS for all data in transit</li>
+        <li>Secure API communication</li>
+        <li>Regular automated backups</li>
+        <li>Data-retention controls</li>
+        <li>Incident-response procedures</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ============ OPERATIONAL SECURITY ============ -->
+  <div class="section-head">
+    <span class="label">Operational Security</span>
+    <h2>Protection across the entire operational chain</h2>
+    <p>From supplier search through to confirmed trip — security controls protect information at each stage.</p>
+  </div>
+
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:48px;justify-content:center;">
+    <span style="font-size:.82rem;background:var(--card);border:1px solid var(--border);padding:8px 16px;border-radius:20px;font-weight:600;color:var(--charcoal);">Supplier</span>
+    <span style="color:var(--warm-gray);display:flex;align-items:center;font-size:1.1rem;">→</span>
+    <span style="font-size:.82rem;background:var(--card);border:1px solid var(--border);padding:8px 16px;border-radius:20px;font-weight:600;color:var(--charcoal);">Search</span>
+    <span style="color:var(--warm-gray);display:flex;align-items:center;font-size:1.1rem;">→</span>
+    <span style="font-size:.82rem;background:var(--card);border:1px solid var(--border);padding:8px 16px;border-radius:20px;font-weight:600;color:var(--charcoal);">Rate</span>
+    <span style="color:var(--warm-gray);display:flex;align-items:center;font-size:1.1rem;">→</span>
+    <span style="font-size:.82rem;background:var(--card);border:1px solid var(--border);padding:8px 16px;border-radius:20px;font-weight:600;color:var(--charcoal);">Availability</span>
+    <span style="color:var(--warm-gray);display:flex;align-items:center;font-size:1.1rem;">→</span>
+    <span style="font-size:.82rem;background:var(--card);border:1px solid var(--border);padding:8px 16px;border-radius:20px;font-weight:600;color:var(--charcoal);">Reservation</span>
+    <span style="color:var(--warm-gray);display:flex;align-items:center;font-size:1.1rem;">→</span>
+    <span style="font-size:.82rem;background:var(--card);border:1px solid var(--border);padding:8px 16px;border-radius:20px;font-weight:600;color:var(--charcoal);">Confirmation</span>
+    <span style="color:var(--warm-gray);display:flex;align-items:center;font-size:1.1rem;">→</span>
+    <span style="font-size:.82rem;background:var(--card);border:1px solid var(--border);padding:8px 16px;border-radius:20px;font-weight:600;color:var(--charcoal);">Trip</span>
+  </div>
+
+  <!-- ============ INFRASTRUCTURE SECURITY ============ -->
+  <div class="section-head">
+    <span class="label">Infrastructure Security</span>
+    <h2>Production-environment controls</h2>
+  </div>
+
+  <div class="data-grid">
+    <div class="data-card">
+      <h4>Network &amp; Hosting</h4>
+      <ul>
+        <li>HTTPS/TLS for all connections</li>
+        <li>Secure cloud hosting environment</li>
+        <li>Environment-variable protection for secrets</li>
+        <li>Database access controls</li>
+        <li>Secrets management</li>
+      </ul>
+    </div>
+    <div class="data-card">
+      <h4>Operations &amp; Maintenance</h4>
+      <ul>
+        <li>Regular automated backups</li>
+        <li>System monitoring and alerting</li>
+        <li>Activity and event logging</li>
+        <li>Dependency and vulnerability management</li>
+        <li>Controlled deployment processes</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ============ SECURITY MONITORING ============ -->
+  <div class="card" style="margin-bottom:48px;">
+    <h3>Security Monitoring</h3>
+    <p style="font-size:.88rem;color:var(--warm-gray);margin-bottom:16px;">
+      SafariLink monitors important system events to detect anomalies and support rapid triage.
+    </p>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+      <div style="font-size:.82rem;color:#374151;padding:8px 12px;background:var(--bg);border-radius:8px;">Authentication failures</div>
+      <div style="font-size:.82rem;color:#374151;padding:8px 12px;background:var(--bg);border-radius:8px;">Suspicious login activity</div>
+      <div style="font-size:.82rem;color:#374151;padding:8px 12px;background:var(--bg);border-radius:8px;">Permission changes</div>
+      <div style="font-size:.82rem;color:#374151;padding:8px 12px;background:var(--bg);border-radius:8px;">Administrative actions</div>
+      <div style="font-size:.82rem;color:#374151;padding:8px 12px;background:var(--bg);border-radius:8px;">Rate changes</div>
+      <div style="font-size:.82rem;color:#374151;padding:8px 12px;background:var(--bg);border-radius:8px;">Reservation changes</div>
+      <div style="font-size:.82rem;color:#374151;padding:8px 12px;background:var(--bg);border-radius:8px;">Account changes</div>
+      <div style="font-size:.82rem;color:#374151;padding:8px 12px;background:var(--bg);border-radius:8px;">System errors</div>
+      <div style="font-size:.82rem;color:#374151;padding:8px 12px;background:var(--bg);border-radius:8px;">API failures</div>
+    </div>
+  </div>
+
+  <!-- ============ INCIDENT RESPONSE ============ -->
+  <div class="section-head">
+    <span class="label">Incident Response</span>
+    <h2>If a security incident occurs</h2>
+    <p>SafariLink maintains a defined incident-response process.</p>
+  </div>
+
+  <div class="ir-timeline">
+    <div class="ir-step">
+      <div class="ir-num">1</div>
+      <h4>Detect</h4>
+      <p>Identify the incident through monitoring, alerts or reports.</p>
+    </div>
+    <div class="ir-step">
+      <div class="ir-num">2</div>
+      <h4>Contain</h4>
+      <p>Isolate affected systems and prevent further impact.</p>
+    </div>
+    <div class="ir-step">
+      <div class="ir-num">3</div>
+      <h4>Investigate</h4>
+      <p>Determine scope, cause and affected information.</p>
+    </div>
+    <div class="ir-step">
+      <div class="ir-num">4</div>
+      <h4>Remediate</h4>
+      <p>Address root cause and restore secure operations.</p>
+    </div>
+    <div class="ir-step">
+      <div class="ir-num">5</div>
+      <h4>Recover</h4>
+      <p>Restore services and verify normal operation.</p>
+    </div>
+    <div class="ir-step">
+      <div class="ir-num">6</div>
+      <h4>Communicate</h4>
+      <p>Notify affected users and authorities where required.</p>
+    </div>
+  </div>
+
+  <div class="intro-note" style="margin-bottom:48px;">
+    <strong>Incident handling is risk-based.</strong> Where applicable law requires notification of a
+    personal-data breach, SafariLink will make the required notifications within the applicable timeframe.
+    Incident-response procedures are reviewed and tested periodically.
+  </div>
+
+  <!-- ============ AI SECURITY ============ -->
+  <div class="section-head">
+    <span class="label">AI Security</span>
+    <h2>AI does not override permissions</h2>
+    <p>That is the core rule. SafariLink AI features operate within each user's existing access controls.</p>
+  </div>
+
+  <div class="ai-principles">
+    <div class="ai-card">
+      <div class="ai-num">1</div>
+      <div>
+        <h4>Permission-bound AI</h4>
+        <p>If a user cannot access a supplier's private rate through the normal platform, the AI assistant will not expose that information either. AI operates within the user's existing access permissions.</p>
+      </div>
+    </div>
+    <div class="ai-card">
+      <div class="ai-num">2</div>
+      <div>
+        <h4>Authorized data only</h4>
+        <p>AI uses platform data that the user is authorized to access — it does not pull from sources the user cannot already see.</p>
+      </div>
+    </div>
+    <div class="ai-card">
+      <div class="ai-num">3</div>
+      <div>
+        <h4>Respects access controls</h4>
+        <p>Role-based restrictions, STO-rate protections and supplier permissions are applied before AI results are returned.</p>
+      </div>
+    </div>
+    <div class="ai-card">
+      <div class="ai-num">4</div>
+      <div>
+        <h4>No invented operational data</h4>
+        <p>AI avoids fabricating rates, availability, confirmations or operational information that does not exist in the platform.</p>
+      </div>
+    </div>
+    <div class="ai-card">
+      <div class="ai-num">5</div>
+      <div>
+        <h4>Suggestions are not actions</h4>
+        <p>AI clearly distinguishes suggestions and drafts from confirmed actions. Users must review and approve important decisions.</p>
+      </div>
+    </div>
+    <div class="ai-card">
+      <div class="ai-num">6</div>
+      <div>
+        <h4>Confidentiality protected</h4>
+        <p>AI responses are designed to protect confidential business information, STO rates and personal data.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SECURITY REPORTING ============ -->
+  <div class="report-cta">
+    <h3>Found a potential security issue?</h3>
+    <p>
+      Please report it through the security email below. Do not publicly disclose a vulnerability
+      before SafariLink has had an opportunity to investigate and address it.
+    </p>
+    <div class="email-box">
+      📧 [Insert Security Email]
+    </div>
+    <small>
+      We treat security reports seriously. Please include enough detail to help us reproduce and
+      understand the issue. If you are a SafariLink user, you may also contact support through your
+      account for non-urgent security questions.
+    </small>
+  </div>
+
+</div>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="links">
+    <a href="index.html">Home</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="about.html">About</a>
+    <a href="roadmap.html">Roadmap</a>
+    <a href="terms.html">Terms</a>
+    <a href="supplier-terms.html">Supplier Terms</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="cookie-policy.html">Cookie Policy</a>
+    <a href="security.html">Security</a>
+  </div>
+  <p>© 2026 SafariLink Tanzania. All rights reserved.</p>
+  <small>Arusha, United Republic of Tanzania</small>
+</footer>
+
+</body>
+</html>
