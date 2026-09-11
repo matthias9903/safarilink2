@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — SafariLink Tanzania B2B</title>
+<style>
+  :root{
+    --forest:#1a5a3a; --forest-dark:#12462a; --accent:#2d8c5f;
+    --khaki:#e8e5dd; --bg:#f8f7f4; --ink:#2c2c2c; --muted:#6f6a5e;
+    --line:#e8e5dd; --white:#fff; --radius-lg:16px; --radius-md:10px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;font-size:15px;}
+  a{color:var(--forest);text-decoration:none;}
+  a:hover{text-decoration:underline;}
+
+  /* Top bar */
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
+  .topbar-inner{max-width:860px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--forest);font-size:15px;}
+  .brand-mark{width:34px;height:34px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,#2d8c5f,#1a5a3a);display:flex;align-items:center;justify-content:center;color:#fff;}
+  .back-link{font-size:13px;font-weight:600;color:var(--forest);border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 16px;white-space:nowrap;}
+  .back-link:hover{background:var(--bg);text-decoration:none;}
+
+  /* Hero */
+  .hero{background:linear-gradient(135deg,#123b26 0%,#1a5a3a 55%,#2d8c5f 100%);color:#fff;padding:56px 24px 44px;text-align:center;}
+  .hero small{display:inline-block;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#cfe5d8;margin-bottom:10px;border:1px solid rgba(255,255,255,.25);padding:5px 14px;border-radius:999px;background:rgba(255,255,255,.08);}
+  .hero h1{font-size:clamp(26px,4vw,40px);font-weight:800;letter-spacing:.3px;}
+  .hero p{color:#cfe5d8;font-size:14px;margin-top:10px;}
+  .hero p strong{color:#fff;font-weight:600;}
+
+  /* Layout */
+  .wrap{max-width:860px;margin:0 auto;padding:40px 24px 80px;}
+  .intro{background:#fff;border:1px solid var(--line);border-radius:var(--radius-lg);padding:26px 28px;margin-bottom:34px;font-size:14.5px;color:#3d3d3d;line-height:1.8;}
+  .intro p{margin-bottom:10px;}
+  .intro p:last-child{margin-bottom:0;}
+
+  .toc{background:#fff;border:1px solid var(--line);border-radius:var(--radius-lg);padding:22px 24px;margin-bottom:34px;}
+  .toc h3{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+  .toc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:6px;}
+  .toc-grid a{font-size:13px;color:var(--ink);padding:6px 10px;border-radius:6px;display:flex;gap:8px;align-items:baseline;}
+  .toc-grid a:hover{background:var(--bg);text-decoration:none;color:var(--forest);}
+  .toc-grid .num{font-weight:800;color:var(--forest);font-size:12px;min-width:22px;}
+  .toc-grid a.missing{color:#a89c80;cursor:default;}
+  .toc-grid a.missing .num{color:#a89c80;}
+  .toc-grid a.missing:hover{background:transparent;}
+
+  /* Sections */
+  .privacy-section{background:#fff;border:1px solid var(--line);border-radius:var(--radius-lg);padding:26px 28px;margin-bottom:16px;display:flex;gap:18px;}
+  .section-num{flex-shrink:0;width:44px;height:44px;border-radius:12px;background:var(--bg);border:1px solid var(--line);color:var(--forest);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;}
+  .section-body{flex:1;min-width:0;}
+  .section-body h2{font-size:17px;font-weight:800;margin-bottom:10px;letter-spacing:.2px;}
+  .section-body p{margin-bottom:10px;color:#3d3d3d;}
+  .section-body ul{margin:0 0 10px;padding-left:0;list-style:none;}
+  .section-body ul li{padding:5px 0 5px 26px;position:relative;color:#3d3d3d;font-size:14.5px;}
+  .section-body ul li::before{content:"";position:absolute;left:6px;top:13px;width:7px;height:7px;border-radius:50%;background:var(--accent);opacity:.55;}
+
+  /* Placeholder */
+  .placeholder{background:#fffbeb;border:1px dashed #d8b45a;border-radius:10px;padding:12px 14px;font-size:13px;color:#8a6d1d;margin:8px 0 12px;}
+  .privacy-section.is-placeholder{background:#fffbeb;border-style:dashed;border-color:#d8b45a;}
+  .privacy-section.is-placeholder .section-num{background:#fff7dd;border-color:#d8b45a;color:#8a6d1d;}
+
+  /* Doc footer */
+  .doc-footer{margin-top:40px;background:var(--forest-dark);color:#cfe5d8;border-radius:var(--radius-lg);padding:28px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px;}
+  .doc-footer h4{color:#fff;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:10px;}
+  .doc-footer p,.doc-footer a{font-size:13.5px;line-height:1.8;color:#cfe5d8;}
+  .doc-footer a:hover{color:#fff;}
+  .copyright{border-top:1px solid rgba(255,255,255,.15);margin-top:26px;padding-top:16px;text-align:center;font-size:12.5px;color:rgba(255,255,255,.55);}
+
+  @media (max-width:640px){
+    .privacy-section{flex-direction:column;gap:10px;padding:20px;}
+    .section-num{width:38px;height:38px;}
+    .wrap{padding:24px 16px 60px;}
+    .hero{padding:40px 18px 32px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c4-4 8-7.5 8-12a8 8 0 1 0-16 0c0 4.5 4 8 8 12z"/><circle cx="12" cy="10" r="3"/></svg>
+      </span>
+      SafariLink Tanzania B2B
+    </a>
+    <a class="back-link" href="#" onclick="if(document.referrer){history.back();return false;}window.location.href='index.html';return false;">&larr; Back</a>
+  </div>
+</header>
+
+<div class="hero">
+  <small>Legal</small>
+  <h1>Privacy Policy</h1>
+  <p><strong>Last Updated:</strong> [Insert Date]</p>
+</div>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <div class="intro">
+    <p>This Privacy Policy explains how SafariLink Tanzania B2B ("SafariLink," "we," "our," or "us") collects, uses, stores and discloses personal information when you use the SafariLink platform, website and services (together, the "Platform") and when you otherwise interact with us.</p>
+    <p>SafariLink operates as a B2B travel-operating network that connects tour operators, accommodation, fleet providers and professional guides across Tanzania. The Platform processes information about businesses, their authorized users, and — to a limited extent — travellers whose information is submitted by operator accounts.</p>
+    <p>By using the Platform, you acknowledge that your information will be handled as described in this Privacy Policy.</p>
+  </div>
+
+  <!-- ============ TABLE OF CONTENTS ============ -->
+  <div class="toc">
+    <h3>Contents</h3>
+    <div class="toc-grid">
+      <a class="missing" href="#s1-4"><span class="num">1&ndash;4</span>Scope &amp; Key Definitions</a>
+      <a class="missing" href="#s5"><span class="num">5</span>Information We Collect</a>
+      <a class="missing" href="#s6"><span class="num">6</span>How We Collect Information</a>
+      <a class="missing" href="#s7"><span class="num">7</span>How We Use Information</a>
+      <a class="missing" href="#s8"><span class="num">8</span>Legal Bases for Processing</a>
+      <a class="missing" href="#s9"><span class="num">9</span>How We Share Information</a>
+      <a class="missing" href="#s10"><span class="num">10</span>Data Retention</a>
+      <a class="missing" href="#s11"><span class="num">11</span>Data Security</a>
+      <a class="missing" href="#s12-26"><span class="num">12&ndash;26</span>Additional Provisions</a>
+      <a href="#s27"><span class="num">27</span>Changes to This Policy</a>
+      <a href="#s28"><span class="num">28</span>Children's Privacy</a>
+      <a href="#s29"><span class="num">29</span>Contact</a>
+      <a href="#s30"><span class="num">30</span>How to Exercise Rights</a>
+      <a href="#s31"><span class="num">31</span>Governing Law</a>
+    </div>
+  </div>
+
+  <!-- ============ SECTIONS 1-26 (not shown in excerpt) ============ -->
+  <section class="privacy-section is-placeholder">
+    <div class="section-num">1&ndash;26</div>
+    <div class="section-body">
+      <h2>Sections 1 through 26</h2>
+      <p>Sections 1&ndash;26 of your Privacy Policy file were not visible in the uploaded excerpt. These typically cover:</p>
+      <ul>
+        <li>Scope and key definitions (controller, processor, personal data, etc.)</li>
+        <li>Information we collect: account data, business data, contact details, usage data, device data, communications, payment information, traveller data submitted by operators</li>
+        <li>How we collect information: directly from you, automatically through the Platform, from third-party sources</li>
+        <li>How we use information: to provide and operate the Platform, facilitate bookings, communicate, improve services, security, legal compliance</li>
+        <li>Legal bases for processing: contract necessity, legitimate interests, consent, legal obligation</li>
+        <li>How we share information: with Suppliers (to fulfil bookings), service providers, as required by law, business transfers</li>
+        <li>Data retention periods and criteria</li>
+        <li>Data security measures and breach notification</li>
+        <li>Cross-border data transfers</li>
+        <li>Your rights: access, rectification, erasure, restriction, portability, objection</li>
+        <li>Cookies and tracking technologies</li>
+      </ul>
+      <div class="placeholder">Insert the full text of Sections 1&ndash;26 from your Privacy Policy file here, using the same section format as the sections below.</div>
+    </div>
+  </section>
+
+  <!-- ============ 27. CHANGES TO THIS PRIVACY POLICY ============ -->
+  <section class="privacy-section" id="s27">
+    <div class="section-num">27</div>
+    <div class="section-body">
+      <h2>Changes to This Privacy Policy</h2>
+      <p>SafariLink may update this Privacy Policy from time to time to reflect changes in our practices, the Platform, legal requirements, or for other operational reasons.</p>
+      <p>When we make material changes, we will notify users through the Platform, by email where appropriate, or through other reasonable means before the changes take effect.</p>
+      <p>The updated Privacy Policy will indicate the "Last Updated" date at the top of the page.</p>
+      <p>Your continued use of the Platform after the effective date of an updated Privacy Policy constitutes acceptance of those changes, to the extent permitted by applicable law. If you do not agree with the updated policy, you should discontinue use of the Platform and may close your Account.</p>
+    </div>
+  </section>
+
+  <!-- ============ 28. CHILDREN'S PRIVACY ============ -->
+  <section class="privacy-section" id="s28">
+    <div class="section-num">28</div>
+    <div class="section-body">
+      <h2>Children's Privacy</h2>
+      <p>The SafariLink Platform is designed for businesses and professional users. It is not directed at children under the age of 16, and we do not knowingly collect personal information from children.</p>
+      <p>Where an operator submits information about travellers that includes minors (such as for family safaris), the operator is responsible for obtaining appropriate consent from the parent or legal guardian.</p>
+      <p>If we become aware that we have inadvertently collected personal information from a child without appropriate consent, we will take reasonable steps to delete that information.</p>
+    </div>
+  </section>
+
+  <!-- ============ 29. CONTACT ============ -->
+  <section class="privacy-section" id="s29">
+    <div class="section-num">29</div>
+    <div class="section-body">
+      <h2>Contact</h2>
+      <p>If you have questions, concerns or requests regarding this Privacy Policy or how SafariLink handles personal information, you can contact us at:</p>
+      <ul>
+        <li><strong>SafariLink Tanzania B2B</strong></li>
+        <li>Privacy Email: [Insert Privacy Email]</li>
+        <li>General Email: [Insert General Email]</li>
+        <li>Website: [Insert Website]</li>
+        <li>Address: [Insert Registered Business Address]</li>
+        <li>United Republic of Tanzania</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 30. HOW TO EXERCISE YOUR RIGHTS ============ -->
+  <section class="privacy-section" id="s30">
+    <div class="section-num">30</div>
+    <div class="section-body">
+      <h2>How to Exercise Your Rights</h2>
+      <p>Depending on your jurisdiction, you may have rights to access, correct, delete, restrict, or port your personal information, or to object to certain processing.</p>
+      <p>To exercise these rights, you can contact us using the details in Section 29 (Contact) above. Please provide enough information for us to identify your Account or the relevant data, and to verify your identity where necessary.</p>
+      <p>We will respond to valid requests within the timeframes required by applicable law. If we need additional time or information, we will let you know.</p>
+      <p>You also have the right to lodge a complaint with a relevant data-protection supervisory authority if you believe your rights have been violated.</p>
+    </div>
+  </section>
+
+  <!-- ============ 31. GOVERNING LAW ============ -->
+  <section class="privacy-section" id="s31">
+    <div class="section-num">31</div>
+    <div class="section-body">
+      <h2>Governing Law</h2>
+      <p>This Privacy Policy shall be interpreted in accordance with applicable laws of the United Republic of Tanzania, subject to any mandatory data-protection rights or requirements that apply to the individual concerned.</p>
+    </div>
+  </section>
+
+  <!-- ============ PAGE FOOTER ============ -->
+  <div class="doc-footer">
+    <div>
+      <h4>SafariLink Tanzania B2B</h4>
+      <p>United Republic of Tanzania</p>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <p>Email: [Insert General Email]<br>Website: [Insert Website]</p>
+    </div>
+    <div>
+      <h4>Legal</h4>
+      <a href="terms.html">Terms &amp; Conditions</a><br>
+      <a href="javascript:window.print()">Print / Save PDF</a><br>
+      <a href="index.html">Back to Dashboard</a>
+    </div>
+  </div>
+  <p class="copyright">&copy; <span id="year"></span> SafariLink Tanzania B2B. All rights reserved.</p>
+
+</main>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
