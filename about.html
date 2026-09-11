@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About SafariLink — Tanzania B2B Tourism Operating Network</title>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style>
+  :root {
+    --forest-green: #1a5a3a;
+    --forest-green-light: #2d7a52;
+    --accent-green: #3fb983;
+    --warm-off-white: #f8f7f4;
+    --khaki: #e8e5dd;
+    --charcoal: #2c2c2c;
+    --warm-gray: #a39e95;
+    --border-light: #d4cfc6;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 12px 24px rgba(0,0,0,0.12);
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+    background: var(--warm-off-white);
+    color: var(--charcoal);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ============ NAVBAR ============ */
+  .navbar {
+    background: #fff;
+    border-bottom: 1px solid var(--border-light);
+    padding: 0 40px;
+    height: 68px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-sm);
+  }
+  .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--charcoal);
+  }
+  .nav-brand-icon {
+    width: 36px; height: 36px;
+    background: var(--forest-green);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 800; color: #fff;
+  }
+  .nav-brand-text {
+    font-size: 1.15rem;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    color: var(--charcoal);
+  }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    list-style: none;
+  }
+  .nav-links a {
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--charcoal);
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--forest-green); }
+
+  /* ============ HERO ============ */
+  .hero {
+    background: linear-gradient(135deg, var(--forest-green) 0%, #0e3a26 60%, #0a2a1c 100%);
+    padding: 80px 40px;
+    text-align: center;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 30% 50%, rgba(63,185,131,0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 50%, rgba(26,90,58,0.3) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .hero-tag {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.18);
+    padding: 6px 18px;
+    border-radius: 20px;
+    margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-size: 2.8rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    margin-bottom: 20px;
+  }
+  .hero h1 span {
+    color: var(--accent-green);
+  }
+  .hero p {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.78);
+    line-height: 1.7;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  /* ============ CONTAINER ============ */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ============ SECTIONS ============ */
+  .section {
+    padding: 72px 0;
+  }
+  .section-alt {
+    background: #fff;
+    border-top: 1px solid var(--border-light);
+    border-bottom: 1px solid var(--border-light);
+  }
+  .section-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--forest-green);
+    display: inline-block;
+    margin-bottom: 12px;
+  }
+  .section h2 {
+    font-size: 1.9rem;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    color: var(--charcoal);
+    margin-bottom: 16px;
+    line-height: 1.25;
+  }
+  .section p {
+    font-size: 1.02rem;
+    color: #555;
+    line-height: 1.75;
+    margin-bottom: 16px;
+  }
+
+  /* ============ TAGLINE BLOCK ============ */
+  .tagline-block {
+    background: var(--forest-green);
+    color: #fff;
+    text-align: center;
+    padding: 64px 24px;
+  }
+  .tagline-block h2 {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    margin-bottom: 12px;
+    color: #fff;
+  }
+  .tagline-block p {
+    font-size: 1.08rem;
+    color: rgba(255,255,255,0.75);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* ============ MISSION CARDS ============ */
+  .mission-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 40px;
+  }
+  .mission-card {
+    background: #fff;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 28px;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s;
+  }
+  .mission-card:hover { box-shadow: var(--shadow-md); }
+  .mission-card-icon {
+    width: 44px; height: 44px;
+    background: rgba(26,90,58,0.08);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--forest-green);
+    margin-bottom: 16px;
+  }
+  .mission-card h4 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--charcoal);
+  }
+  .mission-card p {
+    font-size: 0.9rem;
+    color: #666;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* ============ VALUES ============ */
+  .values-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 28px;
+  }
+  .value-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    background: var(--warm-off-white);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-light);
+  }
+  .value-icon {
+    width: 36px; height: 36px;
+    min-width: 36px;
+    background: var(--forest-green);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    font-size: 16px;
+  }
+  .value-text h4 {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--charcoal);
+    margin-bottom: 2px;
+  }
+  .value-text p {
+    font-size: 0.82rem;
+    color: #777;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  /* ============ FOOTER ============ */
+  .page-footer {
+    background: var(--charcoal);
+    color: #ccc;
+    text-align: center;
+    padding: 32px 24px;
+    border-top: 3px solid var(--forest-green);
+  }
+  .page-footer p {
+    font-size: 0.85rem;
+    color: #777;
+    margin-bottom: 8px;
+  }
+  .page-footer a {
+    color: var(--accent-green);
+    text-decoration: none;
+  }
+  .page-footer a:hover { text-decoration: underline; }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 768px) {
+    .hero { padding: 56px 24px; }
+    .hero h1 { font-size: 2rem; }
+    .section { padding: 48px 0; }
+    .section h2 { font-size: 1.5rem; }
+    .navbar { padding: 0 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <a href="index.html" class="nav-brand">
+    <div class="nav-brand-icon">S</div>
+    <span class="nav-brand-text">SafariLink</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="about.html" style="color:var(--forest-green);font-weight:600;">About</a></li>
+    <li><a href="terms.html">Terms</a></li>
+    <li><a href="privacy.html">Privacy</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-tag">Our Mission</div>
+    <h1>One connected network.<br>A more efficient <span>tourism industry</span>.</h1>
+    <p>Tanzania is the destination. SafariLink is the infrastructure behind the journey — connecting tour operators with verified suppliers across the entire tourism value chain.</p>
+  </div>
+</section>
+
+<!-- What Is SafariLink -->
+<section class="section">
+  <div class="container">
+    <span class="section-label">What We Are</span>
+    <h2>A B2B operating network built for Tanzania tourism.</h2>
+    <p>
+      SafariLink is a purpose-built platform that brings together Tanzania’s fragmented tourism
+      operations into one connected workspace. Rather than juggling spreadsheets, WhatsApp threads,
+      phone calls, and email chains, tour operators, accommodation providers, vehicle fleet owners,
+      and professional guides all work from the same real-time information.
+    </p>
+    <p>
+      From sourcing a Serengeti camp with STO rates, to assigning a Land Cruiser, booking a certified
+      guide, building a day-by-day itinerary, and generating a client-ready quote — SafariLink keeps
+      every step inside a single platform designed around the operational realities of the Tanzania
+      tourism industry.
+    </p>
+  </div>
+</section>
+
+<!-- Mission Cards -->
+<section class="section section-alt">
+  <div class="container">
+    <span class="section-label">Who We Serve</span>
+    <h2>Built for everyone in the supply chain.</h2>
+    <div class="mission-grid">
+      <div class="mission-card">
+        <div class="mission-card-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <h4>Tour Operators</h4>
+        <p>Source accommodation, vehicles, and guides. Build itineraries, calculate costs, generate quotes, and manage reservations — all in one place.</p>
+      </div>
+      <div class="mission-card">
+        <div class="mission-card-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <h4>Accommodation Providers</h4>
+        <p>List properties, manage room types and availability, set STO rates, receive bookings, and connect directly with tour operators.</p>
+      </div>
+      <div class="mission-card">
+        <div class="mission-card-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        </div>
+        <h4>Fleet Owners</h4>
+        <p>Register safari vehicles, manage availability, upload documents, and receive booking requests from verified operators.</p>
+      </div>
+      <div class="mission-card">
+        <div class="mission-card-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <h4>Professional Guides</h4>
+        <p>Showcase qualifications, languages, specialties, and availability. Get matched with operators who need certified guides for their trips.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Why SafariLink -->
+<section class="section">
+  <div class="container">
+    <span class="section-label">Why SafariLink</span>
+    <h2>Designed in Tanzania. Built for Tanzanian tourism.</h2>
+    <p>
+      SafariLink isn't a generic travel platform adapted for the region — it was conceived and is
+      being built around the specific operational realities of Tanzania's tourism industry. From
+      B2B STO rates and negotiated supplier contracts to vehicle fleet coordination, guide
+      certification tracking, and multi-currency quoting, every feature reflects how tourism
+      businesses in Tanzania actually work.
+    </p>
+    <p>
+      By replacing fragmented communication channels with a single source of truth, SafariLink
+      reduces errors, speeds up the quoting process, improves supplier relationships, and gives
+      tour operators more time to focus on what matters: delivering exceptional experiences.
+    </p>
+  </div>
+</section>
+
+<!-- Tagline Block -->
+<section class="tagline-block">
+  <h2>Tanzania is the destination.</h2>
+  <p>SafariLink is the infrastructure behind the journey — connecting operators, suppliers, and travelers through one trusted network.</p>
+</section>
+
+<!-- Core Values -->
+<section class="section section-alt">
+  <div class="container">
+    <span class="section-label">What Drives Us</span>
+    <h2>Core values.</h2>
+    <div class="values-list">
+      <div class="value-item">
+        <div class="value-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="value-text">
+          <h4>Trust &amp; Reliability</h4>
+          <p>Verified suppliers, transparent rates, and dependable operations form the foundation of every connection we enable.</p>
+        </div>
+      </div>
+      <div class="value-item">
+        <div class="value-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <div class="value-text">
+          <h4>Efficiency</h4>
+          <p>We eliminate redundancy — one platform replaces spreadsheets, scattered messages, and manual coordination.</p>
+        </div>
+      </div>
+      <div class="value-item">
+        <div class="value-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        </div>
+        <div class="value-text">
+          <h4>Speed</h4>
+          <p>Quotes that used to take days can be generated in minutes — with accurate, real-time pricing from connected suppliers.</p>
+        </div>
+      </div>
+      <div class="value-item">
+        <div class="value-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <div class="value-text">
+          <h4>Locally Rooted</h4>
+          <p>Headquartered in Arusha, Tanzania — built by people who understand the industry from the inside.</p>
+        </div>
+      </div>
+      <div class="value-item">
+        <div class="value-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+        </div>
+        <div class="value-text">
+          <h4>Connected</h4>
+          <p>Every piece of the operation — accommodation, fleet, guides, itineraries, quotes — linked in one network.</p>
+        </div>
+      </div>
+      <div class="value-item">
+        <div class="value-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </div>
+        <div class="value-text">
+          <h4>Accuracy</h4>
+          <p>Real-time availability, verified rates, and structured workflows reduce costly quoting errors.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact -->
+<section class="section">
+  <div class="container" style="text-align:center;">
+    <span class="section-label">Get In Touch</span>
+    <h2>Ready to join the network?</h2>
+    <p style="max-width:560px;margin:0 auto 24px auto;">
+      Whether you're a tour operator looking to streamline your operations or a supplier wanting
+      to connect with more clients, we'd love to hear from you.
+    </p>
+    <div style="display:flex;flex-direction:column;gap:8px;font-size:0.95rem;color:#555;">
+      <div>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--forest-green)" stroke-width="2" style="vertical-align:middle;margin-right:6px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        Arusha, Tanzania
+      </div>
+      <div>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--forest-green)" stroke-width="2" style="vertical-align:middle;margin-right:6px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        hello@safarilink.co.tz
+      </div>
+      <div>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--forest-green)" stroke-width="2" style="vertical-align:middle;margin-right:6px;"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        safarilink.co.tz
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="page-footer">
+  <p>SafariLink — The operating network for Tanzania tourism.</p>
+  <p>
+    <a href="terms.html">Terms &amp; Conditions</a> &nbsp;&middot;&nbsp;
+    <a href="privacy.html">Privacy Policy</a> &nbsp;&middot;&nbsp;
+    <a href="about.html">About</a>
+  </p>
+  <p style="font-size:0.78rem;color:#555;margin-top:8px;">&copy; 2024 SafariLink Tanzania B2B. All rights reserved.</p>
+</footer>
+
+<script>
+  lucide.createIcons();
+</script>
+</body>
+</html>
