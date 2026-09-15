@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SafariLink roadmap: building the infrastructure behind Tanzania tourism.">
+  <title>Our Roadmap — SafariLink Tanzania B2B</title>
+  <style>
+    :root {
+      --forest-green: #1a5a3a;
+      --forest-green-light: #2d7a52;
+      --accent-green: #3fb983;
+      --warm-off-white: #f8f7f4;
+      --khaki: #e8e5dd;
+      --charcoal: #2c2c2c;
+      --warm-gray: #6e746f;
+      --border-light: #d4d6cf;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.05);
+      --shadow-md: 0 4px 12px rgba(0,0,0,.08);
+      --shadow-lg: 0 12px 24px rgba(0,0,0,.12);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+    }
+
+    * { box-sizing: border-box; margin: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif; background: var(--warm-off-white); color: var(--charcoal); line-height: 1.7; }
+    .topbar { position: sticky; top: 0; z-index: 50; background: #fff; border-bottom: 1px solid var(--border-light); box-shadow: var(--shadow-sm); }
+    .topbar-inner { max-width: 1120px; min-height: 57px; margin: 0 auto; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--charcoal); }
+    .brand-mark { width: 32px; height: 32px; border-radius: 8px; background: var(--forest-green); color: #fff; font-weight: 800; font-size: 16px; display: grid; place-items: center; }
+    .brand-name { font-size: 17px; font-weight: 800; letter-spacing: -.3px; }
+    .topbar-link { color: var(--forest-green); text-decoration: none; font-size: 13.5px; font-weight: 600; padding: 7px 13px; border: 1px solid var(--forest-green); border-radius: 8px; transition: .15s; }
+    .topbar-link:hover { background: var(--forest-green); color: #fff; }
+    .hero { background: linear-gradient(135deg, var(--forest-green) 0%, var(--forest-green-light) 100%); color: #fff; padding: 66px 24px 82px; }
+    .hero-inner { max-width: 820px; margin: 0 auto; }
+    .eyebrow { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent-green); border: 1px solid rgba(255,255,255,.35); padding: 4px 12px; border-radius: 20px; margin-bottom: 16px; }
+    h1 { font-size: clamp(32px, 5vw, 46px); line-height: 1.12; letter-spacing: -1.2px; margin-bottom: 14px; }
+    .hero p { max-width: 620px; font-size: 17px; color: rgba(255,255,255,.88); }
+    main { max-width: 820px; margin: -34px auto 54px; padding: 0 24px; position: relative; }
+    .intro, .phase, .principles, .next { background: #fff; border: 1px solid var(--border-light); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); }
+    .intro { padding: 30px 32px; margin-bottom: 25px; font-size: 15.5px; }
+    .intro p + p { margin-top: 14px; }
+    .timeline { position: relative; padding-left: 34px; }
+    .timeline::before { content: ""; position: absolute; left: 10px; top: 25px; bottom: 25px; width: 2px; background: var(--border-light); }
+    .phase { position: relative; padding: 31px 32px; margin-bottom: 24px; }
+    .phase::before { content: ""; position: absolute; width: 17px; height: 17px; left: -33px; top: 38px; border-radius: 50%; background: var(--warm-off-white); border: 4px solid var(--forest-green); z-index: 1; }
+    .phase.current { border-top: 4px solid var(--forest-green); }
+    .phase.future::before { border-color: var(--accent-green); }
+    .phase-number { color: var(--accent-green); font-size: 11.5px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; }
+    h2 { color: var(--forest-green); font-size: 23px; line-height: 1.25; margin: 5px 0 8px; }
+    h3 { color: var(--forest-green); font-size: 16px; margin: 24px 0 10px; }
+    .status { display: inline-block; margin: 2px 0 17px; padding: 4px 10px; border-radius: 14px; background: rgba(63,185,131,.12); color: var(--forest-green); font-size: 12px; font-weight: 700; }
+    .phase > p { color: var(--warm-gray); font-size: 14.8px; }
+    .capabilities { list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 14px; margin-top: 11px; }
+    .capabilities li { background: var(--warm-off-white); border: 1px solid var(--border-light); border-radius: var(--radius-sm); padding: 8px 10px 8px 29px; font-size: 13.5px; line-height: 1.35; position: relative; }
+    .capabilities li::before { content: "✓"; position: absolute; left: 10px; color: var(--forest-green); font-weight: 800; }
+    .goal, .example, .principle { margin-top: 23px; padding: 17px 18px; border-radius: var(--radius-sm); }
+    .goal { background: #f1f7f3; border-left: 3px solid var(--forest-green); }
+    .example { background: var(--khaki); border-left: 3px solid var(--accent-green); }
+    .principle { background: #fff8e8; border-left: 3px solid #bc8a27; }
+    .goal strong, .example strong, .principle strong { display: block; color: var(--forest-green); font-size: 12px; letter-spacing: .7px; text-transform: uppercase; margin-bottom: 4px; }
+    .flow { color: var(--forest-green); background: var(--warm-off-white); border: 1px solid var(--border-light); padding: 12px 15px; border-radius: var(--radius-sm); font-size: 13.5px; font-weight: 700; margin: 17px 0 4px; line-height: 1.55; }
+    .principles, .next { padding: 31px 32px; margin-top: 25px; }
+    .principle-list { list-style: none; display: grid; gap: 11px; margin-top: 17px; }
+    .principle-list li { padding: 11px 14px; border: 1px solid var(--border-light); border-radius: var(--radius-sm); background: var(--warm-off-white); font-size: 14px; }
+    .next { background: var(--khaki); text-align: center; }
+    .next p { color: var(--warm-gray); font-size: 14.5px; max-width: 540px; margin: 0 auto 18px; }
+    .button { display: inline-block; background: var(--forest-green); color: #fff; text-decoration: none; font-weight: 700; font-size: 14px; padding: 11px 18px; border-radius: 8px; box-shadow: var(--shadow-sm); }
+    .button:hover { background: var(--forest-green-light); }
+    footer { background: var(--charcoal); color: #ccc; border-top: 3px solid var(--forest-green); padding: 31px 24px; }
+    .footer-inner { max-width: 1120px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 22px; }
+    .footer-brand { display: flex; align-items: center; gap: 10px; color: #fff; font-weight: 800; }
+    .footer-mark { width: 30px; height: 30px; border-radius: 7px; background: var(--forest-green); display: grid; place-items: center; }
+    footer nav { display: flex; flex-wrap: wrap; gap: 18px; font-size: 13px; } footer a { color: #aaa; text-decoration: none; } footer a:hover { color: #fff; } footer p { color: #777; font-size: 12px; }
+    @media (max-width: 620px) { .topbar-inner { padding-inline: 16px; } .hero { padding: 50px 20px 70px; } main { padding-inline: 16px; } .intro, .phase, .principles, .next { padding: 24px 20px; } .timeline { padding-left: 25px; } .timeline::before { left: 6px; } .phase::before { left: -27px; } .capabilities { grid-template-columns: 1fr; } .topbar-link { font-size: 12px; padding: 6px 9px; } }
+  </style>
+</head>
+<body>
+  <header class="topbar"><div class="topbar-inner"><a class="brand" href="index.html" aria-label="SafariLink home"><span class="brand-mark">S</span><span class="brand-name">SafariLink</span></a><a class="topbar-link" href="index.html">← Back to SafariLink</a></div></header>
+
+  <section class="hero"><div class="hero-inner"><span class="eyebrow">Roadmap</span><h1>Our Roadmap</h1><p>Building the infrastructure behind Tanzania tourism.</p></div></section>
+
+  <main>
+    <section class="intro">
+      <p>SafariLink is being built around one simple idea: tourism businesses should spend less time coordinating suppliers and more time selling and delivering great Tanzania experiences.</p>
+      <p>Our roadmap focuses on making the platform progressively more useful, connected and intelligent while maintaining the reliability required for real tourism operations. We are developing SafariLink in stages, starting with the operational foundation and gradually adding deeper automation, intelligence, integrations and network capabilities.</p>
+    </section>
+
+    <div class="timeline">
+      <article class="phase current"><span class="phase-number">Phase 1</span><h2>The Foundation</h2><span class="status">Current / Foundation</span><p>Build the core B2B operating network. The first stage focuses on the essential infrastructure required to connect tourism businesses.</p><h3>Core capabilities</h3><ul class="capabilities"><li>Tour operator accounts</li><li>Supplier accounts</li><li>Business verification</li><li>Accommodation profiles</li><li>Room inventory</li><li>B2B / STO rates</li><li>Vehicle fleet profiles</li><li>Vehicle availability</li><li>Professional guide profiles</li><li>Guide availability</li><li>Activity and experience listings</li><li>Supplier and global search</li><li>Supplier messaging</li><li>Availability requests</li><li>Reservation management</li><li>Itinerary builder</li><li>Cost calculation</li><li>Markups and margins</li><li>Client quotes</li><li>Documents and notifications</li><li>User roles and permissions</li></ul><div class="goal"><strong>Goal</strong>Create one reliable place where Tanzania tourism businesses can find, compare, plan and manage the services required to operate trips.</div></article>
+
+      <article class="phase future"><span class="phase-number">Phase 2</span><h2>Connected Operations</h2><p>Connect the entire trip workflow. The second stage connects individual platform features into a continuous operational workflow.</p><div class="flow">Inquiry → Search → Availability → Cost → Quote → Reservation → Confirmation → Operation</div><h3>Planned capabilities</h3><ul class="capabilities"><li>Central reservation calendar</li><li>Supplier confirmation tracking</li><li>Automated reminders and deadlines</li><li>Booking reference management</li><li>Client and trip task management</li><li>Supplier response tracking</li><li>Reservation documents and vouchers</li><li>Booking summaries</li><li>Invoice management</li><li>Payment tracking</li><li>Operational dashboards</li><li>Team assignments and internal notes</li><li>Trip status monitoring</li></ul><div class="goal"><strong>Goal</strong>Move from simply finding suppliers to actually running trips through SafariLink.</div></article>
+
+      <article class="phase future"><span class="phase-number">Phase 3</span><h2>Intelligent SafariLink</h2><p>Introduce intelligence into the operating workflow. SafariLink Intelligence will help tourism professionals make faster and better operational decisions.</p><h3>Planned capabilities</h3><ul class="capabilities"><li>Natural-language search</li><li>AI itinerary assistant</li><li>AI supplier, guide and vehicle matching</li><li>AI costing assistant</li><li>AI quote drafting</li><li>AI reservation follow-up</li><li>AI communication assistant</li><li>Automatic document extraction</li><li>Rate-sheet and supplier information extraction</li><li>Translation assistance</li><li>Operational and margin alerts</li><li>Trip risk detection</li><li>Alternative supplier recommendations</li></ul><div class="example"><strong>Example</strong>“Find a 4-star lodge near Serengeti for 2 adults, September 15–17, with breakfast and an available STO rate.” SafariLink searches its actual supplier inventory and returns relevant options.</div><div class="principle"><strong>Important principle</strong>SafariLink Intelligence works from verified platform data. It should never invent hotels, prices, availability, supplier confirmations, vehicle or guide availability, or reservation status. Critical booking and financial actions remain subject to user confirmation.</div></article>
+
+      <article class="phase future"><span class="phase-number">Phase 4</span><h2>Network Expansion</h2><p>Expand the Tanzania tourism supply network once the operating foundation is established.</p><h3>Potential categories</h3><ul class="capabilities"><li>More accommodation providers</li><li>Vehicle fleets and transfer companies</li><li>Guides and activities</li><li>Cultural experiences</li><li>Zanzibar suppliers</li><li>Kilimanjaro operators</li><li>Aviation partners</li><li>Boat operators and marine excursions</li><li>Event and conference suppliers</li><li>Specialised transport</li><li>Luxury services</li></ul><div class="goal"><strong>Goal</strong>Make SafariLink increasingly useful as the digital infrastructure connecting Tanzania's tourism supply chain.</div></article>
+
+      <article class="phase future"><span class="phase-number">Phase 5</span><h2>Integrations</h2><p>Connect SafariLink with the systems tourism businesses already use. Integrations will be introduced based on user demand, technical feasibility and operational value.</p><h3>Potential integrations</h3><ul class="capabilities"><li>Accounting systems</li><li>Payment providers</li><li>Email and WhatsApp</li><li>Calendar systems</li><li>CRM platforms</li><li>Booking systems</li><li>Property management systems</li><li>Channel managers</li><li>Flight and transfer systems</li><li>Mapping services</li><li>Document storage</li><li>Business intelligence tools</li></ul></article>
+
+      <article class="phase future"><span class="phase-number">Phase 6</span><h2>Tanzania Tourism Intelligence</h2><p>Turn operational data into business intelligence. As the network grows, SafariLink can help businesses understand the patterns that make better decisions possible.</p><h3>Insights may include</h3><ul class="capabilities"><li>Demand and destination patterns</li><li>Supplier performance</li><li>Average booking value</li><li>Trip profitability</li><li>Seasonal trends</li><li>Reservation conversion</li><li>Cancellation patterns</li><li>Supplier response times</li><li>Fleet utilisation</li><li>Guide demand</li><li>Accommodation demand</li><li>Popular itinerary combinations</li></ul><div class="goal"><strong>Goal</strong>Not simply to store information, but to help tourism businesses make better decisions.</div></article>
+    </div>
+
+    <section class="principles"><span class="phase-number">Guiding principles</span><h2>Roadmap Principles</h2><ul class="principle-list"><li>Reliability over unnecessary complexity.</li><li>Operational value over features for the sake of features.</li><li>Security over convenience.</li><li>Real tourism workflows over generic SaaS assumptions.</li><li>Tanzania-first development over trying to serve every market immediately.</li></ul></section>
+    <section class="next"><span class="phase-number">What’s next?</span><h2>Help shape SafariLink</h2><p>The roadmap will evolve based on operator and supplier feedback, network demand, technology, security and regulatory requirements, and operational priorities.</p><p>Have a feature request? Tell us what would make your daily tourism operations easier.</p><a class="button" href="feature-request.html">Submit a Feature Request →</a></section>
+  </main>
+
+  <footer><div class="footer-inner"><div class="footer-brand"><span class="footer-mark">S</span><span>SafariLink</span></div><nav><a href="terms.html">Terms &amp; Conditions</a><a href="privacy.html">Privacy Policy</a><a href="supplier-terms.html">Supplier Terms</a><a href="cookie-policy.html">Cookie Policy</a><a href="about.html">About</a></nav><p>© 2025 SafariLink Tanzania B2B</p></div></footer>
+</body>
+</html>
