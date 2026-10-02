@@ -465,20 +465,85 @@
   });
 
   /* Form submit handler */
-  function handleSubmit(e) {
-    e.preventDefault();
+ function handleSubmit(e) {
+  e.preventDefault();
 
-    /* Basic validation */
-    var companyName = document.getElementById('companyName').value;
-    var contactName = document.getElementById('contactName').value;
-    var email = document.getElementById('email').value;
-    var phone = document.getElementById('phone').value;
-    var region = document.getElementById('region').value;
-    var consent = document.getElementById('consent').checked;
+  var companyName = document.getElementById('companyName').value.trim();
+  var contactName = document.getElementById('contactName').value.trim();
+  var email = document.getElementById('email').value.trim();
+  var phone = document.getElementById('phone').value.trim();
+  var region = document.getElementById('region').value;
+  var description = document.getElementById('description').value.trim();
+  var consent = document.getElementById('consent').checked;
 
-    if (!companyName || !contactName || !email || !phone || !region || !consent) {
-      return false;
+  if (!companyName || !contactName || !email || !phone || !region || !consent) {
+    alert('Please complete all required fields.');
+    return false;
+  }
+
+  var btn = document.querySelector('.btn-submit');
+
+  btn.innerHTML = '<i data-lucide="loader"></i> Submitting...';
+  btn.disabled = true;
+  lucide.createIcons();
+
+  fetch('http://localhost:3000/api/access-request', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      businessType: selectedType,
+      companyName: companyName,
+      contactName: contactName,
+      email: email,
+      phone: phone,
+      region: region,
+      description: description
+    })
+  })
+  .then(function(res) {
+    return res.json();
+  })
+  .then(function(data) {
+
+    if (data.success) {
+
+      document.getElementById('formView').style.display = 'none';
+      document.getElementById('successView').classList.add('show');
+
+      lucide.createIcons();
+
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+
+    } else {
+
+      alert(data.error || 'Unable to submit your request.');
+
+      btn.innerHTML = '<i data-lucide="send"></i> Submit access request';
+      btn.disabled = false;
+      lucide.createIcons();
+
     }
+
+  })
+  .catch(function(error) {
+
+    console.error(error);
+
+    alert('Server unreachable. Please make sure SafariLink backend is running.');
+
+    btn.innerHTML = '<i data-lucide="send"></i> Submit access request';
+    btn.disabled = false;
+    lucide.createIcons();
+
+  });
+
+  return false;
+}
 
     /* Show success state */
     document.getElementById('formView').style.display = 'none';
