@@ -299,10 +299,13 @@
    <i data-lucide="briefcase"></i>
    <span>Tour Operator</span>
    </div>
-   <div class="biz-type-card" data-type="service-offering">
-   <i data-lucide="wrench"></i>
-   <span>Service Offering</span>
-   </div>
+   
+             <div class="biz-type-card" data-type="service-offering">
+  <i data-lucide="wrench"></i>
+  <span>Service Offering</span>
+</div>
+
+</div>
 
           <!-- Company name -->
           <div class="form-group">
@@ -455,7 +458,7 @@
   lucide.createIcons();
 
   /* Business type selector */
-  var selectedType = 'accommodation';
+var selectedType = 'accommodation';
   document.querySelectorAll('.biz-type-card').forEach(function(card) {
     card.addEventListener('click', function() {
       document.querySelectorAll('.biz-type-card').forEach(function(c) { c.classList.remove('selected'); });
@@ -463,6 +466,8 @@
       selectedType = card.dataset.type;
     });
   });
+
+
 
   /* Form submit handler */
  function handleSubmit(e) {
@@ -544,6 +549,7 @@
 
   return false;
 }
+
 
     /* Show success state */
     document.getElementById('formView').style.display = 'none';
