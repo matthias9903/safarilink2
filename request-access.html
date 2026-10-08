@@ -457,16 +457,15 @@
 <script>
   lucide.createIcons();
 
-  /* Business type selector */
-var selectedType = 'accommodation';
+ /* Business type selector */
+  var selectedType = 'accommodation';
   document.querySelectorAll('.biz-type-card').forEach(function(card) {
-    card.addEventListener('click', function() {
-      document.querySelectorAll('.biz-type-card').forEach(function(c) { c.classList.remove('selected'); });
-      card.classList.add('selected');
-      selectedType = card.dataset.type;
+    opt.addEventListener('click', function() {
+      document.querySelectorAll('.biz-type-card').forEach(function(o) { o.classList.remove('selected'); });
+      opt.classList.add('selected');
+      selectedType = opt.dataset.type;
     });
   });
-
 
 
   /* Form submit handler */
