@@ -1830,6 +1830,150 @@
   </style>
 
 </div>
+<script>
+  // Lucide icons
+  if (window.lucide) { lucide.createIcons(); }
 
+  // Page navigation guards (safe for a standalone copy)
+  window.navigateTo = window.navigateTo || function (page) {
+    if (page && page !== 'homepage') { console.log('Navigate to:', page); }
+  };
+  window.switchPage = window.switchPage || function (page) { window.navigateTo(page); };
+
+  // Scroll-in animations
+  (function () {
+    function initScrollAnimations() {
+      var els = document.querySelectorAll('.sl-fade-up');
+      if (!els.length) return;
+      if (!('IntersectionObserver' in window)) {
+        for (var i = 0; i < els.length; i++) { els[i].classList.add('visible'); }
+        return;
+      }
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+      els.forEach(function (el) { observer.observe(el); });
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initScrollAnimations);
+    } else {
+      initScrollAnimations();
+    }
+  })();
+</script>
+
+</div>
+
+<!-- ============================================
+     JAVASCRIPT
+     ============================================ -->
+<script>
+  /* Initialize Lucide Icons */
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+  });
+
+  /* Re-initialize icons when views change */
+  function refreshIcons() {
+    setTimeout(function() {
+      if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+      }
+    }, 50);
+  }
+
+  /* ============================================
+     SIDEBAR (mobile)
+     ============================================ */
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    if (sidebar) sidebar.classList.toggle('open');
+    if (overlay) overlay.classList.toggle('active');
+  }
+
+  function closeSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    if (sidebar) sidebar.classList.remove('open');
+    if (overlay) overlay.classList.remove('active');
+  }
+
+  /* ============================================
+     NAVIGATION — Homepage / Dashboard
+     ============================================ */
+  function navigateTo(view) {
+    const homepage = document.getElementById('homepage-view');
+    const dashboard = document.getElementById('dashboard-view');
+
+    if (view === 'homepage') {
+      if (homepage) homepage.style.display = 'block';
+      if (dashboard) dashboard.style.display = 'none';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (view === 'dashboard') {
+      if (homepage) homepage.style.display = 'none';
+      if (dashboard) dashboard.style.display = 'flex';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      refreshIcons();
+    }
+  }
+
+  /* ============================================
+     PAGE SWITCHING — Dashboard
+     ============================================ */
+  function switchPage(page) {
+    const homepage = document.getElementById('homepage-view');
+    const dashboard = document.getElementById('dashboard-view');
+    if (homepage) homepage.style.display = 'none';
+    if (dashboard) dashboard.style.display = 'flex';
+
+    /* Hide all pages */
+    document.querySelectorAll('.page').forEach(function(p) {
+      p.classList.remove('active');
+    });
+
+    /* Show selected page */
+    const targetPage = document.getElementById(page + '-page');
+    if (targetPage) {
+      targetPage.classList.add('active');
+    }
+
+    /* Update sidebar active state */
+    const pageMap = {
+      'dashboard': 'dashboard',
+      'itinerary': 'itineraries',
+      'trips': 'trips',
+      'accommodation': 'accommodation',
+      'vehicles': 'vehicles',
+      'guides': 'guides',
+      'activities': 'activities',
+      'messages': 'messages',
+      'documents': 'documents',
+      'invoices': 'invoices',
+      'tasks': 'tasks',
+      'favorites': 'favorites',
+      'analytics': 'reports & analytics',
+      'company': 'company',
+      'team': 'team'
+    };
+
+    document.querySelectorAll('.nav-item').forEach(function(item) {
+      item.classList.remove('active');
+      const text = item.textContent.trim().toLowerCase();
+      if (text === page.toLowerCase() || text === pageMap[page]) {
+        item.classList.add('active');
+      }
+    });
+
+    closeSidebar();
+  }
+</script>
 </body>
 </html>
