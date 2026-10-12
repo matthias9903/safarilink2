@@ -149,9 +149,9 @@
   .section-body { padding: 18px 22px 20px; font-size: 0.925rem; }
   .section-body p { margin-bottom: 10px; }
   .section-body p:last-child { margin-bottom: 0; }
-  .section-body ul { margin: 8px 0 10px; padding-left: 22px; }
-  .section-body li { margin-bottom: 6px; }
-  .section-body ul.simple { list-style: disc; }
+  .section-body ul{margin:0 0 10px;padding-left:0;list-style:none;}
+  .section-body ul li{padding:5px 0 5px 26px;position:relative;color:#3d3d3d;font-size:14.5px;}
+  .section-body ul li::before{content:"";position:absolute;left:6px;top:13px;width:7px;height:7px;border-radius:50%;background:var(--accent);opacity:.55;}
 
   /* Callout */
   .intro-callout {
@@ -239,6 +239,18 @@
       <div class="section-head"><span class="section-num">1</span><div class="section-title">Purpose of SafariLink</div></div>
       <div class="section-body">
         <p>SafariLink is a B2B travel operating network that connects tour Operators with tourism Suppliers in Tanzania. The Platform supports discovery, booking communication, and management of accommodation and fleet services between SafariLink verified users (Operators) and Suppliers (Accommodation and Fleet Providers).</p>
+        <p>The Platform allows Users to:</p>
+        <ul>
+        <li>Present their services to verified tourism businesses</li>
+        <li>Manage business and service information</li>
+        <li>Provide availability</li>
+        <li>Publish or share private B2B/STO rates</li>
+        <li>Receive reservation requests</li>
+        <li>Communicate with Operators</li>
+        <li>Manage confirmations</li>
+        <li>Maintain operational information</li>
+        <li>Participate in a connected tourism supply network.</li>
+      </ul>
       </div>
     </article>
 
