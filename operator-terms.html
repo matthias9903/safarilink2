@@ -3,151 +3,243 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Operator Terms &amp; Conditions — SafariLink Tanzania B2B</title>
+<title>Operator Terms &amp; Conditions — SafariLink Tanzania</title>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <style>
-  :root{
-    --forest:#1a5a3a; --forest-dark:#12462a; --accent:#2d8c5f;
-    --khaki:#e8e5dd; --bg:#f8f7f4; --ink:#2c2c2c; --muted:#6f6a5e;
-    --line:#e8e5dd; --white:#fff; --radius-lg:16px; --radius-md:10px;
+  :root {
+    --forest-green: #1a5a3a;
+    --forest-green-light: #2d7a52;
+    --accent-green: #3fb983;
+    --warm-off-white: #f8f7f4;
+    --khaki: #e8e5dd;
+    --charcoal: #2c2c2c;
+    --warm-gray: #a39e95;
+    --border-light: #d4cfc6;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 12px 24px rgba(0,0,0,0.12);
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+    background: var(--warm-off-white);
+    color: var(--charcoal);
+    line-height: 1.7;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   html{scroll-behavior:smooth;}
   body{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;font-size:15px;}
   a{color:var(--forest);text-decoration:none;}
   a:hover{text-decoration:underline;}
+  
 
-  /* Top bar */
+  /* ── Sticky Top Bar ── */
   .topbar{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
   .topbar-inner{max-width:860px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
   .brand{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--forest);font-size:15px;}
+  .brand-icon {
+    width: 36px; height: 36px; border-radius: 9px;
+    background: var(--forest-green); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .brand-icon i { width: 20px; height: 20px; }
+  .brand-text { font-size: 1.125rem; font-weight: 800; color: var(--forest-green); letter-spacing: -0.01em; }
+  .brand-text small { display: block; font-size: 0.65rem; font-weight: 600; color: var(--warm-gray); letter-spacing: 0.08em; text-transform: uppercase; }
   .brand-mark{width:34px;height:34px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,#2d8c5f,#1a5a3a);display:flex;align-items:center;justify-content:center;color:#fff;}
   .back-link{font-size:13px;font-weight:600;color:var(--forest);border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 16px;white-space:nowrap;}
   .back-link:hover{background:var(--bg);text-decoration:none;}
-
-  /* Hero */
-  .hero{background:linear-gradient(135deg,#123b26 0%,#1a5a3a 55%,#2d8c5f 100%);color:#fff;padding:56px 24px 44px;text-align:center;}
-  .hero small{display:inline-block;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#cfe5d8;margin-bottom:10px;border:1px solid rgba(255,255,255,.25);padding:5px 14px;border-radius:999px;background:rgba(255,255,255,.08);}
-  .hero h1{font-size:clamp(26px,4vw,40px);font-weight:800;letter-spacing:.3px;}
-  .hero p{color:#cfe5d8;font-size:14px;margin-top:10px;}
-  .hero p strong{color:#fff;font-weight:600;}
-
-  /* Layout */
-  .wrap{max-width:860px;margin:0 auto;padding:40px 24px 80px;}
-  .toc{background:#fff;border:1px solid var(--line);border-radius:var(--radius-lg);padding:22px 24px;margin-bottom:34px;}
-  .toc h3{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
-  .toc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:6px;}
-  .toc-grid a{font-size:13px;color:var(--ink);padding:6px 10px;border-radius:6px;display:flex;gap:8px;align-items:baseline;}
-  .toc-grid a:hover{background:var(--bg);text-decoration:none;color:var(--forest);}
-  .toc-grid .num{font-weight:800;color:var(--forest);font-size:12px;min-width:22px;}
-  .toc-grid a.missing{color:#a89c80;cursor:default;}
-  .toc-grid a.missing .num{color:#a89c80;}
-  .toc-grid a.missing:hover{background:transparent;}
-
-  /* Sections */
-  .terms-section{background:#fff;border:1px solid var(--line);border-radius:var(--radius-lg);padding:26px 28px;margin-bottom:16px;display:flex;gap:18px;}
-  .section-num{flex-shrink:0;width:44px;height:44px;border-radius:12px;background:var(--bg);border:1px solid var(--line);color:var(--forest);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;}
-  .section-body{flex:1;min-width:0;}
-  .section-body h2{font-size:17px;font-weight:800;margin-bottom:10px;letter-spacing:.2px;}
-  .section-body p{margin-bottom:10px;color:#3d3d3d;}
-  .section-body ul{margin:0 0 10px;padding-left:0;list-style:none;}
-  .section-body ul li{padding:5px 0 5px 26px;position:relative;color:#3d3d3d;font-size:14.5px;}
-  .section-body ul li::before{content:"";position:absolute;left:6px;top:13px;width:7px;height:7px;border-radius:50%;background:var(--accent);opacity:.55;}
-
-  /* Placeholders for anything not captured in the uploaded excerpt */
-  .placeholder{background:#fffbeb;border:1px dashed #d8b45a;border-radius:10px;padding:12px 14px;font-size:13px;color:#8a6d1d;margin:8px 0 12px;}
-  .terms-section.is-placeholder{background:#fffbeb;border-style:dashed;border-color:#d8b45a;}
-  .terms-section.is-placeholder .section-num{background:#fff7dd;border-color:#d8b45a;color:#8a6d1d;}
-
-  /* Footer of terms page */
-  .doc-footer{margin-top:40px;background:var(--forest-dark);color:#cfe5d8;border-radius:var(--radius-lg);padding:28px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px;}
-  .doc-footer h4{color:#fff;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:10px;}
-  .doc-footer p,.doc-footer a{font-size:13.5px;line-height:1.8;color:#cfe5d8;}
-  .doc-footer a:hover{color:#fff;}
-  .copyright{border-top:1px solid rgba(255,255,255,.15);margin-top:26px;padding-top:16px;text-align:center;font-size:12.5px;color:rgba(255,255,255,.55);}
-
-  @media (max-width:640px){
-    .terms-section{flex-direction:column;gap:10px;padding:20px;}
-    .section-num{width:38px;height:38px;}
-    .wrap{padding:24px 16px 60px;}
-    .hero{padding:40px 18px 32px;}
+  .btn-dashboard {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--forest-green); color: #9E9A9A ;
+    padding: 8px 16px; border-radius: var(--radius-sm);
+    font-size: 0.85rem; font-weight: 600; text-decoration: none;
+    transition: background 0.2s;
   }
+  .btn-dashboard:hover { background: var(--forest-green-light); }
+  .btn-dashboard i { width: 15px; height: 15px; }
+
+
+  /* ── Hero ── */
+  .hero {
+    background: linear-gradient(135deg, var(--forest-green) 0%, var(--forest-green-light) 55%, #3b8a5f 100%);
+    color: #fff;
+    padding: 56px 24px 48px;
+  }
+  .hero-inner { max-width: 1080px; margin: 0 auto; }
+  .hero-kicker {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.25);
+    padding: 6px 14px; border-radius: 100px; margin-bottom: 18px;
+  }
+  .hero-kicker i { width: 14px; height: 14px; }
+  .hero h1 { font-size: 2rem; font-weight: 800; letter-spacing: -0.02em; max-width: 720px; }
+  .hero p { margin-top: 10px; font-size: 1rem; color: rgba(255,255,255,0.85); max-width: 640px; }
+  .hero-meta { margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .meta-chip {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 7px 14px; border-radius: var(--radius-sm);
+    font-size: 0.8rem; font-weight: 600;
+  }
+  .meta-chip i { width: 14px; height: 14px; }
+
+  /* ── Breadcrumb / Back link ── */
+  .breadcrumb { max-width: 1080px; margin: 24px auto 0; padding: 0 24px; }
+  .breadcrumb a {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: var(--forest-green); font-size: 0.875rem; font-weight: 600; text-decoration: none;
+  }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb i { width: 15px; height: 15px; }
+
+  /* ── Layout ── */
+  .layout {
+    max-width: 1080px; margin: 0 auto;
+    padding: 32px 24px 60px;
+    display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+  }
+  @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } .toc { display: none; } }
+
+  /* ── TOC ── */
+  .toc {
+    position: sticky; top: 90px; align-self: start;
+    background: #fff; border: 1px solid var(--border-light);
+    border-radius: var(--radius-md); box-shadow: var(--shadow-sm);
+    padding: 18px 20px;
+    max-height: calc(100vh - 120px); overflow-y: auto;
+  }
+  .toc-title { font-size: 0.7rem; font-weight: 800; letter-spacing: 0.09em; text-transform: uppercase; color: var(--warm-gray); margin-bottom: 12px; }
+  .toc-list { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+  .toc-list a {
+    display: block; padding: 5px 8px; border-radius: 5px;
+    font-size: 0.8rem; color: var(--charcoal); text-decoration: none;
+    border-left: 2px solid transparent;
+  }
+  .toc-list a:hover { background: var(--warm-off-white); color: var(--forest-green); border-left-color: var(--accent-green); }
+  .toc-list a.active { background: #ecfdf5; color: var(--forest-green); font-weight: 600; border-left-color: var(--forest-green); }
+
+  /* ── Section cards ── */
+  .section-block { margin-bottom: 28px; }
+  .section-card-hidden { display: none; }
+  .section-card {
+    background: #fff; border: 1px solid var(--border-light);
+    border-radius: var(--radius-md); box-shadow: var(--shadow-sm);
+    overflow: hidden; margin-bottom: 18px;
+  }
+  .section-head {
+    display: flex; align-items: center; gap: 14px;
+    padding: 16px 22px;
+    border-bottom: 1px solid var(--border-light);
+    background: var(--warm-off-white);
+  }
+  .section-num {
+    width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0;
+    background: var(--forest-green); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; font-weight: 800;
+  }
+  .section-title { font-size: 1.02rem; font-weight: 700; color: var(--charcoal); }
+  .section-body { padding: 18px 22px 20px; font-size: 0.925rem; }
+ .section-body p { margin-bottom: 10px; }
+ .section-body p:last-child { margin-bottom: 0; }
+  .section-body ul { margin: 8px 0 10px; padding-left: 22px; }
+  .section-body li { margin-bottom: 6px; }
+  .section-body ul.simple { list-style: disc; }
+
+
+  /* Callout */
+  .intro-callout {
+    background: #fff; border: 1px solid var(--border-light); border-left: 4px solid var(--forest-green);
+    border-radius: var(--radius-md); box-shadow: var(--shadow-sm);
+    padding: 22px 24px; margin-bottom: 32px; font-size: 0.95rem;
+  }
+  .intro-callout strong { color: var(--forest-green); }
+
+  /* ── Footer ── */
+  .site-footer { background: var(--forest-green); color: rgba(255,255,255,0.85); padding: 44px 24px 36px; }
+  .footer-inner { max-width: 1080px; margin: 0 auto; }
+  .footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 32px; }
+  @media (max-width: 760px) { .footer-grid { grid-template-columns: 1fr; } }
+  .footer-brand { font-size: 1.2rem; font-weight: 800; color: #fff; margin-bottom: 8px; letter-spacing: -0.01em; }
+  .footer-brand small { display: block; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(255,255,255,0.6); }
+  .footer-desc { font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-top: 10px; max-width: 320px; }
+  .footer-col-title { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.09em; text-transform: uppercase; color: var(--accent-green); margin-bottom: 14px; }
+  .footer-links { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+  .footer-links a { color: rgba(255,255,255,0.8); text-decoration: none; font-size: 0.875rem; transition: color 0.15s; }
+  .footer-links a:hover { color: #fff; text-decoration: underline; }
+  .footer-bottom {
+    margin-top: 36px; padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.15);
+    font-size: 0.8rem; color: rgba(255,255,255,0.6);
+    display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  }
+
+  .back-to-top {
+    position: fixed; bottom: 24px; right: 24px; z-index: 900;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--forest-green); color: #fff; border: none;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow-lg); cursor: pointer;
+    opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  }
+  .back-to-top.show { opacity: 1; pointer-events: auto; }
+  .back-to-top i { width: 20px; height: 20px; }
+  .back-to-top:hover { background: var(--forest-green-light); }
 </style>
 </head>
 <body>
 
+<!-- ═══════════ TOP BAR ═══════════ -->
 <header class="topbar">
   <div class="topbar-inner">
     <a class="brand" href="index.html">
-      <span class="brand-mark">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c4-4 8-7.5 8-12a8 8 0 1 0-16 0c0 4.5 4 8 8 12z"/><circle cx="12" cy="10" r="3"/></svg>
-      </span>
-      SafariLink Tanzania B2B
+      <span class="brand-icon"><i data-lucide="compass"></i></span>
+      <span class="brand-text">SafariLink<small>Tanzania B2B Network</small></span>
     </a>
     <a class="back-link" href="#" onclick="if(document.referrer){history.back();return false;}window.location.href='index.html';return false;">&larr; Back</a>
   </div>
 </header>
 
-<div class="hero">
-  <small>Legal</small>
-  <h1>Operator Terms &amp; Conditions</h1>
-</div>
-
-<main class="wrap">
-
-  <!-- ============ CONTENTS ============ -->
-  <div class="toc">
-    <h3>Contents</h3>
-    <div class="toc-grid">
-      <a href="#s16"><span class="num">16</span>Purpose and Role of SafariLink</a>
-      <a href="#s17"><span class="num">17</span>Operator Responsibilities</a>
-      <a href="#s18"><span class="num">18</span>Vehicle Leasing</a>
-      <a href="#s19"><span class="num">19</span>Guiding Services</a>
-      <a href="#s20"><span class="num">20</span>Activities &amp; Experiences</a>
-      <a href="#s21"><span class="num">21</span>Platform Content</a>
-      <a href="#s22"><span class="num">22</span>User Content</a>
-      <a href="#s23"><span class="num">23</span>Intellectual Property</a>
-      <a href="#s24"><span class="num">24</span>Prohibited Use</a>
-      <a href="#s25"><span class="num">25</span>Platform Availability</a>
-      <a href="#s26"><span class="num">26</span>Third-Party Services</a>
-      <a href="#s27"><span class="num">27</span>AI Features</a>
-      <a href="#s28"><span class="num">28</span>Communications</a>
-      <a href="#s29"><span class="num">29</span>Confidentiality</a>
-      <a href="#s30"><span class="num">30</span>Privacy &amp; Personal Data</a>
-      <a href="#s31"><span class="num">31</span>Disclaimers</a>
-      <a class="missing" href="#s32"><span class="num">32</span>&mdash; (insert &sect;32&ndash;&sect;35)</a>
-      <a href="#s36"><span class="num">36</span>Dispute Resolution</a>
-      <a href="#s37"><span class="num">37</span>Force Majeure</a>
-      <a href="#s38"><span class="num">38</span>Changes to These Terms</a>
-      <a href="#s39"><span class="num">39</span>Severability</a>
-      <a href="#s40"><span class="num">40</span>Entire Agreement</a>
-      <a href="#s41"><span class="num">41</span>Contact</a>
+<!-- ═══════════ HERO ═══════════ -->
+<section class="hero">
+  <div class="hero-inner">
+    <span class="hero-kicker"><i data-lucide="file-check"></i> Legal Document</span>
+    <h1>SafariLink Tanzania B2B Operator Terms &amp; Conditions</h1>
+    <p>These Tour Operator Terms & Conditions ("Operator Terms") govern access to and use of SafariLink Tanzania B2B ("SafariLink", "we", "us", or "our") by tour operators, travel agencies, destination management companies, and other authorized tourism businesses ("Operator", "you", or "your").</p>
+    <div class="hero-meta">
+      <span class="meta-chip"><i data-lucide="users"></i> Applicable to Tour Operators</span>
     </div>
   </div>
+</section>
 
-  <!-- ============ SECTIONS 1-15 (not shown in the excerpt) ============ -->
-  <section class="terms-section is-placeholder">
-    <div class="section-num">1&ndash;15</div>
-    <div class="section-body">
-      <h2>Sections 1&ndash;15</h2>
-      <p>Your Terms file starts before the excerpt shown here (definitions, accounts, reservations, cancellations, etc.).</p>
-      <div class="placeholder">Insert the text of Sections 1&ndash;15 here. Copy an existing section above or below and fill in the number, title and content.</div>
+<!-- ═══════════ PAGE CONTENT ═══════════ -->
+<div class="layout">
+
+  <!-- Table of Contents -->
+  <aside class="toc">
+    <div class="toc-title">Contents</div>
+    <ul class="toc-list" id="tocList"></ul>
+  </aside>
+
+  <!-- Sections -->
+  <main class="section-block" id="sections">
+      <div class="callout-callout">
+      <p>By registering for an Operator account or using the Platform's Operator services, you agree to these Operator Terms.</p>
     </div>
-  </section>
-
-  <!-- Note carried over from the end of Section 15 -->
-  <section class="terms-section is-placeholder">
-    <div class="section-num">Note</div>
-    <div class="section-body">
-      <h2>Changes</h2>
-      <p>A change is not confirmed until the relevant Supplier or Platform confirms it. Changes may be subject to additional fees.</p>
-    </div>
-  </section>
-
+ 
   <!-- ============ 1. PURPOSE AND ROLE OF SAFARILINK  ============ -->
-  <section class="terms-section" id="s1">
-    <div class="section-num">1</div>
-    <div class="section-body">
-      <h2>Purpose and Role of SafariLink</h2>
+   <article class="section-card" id="sec-1">
+      <div class="section-head"><span class="section-num">1</span>
+        <div class="section-title">Purpose and Role of SafariLink</div></div>
+      <div class="section-body">
       <p>SafariLink provides technology intended to simplify the operational relationship between Operators and Suppliers.</p>      
       <p>The Platform may provide:</p>
       <ul>
@@ -168,13 +260,13 @@
       <p>Unless expressly agreed otherwise in writing, SafariLink acts as a technology platform and does not itself provide accommodation, vehicles, guides, transfers, or activities.</p>
       <p>Suppliers remain responsible for the Services they provide, while Operators remain responsible for their own client relationships, quotations, travel arrangements, and contractual obligations.</p>
     </div>
-  </section>
+    </article>
   
    <!-- ============2. ELIGIBILITY AND OPERATOR VERIFICATION============ -->
-  <section class="terms-section" id="s2">
-    <div class="section-num">2</div>
-    <div class="section-body">
-      <h2>Eligibility and Operation Verification</h2>
+   <article class="section-card" id="sec-2">
+ <div class="section-head"><span class="section-num">2</span>
+    <div class="section-title">Eligibility and Operation Verification</div></div>   
+     <div class="section-body">
       <p>SafariLink is primarily intended for legitimate tourism businesses and authorized industry professionals.</p>      
       <p>To register, an Operator must:</p>
       <ul>
@@ -189,14 +281,13 @@
        <p>Approval is not a guarantee of the Operator's financial standing, professional quality, or legal compliance.</p>
        <p>SafariLink may decline, restrict, or suspend an account where verification requirements are not met.</p>
      </div>
-  </section>
+    </article>
   
   
  <!-- ============3. OPERATOR ACCOUNT RESPONSIBILITIES ============ -->
-  <section class="terms-section" id="s3">
-    <div class="section-num">3</div>
+   <article class="section-card" id="sec-3">
+      <div class="section-head"><span class="section-num">3</span><div class="section-title">Operator Account Responsibilities</div></div>
     <div class="section-body">
-      <h2>Operator Account Responsibilities</h2>
       <p>Operators must maintain accurate account information and protect their login credentials.</p>      
       <p>You agree to:</p>
       <ul>
@@ -211,12 +302,11 @@
        <p>Operators must not share accounts in ways that compromise confidentiality, security, or accountability.</p>
        <p>SafariLink may introduce role-based access for owners, managers, reservations teams, finance teams, itinerary planners, and other authorized employees.</p>
      </div>
-  </section>
+    </article>
   
  <!-- ============4. ACCESS TO SUPPLIERS AND SERVICES ============ -->
-  <section class="terms-section" id="s4">
-    <div class="section-num">4</div>
-    <div class="section-body">
+   <article class="section-card" id="sec-4">
+      <div class="section-head"><span class="section-num">4</span><div class="section-title">Access To Suppliers and Services</div></div>
       <h2>Access To Suppliers and Services</h2>
       <p>SafariLink enables Operators to discover and request services from participating Suppliers.</p>      
       <p>These may include:</p>
@@ -232,13 +322,12 @@
       <p>Wildlife activities, cultural experiences, excursions, and other tourism products</p>
       <p><strong>The availability of a Supplier or Service on SafariLink does not guarantee that the Supplier will accept a request.</strong></p>
     </div>
-  </section>
+    </article>
 
  <!-- ============ 5. PRIVATE STO RATES AND COMMERCIAL CONFIDENTIALITY ============ -->
-  <section class="terms-section" id="s5">
-    <div class="section-num">5</div>
+   <article class="section-card" id="sec-5">
+      <div class="section-head"><span class="section-num">5</span><div class="section-title">Private STO Rates and Commercial Confidentiality</div></div>
     <div class="section-body">
-      <h2>Private STO Rates and Commercial Confidentiality</h2>
       <p>SafariLink is designed to support B2B tourism transactions, including access to private STO Rates rather than relying exclusively on public Rack Rates.</p>      
       <p>An Operator may access private rates only where authorized by the relevant Supplier or SafariLink.</p>
       <p>STO Rates may be subject to:</p>
@@ -266,26 +355,24 @@
       <p>Operators may use authorized rates to calculate their own client quotations and selling prices.</p>
       <p>Confidentiality obligations do not prevent disclosures required by law or disclosures expressly authorized by the relevant Supplier.</p>
  </div>
-  </section>
+    </article>
 
 <!-- ============6 RATE ACCURACY AND VALIDITY ============ -->
-  <section class="terms-section" id="s6">
-    <div class="section-num">6</div>
+   <article class="section-card" id="sec-6">
+      <div class="section-head"><span class="section-num">6</span><div class="section-title">Rate Accuracy and Validity</div></div>
     <div class="section-body">
-      <h2>Rate Accuracy and Validity</h2>
       <p>Operators are responsible for reviewing the applicable rate, currency, validity period, inclusions, exclusions, and commercial conditions before issuing a quotation or confirming a Service.</p>      
       <p>Rates displayed on SafariLink may be supplied or updated by Suppliers.</p>
       <p>Where a rate is expired, incomplete, or inconsistent with the Supplier's current terms, the Operator should request clarification before relying on it.</p>
       <p>A rate displayed in search results does not automatically guarantee availability or constitute a confirmed reservation.</p>
       <p>Where a Supplier has confirmed a Reservation at an agreed rate, any subsequent change should be handled according to the applicable Reservation terms and any valid agreement between the parties.</p>  
      </div>
-  </section>
+    </article>
   
    <!-- ============7. AVAILABILITY AND RESERVATION REQUESTS ============ -->
-  <section class="terms-section" id="s7">
-    <div class="section-num">7</div>
+   <article class="section-card" id="sec-7">
+      <div class="section-head"><span class="section-num">7</span><div class="section-title">Availability and Reservation</div></div>
     <div class="section-body">
-      <h2>Availability and Reservation</h2>
       <p>Operators may use SafariLink to search for available accommodation, vehicles, guides, transfers, and other Services.</p>      
       <p>Availability may be displayed as:</p>
       <ul>
@@ -298,13 +385,12 @@
        <p>A Reservation Request is not a confirmed booking unless the Platform or an authorized Supplier communication explicitly confirms it.</p>
        <p>Operators must check the confirmation status before representing a Service as secured for a traveler.</p>
    </div>
-  </section>
+    </article>
 
 <!-- ============8. RESERVATION MANAGEMENT============ -->
-  <section class="terms-section" id="s8">
-    <div class="section-num">8</div>
+   <article class="section-card" id="sec-8">
+      <div class="section-head"><span class="section-num">8</span><div class="section-title">Reservation Managements</div></div>
     <div class="section-body">
-      <h2>Reservation Managements</h2>
       <p>Operators are responsible for submitting complete and accurate Reservation Requests.</p>      
       <p>Depending on the Service, the request may include:</p>
       <ul>
@@ -323,13 +409,12 @@
        <p>Operators must review the details before submitting a request.</p>
        <p>If additional information is required, the Operator must respond promptly to avoid delays or loss of availability.</p>
    </div>
-  </section>
+    </article>
   
   <!-- ============9. CONFIRMED RESERVATIONS============ -->
-  <section class="terms-section" id="s9">
-    <div class="section-num">9</div>
+   <article class="section-card" id="sec-9">
+      <div class="section-head"><span class="section-num">9</span><div class="section-title">Confirmed Managements</div></div>
     <div class="section-body">
-      <h2>Confirmed Managements</h2>
       <p>Once a Reservation is confirmed, the Operator must retain the confirmation details and communicate relevant information to the appropriate parties.</p>      
       <p>The confirmation may specify:</p>
       <ul>
@@ -346,26 +431,24 @@
       </ul>
        <p>Operators should not assume that an unconfirmed request, draft itinerary, quotation, or provisional hold constitutes a confirmed booking.</p>
    </div>
-  </section>
+    </article>
   
 <!-- ============10. CANCELLATIONS AND MODIFICATIONS============ -->
-  <section class="terms-section" id="s6">
-    <div class="section-num">6</div>
+   <article class="section-card" id="sec-10">
+      <div class="section-head"><span class="section-num">10</span><div class="section-title">Cancellations and Modifications</div></div>
     <div class="section-body">
-      <h2>Cancellations and Modifications</h2>
       <p>Each Supplier may establish its own cancellation, modification, deposit, and refund conditions.</p>      
       <p>Before confirming a Reservation, Operators should review the applicable conditions and communicate material restrictions to their clients.</p>
        <p>Changes to dates, rooms, vehicles, guides, traveler numbers, or other Reservation details are subject to availability and Supplier approval.</p>
       <p>Additional charges may apply.</p>
       <p>An Operator must not represent a requested change as confirmed until the relevant Supplier or authorized Platform workflow confirms it./p>
    </div>
- </section>
+    </article>
 
 <!-- ============11. OPERATOR CANCELLATIONS============ -->
-  <section class="terms-section" id="s9">
-    <div class="section-num">9</div>
+   <article class="section-card" id="sec-11">
+      <div class="section-head"><span class="section-num">11</span><div class="section-title">Operator Cancellations</div></div>
     <div class="section-body">
-      <h2>Operator Cancellations</h2>
       <p>Where an Operator requests cancellation, the applicable Supplier cancellation policy and Reservation terms will determine the consequences.</p>      
       <p>The Operator is responsible for understanding any applicable:</p>
       <ul>
@@ -379,7 +462,62 @@
        <p>If an Operator has entered into a separate agreement with a Supplier, that agreement may govern the cancellation process.</p>
        <p>SafariLink does not guarantee a refund where the applicable terms do not provide for one.</p>
  </div>
-  </section>
+    </article>
+  
+  <!-- ============12. ITINERARY BUILDER  ============ -->
+   <article class="section-card" id="sec-12">
+      <div class="section-head"><span class="section-num">12</span><div class="section-title">Itinerary Builder</div></div>
+    <div class="section-body">
+      <p>SafariLink may provide tools for creating, editing, costing, and managing itineraries.</p>      
+      <p>Operators are responsible for reviewing the accuracy and feasibility of each itinerary before presenting it to clients.</p>
+      <p>This includes checking:</p>
+      <ul>
+        <li>Dates and travel durations</li>
+        <li>Park and destination routing</li>
+        <li>Accommodation availability</li>
+        <li>Vehicle availability</li>
+        <li>Guide availability</li>
+        <li>Transfer arrangements</li>
+        <li>Activity schedules</li>
+        <li>Travel times</li>
+        <li>Park fees and other charges</li>
+        <li>Meal plans</li>
+        <li>Supplier inclusions and exclusions</li>
+        <li>Overall commercial feasibility of the trip</li>
+      </ul>
+       <p>An itinerary generated by the Platform or assisted by AI is not proof that its individual Services are available or confirmed.</p>
+       <p>Operators must independently verify material details and obtain required Supplier confirmations.</p>
+ </div>
+    </article>
+
+
+  <!-- ============13. QUOTATIONS, COSTING, AND PROFIT MARGINS  ============ -->
+   <article class="section-card" id="sec-13">
+      <div class="section-head"><span class="section-num">13</span><div class="section-title">Quotations, Costing, and Profit Margins</div></div>
+    <div class="section-body">
+      <p>SafariLink may provide tools to calculate trip costs, selling prices, markups, margins, commissions, taxes, and other financial information.</p>      
+      <p>Operators are responsible for checking calculations and assumptions before issuing a quotation.</p>
+      <p>You must verify:</p>
+      <ul>
+       <li>Supplier rates</li>
+       <li>Currency</li>
+       <li>Exchange rates</li>
+       <li>Park fees</li>
+       <li>Conservation fees</li>
+       <li>Taxes</li>
+       <li>Transfers</li>
+       <li>Guide costs</li>
+       <li>Vehicle lease charges</li>
+       <li>Accommodation costs</li>
+       <li>Commissions</li>
+       <li>Discounts</li>
+       <li>Contingency allowances</li>
+       <li>Other applicable expenses</li>
+      </ul>
+       <p>Operators are responsible for the prices they quote to their clients.</p>
+       <p>SafariLink does not guarantee the profitability or commercial viability of an itinerary.</p>
+ </div>
+    </article>
   
   <!-- ============ 16. SUPPLIER RESPONSIBILITIES ============ -->
   <section class="terms-section" id="s16">
