@@ -78,6 +78,7 @@
     padding:16px 20px;font-size:.9rem;color:var(--charcoal);margin-bottom:44px;
   }
 
+ 
   /* ── Phase pills ───────────────────────────── */
   .phase-pills{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:52px;}
   .phase-pill{
@@ -187,14 +188,36 @@
   }
 
   /* ── Footer ────────────────────────────────── */
-  footer{
-    background:var(--charcoal);color:#BBB;margin-top:56px;
-    padding:36px 24px;text-align:center;border-top:3px solid var(--forest-green);
+  /* ── Footer ── */
+  .site-footer { background: var(--forest-green); color: rgba(255,255,255,0.85); padding: 44px 24px 36px; }
+  .footer-inner { max-width: 1080px; margin: 0 auto; }
+  .footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 32px; }
+  @media (max-width: 760px) { .footer-grid { grid-template-columns: 1fr; } }
+  .footer-brand { font-size: 1.2rem; font-weight: 800; color: #fff; margin-bottom: 8px; letter-spacing: -0.01em; }
+  .footer-brand small { display: block; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(255,255,255,0.6); }
+  .footer-desc { font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-top: 10px; max-width: 320px; }
+  .footer-col-title { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.09em; text-transform: uppercase; color: var(--accent-green); margin-bottom: 14px; }
+  .footer-links { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+  .footer-links a { color: rgba(255,255,255,0.8); text-decoration: none; font-size: 0.875rem; transition: color 0.15s; }
+  .footer-links a:hover { color: #fff; text-decoration: underline; }
+  .footer-bottom {
+    margin-top: 36px; padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.15);
+    font-size: 0.8rem; color: rgba(255,255,255,0.6);
+    display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
   }
-  footer .links{display:flex;justify-content:center;gap:22px;flex-wrap:wrap;margin-bottom:14px;font-size:.82rem;}
-  footer .links a{color:#DDD;}
-  footer .links a:hover{color:#fff;}
-  footer small{font-size:.75rem;color:#999;}
+
+  .back-to-top {
+    position: fixed; bottom: 24px; right: 24px; z-index: 900;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--forest-green); color: #fff; border: none;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow-lg); cursor: pointer;
+    opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  }
+  .back-to-top.show { opacity: 1; pointer-events: auto; }
+  .back-to-top i { width: 20px; height: 20px; }
+ .back-to-top:hover { background: var(--forest-green-light); }
 
   /* ── Responsive ────────────────────────────── */
   @media(max-width:900px){
@@ -207,6 +230,24 @@
     .pipeline{grid-template-columns:repeat(2,1fr);}
     .metric-grid{grid-template-columns:1fr;}
   }
+
+
+  /* ── Supplier workflows: added without changing operator styles ── */
+  .supplier-workflows{margin-top:72px;padding-top:12px;}
+  .supplier-role{margin:26px 0 34px;}
+  .supplier-role-head{display:flex;gap:16px;align-items:flex-start;margin-bottom:16px;}
+  .supplier-role-icon{flex-shrink:0;width:48px;height:48px;border-radius:13px;background:rgba(26,90,58,.1);color:var(--forest-green);display:flex;align-items:center;justify-content:center;font-size:1.25rem;font-weight:800;}
+  .supplier-role-head h3{font-size:1.15rem;color:var(--charcoal);font-weight:800;margin-bottom:4px;}
+  .supplier-role-head p{font-size:.9rem;color:var(--warm-gray);}
+  .supplier-steps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
+  .supplier-step{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;display:flex;gap:13px;align-items:flex-start;}
+  .supplier-step-num{flex-shrink:0;width:32px;height:32px;border-radius:9px;background:var(--forest-green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:800;}
+  .supplier-step h4{font-size:.95rem;color:var(--charcoal);margin-bottom:5px;font-weight:800;}
+  .supplier-step p{font-size:.83rem;color:var(--warm-gray);margin-bottom:10px;}
+  .supplier-flow{background:rgba(26,90,58,.06);border:1px dashed rgba(26,90,58,.28);border-radius:10px;padding:12px 15px;color:var(--forest-green);font-size:.82rem;font-weight:700;margin-top:12px;}
+  .supplier-note{font-size:.84rem;color:var(--warm-gray);margin-top:10px;}
+  @media(max-width:700px){.supplier-steps{grid-template-columns:1fr;}.supplier-role-head{gap:12px;}}
+
 </style>
 </head>
 <body>
@@ -243,6 +284,7 @@
     <strong>One workflow, three phases.</strong> Plan the trip (Steps 1–5), price and sell it (Steps 6–9),
     then operate and close it (Steps 10–11) — everything tracked in one connected workspace.
   </div>
+
 
   <!-- ============ PHASE PILLS ============ -->
   <div class="phase-pills">
@@ -497,24 +539,147 @@
   </div>
   <p class="pipeline-note">Inquiry → Trip Setup → Supplier Search → Availability → STO Rates → Itinerary → Costing → Margin → Client Quote → Reservation → Supplier Confirmation → Trip Operation → Completion → Reporting</p>
 
+
+  <!-- ============ SUPPLIER WORKFLOWS: ACCOMMODATION, GUIDES & FLEETS ============ -->
+  <section class="supplier-workflows" aria-labelledby="supplier-workflows-title">
+    <div class="section-head">
+      <span class="label">For Service Providers</span>
+      <h2 id="supplier-workflows-title">How Suppliers Use SafariLink</h2>
+      <p>Accommodation partners, professional guides and fleet owners use their provider workspace to manage business information, availability, requests and confirmed services with tour operators.</p>
+    </div>
+
+    <div class="intro-banner">
+      <strong>One connected supplier workflow.</strong> A provider joins SafariLink, completes its profile, publishes relevant services and rates, responds to operator requests, confirms bookings and keeps service information up to date. Operators continue to use the operator workflow above; these are additional supplier-side workflows.
+    </div>
+
+    <!-- ACCOMMODATION PROVIDERS -->
+    <section class="supplier-role" aria-labelledby="accommodation-workflow-title">
+      <div class="supplier-role-head">
+        <div class="supplier-role-icon" aria-hidden="true">A</div>
+        <div>
+          <h3 id="accommodation-workflow-title">Accommodation Owners &amp; Managers</h3>
+          <p>For hotels, lodges, camps and other accommodation providers.</p>
+        </div>
+      </div>
+      <div class="supplier-steps">
+        <article class="supplier-step">
+          <div class="supplier-step-num">1</div>
+          <div><h4>Register Your Property</h4><p>Submit business and property details, location, contact information, property type, facilities and required verification documents for review.</p><span class="chip">Business profile</span><span class="chip">Property details</span><span class="chip">Documents</span></div>
+        </article>
+        <article class="supplier-step">
+          <div class="supplier-step-num">2</div>
+          <div><h4>Set Up Rooms &amp; B2B Rates</h4><p>Add room categories, occupancy, meal plans, applicable tour-operator/STO rates, rate validity, child policies and cancellation conditions.</p><span class="chip">Room types</span><span class="chip">Meal plans</span><span class="chip">STO rates</span></div>
+        </article>
+        <article class="supplier-step">
+          <div class="supplier-step-num">3</div>
+          <div><h4>Manage Availability Requests</h4><p>Review incoming requests from verified operators, check the requested dates and room requirements, then respond with availability, a decline or an alternative where appropriate.</p><span class="chip">New requests</span><span class="chip">Availability</span><span class="chip">Alternatives</span></div>
+        </article>
+        <article class="supplier-step">
+          <div class="supplier-step-num">4</div>
+          <div><h4>Confirm &amp; Deliver the Stay</h4><p>Confirm accepted reservations, review guest and arrival details shared for the booking, communicate relevant updates and keep reservation status current.</p><span class="chip">Confirmations</span><span class="chip">Arrival details</span><span class="chip">Booking updates</span></div>
+        </article>
+      </div>
+      <div class="supplier-flow">Property registration → Profile verification → Rooms &amp; rates → Availability response → Reservation confirmation → Stay completed</div>
+    </section>
+
+    <!-- TOUR GUIDES -->
+    <section class="supplier-role" aria-labelledby="guide-workflow-title">
+      <div class="supplier-role-head">
+        <div class="supplier-role-icon" aria-hidden="true">G</div>
+        <div>
+          <h3 id="guide-workflow-title">Professional Tour Guides</h3>
+          <p>For independent guides and guiding businesses offering professional services.</p>
+        </div>
+      </div>
+      <div class="supplier-steps">
+        <article class="supplier-step">
+          <div class="supplier-step-num">1</div>
+          <div><h4>Create Your Guide Profile</h4><p>Provide your professional background, contact details, languages, destinations served, specialisations, experience and required credentials.</p><span class="chip">Languages</span><span class="chip">Experience</span><span class="chip">Credentials</span></div>
+        </article>
+        <article class="supplier-step">
+          <div class="supplier-step-num">2</div>
+          <div><h4>Set Rates &amp; Availability</h4><p>Specify your service areas, guiding categories, rate basis and dates when you are available or unavailable for assignments.</p><span class="chip">Service areas</span><span class="chip">Rates</span><span class="chip">Calendar</span></div>
+        </article>
+        <article class="supplier-step">
+          <div class="supplier-step-num">3</div>
+          <div><h4>Review Assignment Requests</h4><p>Review requests from operators, including dates, destination, group size, language and relevant trip requirements. Accept, decline or discuss details before confirming.</p><span class="chip">Trip details</span><span class="chip">Group size</span><span class="chip">Respond to request</span></div>
+        </article>
+        <article class="supplier-step">
+          <div class="supplier-step-num">4</div>
+          <div><h4>Deliver the Assignment</h4><p>Review confirmed schedules, pickup arrangements and operator instructions, communicate important changes and update the assignment status after service delivery.</p><span class="chip">Schedule</span><span class="chip">Pickup details</span><span class="chip">Completion status</span></div>
+        </article>
+      </div>
+      <div class="supplier-flow">Guide registration → Profile verification → Rates &amp; availability → Assignment request → Confirmation → Guiding service completed</div>
+    </section>
+
+    <!-- FLEET OWNERS -->
+    <section class="supplier-role" aria-labelledby="fleet-workflow-title">
+      <div class="supplier-role-head">
+        <div class="supplier-role-icon" aria-hidden="true">F</div>
+        <div>
+          <h3 id="fleet-workflow-title">Fleet Owners &amp; Vehicle Providers</h3>
+          <p>For safari vehicle fleets, transfer vans and other approved transport providers.</p>
+        </div>
+      </div>
+      <div class="supplier-steps">
+        <article class="supplier-step">
+          <div class="supplier-step-num">1</div>
+          <div><h4>Register Your Fleet</h4><p>Submit company details and add each vehicle with its type, passenger capacity, features, operating location and required registration and insurance documents.</p><span class="chip">Vehicle profile</span><span class="chip">Capacity</span><span class="chip">Documents</span></div>
+        </article>
+        <article class="supplier-step">
+          <div class="supplier-step-num">2</div>
+          <div><h4>Set Leasing Rates &amp; Availability</h4><p>Enter applicable rates, such as per-day leasing rates, service conditions, included items and available dates. Keep maintenance or unavailable periods updated.</p><span class="chip">Daily rates</span><span class="chip">Availability</span><span class="chip">Maintenance</span></div>
+        </article>
+        <article class="supplier-step">
+          <div class="supplier-step-num">3</div>
+          <div><h4>Respond to Vehicle Requests</h4><p>Review an operator's dates, pickup or operating location, vehicle type, capacity and lease duration. Confirm availability or propose a suitable alternative.</p><span class="chip">Vehicle requirements</span><span class="chip">Lease period</span><span class="chip">Alternatives</span></div>
+        </article>
+        <article class="supplier-step">
+          <div class="supplier-step-num">4</div>
+          <div><h4>Confirm &amp; Manage the Booking</h4><p>Confirm the agreed vehicle and service details, coordinate handover or pickup, report breakdowns or changes promptly and update the booking after the service.</p><span class="chip">Booking confirmation</span><span class="chip">Handover details</span><span class="chip">Issue reporting</span></div>
+        </article>
+      </div>
+      <div class="supplier-flow">Fleet registration → Vehicle verification → Rates &amp; availability → Operator request → Vehicle confirmation → Service completed</div>
+    </section>
+
+    <div class="intro-banner">
+      <strong>Shared visibility and accountability.</strong> The intended supplier workspace brings requests, responses, booking statuses and service updates into one place. Access to rates and business information should depend on provider verification, user permissions and the platform's final implemented features.
+    </div>
+  </section>
+
 </div>
 
-<!-- ============ FOOTER ============ -->
-<footer>
-  <div class="links">
-    <a href="index.html">Home</a>
-    <a href="pricing.html">Pricing</a>
-    <a href="about.html">About</a>
-    <a href="roadmap.html">Roadmap</a>
-    <a href="how-it-works.html">How It Works</a>
-    <a href="terms.html">Terms</a>
-    <a href="supplier-terms.html">Supplier Terms</a>
-    <a href="privacy.html">Privacy</a>
-    <a href="cookie-policy.html">Cookie Policy</a>
-    <a href="security.html">Security</a>
+<!-- ═══════════ FOOTER ═══════════ -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">SafariLink<small>Tanzania B2B Travel Operating Network</small></div>
+        <p class="footer-desc">Connecting tour operators with verified accommodation and fleet suppliers across Tanzania. Built for the way the industry works.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Legal</div>
+        <ul class="footer-links">
+          <li><a href="supplier-terms.html">Supplier Terms</a></li>
+          <li><a href="privacy.html">Privacy Policy</a></li>
+          <li><a href="cookie-policy.html">Cookie Policy</a></li>
+          <li><a href="request-access.html">Request Access</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Company</div>
+        <ul class="footer-links">
+          <li><a href="about.html">About SafariLink</a></li>
+          <li><a href="security.html">Security</a></li>
+          <li><a href="index.html">Home</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 SafariLink Tanzania. All rights reserved.</span>
+      <span>Arusha, United Republic of Tanzania</span>
+    </div>
   </div>
-  <p>© 2026 SafariLink Tanzania. All rights reserved.</p>
-  <small>Arusha, United Republic of Tanzania</small>
 </footer>
 
 </body>
