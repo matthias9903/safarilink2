@@ -365,13 +365,13 @@
 
           <!-- Description -->
           <div class="form-group">
-            <label for="description">Tell us briefly about your business</label>
-            <textarea id="description" placeholder="e.g. We operate 22 tented rooms in central Serengeti, offering full-board packages to tour operators."></textarea>
+            <label for="description">Tell us briefly about your business <span class="req">*</span></label>
+            <textarea id="description" placeholder="e.g. We operate 22 tented rooms in central Serengeti, offering full-board packages to tour operators." required></textarea>
           </div>
 
           <!-- Supporting business documents -->
           <div class="form-group">
-            <label for="businessDocuments">Business documents <span style="font-weight:400;color:var(--warm-gray);">(optional)</span></label>
+            <label for="businessDocuments">Business documents <span class="req">*</span></label>
             <div class="document-upload-box">
               <span class="upload-title">Upload supporting documents</span>
               <span class="upload-help">Select several files at once, such as business registration, tourism licence, TIN certificate, insurance, or other relevant certificates.</span>
@@ -576,8 +576,22 @@ var selectedType = 'accommodation';
   var description = document.getElementById('description').value.trim();
   var consent = document.getElementById('consent').checked;
 
-  if (!companyName || !contactName || !email || !phone || !region || !consent) {
-    alert('Please complete all required fields.');
+  if (!companyName || !contactName || !email || !phone || !region || !description || !consent) {
+    alert('Please complete every field marked with an asterisk (*), including the business description, before submitting.');
+    var firstMissing = !companyName ? document.getElementById('companyName')
+      : !contactName ? document.getElementById('contactName')
+      : !email ? document.getElementById('email')
+      : !phone ? document.getElementById('phone')
+      : !region ? document.getElementById('region')
+      : !description ? document.getElementById('description')
+      : document.getElementById('consent');
+    firstMissing.focus();
+    return false;
+  }
+
+  if (selectedDocuments.length === 0) {
+    alert('Please upload at least one business document before submitting your request.');
+    document.getElementById('businessDocuments').focus();
     return false;
   }
 
