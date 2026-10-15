@@ -210,13 +210,17 @@
     document.getElementById('adminPass').value = '';
   }
 
-  function loadRequests() {
-    fetch('/api/admin/requests', {
-      headers: { 'Authorization': token }
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(data) { renderRequests(data); });
-  }
+ function loadRequests() {
+  fetch('/api/admin/requests', {
+    headers: { 'Authorization': 'Bearer ' + token }
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) { renderRequests(data); })
+  .catch(function() {
+    document.getElementById('requestsBody').innerHTML =
+      '<tr><td colspan="9" class="empty-state">Could not load requests.</td></tr>';
+  });
+}
 
   function renderRequests(requests) {
     var tbody = document.getElementById('requestsBody');
@@ -267,8 +271,10 @@
   function approveRequest(id) {
     fetch('/api/admin/approve/' + id, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': token }
-    })
+     headers: {
+  'Content-Type': 'application/json',
+  'Authorization': 'Bearer ' + token
+})
     .then(function(r) {
       if (!r.ok) return r.json().then(function(e) { alert(e.error); return null; });
       return r.json();
