@@ -354,8 +354,8 @@
 </div>
 
 <script>
-const API = 'http://localhost:3000';
-
+const API = '';
+  
 /* Role selector — keep existing */
 var selectedRole = 'accommodation';
 document.querySelectorAll('.role-option').forEach(function(opt) {
@@ -403,24 +403,71 @@ function handleLogin(e) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email: email, password: password, role: selectedRole })
   })
-  .then(function(res) { return res.json(); })
-  .then(function(data) {
-    if (data.success) {
-      // Store user info
+  .then(function(res) { return res.json().then(function(data) { return { ok: res.ok, data: data }; }); })
+  .then(function(result) {
+    if (result.ok && result.data.success) {
       localStorage.setItem('safarilink_user', JSON.stringify({
-        email: email, role: data.role, companyName: data.companyName
+        email: email,
+        role: result.data.role,
+        companyName: result.data.companyName,
+        contactName: result.data.contactName || ''
       }));
 
-      // Redirect to role-specific dashboard
-      var dashboards = {
-        'accommodation':    'accommodation-dashboard.html',
-        'fleet':            'fleet-dashboard.html',
-        'guide':            'guide-dashboard.html',
-        'tour-operator':    'tour-operator-dashboard.html',
-        'service-offering': 'service-offering-dashboard.html'
-      };
-      window.location.href = dashboards[data.role] || 'accommodation-dashboard.html';
+      if (result.data.mustChangePassword) {
+        // Simple prompt for now (you can build a nicer page later)
+        var newPass = prompt('You must set a new password (min 8 characters):');
+        if (newPass && newPass.length >= 8) {
+          fetch(API + '/api/change-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: email,
+              currentPassword: password,
+              newPassword: newPass
+            })
+          })
+          .then(function(r) { return r.json(); })
+          .then(function(d) {
+            if (d.success) alert('Password changed. Use your new password next time.');
+            else alert(d.error || 'Could not change password');
+            goToDashboard(result.data.role);
+          })
+          .catch(function() { goToDashboard(result.data.role); });
+        } else {
+          alert('Please change your password from your dashboard later.');
+          goToDashboard(result.data.role);
+        }
+      } else {
+        goToDashboard(result.data.role);
+      }
     } else {
+      errorBox.classList.add('show');
+      errorBox.querySelector('span').textContent =
+        (result.data && result.data.error) || 'Invalid email or password.';
+      btn.innerHTML = '<i data-lucide="log-in"></i> Sign in';
+      btn.disabled = false;
+      lucide.createIcons();
+    }
+  })
+  .catch(function() {
+    errorBox.classList.add('show');
+    errorBox.querySelector('span').textContent = 'Server unreachable. Please try again later.';
+    btn.innerHTML = '<i data-lucide="log-in"></i> Sign in';
+    btn.disabled = false;
+    lucide.createIcons();
+  });
+
+function goToDashboard(role) {
+  var map = {
+    'accommodation': 'dashboard-accommodation.html',
+    'fleet': 'dashboard-fleet.html',
+    'guide': 'dashboard-guide.html',
+    'tour-operator': 'dashboard-tour-operator.html',
+    'service-offering': 'dashboard-tour-operator.html'
+  };
+  window.location.href = map[role] || 'dashboard-tour-operator.html';
+}
+ else {
       errorBox.querySelector('span').textContent = data.error || 'Invalid credentials.';
       errorBox.classList.add('show');
       lucide.createIcons();
