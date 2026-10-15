@@ -193,7 +193,7 @@
   /* ── STATS ── */
 .visual-stats { gap: 24px; margin-bottom: 28px; }
 .visual-stat .num { font-size: 1.5rem; }
-  .visual-stat .label { font-size: 0.72rem; color: rgba(255,255,255,0.55); }
+.visual-stat .label { font-size: 0.72rem; color: rgba(255,255,255,0.55); }
 
   /* ── PROCESS STEPS ── */
   .process-steps { display: flex; flex-direction: column; gap: 14px; }
@@ -613,8 +613,8 @@ var selectedType = 'accommodation';
     formData.append('businessDocuments', file, file.name);
   });
 
-  fetch('http://localhost:3000/api/access-request', {
-    method: 'POST',
+fetch('/api/access-request', {
+  method: 'POST',
     body: formData
   })
   .then(function(res) {
