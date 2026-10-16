@@ -467,25 +467,7 @@ function goToDashboard(role) {
   };
   window.location.href = map[role] || 'dashboard-tour-operator.html';
 }
- else {
-      errorBox.querySelector('span').textContent = data.error || 'Invalid credentials.';
-      errorBox.classList.add('show');
-      lucide.createIcons();
-    }
-  })
-  .catch(function(err) {
-    errorBox.querySelector('span').textContent = 'Server unreachable. Is the backend running?';
-    errorBox.classList.add('show');
-    lucide.createIcons();
-  })
-  .finally(function() {
-    btn.innerHTML = '<i data-lucide="log-in"></i> Sign in to dashboard';
-    btn.disabled = false;
-    lucide.createIcons();
-  });
 
-  return false;
-}
 </script>
 
 </body>
