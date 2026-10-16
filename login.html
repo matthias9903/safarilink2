@@ -356,18 +356,18 @@
 
 <script>
 const API = '';
-  
-/* Role selector — keep existing */
+
 var selectedRole = 'accommodation';
 document.querySelectorAll('.role-option').forEach(function(opt) {
   opt.addEventListener('click', function() {
-    document.querySelectorAll('.role-option').forEach(function(o) { o.classList.remove('selected'); });
+    document.querySelectorAll('.role-option').forEach(function(o) {
+      o.classList.remove('selected');
+    });
     opt.classList.add('selected');
     selectedRole = opt.dataset.role;
   });
 });
 
-/* Password toggle — keep existing */
 function togglePassword() {
   var pwd = document.getElementById('password');
   var icon = document.getElementById('eyeIcon');
@@ -381,15 +381,26 @@ function togglePassword() {
   lucide.createIcons();
 }
 
-/* Updated login — calls real backend */
+function goToDashboard(role) {
+  var map = {
+    'accommodation': 'dashboard-accommodation.html',
+    'fleet': 'dashboard-fleet.html',
+    'guide': 'dashboard-guide.html',
+    'tour-operator': 'dashboard-tour-operator.html',
+    'service-offering': 'dashboard-tour-operator.html'
+  };
+  window.location.href = map[role] || 'dashboard-tour-operator.html';
+}
+
 function handleLogin(e) {
   e.preventDefault();
-  var email    = document.getElementById('email').value.trim();
+  var email = document.getElementById('email').value.trim();
   var password = document.getElementById('password').value;
   var errorBox = document.getElementById('loginError');
 
   if (!email || !password) {
     errorBox.classList.add('show');
+    errorBox.querySelector('span').textContent = 'Please enter email and password.';
     lucide.createIcons();
     return false;
   }
@@ -404,7 +415,11 @@ function handleLogin(e) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email: email, password: password, role: selectedRole })
   })
-  .then(function(res) { return res.json().then(function(data) { return { ok: res.ok, data: data }; }); })
+  .then(function(res) {
+    return res.json().then(function(data) {
+      return { ok: res.ok, data: data };
+    });
+  })
   .then(function(result) {
     if (result.ok && result.data.success) {
       localStorage.setItem('safarilink_user', JSON.stringify({
@@ -415,7 +430,6 @@ function handleLogin(e) {
       }));
 
       if (result.data.mustChangePassword) {
-        // Simple prompt for now (you can build a nicer page later)
         var newPass = prompt('You must set a new password (min 8 characters):');
         if (newPass && newPass.length >= 8) {
           fetch(API + '/api/change-password', {
@@ -433,9 +447,11 @@ function handleLogin(e) {
             else alert(d.error || 'Could not change password');
             goToDashboard(result.data.role);
           })
-          .catch(function() { goToDashboard(result.data.role); });
+          .catch(function() {
+            goToDashboard(result.data.role);
+          });
         } else {
-          alert('Please change your password from your dashboard later.');
+          alert('Please change your password later from your dashboard.');
           goToDashboard(result.data.role);
         }
       } else {
@@ -445,7 +461,7 @@ function handleLogin(e) {
       errorBox.classList.add('show');
       errorBox.querySelector('span').textContent =
         (result.data && result.data.error) || 'Invalid email or password.';
-      btn.innerHTML = '<i data-lucide="log-in"></i> Sign in';
+      btn.innerHTML = '<i data-lucide="log-in"></i> Sign in to dashboard';
       btn.disabled = false;
       lucide.createIcons();
     }
@@ -453,22 +469,15 @@ function handleLogin(e) {
   .catch(function() {
     errorBox.classList.add('show');
     errorBox.querySelector('span').textContent = 'Server unreachable. Please try again later.';
-    btn.innerHTML = '<i data-lucide="log-in"></i> Sign in';
+    btn.innerHTML = '<i data-lucide="log-in"></i> Sign in to dashboard';
     btn.disabled = false;
     lucide.createIcons();
   });
 
-function goToDashboard(role) {
-  var map = {
-    'accommodation': 'dashboard-accommodation.html',
-    'fleet': 'dashboard-fleet.html',
-    'guide': 'dashboard-guide.html',
-    'tour-operator': 'dashboard-tour-operator.html',
-    'service-offering': 'dashboard-tour-operator.html'
-  };
-  window.location.href = map[role] || 'dashboard-tour-operator.html';
+  return false;
 }
 
+lucide.createIcons();
 </script>
 
 </body>
