@@ -184,6 +184,13 @@
   function adminLogin() {
     var pass = document.getElementById('adminPass').value;
     var err = document.getElementById('loginError');
+    err.style.display = 'none';
+
+    if (!pass) {
+      err.textContent = 'Please enter the admin password.';
+      err.style.display = 'block';
+      return;
+    }
 
     fetch('/api/admin/login', {
       method: 'POST',
@@ -191,36 +198,71 @@
       body: JSON.stringify({ password: pass })
     })
     .then(function(r) {
-      if (!r.ok) { err.style.display = 'block'; return null; }
-      return r.json();
+      return r.json().then(function(data) {
+        return { ok: r.ok, data: data };
+      });
     })
-    .then(function(data) {
-      if (!data) return;
-      token = data.token;
+    .then(function(result) {
+      if (!result.ok) {
+        err.textContent = (result.data && result.data.error) || 'Invalid password.';
+        err.style.display = 'block';
+        return;
+      }
+      token = result.data.token;
+      try { sessionStorage.setItem('sl_admin_token', token); } catch (e) {}
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('dashboardScreen').style.display = 'block';
       loadRequests();
+    })
+    .catch(function() {
+      err.textContent = 'Server unreachable. Is Railway running? Open /api/health to check.';
+      err.style.display = 'block';
     });
   }
 
   function logout() {
     token = '';
+    try { sessionStorage.removeItem('sl_admin_token'); } catch (e) {}
     document.getElementById('loginScreen').style.display = 'flex';
     document.getElementById('dashboardScreen').style.display = 'none';
     document.getElementById('adminPass').value = '';
   }
 
- function loadRequests() {
-  fetch('/api/admin/requests', {
-    headers: { 'Authorization': 'Bearer ' + token }
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(data) { renderRequests(data); })
-  .catch(function() {
-    document.getElementById('requestsBody').innerHTML =
-      '<tr><td colspan="9" class="empty-state">Could not load requests.</td></tr>';
-  });
-}
+  function authHeaders(extra) {
+    var h = { 'Authorization': 'Bearer ' + token };
+    if (extra) {
+      for (var k in extra) h[k] = extra[k];
+    }
+    return h;
+  }
+
+  function loadRequests() {
+    fetch('/api/admin/requests', {
+      headers: authHeaders()
+    })
+    .then(function(r) {
+      return r.json().then(function(data) {
+        return { ok: r.ok, data: data };
+      });
+    })
+    .then(function(result) {
+      if (!result.ok) {
+        document.getElementById('requestsBody').innerHTML =
+          '<tr><td colspan="9" class="empty-state">Unauthorized or server error. Log in again.</td></tr>';
+        return;
+      }
+      if (!Array.isArray(result.data)) {
+        document.getElementById('requestsBody').innerHTML =
+          '<tr><td colspan="9" class="empty-state">Unexpected response from server.</td></tr>';
+        return;
+      }
+      renderRequests(result.data);
+    })
+    .catch(function() {
+      document.getElementById('requestsBody').innerHTML =
+        '<tr><td colspan="9" class="empty-state">Could not load requests. Server may be down.</td></tr>';
+    });
+  }
 
   function renderRequests(requests) {
     var tbody = document.getElementById('requestsBody');
@@ -228,7 +270,10 @@
 
     if (!requests.length) {
       tbody.innerHTML = '<tr><td colspan="9" class="empty-state">No access requests yet.</td></tr>';
-      stats.innerHTML = '';
+      stats.innerHTML =
+        '<div class="stat-card pending"><div class="label">Pending</div><div class="number">0</div></div>' +
+        '<div class="stat-card approved"><div class="label">Approved</div><div class="number">0</div></div>' +
+        '<div class="stat-card rejected"><div class="label">Rejected</div><div class="number">0</div></div>';
       return;
     }
 
@@ -243,13 +288,13 @@
 
     var rows = '';
     requests.forEach(function(r) {
-      var badge = '<span class="badge ' + r.status + '">' + r.status.charAt(0).toUpperCase() + r.status.slice(1) + '</span>';
-      var actions = '';
+      var badge = '<span class="badge ' + r.status + '">' +
+        r.status.charAt(0).toUpperCase() + r.status.slice(1) + '</span>';
+      var actions = '—';
       if (r.status === 'pending') {
-        actions = '<button class="btn-sm btn-approve" onclick="approveRequest(' + r.id + ')">Approve</button>' +
-                  '<button class="btn-sm btn-reject" onclick="rejectRequest(' + r.id + ')">Reject</button>';
-      } else {
-        actions = '—';
+        actions =
+          '<button class="btn-sm btn-approve" onclick="approveRequest(' + r.id + ')">Approve</button>' +
+          '<button class="btn-sm btn-reject" onclick="rejectRequest(' + r.id + ')">Reject</button>';
       }
       rows += '<tr>' +
         '<td><strong>' + esc(r.company_name) + '</strong></td>' +
@@ -271,20 +316,25 @@
   function approveRequest(id) {
     fetch('/api/admin/approve/' + id, {
       method: 'POST',
-     headers: {
-  'Content-Type': 'application/json',
-  'Authorization': 'Bearer ' + token
-})
-    .then(function(r) {
-      if (!r.ok) return r.json().then(function(e) { alert(e.error); return null; });
-      return r.json();
+      headers: authHeaders({ 'Content-Type': 'application/json' })
     })
-    .then(function(data) {
-      if (!data) return;
-      document.getElementById('tempPass').textContent = data.tempPassword;
-      document.getElementById('modalEmail').textContent = data.email;
+    .then(function(r) {
+      return r.json().then(function(data) {
+        return { ok: r.ok, data: data };
+      });
+    })
+    .then(function(result) {
+      if (!result.ok) {
+        alert((result.data && result.data.error) || 'Approve failed');
+        return;
+      }
+      document.getElementById('tempPass').textContent = result.data.tempPassword;
+      document.getElementById('modalEmail').textContent = result.data.email;
       document.getElementById('modalOverlay').classList.add('show');
       loadRequests();
+    })
+    .catch(function() {
+      alert('Server unreachable while approving.');
     });
   }
 
@@ -292,10 +342,13 @@
     if (!confirm('Reject this request?')) return;
     fetch('/api/admin/reject/' + id, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': token }
+      headers: authHeaders({ 'Content-Type': 'application/json' })
     })
     .then(function(r) { return r.json(); })
-    .then(function() { loadRequests(); });
+    .then(function() { loadRequests(); })
+    .catch(function() {
+      alert('Server unreachable while rejecting.');
+    });
   }
 
   function closeModal() {
@@ -304,9 +357,20 @@
 
   function esc(s) {
     var d = document.createElement('div');
-    d.textContent = s;
+    d.textContent = s == null ? '' : String(s);
     return d.innerHTML;
   }
+
+  // Restore session if already logged in this tab
+  try {
+    var saved = sessionStorage.getItem('sl_admin_token');
+    if (saved) {
+      token = saved;
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('dashboardScreen').style.display = 'block';
+      loadRequests();
+    }
+  } catch (e) {}
 </script>
 </body>
 </html>
