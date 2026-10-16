@@ -484,13 +484,11 @@
 <script>
   lucide.createIcons();
 
-  /* Business type selector */
-var selectedType = 'accommodation';
+  var selectedType = 'accommodation';
 
-  // Keep the Terms of Service link matched to the selected business type.
-  // Update these filenames if your actual terms pages use different names.
   var termsLink = document.getElementById('termsLink');
   function updateTermsLink() {
+    if (!termsLink) return;
     var isTourOperator = selectedType === 'tour-operator';
     termsLink.href = isTourOperator ? 'operator-terms.html' : 'supplier-terms.html';
     termsLink.textContent = isTourOperator ? 'Tour Operator Terms of Service' : 'Supplier Terms of Service';
@@ -506,160 +504,125 @@ var selectedType = 'accommodation';
       updateTermsLink();
     });
   });
-
   updateTermsLink();
 
-
-  /* Multiple business document selection */
+  /* Optional document selection (UI only — files not sent until server supports uploads) */
   var documentInput = document.getElementById('businessDocuments');
   var selectedDocuments = [];
   var maxFiles = 10;
   var maxFileSize = 10 * 1024 * 1024;
   var allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png', 'webp', 'doc', 'docx'];
 
-  documentInput.addEventListener('change', function () {
-    var incoming = Array.from(documentInput.files || []);
-    var combined = selectedDocuments.slice();
-    incoming.forEach(function (file) {
-      var ext = file.name.split('.').pop().toLowerCase();
-      if (!allowedExtensions.includes(ext)) {
-        alert('Unsupported file type: ' + file.name);
-        return;
-      }
-      if (file.size > maxFileSize) {
-        alert(file.name + ' is larger than 10 MB and was not added.');
-        return;
-      }
-      if (combined.some(function (existing) { return existing.name === file.name && existing.size === file.size; })) return;
-      if (combined.length >= maxFiles) {
-        alert('You can upload a maximum of 10 documents.');
-        return;
-      }
-      combined.push(file);
+  if (documentInput) {
+    documentInput.addEventListener('change', function () {
+      var incoming = Array.from(documentInput.files || []);
+      var combined = selectedDocuments.slice();
+      incoming.forEach(function (file) {
+        var ext = file.name.split('.').pop().toLowerCase();
+        if (allowedExtensions.indexOf(ext) === -1) {
+          alert('Unsupported file type: ' + file.name);
+          return;
+        }
+        if (file.size > maxFileSize) {
+          alert(file.name + ' is larger than 10 MB and was not added.');
+          return;
+        }
+        if (combined.some(function (existing) {
+          return existing.name === file.name && existing.size === file.size;
+        })) return;
+        if (combined.length >= maxFiles) {
+          alert('You can upload a maximum of 10 documents.');
+          return;
+        }
+        combined.push(file);
+      });
+      selectedDocuments = combined;
+      renderSelectedDocuments();
+      documentInput.value = '';
     });
-    selectedDocuments = combined;
-    renderSelectedDocuments();
-    documentInput.value = '';
-  });
+  }
 
   function renderSelectedDocuments() {
     var list = document.getElementById('selectedFiles');
+    if (!list) return;
     list.innerHTML = '';
     selectedDocuments.forEach(function (file, index) {
       var row = document.createElement('div');
       row.className = 'selected-file';
       var name = document.createElement('span');
-      name.textContent = file.name + ' (' + (file.size / (1024 * 1024)).toFixed(2) + ' MB)';
-      var remove = document.createElement('button');
-      remove.type = 'button';
-      remove.textContent = 'Remove';
-      remove.setAttribute('aria-label', 'Remove ' + file.name);
-      remove.addEventListener('click', function () {
+      name.textContent = file.name + ' (' + Math.round(file.size / 1024) + ' KB)';
+      var removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.textContent = 'Remove';
+      removeBtn.onclick = function () {
         selectedDocuments.splice(index, 1);
         renderSelectedDocuments();
-      });
+      };
       row.appendChild(name);
-      row.appendChild(remove);
+      row.appendChild(removeBtn);
       list.appendChild(row);
     });
   }
 
-  /* Form submit handler */
- function handleSubmit(e) {
-  e.preventDefault();
+  function handleSubmit(e) {
+    e.preventDefault();
 
-  var companyName = document.getElementById('companyName').value.trim();
-  var contactName = document.getElementById('contactName').value.trim();
-  var email = document.getElementById('email').value.trim();
-  var phone = document.getElementById('phone').value.trim();
-  var region = document.getElementById('region').value;
-  var description = document.getElementById('description').value.trim();
-  var consent = document.getElementById('consent').checked;
+    var companyName = document.getElementById('companyName').value.trim();
+    var contactName = document.getElementById('contactName').value.trim();
+    var email = document.getElementById('email').value.trim();
+    var phone = document.getElementById('phone').value.trim();
+    var region = document.getElementById('region').value;
+    var description = document.getElementById('description').value.trim();
+    var consent = document.getElementById('consent').checked;
 
-  if (!companyName || !contactName || !email || !phone || !region || !description || !consent) {
-    alert('Please complete every field marked with an asterisk (*), including the business description, before submitting.');
-    var firstMissing = !companyName ? document.getElementById('companyName')
-      : !contactName ? document.getElementById('contactName')
-      : !email ? document.getElementById('email')
-      : !phone ? document.getElementById('phone')
-      : !region ? document.getElementById('region')
-      : !description ? document.getElementById('description')
-      : document.getElementById('consent');
-    firstMissing.focus();
-    return false;
-  }
+    if (!companyName || !contactName || !email || !phone || !region || !consent) {
+      alert('Please complete all required fields and accept the terms.');
+      return false;
+    }
 
-  if (selectedDocuments.length === 0) {
-    alert('Please upload at least one business document before submitting your request.');
-    document.getElementById('businessDocuments').focus();
-    return false;
-  }
+    var btn = document.querySelector('.btn-submit');
+    btn.innerHTML = '<i data-lucide="loader"></i> Submitting...';
+    btn.disabled = true;
+    lucide.createIcons();
 
-  var btn = document.querySelector('.btn-submit');
-
-  btn.innerHTML = '<i data-lucide="loader"></i> Submitting...';
-  btn.disabled = true;
-  lucide.createIcons();
-
-  var formData = new FormData();
-  formData.append('businessType', selectedType);
-  formData.append('companyName', companyName);
-  formData.append('contactName', contactName);
-  formData.append('email', email);
-  formData.append('phone', phone);
-  formData.append('region', region);
-  formData.append('description', description);
-  selectedDocuments.forEach(function (file) {
-    formData.append('businessDocuments', file, file.name);
-  });
-
-fetch('/api/access-request', {
-  method: 'POST',
-    body: formData
-  })
-  .then(function(res) {
-    return res.json();
-  })
-  .then(function(data) {
-
-    if (data.success) {
-
-      document.getElementById('formView').style.display = 'none';
-      document.getElementById('successView').classList.add('show');
-
-      lucide.createIcons();
-
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
-
-    } else {
-
-      alert(data.error || 'Unable to submit your request.');
-
+    // JSON body — matches current server.js (express.json)
+    fetch('/api/access-request', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        businessType: selectedType,
+        companyName: companyName,
+        contactName: contactName,
+        email: email,
+        phone: phone,
+        region: region,
+        description: description || ''
+      })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data.success) {
+        document.getElementById('formView').style.display = 'none';
+        document.getElementById('successView').classList.add('show');
+        lucide.createIcons();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        alert(data.error || 'Unable to submit your request.');
+        btn.innerHTML = '<i data-lucide="send"></i> Submit access request';
+        btn.disabled = false;
+        lucide.createIcons();
+      }
+    })
+    .catch(function(error) {
+      console.error(error);
+      alert('Server unreachable. Please try again later.');
       btn.innerHTML = '<i data-lucide="send"></i> Submit access request';
       btn.disabled = false;
       lucide.createIcons();
+    });
 
-    }
-
-  })
-  .catch(function(error) {
-
-    console.error(error);
-
-    alert('Server unreachable. Please make sure SafariLink backend is running.');
-
-    btn.innerHTML = '<i data-lucide="send"></i> Submit access request';
-    btn.disabled = false;
-    lucide.createIcons();
-
-  });
-
-  return false;
-}
-
+    return false;
+  }
 </script>
 
 </body>
