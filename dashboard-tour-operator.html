@@ -39,41 +39,46 @@
   .dashboard { display: flex; min-height: 100vh; background: var(--warm-off-white); }
 
   .sidebar {
-    width: 260px; background: #fff; border-right: 1px solid var(--border-light);
+    width: 240px; background: var(--charcoal); color: #ccc;
     overflow-y: auto; position: fixed; top: 0; left: 0; height: 100vh; z-index: 1000;
-    transition: transform 0.3s;
+    transition: transform 0.3s; display: flex; flex-direction: column;
   }
 
   .sidebar-header {
-    padding: 20px; border-bottom: 1px solid var(--border-light);
+    padding: 20px 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.08);
   }
   .sidebar-logo {
-    display: flex; align-items: center; gap: 10px; font-size: 1.2rem; font-weight: 700;
-    color: var(--forest-green); cursor: pointer;
+    display: flex; align-items: center; gap: 10px; font-size: 1.1rem; font-weight: 700;
+    color: #fff; cursor: pointer;
   }
+  .sidebar-logo .logo-icon {
+    width: 34px; height: 34px; background: var(--forest-green);
+    border-radius: var(--radius-sm); display: flex; align-items: center;
+    justify-content: center; color: #fff; font-weight: 700; font-size: 16px;
+  }
+  .sidebar-logo .logo-text span { color: var(--accent-green); }
   .sidebar-logo svg, .sidebar-logo i { width: 24px; height: 24px; }
 
-  .sidebar-nav { padding: 12px 0; }
+  .sidebar-nav { padding: 16px 12px; flex: 1; }
 
   .nav-section { margin-bottom: 8px; }
   .nav-section-title {
     font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
-    color: var(--warm-gray); padding: 8px 20px 4px; font-weight: 600;
+    color: rgba(255,255,255,0.35); padding: 16px 8px 8px; font-weight: 600;
   }
   .nav-item {
-    display: flex; align-items: center; gap: 10px; padding: 10px 20px;
-    font-size: 0.875rem; color: var(--charcoal); cursor: pointer;
-    transition: all 0.2s; border-left: 3px solid transparent;
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+    font-size: 0.9rem; color: #bbb; cursor: pointer;
+    transition: all 0.15s; border-radius: var(--radius-sm); margin-bottom: 2px;
   }
-  .nav-item:hover { background: var(--warm-off-white); }
+  .nav-item:hover { background: rgba(255,255,255,0.08); color: #fff; }
   .nav-item.active {
-    background: #edf7f1; color: var(--forest-green); font-weight: 600;
-    border-left-color: var(--forest-green);
+    background: rgba(63,185,131,0.15); color: var(--accent-green); font-weight: 600;
   }
-  .nav-item svg, .nav-item i { width: 18px; height: 18px; flex-shrink: 0; }
+  .nav-item svg, .nav-item i { width: 20px; height: 20px; flex-shrink: 0; }
 
   .main-content {
-    margin-left: 260px; flex: 1; padding: 28px 32px; min-height: 100vh;
+    margin-left: 240px; flex: 1; padding: 28px 32px; min-height: 100vh;
   }
 
   /* ── PAGES ── */
@@ -387,8 +392,8 @@
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="sidebar-logo" onclick="navigateTo('homepage')">
-                <i data-lucide="compass"></i>
-                <span>SafariLink</span>
+                <div class="logo-icon">SL</div>
+                <div class="logo-text">Safari<span>Link</span></div>
             </div>
         </div>
         <nav class="sidebar-nav">
@@ -1723,5 +1728,5 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-</body> 
+</body>
 </html>
