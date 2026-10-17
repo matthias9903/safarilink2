@@ -219,9 +219,72 @@
     .stats-row { grid-template-columns: 1fr; }
     .room-type-grid { grid-template-columns: 1fr; }
   }
+
+  .page-view { display: none; }
+  .page-view.active { display: block; }
+  .filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; align-items: center; }
+  .filters select, .filters input {
+    padding: 8px 12px; border: 1px solid var(--border-light); border-radius: var(--radius-sm);
+    font-family: inherit; font-size: 0.85rem; background: #fff;
+  }
+  .badge {
+    display: inline-block; padding: 3px 10px; border-radius: 100px; font-size: 0.72rem; font-weight: 600;
+  }
+  .badge-reserved { background: #e0f2fe; color: #075985; }
+  .badge-booked { background: #fef3c7; color: #92400e; }
+  .badge-paid { background: #d1fae5; color: #065f46; }
+  .badge-cancelled { background: #fee2e2; color: #991b1b; }
+  .badge-available { background: #d1fae5; color: #065f46; }
+  .badge-unavailable { background: #fee2e2; color: #991b1b; }
+  .badge-maintenance { background: #ede9fe; color: #5b21b6; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-group label { font-size: 0.8rem; font-weight: 600; color: var(--charcoal); }
+  .form-group input, .form-group select, .form-group textarea {
+    padding: 10px 12px; border: 1px solid var(--border-light); border-radius: var(--radius-sm);
+    font-family: inherit; font-size: 0.9rem;
+  }
+  .form-group textarea { min-height: 80px; resize: vertical; }
+  .amenity-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .amenity-chips label {
+    display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: var(--warm-off-white);
+    border: 1px solid var(--border-light); border-radius: 100px; font-size: 0.8rem; cursor: pointer;
+  }
+  .amenity-chips input { accent-color: var(--forest-green); }
+  .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+  .gallery-item {
+    aspect-ratio: 4/3; background: var(--khaki); border-radius: var(--radius-md);
+    display: flex; align-items: center; justify-content: center; color: var(--warm-gray);
+    border: 1px solid var(--border-light); position: relative; overflow: hidden;
+  }
+  .gallery-item img { width: 100%; height: 100%; object-fit: cover; }
+  .msg-list { display: flex; flex-direction: column; gap: 0; }
+  .msg-row {
+    display: flex; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--border-light); cursor: pointer;
+  }
+  .msg-row:hover { background: var(--warm-off-white); }
+  .msg-avatar {
+    width: 40px; height: 40px; border-radius: 50%; background: var(--forest-green); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;
+  }
+  .msg-body { flex: 1; min-width: 0; }
+  .msg-body h4 { font-size: 0.9rem; margin-bottom: 2px; }
+  .msg-body p { font-size: 0.8rem; color: var(--warm-gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .prop-card {
+    background: #fff; border: 1px solid var(--border-light); border-radius: var(--radius-md);
+    padding: 18px; box-shadow: var(--shadow-sm);
+  }
+  .prop-card h4 { margin-bottom: 6px; }
+  .prop-meta { font-size: 0.8rem; color: var(--warm-gray); margin-bottom: 10px; }
+  .team-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border-light); }
+  .empty-hint { text-align: center; padding: 32px; color: var(--warm-gray); font-size: 0.9rem; }
+  @media (max-width: 768px) {
+    .form-grid { grid-template-columns: 1fr; }
+  }
+
 </style>
 </head>
-
 <script>
   (function () {
     function readUser() {
@@ -237,7 +300,6 @@
     }
     var user = readUser();
     if (!user) { window.location.href = 'login.html'; return; }
-
     var rolePageMap = {
       'dashboard-fleet.html': ['fleet', 'fleet-owner'],
       'dashboard-accommodation.html': ['accommodation', 'accommodation-provider'],
@@ -250,18 +312,9 @@
       window.location.href = 'login.html';
     }
   })();
-</script>  
-  
-  <script>
-  function logout() {
-    sessionStorage.removeItem('safariLinkUser'); try { localStorage.removeItem('safarilink_user'); } catch(e) {}
-    window.location.href = 'index.html';
-  }
 </script>
-  
-  <body>
+<body>
 
-<!-- ═══════════════ SIDEBAR ═══════════════ -->
 <aside class="sidebar">
   <div class="sidebar-brand">
     <div class="logo-icon">SL</div>
@@ -269,319 +322,640 @@
   </div>
   <nav class="sidebar-nav">
     <div class="sidebar-section">Main</div>
-    <a class="sidebar-link active"><i data-lucide="layout-dashboard"></i>Dashboard</a>
-    <a class="sidebar-link"><i data-lucide="calendar-days"></i>Reservations<span class="sidebar-badge">3</span></a>
-    <a class="sidebar-link"><i data-lucide="building-2"></i>My Properties</a>
+    <a class="sidebar-link active" data-page="dashboard" onclick="showPage('dashboard')"><i data-lucide="layout-dashboard"></i>Dashboard</a>
+    <a class="sidebar-link" data-page="reservations" onclick="showPage('reservations')"><i data-lucide="calendar-days"></i>Reservations<span class="sidebar-badge" id="resBadge">0</span></a>
+    <a class="sidebar-link" data-page="properties" onclick="showPage('properties')"><i data-lucide="building-2"></i>My Properties</a>
+    <a class="sidebar-link" data-page="room-type" onclick="showPage('room-type')"><i data-lucide="bed-double"></i>Add Room Type</a>
     <div class="sidebar-section">Operations</div>
-    <a class="sidebar-link"><i data-lucide="trending-up"></i>Rates & Pricing</a>
-    <a class="sidebar-link"><i data-lucide="image"></i>Photo Gallery</a>
-    <a class="sidebar-link"><i data-lucide="message-square"></i>Messages<span class="sidebar-badge">5</span></a>
+    <a class="sidebar-link" data-page="rates" onclick="showPage('rates')"><i data-lucide="trending-up"></i>Rates &amp; Pricing</a>
+    <a class="sidebar-link" data-page="gallery" onclick="showPage('gallery')"><i data-lucide="image"></i>Photo Gallery</a>
+    <a class="sidebar-link" data-page="messages" onclick="showPage('messages')"><i data-lucide="message-square"></i>Messages<span class="sidebar-badge">5</span></a>
     <div class="sidebar-section">Reports</div>
-    <a class="sidebar-link"><i data-lucide="bar-chart-3"></i>Revenue</a>
-    <a class="sidebar-link"><i data-lucide="pie-chart"></i>Occupancy</a>
-    <a class="sidebar-link"><i data-lucide="users"></i>Guest Insights</a>
+    <a class="sidebar-link" data-page="revenue" onclick="showPage('revenue')"><i data-lucide="bar-chart-3"></i>Revenue Analytics</a>
+    <a class="sidebar-link" data-page="occupancy" onclick="showPage('occupancy')"><i data-lucide="pie-chart"></i>Occupancy Analytics</a>
+    <a class="sidebar-link" data-page="guests" onclick="showPage('guests')"><i data-lucide="users"></i>Guest Insights</a>
     <div class="sidebar-section">Settings</div>
-    <a class="sidebar-link"><i data-lucide="settings"></i>Account</a>
-    <a class="sidebar-link"><i data-lucide="shield-check"></i>Verification</a>
+    <a class="sidebar-link" data-page="account" onclick="showPage('account')"><i data-lucide="settings"></i>Account</a>
   </nav>
   <div class="sidebar-footer">
     <div class="sidebar-user">
-      <div class="sidebar-user-avatar">SC</div>
+      <div class="sidebar-user-avatar">SH</div>
       <div>
-        <div style="color:#fff;font-weight:600;font-size:0.85rem;">Serengeti Heritage Camp</div>
-        <div style="font-size:0.7rem;color:rgba(255,255,255,0.45);">Verified Partner</div>
+        <div style="color:#fff;font-weight:600;font-size:0.85rem;">Serengeti Hill Camp</div>
+        <div style="font-size:0.7rem;color:rgba(255,255,255,0.45);">Accommodation Partner</div>
       </div>
     </div>
   </div>
 </aside>
 
-<!-- ═══════════════ MAIN ═══════════════ -->
 <div class="main-wrapper">
-
-  <!-- TOP BAR -->
   <header class="topbar">
     <div class="topbar-left">
-      <h2>Good morning, Serengeti Heritage Camp</h2>
-      <p>Central Serengeti • Property ID: SHC-0042 • Last synced: 2 min ago</p>
+      <h2 id="pageTitle">Dashboard</h2>
+      <p id="pageSubtitle">Central Serengeti · Manage inventory, rates &amp; reservations</p>
     </div>
     <div class="topbar-actions">
-      <button class="topbar-btn"><i data-lucide="bell"></i> Notifications</button>
-      <button class="topbar-btn primary"><i data-lucide="plus-circle"></i> Add Room Type</button>
+      <button class="topbar-btn" onclick="logout()"><i data-lucide="log-out"></i> Log out</button>
+      <button class="topbar-btn primary" onclick="showPage('room-type')"><i data-lucide="plus-circle"></i> Add Room Type</button>
     </div>
   </header>
 
   <div class="dashboard-content">
 
-    <!-- ── STAT ROW ── -->
-    <div class="stats-row">
-      <div class="stat-card">
-        <div class="stat-card-header">
-          <span class="stat-card-label">Tonight's Occupancy</span>
-          <span class="stat-card-icon green"><i data-lucide="bed-double"></i></span>
+    <!-- DASHBOARD -->
+    <div class="page-view active" id="page-dashboard">
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-card-header"><span class="stat-card-label">Tonight's Occupancy</span>
+            <div class="stat-card-icon green"><i data-lucide="bed"></i></div></div>
+          <div class="stat-card-value">78%</div>
+          <div class="stat-card-trend up"><i data-lucide="trending-up" style="width:14px;height:14px;"></i> +6% vs last week</div>
         </div>
-        <div class="stat-card-value">18 / 22</div>
-        <div class="stat-card-trend up"><i data-lucide="trending-up"></i> +8% vs last week</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card-header">
-          <span class="stat-card-label">Pending Confirmations</span>
-          <span class="stat-card-icon amber"><i data-lucide="clock"></i></span>
+        <div class="stat-card">
+          <div class="stat-card-header"><span class="stat-card-label">Open Reservations</span>
+            <div class="stat-card-icon amber"><i data-lucide="calendar-check"></i></div></div>
+          <div class="stat-card-value" id="statOpenRes">0</div>
+          <div class="stat-card-trend">Pending confirm / payment</div>
         </div>
-        <div class="stat-card-value">3</div>
-        <div class="stat-card-trend" style="color:var(--warm-gray);">Requires attention</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card-header">
-          <span class="stat-card-label">Revenue This Month</span>
-          <span class="stat-card-icon blue"><i data-lucide="dollar-sign"></i></span>
+        <div class="stat-card">
+          <div class="stat-card-header"><span class="stat-card-label">Revenue This Month</span>
+            <div class="stat-card-icon blue"><i data-lucide="dollar-sign"></i></div></div>
+          <div class="stat-card-value">$18.2k</div>
+          <div class="stat-card-trend up"><i data-lucide="trending-up" style="width:14px;height:14px;"></i> +12% vs last month</div>
         </div>
-        <div class="stat-card-value">$18,240</div>
-        <div class="stat-card-trend up"><i data-lucide="trending-up"></i> +12% vs last month</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card-header">
-          <span class="stat-card-label">Avg. Nightly Rate</span>
-          <span class="stat-card-icon red"><i data-lucide="receipt"></i></span>
-        </div>
-        <div class="stat-card-value">$298</div>
-        <div class="stat-card-trend up"><i data-lucide="trending-up"></i> +5% ADR</div>
-      </div>
-    </div>
-
-    <!-- ── QUICK ACTIONS ── -->
-    <div class="quick-actions" style="margin-bottom:28px;">
-      <a class="quick-action"><span class="quick-action-icon"><i data-lucide="calendar-plus"></i></span>Block Dates</a>
-      <a class="quick-action"><span class="quick-action-icon"><i data-lucide="tag"></i></span>Update STO Rates</a>
-      <a class="quick-action"><span class="quick-action-icon"><i data-lucide="message-square-plus"></i></span>Reply to Operator</a>
-      <a class="quick-action"><span class="quick-action-icon"><i data-lucide="file-bar-chart"></i></span>Export Report</a>
-    </div>
-
-    <!-- ── TWO COLUMN: Reservations + Calendar ── -->
-    <div class="grid-2">
-
-      <!-- RECENT RESERVATIONS -->
-      <div class="card">
-        <div class="card-header">
-          <h3><i data-lucide="calendar-check" style="width:18px;height:18px;margin-right:6px;"></i>Recent Reservations</h3>
-          <a style="font-size:0.8rem;color:var(--forest-green);font-weight:600;text-decoration:none;cursor:pointer;">View All →</a>
-        </div>
-        <div class="card-body no-padding">
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr><th>Operator</th><th>Room Type</th><th>Check-in</th><th>Check-out</th><th>Guests</th><th>Rate</th><th>Status</th></tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong>Dream Trails</strong><br><span style="font-size:0.72rem;color:var(--warm-gray);">Mathias Mwembe</span></td>
-                  <td>Double Tent</td><td>12 Sep</td><td>15 Sep</td><td>2</td><td>$320/n</td>
-                  <td><span class="badge badge-confirmed">Confirmed</span></td>
-                </tr>
-                <tr>
-                  <td><strong>Wild Africa Safaris</strong><br><span style="font-size:0.72rem;color:var(--warm-gray);">Anna K.</span></td>
-                  <td>Family Suite</td><td>28 Sep</td><td>05 Oct</td><td>4</td><td>$450/n</td>
-                  <td><span class="badge badge-pending">Pending</span></td>
-                </tr>
-                <tr>
-                  <td><strong>Tanzania Explorer</strong><br><span style="font-size:0.72rem;color:var(--warm-gray);">David J.</span></td>
-                  <td>Single Tent</td><td>18 Sep</td><td>20 Sep</td><td>1</td><td>$180/n</td>
-                  <td><span class="badge badge-confirmed">Confirmed</span></td>
-                </tr>
-                <tr>
-                  <td><strong>Serengeti Pride Tours</strong><br><span style="font-size:0.72rem;color:var(--warm-gray);">Grace N.</span></td>
-                  <td>Double Tent</td><td>10 Oct</td><td>14 Oct</td><td>2</td><td>$320/n</td>
-                  <td><span class="badge badge-pending">Pending</span></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+        <div class="stat-card">
+          <div class="stat-card-header"><span class="stat-card-label">Avg. Nightly Rate</span>
+            <div class="stat-card-icon purple"><i data-lucide="tag"></i></div></div>
+          <div class="stat-card-value">$248</div>
+          <div class="stat-card-trend">STO blended rate</div>
         </div>
       </div>
-
-      <!-- AVAILABILITY CALENDAR -->
-      <div class="card">
-        <div class="card-header">
-          <h3><i data-lucide="calendar" style="width:18px;height:18px;margin-right:6px;"></i>Availability — September 2026</h3>
-          <div style="display:flex;gap:12px;font-size:0.7rem;">
-            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:50%;background:var(--status-available);"></span>Available</span>
-            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:50%;background:var(--status-pending);"></span>Partial</span>
-            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:50%;background:var(--status-unavailable);"></span>Full</span>
-          </div>
-        </div>
-        <div class="card-body">
-          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center;font-size:0.65rem;color:var(--warm-gray);margin-bottom:6px;">
-            <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
-          </div>
-          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;">
-            <span class="cal-day free"><span class="cal-day-num">1</span></span>
-            <span class="cal-day free"><span class="cal-day-num">2</span></span>
-            <span class="cal-day today"><span class="cal-day-num">3</span></span>
-            <span class="cal-day booked"><span class="cal-day-num">4</span></span>
-            <span class="cal-day full"><span class="cal-day-num">5</span></span>
-            <span class="cal-day full"><span class="cal-day-num">6</span></span>
-            <span class="cal-day booked"><span class="cal-day-num">7</span></span>
-            <span class="cal-day free"><span class="cal-day-num">8</span></span>
-            <span class="cal-day free"><span class="cal-day-num">9</span></span>
-            <span class="cal-day booked"><span class="cal-day-num">10</span></span>
-            <span class="cal-day booked"><span class="cal-day-num">11</span></span>
-            <span class="cal-day booked"><span class="cal-day-num">12</span></span>
-            <span class="cal-day full"><span class="cal-day-num">13</span></span>
-            <span class="cal-day full"><span class="cal-day-num">14</span></span>
-            <span class="cal-day full"><span class="cal-day-num">15</span></span>
-            <span class="cal-day full"><span class="cal-day-num">16</span></span>
-            <span class="cal-day free"><span class="cal-day-num">17</span></span>
-            <span class="cal-day free"><span class="cal-day-num">18</span></span>
-            <span class="cal-day free"><span class="cal-day-num">19</span></span>
-            <span class="cal-day full"><span class="cal-day-num">20</span></span>
-            <span class="cal-day free"><span class="cal-day-num">21</span></span>
-            <span class="cal-day free"><span class="cal-day-num">22</span></span>
-            <span class="cal-day free"><span class="cal-day-num">23</span></span>
-            <span class="cal-day free"><span class="cal-day-num">24</span></span>
-            <span class="cal-day booked"><span class="cal-day-num">25</span></span>
-            <span class="cal-day booked"><span class="cal-day-num">26</span></span>
-            <span class="cal-day booked"><span class="cal-day-num">27</span></span>
-            <span class="cal-day booked"><span class="cal-day-num">28</span></span>
-            <span class="cal-day booked"><span class="cal-day-num">29</span></span>
-            <span class="cal-day free"><span class="cal-day-num">30</span></span>
-          </div>
-        </div>
+      <div class="quick-actions" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px;">
+        <a class="quick-action" onclick="showPage('reservations')"><span class="quick-action-icon"><i data-lucide="calendar-days"></i></span>Reservations</a>
+        <a class="quick-action" onclick="showPage('properties')"><span class="quick-action-icon"><i data-lucide="building-2"></i></span>Properties</a>
+        <a class="quick-action" onclick="showPage('rates')"><span class="quick-action-icon"><i data-lucide="tag"></i></span>Update Rates</a>
+        <a class="quick-action" onclick="showPage('room-type')"><span class="quick-action-icon"><i data-lucide="plus"></i></span>Add Room Type</a>
       </div>
-    </div>
-
-    <!-- ── ROOM TYPES ── -->
-    <div class="card" style="margin-bottom:28px;">
-      <div class="card-header">
-        <h3><i data-lucide="bed" style="width:18px;height:18px;margin-right:6px;"></i>Room Types & Inventory</h3>
-        <button class="topbar-btn" style="font-size:0.8rem;"><i data-lucide="plus"></i> Add</button>
-      </div>
-      <div class="card-body">
-        <div class="room-type-grid">
-          <div class="room-type-card">
-            <h4>Double Tent</h4>
-            <div class="room-type-capacity">
-              <span><i data-lucide="users" style="width:14px;height:14px;"></i> 2 guests</span>
-              <span><i data-lucide="maximize" style="width:14px;height:14px;"></i> 35 m²</span>
-              <span><i data-lucide="wifi" style="width:14px;height:14px;"></i> WiFi</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;font-size:0.75rem;margin-bottom:4px;">
-              <span>8 of 10 available tonight</span><span>80%</span>
-            </div>
-            <div class="room-type-bar"><div class="room-type-bar-fill" style="width:80%;background:var(--status-available);"></div></div>
-            <div class="room-type-price">STO Rate: $220/n &nbsp;|&nbsp; Public: $320/n</div>
-          </div>
-          <div class="room-type-card">
-            <h4>Family Suite</h4>
-            <div class="room-type-capacity">
-              <span><i data-lucide="users" style="width:14px;height:14px;"></i> 4 guests</span>
-              <span><i data-lucide="maximize" style="width:14px;height:14px;"></i> 55 m²</span>
-              <span><i data-lucide="wifi" style="width:14px;height:14px;"></i> WiFi</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;font-size:0.75rem;margin-bottom:4px;">
-              <span>3 of 4 available tonight</span><span>75%</span>
-            </div>
-            <div class="room-type-bar"><div class="room-type-bar-fill" style="width:75%;background:var(--status-pending);"></div></div>
-            <div class="room-type-price">STO Rate: $350/n &nbsp;|&nbsp; Public: $450/n</div>
-          </div>
-          <div class="room-type-card">
-            <h4>Single Tent</h4>
-            <div class="room-type-capacity">
-              <span><i data-lucide="users" style="width:14px;height:14px;"></i> 1 guest</span>
-              <span><i data-lucide="maximize" style="width:14px;height:14px;"></i> 22 m²</span>
-              <span><i data-lucide="wifi" style="width:14px;height:14px;"></i> WiFi</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;font-size:0.75rem;margin-bottom:4px;">
-              <span>4 of 8 available tonight</span><span>50%</span>
-            </div>
-            <div class="room-type-bar"><div class="room-type-bar-fill" style="width:50%;background:var(--accent-green);"></div></div>
-            <div class="room-type-price">STO Rate: $130/n &nbsp;|&nbsp; Public: $180/n</div>
-          </div>
+      <div class="card" style="background:#fff;border:1px solid var(--border-light);border-radius:var(--radius-md);box-shadow:var(--shadow-sm);">
+        <div class="card-header" style="padding:16px 20px;border-bottom:1px solid var(--border-light);display:flex;justify-content:space-between;align-items:center;">
+          <h3 style="font-size:1rem;"><i data-lucide="calendar-check" style="width:18px;height:18px;margin-right:6px;"></i>Recent Reservations</h3>
+          <a onclick="showPage('reservations')" style="font-size:0.8rem;color:var(--forest-green);font-weight:600;cursor:pointer;">View All →</a>
         </div>
-      </div>
-    </div>
-
-    <!-- ── MESSAGES + REVENUE CHART ── -->
-    <div class="grid-2">
-      <div class="card">
-        <div class="card-header">
-          <h3><i data-lucide="inbox" style="width:18px;height:18px;margin-right:6px;"></i>Operator Messages</h3>
-          <span class="sidebar-badge">5 new</span>
-        </div>
-        <div class="card-body no-padding">
+        <div class="card-body" style="padding:0;overflow-x:auto;">
           <table>
+            <thead><tr><th>Operator</th><th>Room</th><th>Check-in</th><th>Status</th><th>Amount</th></tr></thead>
+            <tbody id="dashResTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESERVATIONS -->
+    <div class="page-view" id="page-reservations">
+      <div class="filters">
+        <select id="resFilterStatus" onchange="renderReservations()">
+          <option value="all">All statuses</option>
+          <option value="reserved">Reserved</option>
+          <option value="booked">Booked</option>
+          <option value="paid">Paid</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+        <input type="search" id="resSearch" placeholder="Search operator or room…" oninput="renderReservations()">
+      </div>
+      <div class="stats-row" style="grid-template-columns:repeat(4,1fr);">
+        <div class="stat-card"><div class="stat-card-label">Reserved</div><div class="stat-card-value" id="cReserved">0</div></div>
+        <div class="stat-card"><div class="stat-card-label">Booked</div><div class="stat-card-value" id="cBooked">0</div></div>
+        <div class="stat-card"><div class="stat-card-label">Paid</div><div class="stat-card-value" id="cPaid">0</div></div>
+        <div class="stat-card"><div class="stat-card-label">Cancelled</div><div class="stat-card-value" id="cCancelled">0</div></div>
+      </div>
+      <div class="card" style="background:#fff;border:1px solid var(--border-light);border-radius:var(--radius-md);">
+        <div class="card-body" style="padding:0;overflow-x:auto;">
+          <table>
+            <thead>
+              <tr><th>ID</th><th>Operator</th><th>Room type</th><th>Check-in</th><th>Check-out</th><th>Guests</th><th>Amount</th><th>Payment</th><th>Status</th></tr>
+            </thead>
+            <tbody id="resTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROPERTIES -->
+    <div class="page-view" id="page-properties">
+      <div class="filters">
+        <select id="propFilter" onchange="renderProperties()">
+          <option value="all">All properties</option>
+          <option value="available">Available</option>
+          <option value="unavailable">Unavailable</option>
+          <option value="maintenance">Maintenance</option>
+        </select>
+        <button class="topbar-btn primary" onclick="document.getElementById('propFormWrap').style.display='block'"><i data-lucide="plus"></i> Add property</button>
+      </div>
+      <div id="propFormWrap" style="display:none;background:#fff;border:1px solid var(--border-light);border-radius:var(--radius-md);padding:20px;margin-bottom:20px;">
+        <h3 style="margin-bottom:14px;">New property</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>Property name *</label><input id="propName" placeholder="e.g. Serengeti Hill Camp"></div>
+          <div class="form-group"><label>Location *</label><input id="propLocation" placeholder="e.g. Central Serengeti"></div>
+          <div class="form-group"><label>Type</label>
+            <select id="propType"><option>Lodge</option><option>Camp</option><option>Hotel</option><option>Guesthouse</option></select>
+          </div>
+          <div class="form-group"><label>Status</label>
+            <select id="propStatus"><option value="available">Available</option><option value="unavailable">Unavailable</option><option value="maintenance">Maintenance</option></select>
+          </div>
+          <div class="form-group full"><label>Description</label><textarea id="propDesc" placeholder="Short description"></textarea></div>
+        </div>
+        <div style="margin-top:14px;display:flex;gap:8px;">
+          <button class="topbar-btn primary" onclick="addProperty()">Save property</button>
+          <button class="topbar-btn" onclick="document.getElementById('propFormWrap').style.display='none'">Cancel</button>
+        </div>
+      </div>
+      <div id="propGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;"></div>
+    </div>
+
+    <!-- ADD ROOM TYPE -->
+    <div class="page-view" id="page-room-type">
+      <div class="card" style="background:#fff;border:1px solid var(--border-light);border-radius:var(--radius-md);padding:24px;max-width:800px;">
+        <h3 style="margin-bottom:16px;">Add room type</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>Room type name *</label><input id="roomName" placeholder="e.g. Luxury Tent"></div>
+          <div class="form-group"><label>Property *</label><select id="roomProperty"></select></div>
+          <div class="form-group"><label>Max guests</label><input id="roomGuests" type="number" min="1" value="2"></div>
+          <div class="form-group"><label>Units available</label><input id="roomUnits" type="number" min="1" value="1"></div>
+          <div class="form-group"><label>STO rate (USD/night) *</label><input id="roomSto" type="number" min="0" step="1" placeholder="220"></div>
+          <div class="form-group"><label>Public rate (USD/night)</label><input id="roomPublic" type="number" min="0" step="1" placeholder="320"></div>
+          <div class="form-group full"><label>Location / wing</label><input id="roomLocation" placeholder="e.g. East wing, riverside"></div>
+          <div class="form-group full"><label>Amenities</label>
+            <div class="amenity-chips" id="amenityList">
+              <label><input type="checkbox" value="Wi‑Fi"> Wi‑Fi</label>
+              <label><input type="checkbox" value="En-suite"> En-suite</label>
+              <label><input type="checkbox" value="AC"> AC</label>
+              <label><input type="checkbox" value="Mosquito net"> Mosquito net</label>
+              <label><input type="checkbox" value="Private deck"> Private deck</label>
+              <label><input type="checkbox" value="View"> View</label>
+              <label><input type="checkbox" value="Mini bar"> Mini bar</label>
+              <label><input type="checkbox" value="Safe"> Safe</label>
+            </div>
+          </div>
+          <div class="form-group full"><label>Notes</label><textarea id="roomNotes" placeholder="Extra details for operators"></textarea></div>
+        </div>
+        <div style="margin-top:16px;display:flex;gap:8px;">
+          <button class="topbar-btn primary" onclick="addRoomType()">Save room type</button>
+          <button class="topbar-btn" onclick="showPage('properties')">Cancel</button>
+        </div>
+      </div>
+      <div style="margin-top:28px;">
+        <h3 style="margin-bottom:12px;">Your room types</h3>
+        <div id="roomTypeList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;"></div>
+      </div>
+    </div>
+
+    <!-- RATES -->
+    <div class="page-view" id="page-rates">
+      <p style="color:var(--warm-gray);margin-bottom:16px;font-size:0.9rem;">Edit STO and public rates for each room type. Changes are saved on this device.</p>
+      <div class="card" style="background:#fff;border:1px solid var(--border-light);border-radius:var(--radius-md);">
+        <div class="card-body" style="padding:0;overflow-x:auto;">
+          <table>
+            <thead><tr><th>Room type</th><th>Property</th><th>STO $/night</th><th>Public $/night</th><th></th></tr></thead>
+            <tbody id="ratesTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- GALLERY -->
+    <div class="page-view" id="page-gallery">
+      <div class="filters">
+        <input type="file" id="galleryInput" accept="image/*" multiple onchange="addGalleryFiles(event)">
+        <button class="topbar-btn primary" onclick="document.getElementById('galleryInput').click()"><i data-lucide="upload"></i> Upload photos</button>
+      </div>
+      <div class="gallery-grid" id="galleryGrid"></div>
+    </div>
+
+    <!-- MESSAGES -->
+    <div class="page-view" id="page-messages">
+      <div class="card" style="background:#fff;border:1px solid var(--border-light);border-radius:var(--radius-md);padding:8px 20px;">
+        <div class="msg-list" id="msgList"></div>
+      </div>
+    </div>
+
+    <!-- REVENUE -->
+    <div class="page-view" id="page-revenue">
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-card-label">This month</div><div class="stat-card-value">$18,240</div></div>
+        <div class="stat-card"><div class="stat-card-label">Last month</div><div class="stat-card-value">$16,280</div></div>
+        <div class="stat-card"><div class="stat-card-label">YTD</div><div class="stat-card-value">$112.4k</div></div>
+        <div class="stat-card"><div class="stat-card-label">Avg booking value</div><div class="stat-card-value">$642</div></div>
+      </div>
+      <div class="card" style="background:#fff;border:1px solid var(--border-light);border-radius:var(--radius-md);padding:20px;">
+        <h3 style="margin-bottom:16px;">Monthly revenue</h3>
+        <div style="display:flex;align-items:flex-end;gap:10px;height:200px;">
+          <div style="flex:1;text-align:center;"><div style="background:var(--accent-green);height:90px;border-radius:4px 4px 0 0;"></div><span style="font-size:0.7rem;color:var(--warm-gray);">Apr</span></div>
+          <div style="flex:1;text-align:center;"><div style="background:var(--accent-green);height:110px;border-radius:4px 4px 0 0;"></div><span style="font-size:0.7rem;color:var(--warm-gray);">May</span></div>
+          <div style="flex:1;text-align:center;"><div style="background:var(--forest-green);height:145px;border-radius:4px 4px 0 0;"></div><span style="font-size:0.7rem;color:var(--warm-gray);">Jun</span></div>
+          <div style="flex:1;text-align:center;"><div style="background:var(--forest-green);height:160px;border-radius:4px 4px 0 0;"></div><span style="font-size:0.7rem;color:var(--warm-gray);">Jul</span></div>
+          <div style="flex:1;text-align:center;"><div style="background:var(--forest-green);height:170px;border-radius:4px 4px 0 0;"></div><span style="font-size:0.7rem;color:var(--warm-gray);">Aug</span></div>
+          <div style="flex:1;text-align:center;"><div style="background:var(--forest-green);height:135px;border-radius:4px 4px 0 0;"></div><span style="font-size:0.7rem;color:var(--warm-gray);">Sep</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OCCUPANCY -->
+    <div class="page-view" id="page-occupancy">
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-card-label">Tonight</div><div class="stat-card-value">78%</div></div>
+        <div class="stat-card"><div class="stat-card-label">This week</div><div class="stat-card-value">71%</div></div>
+        <div class="stat-card"><div class="stat-card-label">This month</div><div class="stat-card-value">68%</div></div>
+        <div class="stat-card"><div class="stat-card-label">Available units</div><div class="stat-card-value" id="occUnits">—</div></div>
+      </div>
+      <div class="card" style="background:#fff;border:1px solid var(--border-light);border-radius:var(--radius-md);padding:20px;">
+        <h3 style="margin-bottom:12px;">Occupancy by room type</h3>
+        <div id="occByRoom"></div>
+      </div>
+    </div>
+
+    <!-- GUESTS -->
+    <div class="page-view" id="page-guests">
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-card-label">Guests this month</div><div class="stat-card-value">142</div></div>
+        <div class="stat-card"><div class="stat-card-label">Repeat operators</div><div class="stat-card-value">18</div></div>
+        <div class="stat-card"><div class="stat-card-label">Avg stay</div><div class="stat-card-value">3.2 n</div></div>
+        <div class="stat-card"><div class="stat-card-label">Top market</div><div class="stat-card-value" style="font-size:1.1rem;">EU / US</div></div>
+      </div>
+      <div class="card" style="background:#fff;border:1px solid var(--border-light);border-radius:var(--radius-md);">
+        <div class="card-body" style="padding:0;overflow-x:auto;">
+          <table>
+            <thead><tr><th>Operator</th><th>Trips</th><th>Guests</th><th>Nights</th><th>Revenue</th></tr></thead>
             <tbody>
-              <tr>
-                <td style="width:40px;"><div style="width:36px;height:36px;border-radius:50%;background:var(--forest-green);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;">DT</div></td>
-                <td>
-                  <strong>Dream Trails</strong>
-                  <div style="font-size:0.8rem;color:var(--warm-gray);">"Any availability for 15–18 September? Double tents preferred."</div>
-                </td>
-                <td style="text-align:right;"><span style="font-size:0.7rem;color:var(--warm-gray);">10m ago</span></td>
-              </tr>
-              <tr>
-                <td style="width:40px;"><div style="width:36px;height:36px;border-radius:50%;background:#0891b2;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;">WA</div></td>
-                <td>
-                  <strong>Wild Africa Safaris</strong>
-                  <div style="font-size:0.8rem;color:var(--warm-gray);">"Can we negotiate the Family Suite rate for a 7-night block?"</div>
-                </td>
-                <td style="text-align:right;"><span style="font-size:0.7rem;color:var(--warm-gray);">1h ago</span></td>
-              </tr>
-              <tr>
-                <td style="width:40px;"><div style="width:36px;height:36px;border-radius:50%;background:#f59e0b;display:flex;align-items:center;justify-content:center;color:#000;font-weight:700;font-size:13px;">TE</div></td>
-                <td>
-                  <strong>Tanzania Explorer</strong>
-                  <div style="font-size:0.8rem;color:var(--warm-gray);">"Confirmed: single tent for 18–20 Sep. Sending payment shortly."</div>
-                </td>
-                <td style="text-align:right;"><span style="font-size:0.7rem;color:var(--warm-gray);">3h ago</span></td>
-              </tr>
+              <tr><td>Dreamtrails Expeditions</td><td>12</td><td>48</td><td>36</td><td>$8,640</td></tr>
+              <tr><td>Serengeti Trails Ltd</td><td>8</td><td>32</td><td>24</td><td>$5,280</td></tr>
+              <tr><td>Kilimanjaro Voyages</td><td>6</td><td>24</td><td>18</td><td>$3,960</td></tr>
+              <tr><td>Safari Circle TZ</td><td>5</td><td>20</td><td>15</td><td>$3,300</td></tr>
             </tbody>
           </table>
         </div>
       </div>
+    </div>
 
-      <div class="card">
-        <div class="card-header">
-          <h3><i data-lucide="line-chart" style="width:18px;height:18px;margin-right:6px;"></i>Revenue Trend</h3>
-          <select style="border:1px solid var(--border-light);border-radius:var(--radius-sm);padding:6px 10px;font-size:0.8rem;">
-            <option>Last 6 months</option><option>Last 12 months</option><option>This year</option>
-          </select>
+    <!-- ACCOUNT -->
+    <div class="page-view" id="page-account">
+      <div class="card" style="background:#fff;border:1px solid var(--border-light);border-radius:var(--radius-md);padding:24px;margin-bottom:20px;max-width:720px;">
+        <h3 style="margin-bottom:14px;">Account details</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>Business name</label><input id="accName" value="Serengeti Hill Camp"></div>
+          <div class="form-group"><label>Contact email</label><input id="accEmail" type="email" value="dreamtrailsexpedictions@gmail.com"></div>
+          <div class="form-group"><label>Phone</label><input id="accPhone" value="+255 700 000 000"></div>
+          <div class="form-group"><label>Region</label><input id="accRegion" value="Arusha / Serengeti"></div>
         </div>
-        <div class="card-body">
-          <div style="display:flex;align-items:flex-end;gap:8px;height:180px;padding:8px 0;">
-            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
-              <div style="width:100%;background:var(--accent-green);border-radius:4px 4px 0 0;height:90px;"></div>
-              <span style="font-size:0.65rem;color:var(--warm-gray);">Apr</span>
-            </div>
-            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
-              <div style="width:100%;background:var(--accent-green);border-radius:4px 4px 0 0;height:110px;"></div>
-              <span style="font-size:0.65rem;color:var(--warm-gray);">May</span>
-            </div>
-            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
-              <div style="width:100%;background:var(--forest-green);border-radius:4px 4px 0 0;height:145px;"></div>
-              <span style="font-size:0.65rem;color:var(--warm-gray);">Jun</span>
-            </div>
-            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
-              <div style="width:100%;background:var(--forest-green);border-radius:4px 4px 0 0;height:160px;"></div>
-              <span style="font-size:0.65rem;color:var(--warm-gray);">Jul</span>
-            </div>
-            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
-              <div style="width:100%;background:var(--forest-green);border-radius:4px 4px 0 0;height:170px;"></div>
-              <span style="font-size:0.65rem;color:var(--warm-gray);">Aug</span>
-            </div>
-            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
-              <div style="width:100%;background:var(--forest-green);border-radius:4px 4px 0 0;height:135px;"></div>
-              <span style="font-size:0.65rem;color:var(--warm-gray);">Sep</span>
+        <button class="topbar-btn primary" style="margin-top:14px;" onclick="saveAccount()">Save account</button>
+      </div>
+      <div class="card" style="background:#fff;border:1px solid var(--border-light);border-radius:var(--radius-md);padding:24px;max-width:720px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <h3>Team members</h3>
+          <button class="topbar-btn primary" onclick="document.getElementById('memberForm').style.display='block'"><i data-lucide="user-plus"></i> Add member</button>
+        </div>
+        <div id="memberForm" style="display:none;margin-bottom:16px;padding:16px;background:var(--warm-off-white);border-radius:var(--radius-md);">
+          <div class="form-grid">
+            <div class="form-group"><label>Name</label><input id="memName" placeholder="Full name"></div>
+            <div class="form-group"><label>Email</label><input id="memEmail" type="email" placeholder="email@company.com"></div>
+            <div class="form-group"><label>Role</label>
+              <select id="memRole"><option>Manager</option><option>Front desk</option><option>Finance</option><option>Viewer</option></select>
             </div>
           </div>
-          <div style="text-align:center;font-size:0.78rem;color:var(--warm-gray);margin-top:8px;">
-            Total: <strong style="color:var(--forest-green);">$18,240</strong> this month
+          <div style="margin-top:12px;display:flex;gap:8px;">
+            <button class="topbar-btn primary" onclick="addMember()">Add</button>
+            <button class="topbar-btn" onclick="document.getElementById('memberForm').style.display='none'">Cancel</button>
           </div>
         </div>
+        <div id="memberList"></div>
       </div>
     </div>
 
-  </div><!-- /.dashboard-content -->
-</div><!-- /.main-wrapper -->
+  </div>
+</div>
 
-<script>lucide.createIcons();</script>
+<script>
+function logout() {
+  sessionStorage.removeItem('safariLinkUser');
+  try { localStorage.removeItem('safarilink_user'); } catch (e) {}
+  window.location.href = 'index.html';
+}
+
+var titles = {
+  dashboard: ['Dashboard', 'Central Serengeti · Manage inventory, rates & reservations'],
+  reservations: ['Reservations', 'Reserved, booked, paid and cancelled stays'],
+  properties: ['My Properties', 'All properties and availability'],
+  'room-type': ['Add Room Type', 'Amenities, pricing and location'],
+  rates: ['Rates & Pricing', 'STO and public nightly rates'],
+  gallery: ['Photo Gallery', 'Property and room photos'],
+  messages: ['Messages', 'Operator and system messages'],
+  revenue: ['Revenue Analytics', 'Performance over time'],
+  occupancy: ['Occupancy Analytics', 'Fill rates by room type'],
+  guests: ['Guest Insights', 'Operators and guest patterns'],
+  account: ['Account', 'Business profile and team access']
+};
+
+function showPage(id) {
+  document.querySelectorAll('.page-view').forEach(function(p) { p.classList.remove('active'); });
+  var el = document.getElementById('page-' + id);
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.sidebar-link').forEach(function(a) {
+    a.classList.toggle('active', a.getAttribute('data-page') === id);
+  });
+  var t = titles[id] || ['Dashboard', ''];
+  document.getElementById('pageTitle').textContent = t[0];
+  document.getElementById('pageSubtitle').textContent = t[1];
+  if (id === 'reservations') renderReservations();
+  if (id === 'properties') renderProperties();
+  if (id === 'room-type') { fillPropertySelect(); renderRoomTypes(); }
+  if (id === 'rates') renderRates();
+  if (id === 'gallery') renderGallery();
+  if (id === 'messages') renderMessages();
+  if (id === 'occupancy') renderOccupancy();
+  if (id === 'account') renderMembers();
+  lucide.createIcons();
+}
+
+function store(key, val) { localStorage.setItem('sl_acc_' + key, JSON.stringify(val)); }
+function load(key, fallback) {
+  try {
+    var v = localStorage.getItem('sl_acc_' + key);
+    return v ? JSON.parse(v) : fallback;
+  } catch (e) { return fallback; }
+}
+
+/* Seed data */
+function seed() {
+  if (!load('seeded', false)) {
+    store('properties', [
+      { id: 1, name: 'Serengeti Hill Camp', location: 'Central Serengeti', type: 'Camp', status: 'available', desc: 'Tented camp with wildlife views' },
+      { id: 2, name: 'Ngoro View Lodge', location: 'Ngorongoro', type: 'Lodge', status: 'available', desc: 'Lodge overlooking the crater rim' }
+    ]);
+    store('rooms', [
+      { id: 1, name: 'Luxury Tent', propertyId: 1, guests: 2, units: 6, sto: 220, pub: 320, location: 'Main camp', amenities: ['Wi‑Fi','En-suite','Private deck'], notes: '' },
+      { id: 2, name: 'Family Suite', propertyId: 1, guests: 4, units: 2, sto: 350, pub: 450, location: 'Riverside', amenities: ['Wi‑Fi','En-suite','View'], notes: '' },
+      { id: 3, name: 'Standard Room', propertyId: 2, guests: 2, units: 10, sto: 130, pub: 180, location: 'Main block', amenities: ['Wi‑Fi','En-suite'], notes: '' }
+    ]);
+    store('reservations', [
+      { id: 'R-1042', operator: 'Dreamtrails Expeditions', room: 'Luxury Tent', checkIn: '2026-10-20', checkOut: '2026-10-23', guests: 2, amount: 660, payment: 'Paid', status: 'paid' },
+      { id: 'R-1043', operator: 'Serengeti Trails Ltd', room: 'Family Suite', checkIn: '2026-10-22', checkOut: '2026-10-25', guests: 4, amount: 1050, payment: 'Deposit', status: 'booked' },
+      { id: 'R-1044', operator: 'Kilimanjaro Voyages', room: 'Standard Room', checkIn: '2026-10-25', checkOut: '2026-10-27', guests: 2, amount: 260, payment: 'Pending', status: 'reserved' },
+      { id: 'R-1045', operator: 'Safari Circle TZ', room: 'Luxury Tent', checkIn: '2026-10-18', checkOut: '2026-10-19', guests: 2, amount: 220, payment: 'Refunded', status: 'cancelled' },
+      { id: 'R-1046', operator: 'Dreamtrails Expeditions', room: 'Standard Room', checkIn: '2026-11-01', checkOut: '2026-11-04', guests: 2, amount: 390, payment: 'Paid', status: 'paid' }
+    ]);
+    store('members', [
+      { id: 1, name: 'Camp Manager', email: 'manager@serengetihill.tz', role: 'Manager' }
+    ]);
+    store('gallery', []);
+    store('seeded', true);
+  }
+}
+
+function statusBadge(s) {
+  var map = { reserved: 'badge-reserved', booked: 'badge-booked', paid: 'badge-paid', cancelled: 'badge-cancelled',
+    available: 'badge-available', unavailable: 'badge-unavailable', maintenance: 'badge-maintenance' };
+  return '<span class="badge ' + (map[s] || '') + '">' + s.charAt(0).toUpperCase() + s.slice(1) + '</span>';
+}
+
+function renderReservations() {
+  var list = load('reservations', []);
+  var status = document.getElementById('resFilterStatus').value;
+  var q = (document.getElementById('resSearch').value || '').toLowerCase();
+  var counts = { reserved: 0, booked: 0, paid: 0, cancelled: 0 };
+  list.forEach(function(r) { if (counts[r.status] != null) counts[r.status]++; });
+  document.getElementById('cReserved').textContent = counts.reserved;
+  document.getElementById('cBooked').textContent = counts.booked;
+  document.getElementById('cPaid').textContent = counts.paid;
+  document.getElementById('cCancelled').textContent = counts.cancelled;
+  document.getElementById('resBadge').textContent = counts.reserved + counts.booked;
+  document.getElementById('statOpenRes').textContent = counts.reserved + counts.booked;
+
+  var filtered = list.filter(function(r) {
+    if (status !== 'all' && r.status !== status) return false;
+    if (q && (r.operator + r.room + r.id).toLowerCase().indexOf(q) === -1) return false;
+    return true;
+  });
+  document.getElementById('resTable').innerHTML = filtered.map(function(r) {
+    return '<tr><td>' + r.id + '</td><td>' + r.operator + '</td><td>' + r.room + '</td><td>' + r.checkIn +
+      '</td><td>' + r.checkOut + '</td><td>' + r.guests + '</td><td>$' + r.amount +
+      '</td><td>' + r.payment + '</td><td>' + statusBadge(r.status) + '</td></tr>';
+  }).join('') || '<tr><td colspan="9" class="empty-hint">No reservations match.</td></tr>';
+
+  document.getElementById('dashResTable').innerHTML = list.slice(0, 5).map(function(r) {
+    return '<tr><td>' + r.operator + '</td><td>' + r.room + '</td><td>' + r.checkIn +
+      '</td><td>' + statusBadge(r.status) + '</td><td>$' + r.amount + '</td></tr>';
+  }).join('');
+}
+
+function renderProperties() {
+  var list = load('properties', []);
+  var f = document.getElementById('propFilter').value;
+  var filtered = list.filter(function(p) { return f === 'all' || p.status === f; });
+  document.getElementById('propGrid').innerHTML = filtered.map(function(p) {
+    return '<div class="prop-card"><h4>' + esc(p.name) + '</h4>' +
+      '<div class="prop-meta">' + esc(p.type) + ' · ' + esc(p.location) + '</div>' +
+      '<div style="margin-bottom:10px;">' + statusBadge(p.status) + '</div>' +
+      '<p style="font-size:0.85rem;color:var(--warm-gray);">' + esc(p.desc || '') + '</p></div>';
+  }).join('') || '<div class="empty-hint">No properties yet. Add one above.</div>';
+}
+
+function addProperty() {
+  var name = document.getElementById('propName').value.trim();
+  var location = document.getElementById('propLocation').value.trim();
+  if (!name || !location) { alert('Name and location are required'); return; }
+  var list = load('properties', []);
+  list.push({
+    id: Date.now(),
+    name: name,
+    location: location,
+    type: document.getElementById('propType').value,
+    status: document.getElementById('propStatus').value,
+    desc: document.getElementById('propDesc').value.trim()
+  });
+  store('properties', list);
+  document.getElementById('propFormWrap').style.display = 'none';
+  ['propName','propLocation','propDesc'].forEach(function(id) { document.getElementById(id).value = ''; });
+  renderProperties();
+  fillPropertySelect();
+}
+
+function fillPropertySelect() {
+  var sel = document.getElementById('roomProperty');
+  var list = load('properties', []);
+  sel.innerHTML = list.map(function(p) {
+    return '<option value="' + p.id + '">' + esc(p.name) + '</option>';
+  }).join('') || '<option value="">Add a property first</option>';
+}
+
+function addRoomType() {
+  var name = document.getElementById('roomName').value.trim();
+  var sto = Number(document.getElementById('roomSto').value);
+  var propId = Number(document.getElementById('roomProperty').value);
+  if (!name || !propId || !sto) { alert('Name, property and STO rate are required'); return; }
+  var amenities = [];
+  document.querySelectorAll('#amenityList input:checked').forEach(function(c) { amenities.push(c.value); });
+  var list = load('rooms', []);
+  list.push({
+    id: Date.now(),
+    name: name,
+    propertyId: propId,
+    guests: Number(document.getElementById('roomGuests').value) || 2,
+    units: Number(document.getElementById('roomUnits').value) || 1,
+    sto: sto,
+    pub: Number(document.getElementById('roomPublic').value) || sto,
+    location: document.getElementById('roomLocation').value.trim(),
+    amenities: amenities,
+    notes: document.getElementById('roomNotes').value.trim()
+  });
+  store('rooms', list);
+  document.getElementById('roomName').value = '';
+  document.getElementById('roomNotes').value = '';
+  document.querySelectorAll('#amenityList input').forEach(function(c) { c.checked = false; });
+  alert('Room type saved');
+  renderRoomTypes();
+}
+
+function propName(id) {
+  var p = load('properties', []).find(function(x) { return x.id === id; });
+  return p ? p.name : '—';
+}
+
+function renderRoomTypes() {
+  var list = load('rooms', []);
+  document.getElementById('roomTypeList').innerHTML = list.map(function(r) {
+    return '<div class="prop-card"><h4>' + esc(r.name) + '</h4>' +
+      '<div class="prop-meta">' + esc(propName(r.propertyId)) + ' · ' + esc(r.location || '—') + '</div>' +
+      '<div style="font-size:0.85rem;margin-bottom:6px;">STO $' + r.sto + ' · Public $' + r.pub + ' · ' + r.units + ' units · max ' + r.guests + ' guests</div>' +
+      '<div style="font-size:0.78rem;color:var(--warm-gray);">' + esc((r.amenities || []).join(' · ')) + '</div></div>';
+  }).join('') || '<div class="empty-hint">No room types yet.</div>';
+}
+
+function renderRates() {
+  var list = load('rooms', []);
+  document.getElementById('ratesTable').innerHTML = list.map(function(r) {
+    return '<tr><td>' + esc(r.name) + '</td><td>' + esc(propName(r.propertyId)) +
+      '</td><td><input type="number" id="sto_' + r.id + '" value="' + r.sto + '" style="width:90px;padding:6px;"></td>' +
+      '<td><input type="number" id="pub_' + r.id + '" value="' + r.pub + '" style="width:90px;padding:6px;"></td>' +
+      '<td><button class="topbar-btn primary" onclick="saveRate(' + r.id + ')">Save</button></td></tr>';
+  }).join('') || '<tr><td colspan="5" class="empty-hint">Add room types first.</td></tr>';
+}
+
+function saveRate(id) {
+  var list = load('rooms', []);
+  list = list.map(function(r) {
+    if (r.id === id) {
+      r.sto = Number(document.getElementById('sto_' + id).value) || r.sto;
+      r.pub = Number(document.getElementById('pub_' + id).value) || r.pub;
+    }
+    return r;
+  });
+  store('rooms', list);
+  alert('Rates updated');
+}
+
+function renderGallery() {
+  var list = load('gallery', []);
+  var grid = document.getElementById('galleryGrid');
+  if (!list.length) {
+    grid.innerHTML = '<div class="empty-hint" style="grid-column:1/-1;">No photos yet. Upload images above.</div>';
+    return;
+  }
+  grid.innerHTML = list.map(function(g, i) {
+    return '<div class="gallery-item"><img src="' + g + '" alt="Photo ' + (i+1) + '"></div>';
+  }).join('');
+}
+
+function addGalleryFiles(e) {
+  var files = Array.from(e.target.files || []);
+  if (!files.length) return;
+  var list = load('gallery', []);
+  var left = files.length;
+  files.forEach(function(f) {
+    var reader = new FileReader();
+    reader.onload = function() {
+      list.push(reader.result);
+      left--;
+      if (left === 0) { store('gallery', list); renderGallery(); }
+    };
+    reader.readAsDataURL(f);
+  });
+  e.target.value = '';
+}
+
+function renderMessages() {
+  var msgs = [
+    { from: 'Dreamtrails Expeditions', initials: 'DT', text: 'Please confirm availability for 4 luxury tents, 20–23 Oct.', time: '2h ago' },
+    { from: 'Serengeti Trails Ltd', initials: 'ST', text: 'Deposit paid for R-1043. Looking forward to arrival.', time: '5h ago' },
+    { from: 'SafariLink System', initials: 'SL', text: 'Your STO rates were viewed 14 times this week.', time: '1d ago' },
+    { from: 'Kilimanjaro Voyages', initials: 'KV', text: 'Can we extend R-1044 by one night?', time: '1d ago' },
+    { from: 'Safari Circle TZ', initials: 'SC', text: 'Cancellation for R-1045 processed.', time: '2d ago' }
+  ];
+  document.getElementById('msgList').innerHTML = msgs.map(function(m) {
+    return '<div class="msg-row"><div class="msg-avatar">' + m.initials + '</div><div class="msg-body">' +
+      '<h4>' + m.from + ' <span style="font-weight:400;color:var(--warm-gray);font-size:0.75rem;">· ' + m.time + '</span></h4>' +
+      '<p>' + m.text + '</p></div></div>';
+  }).join('');
+}
+
+function renderOccupancy() {
+  var rooms = load('rooms', []);
+  var totalUnits = rooms.reduce(function(s, r) { return s + (r.units || 0); }, 0);
+  document.getElementById('occUnits').textContent = totalUnits || '—';
+  document.getElementById('occByRoom').innerHTML = rooms.map(function(r) {
+    var pct = 55 + (r.id % 40);
+    return '<div style="margin-bottom:14px;"><div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:4px;">' +
+      '<span>' + esc(r.name) + '</span><strong>' + pct + '%</strong></div>' +
+      '<div style="height:8px;background:var(--khaki);border-radius:4px;overflow:hidden;">' +
+      '<div style="height:100%;width:' + pct + '%;background:var(--accent-green);"></div></div></div>';
+  }).join('') || '<div class="empty-hint">Add room types to see occupancy.</div>';
+}
+
+function renderMembers() {
+  var list = load('members', []);
+  document.getElementById('memberList').innerHTML = list.map(function(m) {
+    return '<div class="team-row"><div><strong>' + esc(m.name) + '</strong><div style="font-size:0.8rem;color:var(--warm-gray);">' +
+      esc(m.email) + ' · ' + esc(m.role) + '</div></div>' +
+      '<button class="topbar-btn" onclick="removeMember(' + m.id + ')">Remove</button></div>';
+  }).join('') || '<div class="empty-hint">No team members yet.</div>';
+}
+
+function addMember() {
+  var name = document.getElementById('memName').value.trim();
+  var email = document.getElementById('memEmail').value.trim();
+  if (!name || !email) { alert('Name and email required'); return; }
+  var list = load('members', []);
+  list.push({ id: Date.now(), name: name, email: email, role: document.getElementById('memRole').value });
+  store('members', list);
+  document.getElementById('memName').value = '';
+  document.getElementById('memEmail').value = '';
+  document.getElementById('memberForm').style.display = 'none';
+  renderMembers();
+}
+
+function removeMember(id) {
+  var list = load('members', []).filter(function(m) { return m.id !== id; });
+  store('members', list);
+  renderMembers();
+}
+
+function saveAccount() {
+  store('account', {
+    name: document.getElementById('accName').value,
+    email: document.getElementById('accEmail').value,
+    phone: document.getElementById('accPhone').value,
+    region: document.getElementById('accRegion').value
+  });
+  alert('Account saved');
+}
+
+function esc(s) {
+  var d = document.createElement('div');
+  d.textContent = s == null ? '' : String(s);
+  return d.innerHTML;
+}
+
+seed();
+renderReservations();
+lucide.createIcons();
+</script>
 </body>
 </html>
