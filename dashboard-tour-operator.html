@@ -341,6 +341,36 @@
   }
 </style>
 </head>
+<script>
+  (function () {
+    function readUser() {
+      try {
+        var a = sessionStorage.getItem('safariLinkUser');
+        if (a) return JSON.parse(a);
+      } catch (e) {}
+      try {
+        var b = localStorage.getItem('safarilink_user');
+        if (b) return JSON.parse(b);
+      } catch (e) {}
+      return null;
+    }
+    var user = readUser();
+    if (!user) { window.location.href = 'login.html'; return; }
+
+    var rolePageMap = {
+      'dashboard-fleet.html': ['fleet', 'fleet-owner'],
+      'dashboard-accommodation.html': ['accommodation', 'accommodation-provider'],
+      'dashboard-tour-operator.html': ['tour-operator', 'service-offering'],
+      'dashboard-guide.html': ['guide']
+    };
+    var currentPage = window.location.pathname.split('/').pop();
+    var allowed = rolePageMap[currentPage];
+    if (allowed && allowed.indexOf(user.role) === -1) {
+      window.location.href = 'login.html';
+    }
+  })();
+</script>
+
 <body>
 
 <!-- ============================================
