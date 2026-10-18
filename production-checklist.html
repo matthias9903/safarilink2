@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SafariLink — Production checklist</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 720px; margin: 32px auto; padding: 0 16px; line-height: 1.55; color: #2c2c2c; background: #f8f7f4; }
+  h1 { color: #1a5a3a; font-size: 1.5rem; }
+  h2 { color: #1a5a3a; font-size: 1.1rem; margin-top: 28px; border-bottom: 2px solid #d4cfc6; padding-bottom: 6px; }
+  .card { background: #fff; border: 1px solid #d4cfc6; border-radius: 12px; padding: 16px 18px; margin: 12px 0; }
+  .ok { background: #ecfdf5; border-left: 4px solid #3fb983; }
+  .warn { background: #fffbeb; border-left: 4px solid #f59e0b; }
+  code { background: #e8e5dd; padding: 2px 6px; border-radius: 4px; font-size: 0.88em; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; background: #fff; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #d4cfc6; }
+  th { background: #e8e5dd; }
+  label { display: flex; gap: 10px; margin: 8px 0; align-items: flex-start; }
+</style>
+</head>
+<body>
+<h1>SafariLink — Production checklist</h1>
+<p>Complete these steps on <strong>Railway</strong> so the live site is secure and stable.</p>
+
+<div class="card ok">
+  <strong>Live site:</strong> <code>https://safarilink2-production.up.railway.app</code>
+</div>
+
+<h2>1. Upload production files to GitHub</h2>
+<div class="card">
+  Replace on GitHub, then wait for Railway deploy to turn <strong>Success</strong>:
+  <ul>
+    <li><code>server.js</code></li>
+    <li><code>package.json</code></li>
+    <li>Fixed dashboards + <code>login.html</code> + <code>admin-dashboard.html</code> + <code>request-access.html</code> (from previous step)</li>
+  </ul>
+</div>
+
+<h2>2. Railway Variables (required)</h2>
+<table>
+  <tr><th>Variable</th><th>Example / notes</th></tr>
+  <tr><td><code>ADMIN_PASSWORD</code></td><td>Long password only you know</td></tr>
+  <tr><td><code>ADMIN_TOKEN</code></td><td>Long random string (e.g. 32+ characters)</td></tr>
+  <tr><td><code>DB_PATH</code></td><td><code>/app/data/safarilink.db</code></td></tr>
+  <tr><td><code>PUBLIC_URL</code></td><td><code>https://safarilink2-production.up.railway.app</code></td></tr>
+  <tr><td><code>NODE_ENV</code></td><td><code>production</code></td></tr>
+</table>
+
+<div class="card warn">
+  <strong>Important:</strong> With <code>NODE_ENV=production</code> (or Railway’s environment), the app <em>will not start</em> unless <code>ADMIN_PASSWORD</code> and <code>ADMIN_TOKEN</code> are set. That is intentional for security.
+</div>
+
+<h2>3. Email (approve / reject notifications)</h2>
+<table>
+  <tr><th>Variable</th><th>Notes</th></tr>
+  <tr><td><code>EMAIL_USER</code></td><td>Your Gmail address</td></tr>
+  <tr><td><code>EMAIL_PASS</code></td><td>Gmail <strong>App Password</strong> (not your normal password)</td></tr>
+  <tr><td><code>EMAIL_FROM</code></td><td>Optional; defaults to EMAIL_USER</td></tr>
+</table>
+<p>Google Account → Security → 2-Step Verification → App passwords.</p>
+
+<h2>4. Volume (database + documents)</h2>
+<div class="card">
+  Railway service → add <strong>Volume</strong> mounted at <code>/app/data</code>.
+  Without this, requests and uploaded files can disappear on redeploy.
+</div>
+
+<h2>5. Verify after deploy</h2>
+<label><input type="checkbox"> <code>/api/health</code> returns <code>"ok": true</code></label>
+<label><input type="checkbox"> Admin login works with your <code>ADMIN_PASSWORD</code></label>
+<label><input type="checkbox"> Request Access saves a request</label>
+<label><input type="checkbox"> Approve shows temp password</label>
+<label><input type="checkbox"> Fleet / accommodation / guide dashboards stay logged in</label>
+<label><input type="checkbox"> Document upload appears in Admin → Review</label>
+
+<h2>6. Owner partner login</h2>
+<div class="card">
+  Email: <code>dreamtrailsexpedictions@gmail.com</code><br>
+  Password: value of <code>OWNER_TEMP_PASSWORD</code> (default <code>SafariLink2026</code> until you change it)<br>
+  Pick any role on the login page to open that dashboard.
+</div>
+
+<h2>What “production-ready” includes in this build</h2>
+<ul>
+  <li>Required secrets in production (no weak defaults live)</li>
+  <li>Rate limits on login and public APIs</li>
+  <li>Security headers (Helmet)</li>
+  <li>Input validation and safer file names</li>
+  <li>Database indexes + graceful shutdown</li>
+  <li>Email on approve/reject when configured</li>
+  <li>Health check including database</li>
+</ul>
+
+<p style="color:#6b6560;font-size:0.9rem;margin-top:32px">Dreamtrails Expeditions · SafariLink</p>
+</body>
+</html>
