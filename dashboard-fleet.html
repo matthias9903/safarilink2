@@ -46,12 +46,13 @@
   .sidebar.collapsed .sidebar-badge { display: none; }
   .sidebar.collapsed .sidebar-link { justify-content: center; padding: 12px 0; }
   .sidebar-collapse-btn {
-    position: absolute; top: 18px; right: -12px; width: 24px; height: 24px;
+    position: fixed; top: 72px; left: 236px; width: 28px; height: 28px;
     background: var(--forest-green); color: #fff; border: 2px solid #fff;
     border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    cursor: pointer; z-index: 5; box-shadow: 0 2px 6px rgba(0,0,0,.2);
+    cursor: pointer; z-index: 1101; box-shadow: 0 2px 8px rgba(0,0,0,.25);
+    transition: left .3s ease;
   }
-  .sidebar-collapse-btn i { width: 12px; height: 12px; }
+  .sidebar-collapse-btn i { width: 14px; height: 14px; }
   .sidebar-brand {
     padding: 18px; border-bottom: 1px solid rgba(255,255,255,.08);
     display: flex; gap: 10px; align-items: center;
@@ -205,7 +206,7 @@
 
 </style></head>
 <script>(function(){function ru(){try{var a=sessionStorage.getItem('safariLinkUser');if(a)return JSON.parse(a)}catch(e){}try{var b=localStorage.getItem('safarilink_user');if(b)return JSON.parse(b)}catch(e){}return null}var u=ru();if(!u){location.href='login.html';return}var map={'dashboard-fleet.html':['fleet','fleet-owner'],'dashboard-accommodation.html':['accommodation','accommodation-provider'],'dashboard-tour-operator.html':['tour-operator','service-offering'],'dashboard-guide.html':['guide']};var page=location.pathname.split('/').pop();if(map[page]&&map[page].indexOf(u.role)===-1)location.href='login.html';})();</script><body>
-<aside class="sidebar" id="sidebar"><button class="sidebar-collapse-btn" onclick="toggleCollapse()" title="Collapse menu"><i data-lucide="chevrons-left" id="collapseIcon"></i></button><div class="sidebar-brand"><div class="logo-icon">SL</div><div class="logo-text">Safari<span>Link</span></div></div>
+<aside class="sidebar" id="sidebar"><div class="sidebar-brand"><div class="logo-icon">SL</div><div class="logo-text">Safari<span>Link</span></div></div>
 <nav class="sidebar-nav">
 <div class="sidebar-section">Main</div>
 <a class="sidebar-link active" data-p="dashboard" onclick="go('dashboard')"><i data-lucide="layout-dashboard"></i>Dashboard</a>
@@ -225,6 +226,8 @@
 <a class="sidebar-link" data-p="account" onclick="go('account')"><i data-lucide="settings"></i>Account & Team</a>
 </nav>
 <div class="sidebar-footer"><div style="color:#fff;font-weight:600">Safari Fleet Tanzania</div><div style="opacity:.5;font-size:.7rem"><span class="live-dot"></span>Fleet · Live</div></div></aside>
+<button class="sidebar-collapse-btn" onclick="toggleCollapse()" title="Collapse menu"><i data-lucide="chevrons-left" id="collapseIcon"></i></button>
+
 <div class="main"><header class="topbar"><div><h2 id="title">Dashboard</h2><p id="sub">Live platform</p></div>
 <div style="display:flex;gap:8px"><button class="btn" onclick="logout()"><i data-lucide="log-out"></i> Log out</button><button class="btn btn-primary" onclick="go('add')"><i data-lucide="plus"></i> Add vehicle</button></div></header>
 <div class="content">
@@ -290,7 +293,7 @@ function badge(s){return '<span class="badge badge-'+String(s).toLowerCase().rep
 function money(n){return '$'+Number(n||0).toLocaleString()}
 function fileToDataUrl(f){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(r.result)};r.onerror=rej;r.readAsDataURL(f)})}
 
-function toggleCollapse(){var sb=document.getElementById('sidebar');var icon=document.getElementById('collapseIcon');sb.classList.toggle('collapsed');if(icon){icon.setAttribute('data-lucide',sb.classList.contains('collapsed')?'chevrons-right':'chevrons-left');lucide.createIcons()}}
+function toggleCollapse(){var sb=document.getElementById('sidebar');var icon=document.getElementById('collapseIcon');var btn=document.querySelector('.sidebar-collapse-btn');sb.classList.toggle('collapsed');if(btn)btn.style.left=sb.classList.contains('collapsed')?'54px':'236px';if(icon){icon.setAttribute('data-lucide',sb.classList.contains('collapsed')?'chevrons-right':'chevrons-left');lucide.createIcons()}}
 function logout(){sessionStorage.removeItem('safariLinkUser');try{localStorage.removeItem('safarilink_user')}catch(e){}location.href='index.html'}
 var TITLES={   dashboard:['Dashboard','Vehicles on hire, available today and utilisation'],   fleet:['My Fleet','Safari cars, vans and minibuses with features and photos'],   add:['Add Vehicle','Register a new unit with required safari features'],   bookings:['Charter Bookings','Operator hires and trip status'],   drivers:['Drivers','Licences, languages, rating and trip history'],   availability:['Availability Calendar','Block vehicle dates by month or year'],   rates:['Rates & Packages','Day, safari-day and transfer rates'],   agreements:['Hire Agreements','Online terms — operator can accept'],   insurance:['Insurance & Compliance','Renewals, TANAPA/NCAA and pre-hire checks'],   messages:['Messages','Dispatch messages from operators'],   revenue:['Revenue & Utilisation','Completed charters and fleet utilisation'],   account:['Account & Team','Fleet admin and dispatch roles'] };
 var calMonth=new Date();calMonth.setDate(1);
