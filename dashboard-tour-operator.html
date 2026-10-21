@@ -40,7 +40,7 @@
 
   .sidebar {
     width: 240px; background: var(--charcoal); color: #ccc;
-    overflow-y: auto; position: fixed; top: 0; left: 0; height: 100vh; z-index: 1000;
+    overflow-x: visible; overflow-y: auto; position: fixed; top: 0; left: 0; height: 100vh; z-index: 1000;
     transition: transform 0.3s ease, width 0.3s ease; display: flex; flex-direction: column;
   }
   .sidebar.collapsed { width: 68px; }
@@ -53,12 +53,15 @@
   .sidebar.collapsed .logo-text { display: none; }
   .main-content { transition: margin-left 0.3s ease; }
   .main-content.sidebar-collapsed { margin-left: 68px; }
+  /* Collapse button sits on the right edge of the sidebar so it is always visible */
   .sidebar-collapse-btn {
-    position: absolute; top: 18px; right: -14px; width: 28px; height: 28px;
+    position: fixed; top: 72px; left: 226px; width: 28px; height: 28px;
     background: var(--forest-green); color: #fff; border: 2px solid #fff; border-radius: 50%;
     display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1101;
-    box-shadow: 0 2px 6px rgba(0,0,0,.2);
+    box-shadow: 0 2px 8px rgba(0,0,0,.25); transition: left 0.3s ease;
   }
+  .sidebar.collapsed ~ .main-content .sidebar-collapse-btn,
+  body:has(.sidebar.collapsed) .sidebar-collapse-btn { left: 54px; }
   .sidebar-collapse-btn i { width: 14px; height: 14px; }
 
   .sidebar-header {
@@ -408,9 +411,6 @@
 
     <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
-        <button class="sidebar-collapse-btn" onclick="toggleSidebarCollapse()" title="Collapse menu">
-            <i data-lucide="chevrons-left" id="collapseIcon"></i>
-        </button>
         <div class="sidebar-header">
             <div class="sidebar-logo" onclick="navigateTo('homepage')">
                 <div class="logo-icon">SL</div>
@@ -465,6 +465,11 @@
             </div>
         </nav>
     </aside>
+
+    <!-- Collapse menu button (outside sidebar so it is never clipped) -->
+    <button class="sidebar-collapse-btn" onclick="toggleSidebarCollapse()" title="Collapse / expand menu">
+        <i data-lucide="chevrons-left" id="collapseIcon"></i>
+    </button>
 
     <!-- MAIN CONTENT -->
     <div class="main-content">
@@ -720,7 +725,7 @@
 
                         <!-- Day-by-Day Section -->
                         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-                            <div style="font-weight:700;color:var(--charcoal);">📅 Day-by-Day Activities &amp; Accommodations</div>
+                            <div style="font-weight:700;color:var(--charcoal);display:flex;align-items:center;gap:8px;"><i data-lucide="calendar-days" style="width:18px;height:18px;"></i> Day-by-Day Activities &amp; Accommodations</div>
                             <div style="display:flex;gap:8px;">
                                 <button class="btn btn-secondary btn-sm" onclick="ibAddDay()">+ Add Day</button>
                                 <button class="btn btn-primary btn-sm" onclick="openSupplierModal()">+ Find Suppliers</button>
@@ -733,7 +738,7 @@
                         <!-- Costing & Quote Preview -->
                         <div style="margin-top:28px;">
                             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-                                <div style="font-weight:700;color:var(--charcoal);">💰 Costing &amp; Quote Preview</div>
+                                <div style="font-weight:700;color:var(--charcoal);display:flex;align-items:center;gap:8px;"><i data-lucide="wallet" style="width:18px;height:18px;"></i> Costing &amp; Quote Preview</div>
                                 <button class="btn btn-secondary btn-sm" onclick="ibAddCostItem()">+ Add Cost Item</button>
                             </div>
                             <div style="overflow-x:auto;">
@@ -786,7 +791,7 @@
                                 </div>
                                 <div style="margin-top:16px;display:flex;gap:10px;justify-content:flex-end;">
                                     <button class="btn btn-secondary" onclick="ibGoToStep(2)">← Back: Tour Request</button>
-                                    <button class="btn btn-primary" onclick="ibGenerateQuote()">📄 Generate Quote</button>
+                                    <button class="btn btn-primary" onclick="ibGenerateQuote()"><i data-lucide="file-text" style="width:16px;height:16px;"></i> Generate Quote</button>
                                 </div>
                             </div>
                         </div>
@@ -800,7 +805,7 @@
                 <div class="modal">
                     <div class="modal-header">
                         <div class="modal-title">Find &amp; Add Suppliers</div>
-                        <button class="modal-close" onclick="closeSupplierModal()">✕</button>
+                        <button class="modal-close" onclick="closeSupplierModal()"><i data-lucide="x" style="width:16px;height:16px;"></i></button>
                     </div>
                     <div class="modal-body">
                         <input type="text" id="supplierSearch" placeholder="Search accommodations, vehicles, guides..." style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:6px;margin-bottom:16px;" oninput="ibFilterSuppliers()">
@@ -849,7 +854,7 @@
             <div class="modal">
                 <div class="modal-header">
                     <div class="modal-title" id="accomDetailTitle">Property Details</div>
-                    <button class="modal-close" onclick="closeModal('accomDetailModal')">✕</button>
+                    <button class="modal-close" onclick="closeModal('accomDetailModal')"><i data-lucide="x" style="width:16px;height:16px;"></i></button>
                 </div>
                 <div class="modal-body" id="accomDetailBody">
                     <!-- Injected by JS -->
@@ -893,7 +898,7 @@
             <div class="modal">
                 <div class="modal-header">
                     <div class="modal-title" id="fleetDetailTitle">Vehicle Details</div>
-                    <button class="modal-close" onclick="closeModal('fleetDetailModal')">✕</button>
+                    <button class="modal-close" onclick="closeModal('fleetDetailModal')"><i data-lucide="x" style="width:16px;height:16px;"></i></button>
                 </div>
                 <div class="modal-body" id="fleetDetailBody">
                     <!-- Injected by JS -->
@@ -938,7 +943,7 @@
             <div class="modal">
                 <div class="modal-header">
                     <div class="modal-title" id="guideDetailTitle">Guide Details</div>
-                    <button class="modal-close" onclick="closeModal('guideDetailModal')">✕</button>
+                    <button class="modal-close" onclick="closeModal('guideDetailModal')"><i data-lucide="x" style="width:16px;height:16px;"></i></button>
                 </div>
                 <div class="modal-body" id="guideDetailBody">
                     <!-- Injected by JS -->
@@ -1137,6 +1142,56 @@ function renderOpMessages(){
   }).join('');
 }
 
+/* Live sourcing from partner dashboards (shared store). Falls back to seed data. */
+function getLiveAccommodations(){
+  var d = slGet();
+  if (d.properties && d.properties.length) {
+    return d.properties.map(function(p){
+      var rooms = (d.roomTypes||[]).filter(function(r){ return r.propertyId === p.id; });
+      var minSto = rooms.length ? Math.min.apply(null, rooms.map(function(r){ return r.sto||999; })) : 0;
+      return {
+        id: p.id, name: p.name, type: p.type||'Lodge', location: p.location||'',
+        budget: minSto >= 400 ? 'Luxury' : (minSto >= 200 ? 'Premium' : 'Mid-range'),
+        rating: 4.6, pricePerNight: minSto || 250,
+        amenities: (p.amenities||[]).join(','), description: p.desc||'', contact: p.contact||'',
+        status: p.status||'available', preview: p.preview||'', unitsTotal: p.unitsTotal||0, unitsOccupied: p.unitsOccupied||0
+      };
+    });
+  }
+  return typeof accommodations !== 'undefined' ? accommodations : [];
+}
+function getLiveFleet(){
+  var d = slGet();
+  if (d.vehicles && d.vehicles.length) {
+    return d.vehicles.map(function(v){
+      return {
+        id: v.id, name: (v.model||v.plate) + ' ' + (v.plate||''), type: v.category||'Vehicle',
+        seats: v.seats||7, budget: (v.dayRate||0) >= 200 ? 'Premium' : 'Mid-range',
+        year: v.year||2022, ratePerDay: v.dayRate||150, status: v.status||'Available',
+        features: (v.features||[]).join(','), description: (v.model||'') + ' based in ' + (v.base||'Arusha'),
+        preview: v.preview||'', plate: v.plate||''
+      };
+    });
+  }
+  return typeof fleet !== 'undefined' ? fleet : [];
+}
+function getLiveGuides(){
+  var d = slGet();
+  if (d.guides && d.guides.length) {
+    return d.guides.map(function(g){
+      return {
+        id: g.id, name: g.name, special: (g.skills&&g.skills[0])||'Game drives',
+        location: g.base||'Arusha', years: g.years||5,
+        cert: (g.certs&&g.certs[0]&&g.certs[0].name)||'Licensed Guide',
+        avail: 'Available', dailyRate: g.rate||80, rating: g.rating||4.8,
+        languages: g.languages||['English','Swahili'], vehicle: 'Client vehicle',
+        highlight: g.bio||'', image: g.image||''
+      };
+    });
+  }
+  return typeof guides !== 'undefined' ? guides : [];
+}
+
 /* ── Page Switching ── */
 window.switchPage = function(pageName) {
     // Deactivate all pages
@@ -1154,11 +1209,11 @@ window.switchPage = function(pageName) {
     });
     // Re-render lucide icons
     if (window.lucide) { lucide.createIcons(); }
-    // Trigger page-specific init
+    // Trigger page-specific init — sourcing uses live partner data when available
     if (pageName === 'itinerary') { ibInitDates(); }
-    if (pageName === 'accommodation') { accomRenderCards(accommodations); }
-    if (pageName === 'fleet') { fleetRenderCards(fleet); }
-    if (pageName === 'guides') { guideRenderCards(guides); }
+    if (pageName === 'accommodation') { accomRenderCards(getLiveAccommodations()); }
+    if (pageName === 'fleet') { fleetRenderCards(getLiveFleet()); }
+    if (pageName === 'guides') { guideRenderCards(getLiveGuides()); }
     if (pageName === 'messages') { renderOpMessages(); }
     // Close mobile sidebar
     document.getElementById('sidebar').classList.remove('open');
@@ -1176,8 +1231,10 @@ window.toggleSidebarCollapse = function() {
     var sb = document.getElementById('sidebar');
     var main = document.querySelector('.main-content');
     var icon = document.getElementById('collapseIcon');
+    var btn = document.querySelector('.sidebar-collapse-btn');
     sb.classList.toggle('collapsed');
     if (main) main.classList.toggle('sidebar-collapsed');
+    if (btn) btn.style.left = sb.classList.contains('collapsed') ? '54px' : '226px';
     if (icon) {
         icon.setAttribute('data-lucide', sb.classList.contains('collapsed') ? 'chevrons-right' : 'chevrons-left');
         if (window.lucide) lucide.createIcons();
@@ -1251,7 +1308,7 @@ window.handleImageUpload = function(input, previewId) {
         // Re-create icon layer
         var iconDiv = document.createElement('div');
         iconDiv.className = 'img-placeholder-icon';
-        iconDiv.innerHTML = '📷<span>Change image</span>';
+        iconDiv.innerHTML = '<i data-lucide="camera" style="width:24px;height:24px;opacity:.5;"></i><span>Change image</span>';
         preview.appendChild(iconDiv);
         preview.onclick = function() { newInput.click(); };
     };
@@ -1466,7 +1523,7 @@ window.initImagePlaceholders = function() {
                 '<td><input class="cost-input" type="number" value="' + item.unitCost + '" min="0" step="0.01" onchange="ibUpdateCostItem(' + i + ',\'unitCost\',this.value)"></td>' +
                 '<td><input class="cost-input" style="width:60px;" type="number" value="' + item.qty + '" min="1" onchange="ibUpdateCostItem(' + i + ',\'qty\',this.value)"></td>' +
                 '<td style="font-weight:600;">$' + total.toFixed(2) + '</td>' +
-                '<td><button class="cost-remove" onclick="ibRemoveCostItem(' + i + ')">✕</button></td>' +
+                '<td><button class="cost-remove" onclick="ibRemoveCostItem(' + i + ')"><i data-lucide="x" style="width:14px;height:14px;"></i></button></td>' +
             '</tr>';
         }).join('');
         ibCalcCosts();
@@ -1503,9 +1560,9 @@ window.initImagePlaceholders = function() {
         var firstName = document.getElementById('ibFirstName').value.trim();
         var lastName = document.getElementById('ibLastName').value.trim();
         var tourTitle = document.getElementById('ibTourTitle').value.trim();
-        if (!firstName || !lastName) { showToast('⚠️ Please enter client first and last name (Step 1).'); ibGoToStep(1); return; }
-        if (!tourTitle) { showToast('⚠️ Please enter a tour title (Step 2).'); ibGoToStep(2); return; }
-        showToast('📄 Quote generated for ' + firstName + ' ' + lastName + ' — ' + tourTitle);
+        if (!firstName || !lastName) { showToast('Please enter client first and last name (Step 1).'); ibGoToStep(1); return; }
+        if (!tourTitle) { showToast('Please enter a tour title (Step 2).'); ibGoToStep(2); return; }
+        showToast('Quote generated for ' + firstName + ' ' + lastName + ' — ' + tourTitle);
     };
 
     /* ── Supplier Modal ── */
@@ -1591,17 +1648,17 @@ var accommodations = [
         return '<div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;box-shadow:var(--shadow-sm);cursor:pointer;" onclick="accomViewDetail(' + a.id + ')">' +
             '<div class="img-placeholder" id="accomImg_' + a.id + '" onclick="event.stopPropagation();">' +
                 '<input type="file" accept="image/*" onchange="handleImageUpload(this,\'accomImg_' + a.id + '\')" style="display:none;">' +
-                '<div class="img-placeholder-icon">📷<span>Upload photo</span></div>' +
+                '<div class="img-placeholder-icon"><i data-lucide="camera" style="width:24px;height:24px;opacity:.5;"></i><span>Upload photo</span></div>' +
             '</div>' +
             '<div style="padding:14px;">' +
                 '<div style="display:flex;justify-content:space-between;align-items:start;">' +
                     '<div style="font-weight:700;font-size:.92rem;">' + esc(a.name) + '</div>' +
                     '<span class="badge badge-info">' + esc(a.type) + '</span>' +
                 '</div>' +
-                '<div style="font-size:.78rem;color:var(--warm-gray);margin-top:4px;">📍 ' + esc(a.location) + ' · ' + esc(a.budget) + '</div>' +
+                '<div style="font-size:.78rem;color:var(--warm-gray);margin-top:4px;"><i data-lucide="map-pin" style="width:12px;height:12px;display:inline;vertical-align:-2px;"></i> ' + esc(a.location) + ' · ' + esc(a.budget) + '</div>' +
                 '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">' +
                     '<div><span style="font-weight:700;color:var(--primary);">$' + a.pricePerNight + '</span> <span style="font-size:.75rem;color:var(--warm-gray);">/night</span></div>' +
-                    '<div style="font-size:.82rem;">⭐ ' + a.rating.toFixed(1) + '</div>' +
+                    '<div style="font-size:.82rem;"><i data-lucide="star" style="width:12px;height:12px;display:inline;vertical-align:-2px;"></i> ' + a.rating.toFixed(1) + '</div>' +
                 '</div>' +
                 '<div style="display:flex;gap:8px;margin-top:10px;">' +
                     '<button class="btn btn-secondary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();accomViewDetail(' + a.id + ')">View Details</button>' +
@@ -1611,13 +1668,14 @@ var accommodations = [
         '</div>';
     }).join('');
     initImagePlaceholders();
+    if (window.lucide) lucide.createIcons();
 };
 
     window.accomApplyFilters = function() {
         var search = (document.getElementById('accomSearch').value || '').toLowerCase();
         var type = document.getElementById('accomTypeFilter').value;
         var budget = document.getElementById('accomBudgetFilter').value;
-        var filtered = accommodations.filter(function(a) {
+        var filtered = getLiveAccommodations().filter(function(a) {
             return (a.name.toLowerCase().indexOf(search) !== -1 || a.location.toLowerCase().indexOf(search) !== -1) &&
                    (!type || a.type === type) &&
                    (!budget || a.budget === budget);
@@ -1632,12 +1690,12 @@ var accommodations = [
         document.getElementById('accomDetailBody').innerHTML =
             '<div class="detail-img-placeholder" id="accomDetailImg_' + a.id + '" onclick="event.stopPropagation();">' +
                 '<input type="file" accept="image/*" onchange="handleImageUpload(this,\'accomDetailImg_' + a.id + '\')" style="display:none;">' +
-                '<div class="img-placeholder-icon">📷<span>Upload property photo</span></div>' +
+                '<div class="img-placeholder-icon"><i data-lucide="camera" style="width:24px;height:24px;opacity:.5;"></i><span>Upload property photo</span></div>' +
             '</div>' +
             '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;">' +
                 '<span class="badge badge-info">' + esc(a.type) + '</span>' +
                 '<span class="badge badge-success">' + esc(a.budget) + '</span>' +
-                '<span style="font-size:.85rem;">⭐ ' + a.rating.toFixed(1) + '</span>' +
+                '<span style="font-size:.85rem;"><i data-lucide="star" style="width:12px;height:12px;display:inline;vertical-align:-2px;"></i> ' + a.rating.toFixed(1) + '</span>' +
             '</div>' +
             '<div style="margin-bottom:8px;"><strong>Location:</strong> ' + esc(a.location) + '</div>' +
             '<div style="margin-bottom:8px;"><strong>Rate:</strong> $' + a.pricePerNight + ' / night</div>' +
@@ -1645,16 +1703,46 @@ var accommodations = [
             '<div style="margin-bottom:12px;"><strong>Contact:</strong> ' + esc(a.contact) + '</div>' +
             '<p style="color:var(--charcoal);line-height:1.5;">' + esc(a.description) + '</p>' +
             '<div style="display:flex;gap:8px;margin-top:16px;">' +
-                '<button class="btn btn-primary" style="flex:1;justify-content:center;" onclick="accomReserve(' + a.id + ')">📩 Reserve</button>' +
-                '<button class="btn btn-secondary" onclick="showToast(\'✅ ' + esc(a.name) + ' added to favorites\')">♥ Save</button>' +
+                '<button class="btn btn-primary" style="flex:1;justify-content:center;" onclick="accomReserve(' + a.id + ')"><i data-lucide="send" style="width:14px;height:14px;"></i> Reserve</button>' +
+                '<button class="btn btn-secondary" onclick="showToast(\'' + esc(a.name) + ' added to favorites\')"><i data-lucide="heart" style="width:14px;height:14px;"></i> Save</button>' +
             '</div>';
         initImagePlaceholders();
         openModal('accomDetailModal');
     };
 
     window.accomReserve = function(id) {
-        var a = accommodations.find(function(x) { return x.id === id; });
-        showToast('✅ Reservation request sent for ' + (a ? a.name : 'property'));
+        var list = getLiveAccommodations();
+        var a = list.find(function(x) { return x.id === id; });
+        if (!a) { showToast('Property not found'); return; }
+        var today = new Date();
+        var cin = new Date(today); cin.setDate(cin.getDate() + 3);
+        var cout = new Date(today); cout.setDate(cout.getDate() + 6);
+        slUpdate(function(d) {
+            if (!d.reservations) d.reservations = [];
+            d.reservations.push({
+                id: 'R-' + Date.now().toString().slice(-4),
+                operator: 'Dreamtrails Expeditions',
+                propertyId: a.id,
+                room: (d.roomTypes||[]).filter(function(r){return r.propertyId===a.id;})[0]?.name || 'Standard',
+                checkIn: cin.toISOString().slice(0,10),
+                checkOut: cout.toISOString().slice(0,10),
+                guests: 2,
+                amount: (a.pricePerNight||200) * 3,
+                payment: 'Pending',
+                status: 'reserved',
+                createdAt: Date.now(),
+                repliedAt: null,
+                notes: 'Requested from operator sourcing'
+            });
+            if (!d.messages) d.messages = [];
+            d.messages.push({
+                id: Date.now(), side: 'accommodation', from: 'Dreamtrails Expeditions', initials: 'DT',
+                text: 'New reservation request for ' + a.name + ' (3 nights).',
+                time: Date.now(), type: 'info', related: null, unread: true
+            });
+        });
+        showToast('Reservation sent to ' + a.name + ' — appears live on accommodation dashboard');
+        if (window.lucide) lucide.createIcons();
     };
 })();
 
@@ -1680,7 +1768,7 @@ var fleet = [
             return '<div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;box-shadow:var(--shadow-sm);cursor:pointer;" onclick="fleetViewDetail(' + v.id + ')">' +
                 '<div class="img-placeholder" id="fleetImg_' + v.id + '" onclick="event.stopPropagation();">' +
                     '<input type="file" accept="image/*" onchange="handleImageUpload(this,\'fleetImg_' + v.id + '\')" style="display:none;">' +
-                    '<div class="img-placeholder-icon">🚙<span>Upload photo</span></div>' +
+                    '<div class="img-placeholder-icon"><i data-lucide="car" style="width:24px;height:24px;opacity:.5;"></i><span>Upload photo</span></div>' +
                 '</div>' +
                 '<div style="padding:14px;">' +
                     '<div style="display:flex;justify-content:space-between;align-items:start;">' +
@@ -1703,7 +1791,7 @@ var fleet = [
         var search = (document.getElementById('fleetSearch').value || '').toLowerCase();
         var type = document.getElementById('fleetTypeFilter').value;
         var seats = document.getElementById('fleetSeatsFilter').value;
-        var filtered = fleet.filter(function(v) {
+        var filtered = getLiveFleet().filter(function(v) {
             return (v.name.toLowerCase().indexOf(search) !== -1 || v.type.toLowerCase().indexOf(search) !== -1) &&
                    (!type || v.type === type) &&
                    (!seats || (
@@ -1723,7 +1811,7 @@ var fleet = [
         document.getElementById('fleetDetailBody').innerHTML =
             '<div class="detail-img-placeholder" id="fleetDetailImg_' + v.id + '" onclick="event.stopPropagation();">' +
                 '<input type="file" accept="image/*" onchange="handleImageUpload(this,\'fleetDetailImg_' + v.id + '\')" style="display:none;">' +
-                '<div class="img-placeholder-icon">🚙<span>Upload vehicle photo</span></div>' +
+                '<div class="img-placeholder-icon"><i data-lucide="car" style="width:24px;height:24px;opacity:.5;"></i><span>Upload vehicle photo</span></div>' +
             '</div>' +
             '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;">' +
                 '<span class="badge badge-info">' + esc(v.type) + '</span>' +
@@ -1735,16 +1823,43 @@ var fleet = [
             '<div style="margin-bottom:8px;"><strong>Features:</strong> ' + esc(v.features) + '</div>' +
             '<p style="color:var(--charcoal);line-height:1.5;">' + esc(v.description) + '</p>' +
             '<div style="display:flex;gap:8px;margin-top:16px;">' +
-                '<button class="btn btn-primary" style="flex:1;justify-content:center;" onclick="fleetLease(' + v.id + ')">🔑 Lease Vehicle</button>' +
-                '<button class="btn btn-secondary" onclick="showToast(\'✅ ' + esc(v.name) + ' added to favorites\')">♥ Save</button>' +
+                '<button class="btn btn-primary" style="flex:1;justify-content:center;" onclick="fleetLease(' + v.id + ')"><i data-lucide="key" style="width:14px;height:14px;"></i> Lease Vehicle</button>' +
+                '<button class="btn btn-secondary" onclick="showToast(\'' + esc(v.name) + ' added to favorites\')"><i data-lucide="heart" style="width:14px;height:14px;"></i> Save</button>' +
             '</div>';
         initImagePlaceholders();
         openModal('fleetDetailModal');
     };
 
     window.fleetLease = function(id) {
-        var v = fleet.find(function(x) { return x.id === id; });
-        showToast('✅ Lease request sent for ' + (v ? v.name : 'vehicle'));
+        var list = getLiveFleet();
+        var v = list.find(function(x) { return x.id === id; });
+        if (!v) { showToast('Vehicle not found'); return; }
+        var today = new Date();
+        var start = new Date(today); start.setDate(start.getDate() + 2);
+        var end = new Date(today); end.setDate(end.getDate() + 7);
+        slUpdate(function(d) {
+            if (!d.charters) d.charters = [];
+            d.charters.push({
+                ref: 'CH-' + Date.now().toString().slice(-3),
+                operator: 'Dreamtrails Expeditions',
+                vehicleId: v.id,
+                plate: v.plate || v.name,
+                start: start.toISOString().slice(0,10),
+                end: end.toISOString().slice(0,10),
+                route: 'Northern circuit',
+                driver: '',
+                value: (v.ratePerDay||150) * 5,
+                status: 'Reserved',
+                createdAt: Date.now()
+            });
+            if (!d.messages) d.messages = [];
+            d.messages.push({
+                id: Date.now(), side: 'fleet', from: 'Dreamtrails Expeditions', initials: 'DT',
+                text: 'Charter request for ' + (v.plate||v.name) + ' — 5 days.',
+                time: Date.now(), type: 'info', unread: true
+            });
+        });
+        showToast('Lease request sent for ' + (v.plate||v.name) + ' — appears live on fleet dashboard');
     };
 })();
 
@@ -1769,18 +1884,18 @@ var guides = [
         return '<div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;box-shadow:var(--shadow-sm);cursor:pointer;" onclick="guideViewDetail(' + g.id + ')">' +
             '<div class="img-placeholder" id="guideImg_' + g.id + '" onclick="event.stopPropagation();">' +
                 '<input type="file" accept="image/*" onchange="handleImageUpload(this,\'guideImg_' + g.id + '\')" style="display:none;">' +
-                '<div class="img-placeholder-icon">🧑<span>Upload photo</span></div>' +
+                '<div class="img-placeholder-icon"><i data-lucide="user" style="width:24px;height:24px;opacity:.5;"></i><span>Upload photo</span></div>' +
             '</div>' +
             '<div style="padding:14px;">' +
                 '<div style="display:flex;justify-content:space-between;align-items:start;">' +
                     '<div style="font-weight:700;font-size:.92rem;">' + esc(g.name) + '</div>' +
                     '<span class="badge badge-info">' + esc(g.special) + '</span>' +
                 '</div>' +
-                '<div style="font-size:.78rem;color:var(--warm-gray);margin-top:4px;">📍 ' + esc(g.location) + ' · ' + g.years + ' yrs exp</div>' +
+                '<div style="font-size:.78rem;color:var(--warm-gray);margin-top:4px;"><i data-lucide="map-pin" style="width:12px;height:12px;display:inline;vertical-align:-2px;"></i> ' + esc(g.location) + ' · ' + g.years + ' yrs exp</div>' +
                 '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;">' + langTags + '</div>' +
                 '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">' +
                     '<div><span style="font-weight:700;color:var(--primary);">$' + g.dailyRate + '</span> <span style="font-size:.75rem;color:var(--warm-gray);">/da</span></div>' +
-                    '<div style="font-size:.82rem;">⭐ ' + g.rating.toFixed(1) + '</div>' +
+                    '<div style="font-size:.82rem;"><i data-lucide="star" style="width:12px;height:12px;display:inline;vertical-align:-2px;"></i> ' + g.rating.toFixed(1) + '</div>' +
                 '</div>' +
                 '<div style="display:flex;gap:8px;margin-top:10px;">' +
                     '<button class="btn btn-secondary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();guideViewDetail(' + g.id + ')">View Details</button>' +
@@ -1790,13 +1905,14 @@ var guides = [
         '</div>';
     }).join('');
     initImagePlaceholders();
+    if (window.lucide) lucide.createIcons();
 };
 
     window.guideApplyFilters = function() {
         var search = (document.getElementById('guideSearch').value || '').toLowerCase();
         var spec = document.getElementById('guideSpecFilter').value;
         var lang = document.getElementById('guideLangFilter').value;
-        var filtered = guides.filter(function(g) {
+        var filtered = getLiveGuides().filter(function(g) {
             return (g.name.toLowerCase().indexOf(search) !== -1 || g.special.toLowerCase().indexOf(search) !== -1 || g.location.toLowerCase().indexOf(search) !== -1) &&
                    (!spec || g.special === spec) &&
                    (!lang || g.languages.indexOf(lang) !== -1);
@@ -1812,12 +1928,12 @@ var guides = [
         document.getElementById('guideDetailBody').innerHTML =
             '<div class="detail-img-placeholder" id="guideDetailImg_' + g.id + '" onclick="event.stopPropagation();">' +
                 '<input type="file" accept="image/*" onchange="handleImageUpload(this,\'guideDetailImg_' + g.id + '\')" style="display:none;">' +
-                '<div class="img-placeholder-icon">🧑<span>Upload guide photo</span></div>' +
+                '<div class="img-placeholder-icon"><i data-lucide="user" style="width:24px;height:24px;opacity:.5;"></i><span>Upload guide photo</span></div>' +
             '</div>' +
             '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;">' +
                 '<span class="badge badge-info">' + esc(g.special) + '</span>' +
                 '<span class="badge badge-success">' + esc(g.avail) + '</span>' +
-                '<span style="font-size:.85rem;">⭐ ' + g.rating.toFixed(1) + '</span>' +
+                '<span style="font-size:.85rem;"><i data-lucide="star" style="width:12px;height:12px;display:inline;vertical-align:-2px;"></i> ' + g.rating.toFixed(1) + '</span>' +
             '</div>' +
             '<div style="margin-bottom:8px;"><strong>Location:</strong> ' + esc(g.location) + '</div>' +
             '<div style="margin-bottom:8px;"><strong>Experience:</strong> ' + g.years + ' years · ' + esc(g.cert) + '</div>' +
@@ -1827,18 +1943,39 @@ var guides = [
             '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">' + langTags + '</div>' +
             '<p style="color:var(--charcoal);line-height:1.5;">' + esc(g.highlight) + '</p>' +
             '<div style="display:flex;gap:8px;margin-top:16px;">' +
-                '<button class="btn btn-primary" style="flex:1;justify-content:center;" onclick="guideRequest(' + g.id + ')">🧭 Request Guide</button>' +
-                '<button class="btn btn-secondary" onclick="showToast(\'✅ ' + esc(g.name) + ' added to favorites\')">♥ Save</button>' +
+                '<button class="btn btn-primary" style="flex:1;justify-content:center;" onclick="guideRequest(' + g.id + ')"><i data-lucide="compass" style="width:14px;height:14px;"></i> Request Guide</button>' +
+                '<button class="btn btn-secondary" onclick="showToast(\'' + esc(g.name) + ' added to favorites\')"><i data-lucide="heart" style="width:14px;height:14px;"></i> Save</button>' +
             '</div>';
         initImagePlaceholders();
         openModal('guideDetailModal');
     };
 
     window.guideRequest = function(id) {
-        var g = guides.find(function(x) { return x.id === id; });
-        showToast('✅ Guide request sent for ' + (g ? g.name : 'guide'));
+        var list = getLiveGuides();
+        var g = list.find(function(x) { return x.id === id; });
+        if (!g) { showToast('Guide not found'); return; }
+        slUpdate(function(d) {
+            if (!d.guideRequests) d.guideRequests = [];
+            d.guideRequests.push({
+                id: Date.now(),
+                operator: 'Dreamtrails Expeditions',
+                service: g.special || 'Game drive guide',
+                park: 'Serengeti NP',
+                dates: 'Coming week',
+                fee: g.dailyRate || 80,
+                note: 'Requested from operator sourcing'
+            });
+            if (!d.messages) d.messages = [];
+            d.messages.push({
+                id: Date.now()+1, side: 'guide', from: 'Dreamtrails Expeditions', initials: 'DT',
+                text: 'Job request for ' + g.name + ' — ' + (g.special||'guiding') + '.',
+                time: Date.now(), type: 'info', unread: true
+            });
+        });
+        showToast('Guide request sent for ' + g.name + ' — appears live on guide dashboard');
     };
 })();
+
 
 /* ============================================
    INITIALIZE
