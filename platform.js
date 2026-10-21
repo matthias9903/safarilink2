@@ -1,4 +1,3 @@
-
 var SL_KEY='safarilink_platform_v1';
 function slLoad(){try{var r=localStorage.getItem(SL_KEY);if(r)return JSON.parse(r)}catch(e){}return null}
 function slSave(d){localStorage.setItem(SL_KEY,JSON.stringify(d));try{localStorage.setItem(SL_KEY+'_tick',String(Date.now()))}catch(e){}}
