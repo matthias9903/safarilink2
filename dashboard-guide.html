@@ -1,67 +1,213 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>
-      SafariLink — Guide
-    </title>
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js">
-</script>
-    <style>
-:root{--forest-green:#1a5a3a;--accent-green:#3fb983;--warm-off-white:#f8f7f4;--khaki:#e8e5dd;--charcoal:#2c2c2c;--warm-gray:#a39e95;--border-light:#d4cfc6}
-*{margin:0;padding:0;box-sizing:border-box}body{font-family:system-ui,sans-serif;background:var(--warm-off-white);color:var(--charcoal);display:flex;min-height:100vh}
-.sidebar{width:250px;background:var(--charcoal);color:#ccc;display:flex;flex-direction:column;flex-shrink:0}
-.sidebar-brand{padding:18px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;gap:10px;align-items:center}
-.logo-icon{width:34px;height:34px;background:var(--forest-green);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
-.logo-text{font-weight:700;color:#fff}.logo-text span{color:var(--accent-green)}
-.sidebar-nav{padding:12px;flex:1;overflow-y:auto}
-.sidebar-section{font-size:.68rem;text-transform:uppercase;color:rgba(255,255,255,.35);padding:12px 8px 6px}
-.sidebar-link{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:6px;color:#bbb;font-size:.85rem;cursor:pointer}
-.sidebar-link:hover{background:rgba(255,255,255,.08);color:#fff}
-.sidebar-link.active{background:rgba(63,185,131,.15);color:var(--accent-green)}
-.sidebar-link i{width:17px;height:17px}.sidebar-badge{margin-left:auto;background:#f59e0b;color:#000;font-size:.68rem;padding:2px 7px;border-radius:10px;font-weight:700}
-.sidebar-footer{padding:14px;border-top:1px solid rgba(255,255,255,.08);font-size:.8rem}
-.main{flex:1;min-width:0;display:flex;flex-direction:column}
-.topbar{background:#fff;padding:14px 22px;border-bottom:1px solid var(--border-light);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;position:sticky;top:0;z-index:20}
-.btn{border:1px solid var(--border-light);background:#fff;padding:8px 12px;border-radius:6px;cursor:pointer;font:inherit;font-size:.82rem}
-.btn-primary{background:var(--forest-green);color:#fff;border-color:var(--forest-green)}
-.content{padding:22px;flex:1}.page{display:none}.page.active{display:block}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
-.stat{background:#fff;border:1px solid var(--border-light);border-radius:10px;padding:14px}
-.stat .lbl{font-size:.72rem;color:var(--warm-gray)}.stat .val{font-size:1.45rem;font-weight:700}
-.card{background:#fff;border:1px solid var(--border-light);border-radius:10px}
-table{width:100%;border-collapse:collapse;font-size:.84rem}th,td{padding:10px 11px;border-bottom:1px solid var(--border-light);text-align:left}
-th{font-size:.68rem;text-transform:uppercase;color:var(--warm-gray)}
-.badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:.68rem;font-weight:600}
-.badge-paid,.badge-available,.badge-signed,.badge-confirmed,.badge-completed{background:#d1fae5;color:#065f46}
-.badge-booked,.badge-pending,.badge-reserved,.badge-pendingoperator{background:#fef3c7;color:#92400e}
-.badge-ontrip,.badge-inprogress,.badge-onhire{background:#e0f2fe;color:#075985}
-.badge-cancelled,.badge-maintenance{background:#fee2e2;color:#991b1b}
-.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
-input,select,textarea{padding:8px 10px;border:1px solid var(--border-light);border-radius:6px;font:inherit;font-size:.84rem}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.form-group{display:flex;flex-direction:column;gap:4px}.form-group.full{grid-column:1/-1}.form-group label{font-size:.75rem;font-weight:600}
-.prop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
-.prop-card{background:#fff;border:1px solid var(--border-light);border-radius:12px;overflow:hidden;cursor:pointer}
-.prop-card .img{height:140px;background:var(--khaki);display:flex;align-items:center;justify-content:center;overflow:hidden}
-.prop-card .img img{width:100%;height:100%;object-fit:cover}.prop-card .body{padding:12px}
-.meta{font-size:.76rem;color:var(--warm-gray)}
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;align-items:center;justify-content:center;padding:14px}
-.modal-bg.show{display:flex}.modal{background:#fff;border-radius:12px;max-width:700px;width:100%;max-height:90vh;overflow:auto;padding:20px}
-.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;font-size:.78rem}
-.cal .hd{text-align:center;font-weight:600;color:var(--warm-gray);padding:4px}
-.cal .day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:5px;border:1px solid var(--border-light);background:#fff;cursor:pointer}
-.cal .day.busy{background:#fee2e2;color:#991b1b}.cal .day.free{background:#d1fae5;color:#065f46}.cal .day.muted{opacity:.3}
-.msg-row{display:flex;gap:10px;padding:11px 0;border-bottom:1px solid var(--border-light)}
-.msg-av{width:36px;height:36px;border-radius:50%;background:var(--forest-green);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex-shrink:0}
-.chips{display:flex;flex-wrap:wrap;gap:6px}.chips label{font-size:.75rem;padding:5px 10px;border:1px solid var(--border-light);border-radius:99px;background:var(--warm-off-white);cursor:pointer;display:flex;gap:5px;align-items:center}
-.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#10b981;margin-right:5px}
-.team-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border-light)}
-@media(max-width:900px){.stats{grid-template-columns:1fr 1fr}.form-grid{grid-template-columns:1fr}}
-@media(max-width:700px){.sidebar{display:none}}
-</style></head>
-<script>(function(){function ru(){try{var a=sessionStorage.getItem('safariLinkUser');if(a)return JSON.parse(a)}catch(e){}try{var b=localStorage.getItem('safarilink_user');if(b)return JSON.parse(b)}catch(e){}return null}var u=ru();if(!u){location.href='login.html';return}var map={'dashboard-fleet.html':['fleet','fleet-owner'],'dashboard-accommodation.html':['accommodation','accommodation-provider'],'dashboard-tour-operator.html':['tour-operator','service-offering'],'dashboard-guide.html':['guide']};var page=location.pathname.split('/').pop();if(map[page]&&map[page].indexOf(u.role)===-1)location.href='login.html';})();</script><body>
-<aside class="sidebar"><div class="sidebar-brand"><div class="logo-icon">SL</div><div class="logo-text">Safari<span>Link</span></div></div>
+<head>
+<!-- ============================================================
+     GUIDE PARTNER DASHBOARD
+     Purpose: Guide profile, schedule, job requests, services,
+     languages (JP/CN/KR), licences, reviews & earnings.
+     Shares data with Operator / Accommodation / Fleet via localStorage.
+     ============================================================ -->
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SafariLink — Guide</title>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script><style>
+
+  /* ── COLOUR TOKENS ── */
+  :root {
+    --forest-green: #1a5a3a;
+    --accent-green: #3fb983;
+    --warm-off-white: #f8f7f4;
+    --khaki: #e8e5dd;
+    --charcoal: #2c2c2c;
+    --warm-gray: #a39e95;
+    --border-light: #d4cfc6;
+  }
+
+  /* ── RESET & BASE ── */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: system-ui, sans-serif;
+    background: var(--warm-off-white);
+    color: var(--charcoal);
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ── SIDEBAR (navigation + collapse) ── */
+  .sidebar {
+    width: 250px; background: var(--charcoal); color: #ccc;
+    display: flex; flex-direction: column; flex-shrink: 0;
+    transition: width .3s ease; position: relative;
+  }
+  .sidebar.collapsed { width: 68px; }
+  .sidebar.collapsed .logo-text,
+  .sidebar.collapsed .sidebar-section,
+  .sidebar.collapsed .sidebar-link span:not(.sidebar-badge),
+  .sidebar.collapsed .sidebar-footer > div:first-child,
+  .sidebar.collapsed .sidebar-badge { display: none; }
+  .sidebar.collapsed .sidebar-link { justify-content: center; padding: 12px 0; }
+  .sidebar-collapse-btn {
+    position: absolute; top: 18px; right: -12px; width: 24px; height: 24px;
+    background: var(--forest-green); color: #fff; border: 2px solid #fff;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; z-index: 5; box-shadow: 0 2px 6px rgba(0,0,0,.2);
+  }
+  .sidebar-collapse-btn i { width: 12px; height: 12px; }
+  .sidebar-brand {
+    padding: 18px; border-bottom: 1px solid rgba(255,255,255,.08);
+    display: flex; gap: 10px; align-items: center;
+  }
+  .logo-icon {
+    width: 34px; height: 34px; background: var(--forest-green); border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 700;
+  }
+  .logo-text { font-weight: 700; color: #fff; }
+  .logo-text span { color: var(--accent-green); }
+  .sidebar-nav { padding: 12px; flex: 1; overflow-y: auto; }
+  .sidebar-section {
+    font-size: .68rem; text-transform: uppercase;
+    color: rgba(255,255,255,.35); padding: 12px 8px 6px;
+  }
+  .sidebar-link {
+    display: flex; align-items: center; gap: 8px; padding: 9px 12px;
+    border-radius: 6px; color: #bbb; font-size: .85rem; cursor: pointer;
+  }
+  .sidebar-link:hover { background: rgba(255,255,255,.08); color: #fff; }
+  .sidebar-link.active { background: rgba(63,185,131,.15); color: var(--accent-green); }
+  .sidebar-link i { width: 17px; height: 17px; }
+  .sidebar-badge {
+    margin-left: auto; background: #f59e0b; color: #000;
+    font-size: .68rem; padding: 2px 7px; border-radius: 10px; font-weight: 700;
+  }
+  .sidebar-footer { padding: 14px; border-top: 1px solid rgba(255,255,255,.08); font-size: .8rem; }
+
+  /* ── MAIN LAYOUT ── */
+  .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .topbar {
+    background: #fff; padding: 14px 22px; border-bottom: 1px solid var(--border-light);
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 8px; position: sticky; top: 0; z-index: 20;
+  }
+  .topbar h2 { font-size: 1.15rem; }
+  .topbar p { font-size: .78rem; color: var(--warm-gray); }
+  .content { padding: 22px; flex: 1; }
+
+  /* ── PAGES ── */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ── BUTTONS ── */
+  .btn {
+    border: 1px solid var(--border-light); background: #fff; padding: 8px 12px;
+    border-radius: 6px; cursor: pointer; font: inherit; font-size: .82rem;
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .btn:hover { background: var(--khaki); }
+  .btn-primary { background: var(--forest-green); color: #fff; border-color: var(--forest-green); }
+
+  /* ── KPI / STATS ── */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+  .stat { background: #fff; border: 1px solid var(--border-light); border-radius: 10px; padding: 14px; }
+  .stat .lbl { font-size: .72rem; color: var(--warm-gray); }
+  .stat .val { font-size: 1.55rem; font-weight: 700; }
+
+  /* ── CARDS ── */
+  .card { background: #fff; border: 1px solid var(--border-light); border-radius: 10px; }
+
+  /* ── TABLES ── */
+  table { width: 100%; border-collapse: collapse; font-size: .84rem; }
+  th {
+    text-align: left; font-size: .68rem; text-transform: uppercase;
+    color: var(--warm-gray); padding: 9px 11px; border-bottom: 1px solid var(--border-light);
+  }
+  td { padding: 10px 11px; border-bottom: 1px solid var(--border-light); }
+
+  /* ── BADGES (status labels) ── */
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: .68rem; font-weight: 600; }
+  .badge-paid, .badge-available, .badge-signed, .badge-confirmed, .badge-completed { background: #d1fae5; color: #065f46; }
+  .badge-booked, .badge-pending, .badge-reserved, .badge-pendingoperator { background: #fef3c7; color: #92400e; }
+  .badge-ontrip, .badge-inprogress, .badge-onhire { background: #e0f2fe; color: #075985; }
+  .badge-cancelled, .badge-maintenance { background: #fee2e2; color: #991b1b; }
+
+  /* ── FORMS ── */
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  input, select, textarea {
+    padding: 8px 10px; border: 1px solid var(--border-light); border-radius: 6px;
+    font: inherit; font-size: .84rem;
+  }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .form-group { display: flex; flex-direction: column; gap: 4px; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-group label { font-size: .75rem; font-weight: 600; }
+
+  /* ── VEHICLE / CARD GRID ── */
+  .prop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }
+  .prop-card {
+    background: #fff; border: 1px solid var(--border-light); border-radius: 12px;
+    overflow: hidden; cursor: pointer;
+  }
+  .prop-card:hover { border-color: var(--accent-green); }
+  .prop-card .img {
+    height: 140px; background: var(--khaki); display: flex; align-items: center;
+    justify-content: center; overflow: hidden; color: var(--warm-gray);
+    flex-direction: column; gap: 6px;
+  }
+  .prop-card .img img { width: 100%; height: 100%; object-fit: cover; }
+  .prop-card .body { padding: 12px; }
+  .prop-card .img .ph-icon { width: 28px; height: 28px; opacity: .45; }
+  .meta { font-size: .76rem; color: var(--warm-gray); }
+
+  /* ── MODAL ── */
+  .modal-bg {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45);
+    z-index: 50; align-items: center; justify-content: center; padding: 14px;
+  }
+  .modal-bg.show { display: flex; }
+  .modal {
+    background: #fff; border-radius: 12px; max-width: 700px; width: 100%;
+    max-height: 90vh; overflow: auto; padding: 20px;
+  }
+
+  /* ── AVAILABILITY CALENDAR ── */
+  .cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; font-size: .78rem; }
+  .cal .hd { text-align: center; font-weight: 600; color: var(--warm-gray); padding: 4px; }
+  .cal .day {
+    aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+    border-radius: 5px; border: 1px solid var(--border-light); background: #fff; cursor: pointer;
+  }
+  .cal .day.busy { background: #fee2e2; color: #991b1b; }
+  .cal .day.free { background: #d1fae5; color: #065f46; }
+  .cal .day.muted { opacity: .3; }
+
+  /* ── MESSAGES ── */
+  .msg-row { display: flex; gap: 10px; padding: 11px 0; border-bottom: 1px solid var(--border-light); }
+  .msg-av {
+    width: 36px; height: 36px; border-radius: 50%; background: var(--forest-green);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: .75rem; flex-shrink: 0;
+  }
+
+  /* ── LIVE DOT + TEAM ── */
+  .live-dot {
+    display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+    background: #10b981; margin-right: 5px;
+  }
+  .team-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-light); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .stats { grid-template-columns: 1fr 1fr; }
+    .form-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 700px) {
+    .sidebar { display: none; }
+  }
+
+</style>
+</head>
+<script>
+  (function(){function ru(){try{var a=sessionStorage.getItem('safariLinkUser');if(a)return JSON.parse(a)}catch(e){}try{var b=localStorage.getItem('safarilink_user');if(b)return JSON.parse(b)}catch(e){}return null}var u=ru();if(!u){location.href='login.html';return}var map={'dashboard-fleet.html':['fleet','fleet-owner'],'dashboard-accommodation.html':['accommodation','accommodation-provider'],'dashboard-tour-operator.html':['tour-operator','service-offering'],'dashboard-guide.html':['guide']};var page=location.pathname.split('/').pop();if(map[page]&&map[page].indexOf(u.role)===-1)location.href='login.html';})();</script><body>
+<aside class="sidebar" id="sidebar"><button class="sidebar-collapse-btn" onclick="toggleCollapse()" title="Collapse menu"><i data-lucide="chevrons-left" id="collapseIcon"></i></button><div class="sidebar-brand"><div class="logo-icon">SL</div><div class="logo-text">Safari<span>Link</span></div></div>
 <nav class="sidebar-nav">
 <div class="sidebar-section">Main</div>
 <a class="sidebar-link active" data-p="dashboard" onclick="go('dashboard')"><i data-lucide="layout-dashboard"></i>Dashboard</a>
@@ -159,8 +305,9 @@ function badge(s){return '<span class="badge badge-'+String(s).toLowerCase().rep
 function money(n){return '$'+Number(n||0).toLocaleString()}
 function fileToDataUrl(f){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(r.result)};r.onerror=rej;r.readAsDataURL(f)})}
 
+function toggleCollapse(){var sb=document.getElementById('sidebar');var icon=document.getElementById('collapseIcon');sb.classList.toggle('collapsed');if(icon){icon.setAttribute('data-lucide',sb.classList.contains('collapsed')?'chevrons-right':'chevrons-left');lucide.createIcons()}}
 function logout(){sessionStorage.removeItem('safariLinkUser');try{localStorage.removeItem('safarilink_user')}catch(e){}location.href='index.html'}
-var TITLES={dashboard:['Dashboard','Jobs from operators'],schedule:['Schedule','Assignments'],requests:['Job Requests','Accept/decline'],services:['Services','Offerings'],availability:['Availability','Calendar'],profile:['Profile','Operator card data'],pricing:['Rates','Fees'],regions:['Regions','Parks'],languages:['Languages','Incl. JP/CN/KR'],certs:['Licences','Certs'],reviews:['Reviews','Feedback'],messages:['Messages','Ops'],earnings:['Earnings','Fees']};
+var TITLES={   dashboard:['Dashboard','Upcoming jobs, open requests, earnings and rating'],   schedule:['My Schedule','Confirmed and in-progress guide assignments'],   requests:['Job Requests','Accept or decline new operator requests'],   services:['My Services','Game drives, walking, birding and other offerings'],   availability:['Availability Calendar','Block dates you are not available'],   profile:['Guide Profile','Name, photo, years, bio — synced to operator cards'],   pricing:['Day Rates','Full day, half day, overnight and mountain fees'],   regions:['Parks & Regions','Areas you guide — shown on operator cards'],   languages:['Languages & Skills','Including Japanese, Chinese and Korean'],   certs:['Licences & Certificates','Tour guide licence and first aid'],   reviews:['Reviews','Operator feedback and ratings'],   messages:['Messages','Messages from operators'],   earnings:['Earnings','Confirmed and completed guide fees'] };
 var calMonth=new Date();calMonth.setDate(1);
 function guide(){return slGet().guides[0]}
 function go(id){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});document.getElementById('page-'+id).classList.add('active');document.querySelectorAll('.sidebar-link').forEach(function(a){a.classList.toggle('active',a.getAttribute('data-p')===id)});var t=TITLES[id]||['',''];document.getElementById('title').textContent=t[0];document.getElementById('sub').textContent=t[1];refresh();lucide.createIcons()}
