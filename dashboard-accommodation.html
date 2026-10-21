@@ -2,959 +2,310 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SafariLink — Accommodation Partner Dashboard</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SafariLink — Accommodation</title>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <style>
-  :root {
-    --forest-green: #1a5a3a; --forest-green-light: #2d7a52; --accent-green: #3fb983;
-    --warm-off-white: #f8f7f4; --khaki: #e8e5dd; --charcoal: #2c2c2c;
-    --warm-gray: #a39e95; --border-light: #d4cfc6;
-    --status-available: #10b981; --status-pending: #f59e0b; --status-unavailable: #dc2626;
-    --status-info: #0891b2;
-    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05); --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-    --shadow-lg: 0 12px 24px rgba(0,0,0,0.12);
-    --radius-sm: 6px; --radius-md: 10px; --radius-lg: 16px;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
-    background: var(--warm-off-white); color: var(--charcoal); line-height: 1.6;
-  }
-
-  /* ── SIDEBAR ── */
-  .sidebar {
-    position: fixed; top: 0; left: 0; width: 240px; height: 100vh;
-    background: var(--charcoal); color: #ccc; display: flex;
-    flex-direction: column; z-index: 100; overflow-y: auto;
-  }
-  .sidebar-brand {
-    padding: 20px 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.08);
-    display: flex; align-items: center; gap: 10px;
-  }
-  .sidebar-brand .logo-icon {
-    width: 34px; height: 34px; background: var(--forest-green);
-    border-radius: var(--radius-sm); display: flex; align-items: center;
-    justify-content: center; color: #fff; font-weight: 700; font-size: 16px;
-  }
-  .sidebar-brand .logo-text { font-size: 1.1rem; font-weight: 700; color: #fff; }
-  .sidebar-brand .logo-text span { color: var(--accent-green); }
-
-  .sidebar-nav { padding: 16px 12px; flex: 1; }
-  .sidebar-section { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
-    color: rgba(255,255,255,0.35); padding: 16px 8px 8px; font-weight: 600; }
-  .sidebar-link {
-    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
-    border-radius: var(--radius-sm); color: #bbb; text-decoration: none;
-    font-size: 0.9rem; transition: all 0.15s; cursor: pointer; margin-bottom: 2px;
-  }
-  .sidebar-link:hover, .sidebar-link.active {
-    background: rgba(255,255,255,0.08); color: #fff;
-  }
-  .sidebar-link.active { background: rgba(63,185,131,0.15); color: var(--accent-green); }
-  .sidebar-link i { width: 20px; height: 20px; flex-shrink: 0; }
-  .sidebar-badge {
-    margin-left: auto; background: var(--status-pending); color: #000;
-    font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; font-weight: 700;
-  }
-  .sidebar-footer {
-    padding: 16px; border-top: 1px solid rgba(255,255,255,0.08);
-  }
-  .sidebar-user {
-    display: flex; align-items: center; gap: 10px; color: #ccc; font-size: 0.85rem;
-  }
-  .sidebar-user-avatar {
-    width: 32px; height: 32px; border-radius: 50%; background: var(--forest-green);
-    display: flex; align-items: center; justify-content: center;
-    color: #fff; font-weight: 700; font-size: 13px;
-  }
-
-  /* ── MAIN LAYOUT ── */
-  .main-wrapper { margin-left: 240px; min-height: 100vh; }
-  .topbar {
-    background: #fff; padding: 14px 28px; display: flex; align-items: center;
-    justify-content: space-between; border-bottom: 1px solid var(--border-light);
-    position: sticky; top: 0; z-index: 50;
-  }
-  .topbar-left h2 { font-size: 1.25rem; font-weight: 700; color: var(--charcoal); }
-  .topbar-left p { font-size: 0.8rem; color: var(--warm-gray); margin-top: 2px; }
-  .topbar-actions { display: flex; align-items: center; gap: 12px; }
-  .topbar-btn {
-    background: none; border: 1px solid var(--border-light); padding: 8px 16px;
-    border-radius: var(--radius-sm); cursor: pointer; font-size: 0.85rem;
-    display: flex; align-items: center; gap: 6px; color: var(--charcoal); transition: 0.15s;
-  }
-  .topbar-btn:hover { background: var(--khaki); }
-  .topbar-btn.primary {
-    background: var(--forest-green); color: #fff; border-color: var(--forest-green);
-  }
-  .topbar-btn.primary:hover { background: var(--forest-green-light); }
-
-  .dashboard-content { padding: 28px; }
-
-  /* ── STAT CARDS ROW ── */
-  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
-  .stat-card {
-    background: #fff; border-radius: var(--radius-md); padding: 20px;
-    box-shadow: var(--shadow-sm); border: 1px solid var(--border-light);
-    display: flex; flex-direction: column; gap: 8px;
-  }
-  .stat-card-header { display: flex; align-items: center; justify-content: space-between; }
-  .stat-card-icon {
-    width: 40px; height: 40px; border-radius: var(--radius-sm);
-    display: flex; align-items: center; justify-content: center;
-  }
-  .stat-card-icon.green { background: #d1fae5; color: var(--status-available); }
-  .stat-card-icon.amber { background: #fef3c7; color: var(--status-pending); }
-  .stat-card-icon.blue  { background: #dbeafe; color: var(--status-info); }
-  .stat-card-icon.red   { background: #fee2e2; color: var(--status-unavailable); }
-  .stat-card-value { font-size: 1.8rem; font-weight: 700; color: var(--charcoal); }
-  .stat-card-label { font-size: 0.8rem; color: var(--warm-gray); }
-  .stat-card-trend { font-size: 0.75rem; display: flex; align-items: center; gap: 4px; }
-  .stat-card-trend.up { color: var(--status-available); }
-  .stat-card-trend.down { color: var(--status-unavailable); }
-
-  /* ── TWO-COLUMN GRID ── */
-  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px; }
-  .grid-3 { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 28px; }
-  .card {
-    background: #fff; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border-light); overflow: hidden;
-  }
-  .card-header {
-    padding: 16px 20px; border-bottom: 1px solid var(--border-light);
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .card-header h3 { font-size: 0.95rem; font-weight: 700; }
-  .card-body { padding: 20px; }
-  .card-body.no-padding { padding: 0; }
-
-  /* ── TABLES ── */
-  .table-wrap { overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-  table th {
-    background: var(--warm-off-white); text-align: left; padding: 10px 16px;
-    font-weight: 600; color: var(--warm-gray); font-size: 0.75rem;
-    text-transform: uppercase; letter-spacing: 0.04em; border-bottom: 1px solid var(--border-light);
-  }
-  table td { padding: 12px 16px; border-bottom: 1px solid var(--khaki); vertical-align: middle; }
-  table tr:last-child td { border-bottom: none; }
-  table tr:hover { background: rgba(63,185,131,0.03); }
-
-  /* ── STATUS BADGES ── */
-  .badge {
-    display: inline-block; padding: 3px 10px; border-radius: 12px;
-    font-size: 0.72rem; font-weight: 600;
-  }
-  .badge-confirmed { background: #d1fae5; color: #065f46; }
-  .badge-pending   { background: #fef3c7; color: #92400e; }
-  .badge-cancelled { background: #fee2e2; color: #991b1b; }
-  .badge-checkin   { background: #dbeafe; color: #1e40af; }
-  .badge-checkout  { background: #ede9fe; color: #5b21b6; }
-
-  /* ── CALENDAR STRIP ── */
-  .cal-strip { display: flex; gap: 4px; padding: 8px 0; }
-  .cal-day {
-    flex: 1; min-width: 36px; padding: 8px 4px; text-align: center;
-    border-radius: var(--radius-sm); font-size: 0.7rem; cursor: pointer;
-    border: 1px solid transparent; transition: 0.15s;
-  }
-  .cal-day:hover { background: var(--khaki); }
-  .cal-day.today { background: var(--forest-green); color: #fff; font-weight: 700; }
-  .cal-day.booked { background: #fef3c7; border-color: var(--status-pending); }
-  .cal-day.full { background: #fee2e2; border-color: var(--status-unavailable); }
-  .cal-day.free { background: #d1fae5; border-color: var(--status-available); }
-  .cal-day-num { font-weight: 700; font-size: 0.85rem; }
-  .cal-day-label { font-size: 0.6rem; margin-top: 2px; }
-
-  /* ── ROOM TYPE CARDS ── */
-  .room-type-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  .room-type-card {
-    background: var(--warm-off-white); border-radius: var(--radius-md);
-    padding: 16px; border: 1px solid var(--border-light);
-  }
-  .room-type-card h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 8px; }
-  .room-type-capacity { display: flex; gap: 12px; margin-bottom: 8px; }
-  .room-type-capacity span {
-    font-size: 0.75rem; color: var(--warm-gray);
-  }
-  .room-type-bar {
-    height: 6px; background: var(--khaki); border-radius: 3px; margin-bottom: 8px;
-    overflow: hidden;
-  }
-  .room-type-bar-fill {
-    height: 100%; background: var(--accent-green); border-radius: 3px;
-  }
-  .room-type-price { font-size: 0.8rem; font-weight: 600; color: var(--forest-green); }
-
-  /* ── QUICK ACTIONS ── */
-  .quick-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-  .quick-action {
-    background: #fff; border: 1px solid var(--border-light); border-radius: var(--radius-md);
-    padding: 18px 14px; text-align: center; cursor: pointer; transition: 0.15s;
-    display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--charcoal);
-    font-size: 0.82rem; font-weight: 600; text-decoration: none;
-  }
-  .quick-action:hover { box-shadow: var(--shadow-md); border-color: var(--accent-green); }
-  .quick-action-icon {
-    width: 42px; height: 42px; border-radius: 50%; background: var(--warm-off-white);
-    display: flex; align-items: center; justify-content: center; color: var(--forest-green);
-  }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 1100px) {
-    .sidebar { width: 200px; }
-    .main-wrapper { margin-left: 200px; }
-    .stats-row { grid-template-columns: repeat(2, 1fr); }
-    .grid-2, .grid-3 { grid-template-columns: 1fr; }
-    .room-type-grid { grid-template-columns: 1fr 1fr; }
-    .quick-actions { grid-template-columns: repeat(2, 1fr); }
-  }
-  @media (max-width: 768px) {
-    .sidebar { display: none; }
-    .main-wrapper { margin-left: 0; }
-    .stats-row { grid-template-columns: 1fr; }
-    .room-type-grid { grid-template-columns: 1fr; }
-  }
-
-  .page-view { display: none; }
-  .page-view.active { display: block; }
-  .filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; align-items: center; }
-  .filters select, .filters input {
-    padding: 8px 12px; border: 1px solid var(--border-light); border-radius: var(--radius-sm);
-    font-family: inherit; font-size: 0.85rem; background: #fff;
-  }
-  .badge {
-    display: inline-block; padding: 3px 10px; border-radius: 100px; font-size: 0.72rem; font-weight: 600;
-  }
-  .badge-reserved { background: #e0f2fe; color: #075985; }
-  .badge-booked { background: #fef3c7; color: #92400e; }
-  .badge-paid { background: #d1fae5; color: #065f46; }
-  .badge-cancelled { background: #fee2e2; color: #991b1b; }
-  .badge-available { background: #d1fae5; color: #065f46; }
-  .badge-unavailable { background: #fee2e2; color: #991b1b; }
-  .badge-maintenance { background: #ede9fe; color: #5b21b6; }
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .form-group { display: flex; flex-direction: column; gap: 6px; }
-  .form-group.full { grid-column: 1 / -1; }
-  .form-group label { font-size: 0.8rem; font-weight: 600; color: var(--charcoal); }
-  .form-group input, .form-group select, .form-group textarea {
-    padding: 10px 12px; border: 1px solid var(--border-light); border-radius: var(--radius-sm);
-    font-family: inherit; font-size: 0.9rem;
-  }
-  .form-group textarea { min-height: 80px; resize: vertical; }
-  .amenity-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-  .amenity-chips label {
-    display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: var(--warm-off-white);
-    border: 1px solid var(--border-light); border-radius: 100px; font-size: 0.8rem; cursor: pointer;
-  }
-  .amenity-chips input { accent-color: var(--forest-green); }
-  .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
-  .gallery-item {
-    aspect-ratio: 4/3; background: var(--khaki); border-radius: var(--radius-md);
-    display: flex; align-items: center; justify-content: center; color: var(--warm-gray);
-    border: 1px solid var(--border-light); position: relative; overflow: hidden;
-  }
-  .gallery-item img { width: 100%; height: 100%; object-fit: cover; }
-  .msg-list { display: flex; flex-direction: column; gap: 0; }
-  .msg-row {
-    display: flex; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--border-light); cursor: pointer;
-  }
-  .msg-row:hover { background: var(--warm-off-white); }
-  .msg-avatar {
-    width: 40px; height: 40px; border-radius: 50%; background: var(--forest-green); color: #fff;
-    display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;
-  }
-  .msg-body { flex: 1; min-width: 0; }
-  .msg-body h4 { font-size: 0.9rem; margin-bottom: 2px; }
-  .msg-body p { font-size: 0.8rem; color: var(--warm-gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .prop-card {
-    background: #fff; border: 1px solid var(--border-light); border-radius: var(--radius-md);
-    padding: 18px; box-shadow: var(--shadow-sm);
-  }
-  .prop-card h4 { margin-bottom: 6px; }
-  .prop-meta { font-size: 0.8rem; color: var(--warm-gray); margin-bottom: 10px; }
-  .team-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border-light); }
-  .empty-hint { text-align: center; padding: 32px; color: var(--warm-gray); font-size: 0.9rem; }
-  @media (max-width: 768px) {
-    .form-grid { grid-template-columns: 1fr; }
-  }
-
+:root{
+  --forest-green:#1a5a3a;
+  --forest-green-light:#2d7a52;
+  --accent-green:#3fb983;
+  --warm-off-white:#f8f7f4;
+  --khaki:#e8e5dd;
+  --charcoal:#2c2c2c;
+  --warm-gray:#a39e95;
+  --border-light:#d4cfc6}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:system-ui,sans-serif;background:var(--warm-off-white);color:var(--charcoal);display:flex;min-height:100vh}
+.sidebar{width:250px;background:var(--charcoal);color:#ccc;display:flex;flex-direction:column;flex-shrink:0}
+.sidebar-brand{padding:18px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;gap:10px;align-items:center}
+.logo-icon{width:34px;height:34px;background:var(--forest-green);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+.logo-text{font-weight:700;color:#fff;font-size:1.1rem}.logo-text span{color:var(--accent-green)}
+.sidebar-nav{padding:12px;flex:1;overflow-y:auto}
+.sidebar-section{font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.35);padding:12px 8px 6px}
+.sidebar-link{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:6px;color:#bbb;font-size:.85rem;cursor:pointer;margin-bottom:2px}
+.sidebar-link:hover{background:rgba(255,255,255,.08);color:#fff}
+.sidebar-link.active{background:rgba(63,185,131,.15);color:var(--accent-green)}
+.sidebar-link i{width:17px;height:17px}.sidebar-badge{margin-left:auto;background:#f59e0b;color:#000;font-size:.68rem;padding:2px 7px;border-radius:10px;font-weight:700}
+.sidebar-footer{padding:14px;border-top:1px solid rgba(255,255,255,.08);font-size:.8rem}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{background:#fff;padding:14px 22px;border-bottom:1px solid var(--border-light);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;position:sticky;top:0;z-index:20}
+.topbar h2{font-size:1.15rem}.topbar p{font-size:.78rem;color:var(--warm-gray)}
+.btn{border:1px solid var(--border-light);background:#fff;padding:8px 12px;border-radius:6px;cursor:pointer;font:inherit;font-size:.82rem;display:inline-flex;align-items:center;gap:5px}
+.btn:hover{background:var(--khaki)}.btn-primary{background:var(--forest-green);color:#fff;border-color:var(--forest-green)}
+.content{padding:22px;flex:1}.page{display:none}.page.active{display:block}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.stat{background:#fff;border:1px solid var(--border-light);border-radius:10px;padding:14px}
+.stat .lbl{font-size:.72rem;color:var(--warm-gray)}.stat .val{font-size:1.55rem;font-weight:700}
+.card{background:#fff;border:1px solid var(--border-light);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:.84rem}th{text-align:left;font-size:.68rem;text-transform:uppercase;color:var(--warm-gray);padding:9px 11px;border-bottom:1px solid var(--border-light)}td{padding:10px 11px;border-bottom:1px solid var(--border-light)}
+.badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:.68rem;font-weight:600}
+.badge-paid,.badge-available,.badge-signed,.badge-confirmed,.badge-completed{background:#d1fae5;color:#065f46}
+.badge-booked,.badge-pending,.badge-reserved,.badge-pendingoperator{background:#fef3c7;color:#92400e}
+.badge-ontrip,.badge-inprogress,.badge-onhire{background:#e0f2fe;color:#075985}
+.badge-cancelled,.badge-maintenance{background:#fee2e2;color:#991b1b}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+input,select,textarea{padding:8px 10px;border:1px solid var(--border-light);border-radius:6px;font:inherit;font-size:.84rem}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.form-group{display:flex;flex-direction:column;gap:4px}.form-group.full{grid-column:1/-1}.form-group label{font-size:.75rem;font-weight:600}
+.prop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.prop-card{background:#fff;border:1px solid var(--border-light);border-radius:12px;overflow:hidden;cursor:pointer}.prop-card:hover{border-color:var(--accent-green)}
+.prop-card .img{height:140px;background:var(--khaki);display:flex;align-items:center;justify-content:center;overflow:hidden;color:var(--warm-gray)}
+.prop-card .img img{width:100%;height:100%;object-fit:cover}.prop-card .body{padding:12px}
+.meta{font-size:.76rem;color:var(--warm-gray)}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;align-items:center;justify-content:center;padding:14px}
+.modal-bg.show{display:flex}.modal{background:#fff;border-radius:12px;max-width:700px;width:100%;max-height:90vh;overflow:auto;padding:20px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;font-size:.78rem}
+.cal .hd{text-align:center;font-weight:600;color:var(--warm-gray);padding:4px}
+.cal .day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:5px;border:1px solid var(--border-light);background:#fff;cursor:pointer}
+.cal .day.busy{background:#fee2e2;color:#991b1b}.cal .day.free{background:#d1fae5;color:#065f46}.cal .day.muted{opacity:.3}
+.msg-row{display:flex;gap:10px;padding:11px 0;border-bottom:1px solid var(--border-light)}.msg-row.reminder{background:#fffbeb}
+.msg-av{width:36px;height:36px;border-radius:50%;background:var(--forest-green);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex-shrink:0}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.gallery .g{aspect-ratio:4/3;background:var(--khaki);border-radius:8px;overflow:hidden;position:relative;border:1px solid var(--border-light)}
+.gallery .g img{width:100%;height:100%;object-fit:cover}.gallery .g .cap{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.55);color:#fff;font-size:.68rem;padding:3px 5px}
+.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#10b981;margin-right:5px;animation:p 1.4s infinite}
+@keyframes p{50%{opacity:.35}}
+.team-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border-light)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.chips label{font-size:.75rem;padding:5px 10px;border:1px solid var(--border-light);border-radius:99px;background:var(--warm-off-white);cursor:pointer;display:flex;gap:5px;align-items:center}
+@media(max-width:900px){.stats{grid-template-columns:1fr 1fr}.form-grid{grid-template-columns:1fr}}
+@media(max-width:700px){.sidebar{display:none}}
 </style>
 </head>
 <script>
-  (function () {
-    function readUser() {
-      try {
-        var a = sessionStorage.getItem('safariLinkUser');
-        if (a) return JSON.parse(a);
-      } catch (e) {}
-      try {
-        var b = localStorage.getItem('safarilink_user');
-        if (b) return JSON.parse(b);
-      } catch (e) {}
-      return null;
-    }
-    var user = readUser();
-    if (!user) { window.location.href = 'login.html'; return; }
-    var rolePageMap = {
-      'dashboard-fleet.html': ['fleet', 'fleet-owner'],
-      'dashboard-accommodation.html': ['accommodation', 'accommodation-provider'],
-      'dashboard-tour-operator.html': ['tour-operator', 'service-offering'],
-      'dashboard-guide.html': ['guide']
-    };
-    var currentPage = window.location.pathname.split('/').pop();
-    var allowed = rolePageMap[currentPage];
-    if (allowed && allowed.indexOf(user.role) === -1) {
-      window.location.href = 'login.html';
-    }
-  })();
+(function(){function ru(){try{var a=sessionStorage.getItem('safariLinkUser');if(a)return JSON.parse(a)}catch(e){}try{var b=localStorage.getItem('safarilink_user');if(b)return JSON.parse(b)}catch(e){}return null}
+var u=ru();if(!u){location.href='login.html';return}
+var map={'dashboard-fleet.html':['fleet','fleet-owner'],'dashboard-accommodation.html':['accommodation','accommodation-provider'],'dashboard-tour-operator.html':['tour-operator','service-offering'],'dashboard-guide.html':['guide']};
+var page=location.pathname.split('/').pop();if(map[page]&&map[page].indexOf(u.role)===-1)location.href='login.html';
+})();
 </script>
 <body>
-
 <aside class="sidebar">
-  <div class="sidebar-brand">
-    <div class="logo-icon">SL</div>
-    <div class="logo-text">Safari<span>Link</span></div>
-  </div>
-  <nav class="sidebar-nav">
-    <div class="sidebar-section">Main</div>
-    <a class="sidebar-link active" data-page="dashboard" onclick="showPage('dashboard')"><i data-lucide="layout-dashboard"></i>Dashboard</a>
-    <a class="sidebar-link" data-page="reservations" onclick="showPage('reservations')"><i data-lucide="calendar-days"></i>Reservations<span class="sidebar-badge" id="resBadge">0</span></a>
-    <a class="sidebar-link" data-page="properties" onclick="showPage('properties')"><i data-lucide="building-2"></i>My Properties</a>
-    <a class="sidebar-link" data-page="room-type" onclick="showPage('room-type')"><i data-lucide="bed-double"></i>Add Room Type</a>
-    <div class="sidebar-section">Operations</div>
-    <a class="sidebar-link" data-page="rates" onclick="showPage('rates')"><i data-lucide="trending-up"></i>Rates &amp; Pricing</a>
-    <a class="sidebar-link" data-page="gallery" onclick="showPage('gallery')"><i data-lucide="image"></i>Photo Gallery</a>
-    <a class="sidebar-link" data-page="messages" onclick="showPage('messages')"><i data-lucide="message-square"></i>Messages<span class="sidebar-badge">5</span></a>
-    <div class="sidebar-section">Reports</div>
-    <a class="sidebar-link" data-page="revenue" onclick="showPage('revenue')"><i data-lucide="bar-chart-3"></i>Revenue Analytics</a>
-    <a class="sidebar-link" data-page="occupancy" onclick="showPage('occupancy')"><i data-lucide="pie-chart"></i>Occupancy Analytics</a>
-    <a class="sidebar-link" data-page="guests" onclick="showPage('guests')"><i data-lucide="users"></i>Guest Insights</a>
-    <div class="sidebar-section">Settings</div>
-    <a class="sidebar-link" data-page="account" onclick="showPage('account')"><i data-lucide="settings"></i>Account</a>
-  </nav>
-  <div class="sidebar-footer">
-    <div class="sidebar-user">
-      <div class="sidebar-user-avatar">SH</div>
-      <div>
-        <div style="color:#fff;font-weight:600;font-size:0.85rem;">Serengeti Hill Camp</div>
-        <div style="font-size:0.7rem;color:rgba(255,255,255,0.45);">Accommodation Partner</div>
-      </div>
-    </div>
-  </div>
-</aside>
-
-<div class="main-wrapper">
-  <header class="topbar">
-    <div class="topbar-left">
-      <h2 id="pageTitle">Dashboard</h2>
-      <p id="pageSubtitle">Central Serengeti · Manage inventory, rates &amp; reservations</p>
-    </div>
-    <div class="topbar-actions">
-      <button class="topbar-btn" onclick="logout()"><i data-lucide="log-out"></i> Log out</button>
-      <button class="topbar-btn primary" onclick="showPage('room-type')"><i data-lucide="plus-circle"></i> Add Room Type</button>
-    </div>
-  </header>
-
-  <div class="dashboard-content">
-
-    <!-- DASHBOARD -->
-    <div class="page-view active" id="page-dashboard">
-      <div class="stats-row">
-        <div class="stat-card">
-          <div class="stat-card-header"><span class="stat-card-label">Tonight's Occupancy</span>
-            <div class="stat-card-icon green"><i data-lucide="bed"></i></div></div>
-          <div class="stat-card-value">78%</div>
-          <div class="stat-card-trend up"><i data-lucide="trending-up" style="width:14px;height:14px;"></i> +6% vs last week</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-card-header"><span class="stat-card-label">Open Reservations</span>
-            <div class="stat-card-icon amber"><i data-lucide="calendar-check"></i></div></div>
-          <div class="stat-card-value" id="statOpenRes">0</div>
-          <div class="stat-card-trend">Pending confirm / payment</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-card-header"><span class="stat-card-label">Revenue This Month</span>
-            <div class="stat-card-icon blue"><i data-lucide="dollar-sign"></i></div></div>
-          <div class="stat-card-value">$18.2k</div>
-          <div class="stat-card-trend up"><i data-lucide="trending-up" style="width:14px;height:14px;"></i> +12% vs last month</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-card-header"><span class="stat-card-label">Avg. Nightly Rate</span>
-            <div class="stat-card-icon purple"><i data-lucide="tag"></i></div></div>
-          <div class="stat-card-value">$248</div>
-          <div class="stat-card-trend">STO blended rate</div>
-        </div>
-      </div>
-      <div class="quick-actions" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px;">
-        <a class="quick-action" onclick="showPage('reservations')"><span class="quick-action-icon"><i data-lucide="calendar-days"></i></span>Reservations</a>
-        <a class="quick-action" onclick="showPage('properties')"><span class="quick-action-icon"><i data-lucide="building-2"></i></span>Properties</a>
-        <a class="quick-action" onclick="showPage('rates')"><span class="quick-action-icon"><i data-lucide="tag"></i></span>Update Rates</a>
-        <a class="quick-action" onclick="showPage('room-type')"><span class="quick-action-icon"><i data-lucide="plus"></i></span>Add Room Type</a>
-      </div>
-      <div class="card" style="background:#fff;border:1px solid var(--border-light);border-radius:var(--radius-md);box-shadow:var(--shadow-sm);">
-        <div class="card-header" style="padding:16px 20px;border-bottom:1px solid var(--border-light);display:flex;justify-content:space-between;align-items:center;">
-          <h3 style="font-size:1rem;"><i data-lucide="calendar-check" style="width:18px;height:18px;margin-right:6px;"></i>Recent Reservations</h3>
-          <a onclick="showPage('reservations')" style="font-size:0.8rem;color:var(--forest-green);font-weight:600;cursor:pointer;">View All →</a>
-        </div>
-        <div class="card-body" style="padding:0;overflow-x:auto;">
-          <table>
-            <thead><tr><th>Operator</th><th>Room</th><th>Check-in</th><th>Status</th><th>Amount</th></tr></thead>
-            <tbody id="dashResTable"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- RESERVATIONS -->
-    <div class="page-view" id="page-reservations">
-      <div class="filters">
-        <select id="resFilterStatus" onchange="renderReservations()">
-          <option value="all">All statuses</option>
-          <option value="reserved">Reserved</option>
-          <option value="booked">Booked</option>
-          <option value="paid">Paid</option>
-          <option value="cancelled">Cancelled</option>
-        </select>
-        <input type="search" id="resSearch" placeholder="Search operator or room…" oninput="renderReservations()">
-      </div>
-      <div class="stats-row" style="grid-template-columns:repeat(4,1fr);">
-        <div class="stat-card"><div class="stat-card-label">Reserved</div><div class="stat-card-value" id="cReserved">0</div></div>
-        <div class="stat-card"><div class="stat-card-label">Booked</div><div class="stat-card-value" id="cBooked">0</div></div>
-        <div class="stat-card"><div class="stat-card-label">Paid</div><div class="stat-card-value" id="cPaid">0</div></div>
-        <div class="stat-card"><div class="stat-card-label">Cancelled</div><div class="stat-card-value" id="cCancelled">0</div></div>
-      </div>
-      <div class="card" style="background:#fff;border:1px solid var(--border-light);border-radius:var(--radius-md);">
-        <div class="card-body" style="padding:0;overflow-x:auto;">
-          <table>
-            <thead>
-              <tr><th>ID</th><th>Operator</th><th>Room type</th><th>Check-in</th><th>Check-out</th><th>Guests</th><th>Amount</th><th>Payment</th><th>Status</th></tr>
-            </thead>
-            <tbody id="resTable"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- PROPERTIES -->
-    <div class="page-view" id="page-properties">
-      <div class="filters">
-        <select id="propFilter" onchange="renderProperties()">
-          <option value="all">All properties</option>
-          <option value="available">Available</option>
-          <option value="unavailable">Unavailable</option>
-          <option value="maintenance">Maintenance</option>
-        </select>
-        <button class="topbar-btn primary" onclick="document.getElementById('propFormWrap').style.display='block'"><i data-lucide="plus"></i> Add property</button>
-      </div>
-      <div id="propFormWrap" style="display:none;background:#fff;border:1px solid var(--border-light);border-radius:var(--radius-md);padding:20px;margin-bottom:20px;">
-        <h3 style="margin-bottom:14px;">New property</h3>
-        <div class="form-grid">
-          <div class="form-group"><label>Property name *</label><input id="propName" placeholder="e.g. Serengeti Hill Camp"></div>
-          <div class="form-group"><label>Location *</label><input id="propLocation" placeholder="e.g. Central Serengeti"></div>
-          <div class="form-group"><label>Type</label>
-            <select id="propType"><option>Lodge</option><option>Camp</option><option>Hotel</option><option>Guesthouse</option></select>
-          </div>
-          <div class="form-group"><label>Status</label>
-            <select id="propStatus"><option value="available">Available</option><option value="unavailable">Unavailable</option><option value="maintenance">Maintenance</option></select>
-          </div>
-          <div class="form-group full"><label>Description</label><textarea id="propDesc" placeholder="Short description"></textarea></div>
-        </div>
-        <div style="margin-top:14px;display:flex;gap:8px;">
-          <button class="topbar-btn primary" onclick="addProperty()">Save property</button>
-          <button class="topbar-btn" onclick="document.getElementById('propFormWrap').style.display='none'">Cancel</button>
-        </div>
-      </div>
-      <div id="propGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;"></div>
-    </div>
-
-    <!-- ADD ROOM TYPE -->
-    <div class="page-view" id="page-room-type">
-      <div class="card" style="background:#fff;border:1px solid var(--border-light);border-radius:var(--radius-md);padding:24px;max-width:800px;">
-        <h3 style="margin-bottom:16px;">Add room type</h3>
-        <div class="form-grid">
-          <div class="form-group"><label>Room type name *</label><input id="roomName" placeholder="e.g. Luxury Tent"></div>
-          <div class="form-group"><label>Property *</label><select id="roomProperty"></select></div>
-          <div class="form-group"><label>Max guests</label><input id="roomGuests" type="number" min="1" value="2"></div>
-          <div class="form-group"><label>Units available</label><input id="roomUnits" type="number" min="1" value="1"></div>
-          <div class="form-group"><label>STO rate (USD/night) *</label><input id="roomSto" type="number" min="0" step="1" placeholder="220"></div>
-          <div class="form-group"><label>Public rate (USD/night)</label><input id="roomPublic" type="number" min="0" step="1" placeholder="320"></div>
-          <div class="form-group full"><label>Location / wing</label><input id="roomLocation" placeholder="e.g. East wing, riverside"></div>
-          <div class="form-group full"><label>Amenities</label>
-            <div class="amenity-chips" id="amenityList">
-              <label><input type="checkbox" value="Wi‑Fi"> Wi‑Fi</label>
-              <label><input type="checkbox" value="En-suite"> En-suite</label>
-              <label><input type="checkbox" value="AC"> AC</label>
-              <label><input type="checkbox" value="Mosquito net"> Mosquito net</label>
-              <label><input type="checkbox" value="Private deck"> Private deck</label>
-              <label><input type="checkbox" value="View"> View</label>
-              <label><input type="checkbox" value="Mini bar"> Mini bar</label>
-              <label><input type="checkbox" value="Safe"> Safe</label>
-            </div>
-          </div>
-          <div class="form-group full"><label>Notes</label><textarea id="roomNotes" placeholder="Extra details for operators"></textarea></div>
-        </div>
-        <div style="margin-top:16px;display:flex;gap:8px;">
-          <button class="topbar-btn primary" onclick="addRoomType()">Save room type</button>
-          <button class="topbar-btn" onclick="showPage('properties')">Cancel</button>
-        </div>
-      </div>
-      <div style="margin-top:28px;">
-        <h3 style="margin-bottom:12px;">Your room types</h3>
-        <div id="roomTypeList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;"></div>
-      </div>
-    </div>
-
-    <!-- RATES -->
-    <div class="page-view" id="page-rates">
-      <p style="color:var(--warm-gray);margin-bottom:16px;font-size:0.9rem;">Edit STO and public rates for each room type. Changes are saved on this device.</p>
-      <div class="card" style="background:#fff;border:1px solid var(--border-light);border-radius:var(--radius-md);">
-        <div class="card-body" style="padding:0;overflow-x:auto;">
-          <table>
-            <thead><tr><th>Room type</th><th>Property</th><th>STO $/night</th><th>Public $/night</th><th></th></tr></thead>
-            <tbody id="ratesTable"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- GALLERY -->
-    <div class="page-view" id="page-gallery">
-      <div class="filters">
-        <input type="file" id="galleryInput" accept="image/*" multiple onchange="addGalleryFiles(event)">
-        <button class="topbar-btn primary" onclick="document.getElementById('galleryInput').click()"><i data-lucide="upload"></i> Upload photos</button>
-      </div>
-      <div class="gallery-grid" id="galleryGrid"></div>
-    </div>
-
-    <!-- MESSAGES -->
-    <div class="page-view" id="page-messages">
-      <div class="card" style="background:#fff;border:1px solid var(--border-light);border-radius:var(--radius-md);padding:8px 20px;">
-        <div class="msg-list" id="msgList"></div>
-      </div>
-    </div>
-
-    <!-- REVENUE -->
-    <div class="page-view" id="page-revenue">
-      <div class="stats-row">
-        <div class="stat-card"><div class="stat-card-label">This month</div><div class="stat-card-value">$18,240</div></div>
-        <div class="stat-card"><div class="stat-card-label">Last month</div><div class="stat-card-value">$16,280</div></div>
-        <div class="stat-card"><div class="stat-card-label">YTD</div><div class="stat-card-value">$112.4k</div></div>
-        <div class="stat-card"><div class="stat-card-label">Avg booking value</div><div class="stat-card-value">$642</div></div>
-      </div>
-      <div class="card" style="background:#fff;border:1px solid var(--border-light);border-radius:var(--radius-md);padding:20px;">
-        <h3 style="margin-bottom:16px;">Monthly revenue</h3>
-        <div style="display:flex;align-items:flex-end;gap:10px;height:200px;">
-          <div style="flex:1;text-align:center;"><div style="background:var(--accent-green);height:90px;border-radius:4px 4px 0 0;"></div><span style="font-size:0.7rem;color:var(--warm-gray);">Apr</span></div>
-          <div style="flex:1;text-align:center;"><div style="background:var(--accent-green);height:110px;border-radius:4px 4px 0 0;"></div><span style="font-size:0.7rem;color:var(--warm-gray);">May</span></div>
-          <div style="flex:1;text-align:center;"><div style="background:var(--forest-green);height:145px;border-radius:4px 4px 0 0;"></div><span style="font-size:0.7rem;color:var(--warm-gray);">Jun</span></div>
-          <div style="flex:1;text-align:center;"><div style="background:var(--forest-green);height:160px;border-radius:4px 4px 0 0;"></div><span style="font-size:0.7rem;color:var(--warm-gray);">Jul</span></div>
-          <div style="flex:1;text-align:center;"><div style="background:var(--forest-green);height:170px;border-radius:4px 4px 0 0;"></div><span style="font-size:0.7rem;color:var(--warm-gray);">Aug</span></div>
-          <div style="flex:1;text-align:center;"><div style="background:var(--forest-green);height:135px;border-radius:4px 4px 0 0;"></div><span style="font-size:0.7rem;color:var(--warm-gray);">Sep</span></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- OCCUPANCY -->
-    <div class="page-view" id="page-occupancy">
-      <div class="stats-row">
-        <div class="stat-card"><div class="stat-card-label">Tonight</div><div class="stat-card-value">78%</div></div>
-        <div class="stat-card"><div class="stat-card-label">This week</div><div class="stat-card-value">71%</div></div>
-        <div class="stat-card"><div class="stat-card-label">This month</div><div class="stat-card-value">68%</div></div>
-        <div class="stat-card"><div class="stat-card-label">Available units</div><div class="stat-card-value" id="occUnits">—</div></div>
-      </div>
-      <div class="card" style="background:#fff;border:1px solid var(--border-light);border-radius:var(--radius-md);padding:20px;">
-        <h3 style="margin-bottom:12px;">Occupancy by room type</h3>
-        <div id="occByRoom"></div>
-      </div>
-    </div>
-
-    <!-- GUESTS -->
-    <div class="page-view" id="page-guests">
-      <div class="stats-row">
-        <div class="stat-card"><div class="stat-card-label">Guests this month</div><div class="stat-card-value">142</div></div>
-        <div class="stat-card"><div class="stat-card-label">Repeat operators</div><div class="stat-card-value">18</div></div>
-        <div class="stat-card"><div class="stat-card-label">Avg stay</div><div class="stat-card-value">3.2 n</div></div>
-        <div class="stat-card"><div class="stat-card-label">Top market</div><div class="stat-card-value" style="font-size:1.1rem;">EU / US</div></div>
-      </div>
-      <div class="card" style="background:#fff;border:1px solid var(--border-light);border-radius:var(--radius-md);">
-        <div class="card-body" style="padding:0;overflow-x:auto;">
-          <table>
-            <thead><tr><th>Operator</th><th>Trips</th><th>Guests</th><th>Nights</th><th>Revenue</th></tr></thead>
-            <tbody>
-              <tr><td>Dreamtrails Expeditions</td><td>12</td><td>48</td><td>36</td><td>$8,640</td></tr>
-              <tr><td>Serengeti Trails Ltd</td><td>8</td><td>32</td><td>24</td><td>$5,280</td></tr>
-              <tr><td>Kilimanjaro Voyages</td><td>6</td><td>24</td><td>18</td><td>$3,960</td></tr>
-              <tr><td>Safari Circle TZ</td><td>5</td><td>20</td><td>15</td><td>$3,300</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ACCOUNT -->
-    <div class="page-view" id="page-account">
-      <div class="card" style="background:#fff;border:1px solid var(--border-light);border-radius:var(--radius-md);padding:24px;margin-bottom:20px;max-width:720px;">
-        <h3 style="margin-bottom:14px;">Account details</h3>
-        <div class="form-grid">
-          <div class="form-group"><label>Business name</label><input id="accName" value="Serengeti Hill Camp"></div>
-          <div class="form-group"><label>Contact email</label><input id="accEmail" type="email" value="dreamtrailsexpedictions@gmail.com"></div>
-          <div class="form-group"><label>Phone</label><input id="accPhone" value="+255 700 000 000"></div>
-          <div class="form-group"><label>Region</label><input id="accRegion" value="Arusha / Serengeti"></div>
-        </div>
-        <button class="topbar-btn primary" style="margin-top:14px;" onclick="saveAccount()">Save account</button>
-      </div>
-      <div class="card" style="background:#fff;border:1px solid var(--border-light);border-radius:var(--radius-md);padding:24px;max-width:720px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-          <h3>Team members</h3>
-          <button class="topbar-btn primary" onclick="document.getElementById('memberForm').style.display='block'"><i data-lucide="user-plus"></i> Add member</button>
-        </div>
-        <div id="memberForm" style="display:none;margin-bottom:16px;padding:16px;background:var(--warm-off-white);border-radius:var(--radius-md);">
-          <div class="form-grid">
-            <div class="form-group"><label>Name</label><input id="memName" placeholder="Full name"></div>
-            <div class="form-group"><label>Email</label><input id="memEmail" type="email" placeholder="email@company.com"></div>
-            <div class="form-group"><label>Role</label>
-              <select id="memRole"><option>Manager</option><option>Front desk</option><option>Finance</option><option>Viewer</option></select>
-            </div>
-          </div>
-          <div style="margin-top:12px;display:flex;gap:8px;">
-            <button class="topbar-btn primary" onclick="addMember()">Add</button>
-            <button class="topbar-btn" onclick="document.getElementById('memberForm').style.display='none'">Cancel</button>
-          </div>
-        </div>
-        <div id="memberList"></div>
-      </div>
-    </div>
-
+<div class="sidebar-brand">
+  <div class="logo-icon">SL</div>
+  <div class="logo-text">Safari<span>Link</span>
   </div>
 </div>
-
+<nav class="sidebar-nav">
+<div class="sidebar-section">Main</div>
+<a class="sidebar-link active" data-p="dashboard" onclick="go('dashboard')"><i data-lucide="layout-dashboard"></i>Dashboard</a>
+<a class="sidebar-link" data-p="reservations" onclick="go('reservations')"><i data-lucide="calendar-days"></i>Reservations<span class="sidebar-badge" id="bRes">0</span></a>
+<a class="sidebar-link" data-p="properties" onclick="go('properties')"><i data-lucide="building-2"></i>My Properties</a>
+<a class="sidebar-link" data-p="rooms" onclick="go('rooms')"><i data-lucide="bed-double"></i>Room Types</a>
+<a class="sidebar-link" data-p="availability" onclick="go('availability')"><i data-lucide="calendar-range"></i>Availability</a>
+<div class="sidebar-section">Operations</div>
+<a class="sidebar-link" data-p="rates" onclick="go('rates')"><i data-lucide="tag"></i>Rates & Pricing</a>
+<a class="sidebar-link" data-p="gallery" onclick="go('gallery')"><i data-lucide="image"></i>Photo Gallery</a>
+<a class="sidebar-link" data-p="messages" onclick="go('messages')"><i data-lucide="message-square"></i>Messages<span class="sidebar-badge" id="bMsg">0</span></a>
+<div class="sidebar-section">Reports</div>
+<a class="sidebar-link" data-p="revenue" onclick="go('revenue')"><i data-lucide="bar-chart-3"></i>Revenue Analytics</a>
+<a class="sidebar-link" data-p="occupancy" onclick="go('occupancy')"><i data-lucide="pie-chart"></i>Occupancy</a>
+<a class="sidebar-link" data-p="guests" onclick="go('guests')"><i data-lucide="users"></i>Guest Insights</a>
+<div class="sidebar-section">Settings</div>
+<a class="sidebar-link" data-p="account" onclick="go('account')"><i data-lucide="settings"></i>Account & Team</a>
+</nav>
+<div class="sidebar-footer"><div style="color:#fff;font-weight:600">Serengeti Hill Camp</div><div style="opacity:.5;font-size:.7rem"><span class="live-dot"></span>Accommodation · Live</div></div>
+</aside>
+<div class="main">
+<header class="topbar"><div><h2 id="title">Dashboard</h2><p id="sub"><span class="live-dot"></span>Live platform</p></div>
+<div style="display:flex;gap:8px"><button class="btn" onclick="logout()">Log out</button><button class="btn btn-primary" id="ctaBtn" onclick="cta()">Action</button></div></header>
+<div class="content">
+<div class="page active" id="page-dashboard">
+<div class="stats">
+<div class="stat"><div class="lbl">Tonight occupancy</div><div class="val" id="stOcc">—</div></div>
+<div class="stat"><div class="lbl">Open reservations</div><div class="val" id="stOpen">—</div></div>
+<div class="stat"><div class="lbl">Revenue this month</div><div class="val" id="stRev">—</div></div>
+<div class="stat"><div class="lbl">Avg nightly rate</div><div class="val" id="stAvg">—</div></div>
+</div>
+<div class="card" style="overflow-x:auto"><table><thead><tr><th>Operator</th><th>Room</th><th>Check-in</th><th>Status</th><th>Amount</th></tr></thead><tbody id="dashRes"></tbody></table></div>
+</div>
+<div class="page" id="page-reservations">
+<div class="filters">
+<select id="resFilter" onchange="renderRes()"><option value="all">All</option><option>reserved</option><option>booked</option><option>paid</option><option>cancelled</option></select>
+<input id="resQ" placeholder="Search…" oninput="renderRes()">
+<button class="btn" onclick="simOpBooking()">Simulate operator booking</button>
+</div>
+<div class="stats"><div class="stat"><div class="lbl">Reserved</div><div class="val" id="cR">0</div></div><div class="stat"><div class="lbl">Booked</div><div class="val" id="cB">0</div></div><div class="stat"><div class="lbl">Paid</div><div class="val" id="cP">0</div></div><div class="stat"><div class="lbl">Cancelled</div><div class="val" id="cC">0</div></div></div>
+<div class="card" style="overflow-x:auto"><table><thead><tr><th>ID</th><th>Operator</th><th>Room</th><th>In</th><th>Out</th><th>Pay</th><th>Status</th><th></th></tr></thead><tbody id="resTable"></tbody></table></div>
+</div>
+<div class="page" id="page-properties">
+<div class="filters"><button class="btn btn-primary" onclick="document.getElementById('propForm').style.display='block'">Add property</button></div>
+<div id="propForm" class="card" style="display:none;padding:16px;margin-bottom:14px">
+<div class="form-grid">
+<div class="form-group"><label>Name *</label><input id="pName"></div>
+<div class="form-group"><label>Location *</label><input id="pLoc"></div>
+<div class="form-group"><label>Type</label><select id="pType"><option>Tented Camp</option><option>Lodge</option><option>Hotel</option><option>Resort</option></select></div>
+<div class="form-group"><label>Status</label><select id="pStatus"><option value="available">Available</option><option value="unavailable">Unavailable</option></select></div>
+<div class="form-group full"><label>Description</label><textarea id="pDesc"></textarea></div>
+<div class="form-group full"><label>Amenities</label><input id="pAm" placeholder="Wi-Fi, Restaurant, Pool"></div>
+<div class="form-group full"><label>Images (first = preview)</label><input type="file" id="pImg" accept="image/*" multiple></div>
+</div>
+<button class="btn btn-primary" style="margin-top:10px" onclick="addProp()">Save</button>
+</div>
+<div class="prop-grid" id="propGrid"></div>
+</div>
+<div class="page" id="page-rooms">
+<div class="card" style="padding:16px;margin-bottom:14px;max-width:800px">
+<div class="form-grid">
+<div class="form-group"><label>Name *</label><input id="rName"></div>
+<div class="form-group"><label>Property</label><select id="rProp"></select></div>
+<div class="form-group"><label>STO $ *</label><input type="number" id="rSto"></div>
+<div class="form-group"><label>Public $</label><input type="number" id="rPub"></div>
+<div class="form-group"><label>Units</label><input type="number" id="rUnits" value="1"></div>
+<div class="form-group"><label>Guests</label><input type="number" id="rGuests" value="2"></div>
+<div class="form-group full"><label>Amenities</label><input id="rAm"></div>
+<div class="form-group full"><label>Images</label><input type="file" id="rImg" accept="image/*" multiple></div>
+</div>
+<button class="btn btn-primary" style="margin-top:10px" onclick="addRoom()">Save room type</button>
+</div>
+<div class="prop-grid" id="roomGrid"></div>
+</div>
+<div class="page" id="page-availability">
+<div class="filters"><button class="btn" onclick="calShift(-1)">Prev</button><strong id="calLabel"></strong><button class="btn" onclick="calShift(1)">Next</button><button class="btn" onclick="calShift(12)">+Year</button></div>
+<div class="card" style="padding:14px"><div class="cal" id="calGrid"></div><p class="meta" style="margin-top:8px">Green free · Red busy/blocked · Click to toggle block</p></div>
+</div>
+<div class="page" id="page-rates"><div class="card" style="overflow-x:auto"><table><thead><tr><th>Room</th><th>STO</th><th>Public</th><th></th></tr></thead><tbody id="rateTable"></tbody></table></div></div>
+<div class="page" id="page-gallery"><div class="gallery" id="galleryGrid"></div></div>
+<div class="page" id="page-messages"><div class="card" style="padding:8px 16px" id="msgList"></div></div>
+<div class="page" id="page-revenue">
+<div class="stats"><div class="stat"><div class="lbl">Paid</div><div class="val" id="revPaid">—</div></div><div class="stat"><div class="lbl">Manual extra</div><div class="val" id="revMan">—</div></div><div class="stat"><div class="lbl">Total</div><div class="val" id="revTot">—</div></div><div class="stat"><div class="lbl">Avg booking</div><div class="val" id="revAvg">—</div></div></div>
+<div class="card" style="padding:16px;margin-bottom:12px"><h3 style="margin-bottom:8px">Add offline tracking</h3>
+<div class="form-grid"><div class="form-group"><label>Extra revenue $</label><input type="number" id="mRev" value="0"></div>
+<div class="form-group"><label>Extra occ nights</label><input type="number" id="mOcc" value="0"></div></div>
+<button class="btn btn-primary" style="margin-top:8px" onclick="saveManual()">Save</button></div>
+</div>
+<div class="page" id="page-occupancy">
+<div class="stats"><div class="stat"><div class="lbl">Tonight</div><div class="val" id="occN">—</div></div><div class="stat"><div class="lbl">Units</div><div class="val" id="occU">—</div></div><div class="stat"><div class="lbl">Occupied</div><div class="val" id="occO">—</div></div><div class="stat"><div class="lbl">Open demand</div><div class="val" id="occD">—</div></div></div>
+<div class="card" style="padding:16px" id="occByRoom"></div>
+</div>
+<div class="page" id="page-guests"><div class="card" style="overflow-x:auto"><table><thead><tr><th>Operator</th><th>Stays</th><th>Guests</th><th>Revenue</th></tr></thead><tbody id="guestTable"></tbody></table></div></div>
+<div class="page" id="page-account">
+<div class="card" style="padding:16px;max-width:640px;margin-bottom:12px"><h3>Team roles: Admin · Manager · Sales</h3>
+<div class="filters"><button class="btn btn-primary" onclick="document.getElementById('memF').style.display='block'">Add member</button></div>
+<div id="memF" style="display:none" class="form-grid">
+<div class="form-group"><label>Name</label><input id="mName"></div>
+<div class="form-group"><label>Email</label><input id="mEmail"></div>
+<div class="form-group"><label>Role</label><select id="mRole"><option>Admin</option><option>Manager</option><option>Sales</option></select></div>
+</div>
+<button class="btn btn-primary" style="margin-top:8px;display:none" id="memSave" onclick="addMember()">Save member</button>
+<div id="teamList"></div></div>
+</div>
+</div></div>
+<div class="modal-bg" id="modal"><div class="modal" id="modalBody"></div></div>
 <script>
-function logout() {
-  sessionStorage.removeItem('safariLinkUser');
-  try { localStorage.removeItem('safarilink_user'); } catch (e) {}
-  window.location.href = 'index.html';
+
+var SL_KEY = 'safarilink_platform_v1';
+function slLoad(){try{var raw=localStorage.getItem(SL_KEY);if(raw)return JSON.parse(raw)}catch(e){}return null}
+function slSave(data){localStorage.setItem(SL_KEY,JSON.stringify(data));try{localStorage.setItem(SL_KEY+'_tick',String(Date.now()))}catch(e){}}
+function slEnsure(){
+  var d=slLoad();
+  if(d&&d.version===2)return d;
+  d={version:2,
+    properties:[
+      {id:1,name:'Serengeti Hill Camp',type:'Tented Camp',location:'Central Serengeti',status:'available',desc:'Tented camp with wildlife views on the central plains.',amenities:['Wi-Fi','Restaurant','Bar','Laundry'],contact:'+255 754 100 200',region:'Serengeti',images:[],preview:'',unitsTotal:12,unitsOccupied:9},
+      {id:2,name:'Ngoro View Lodge',type:'Lodge',location:'Ngorongoro Rim',status:'available',desc:'Lodge on the crater rim with sundowner decks.',amenities:['Wi-Fi','Restaurant','Fireplace','View'],contact:'+255 754 100 201',region:'Ngorongoro',images:[],preview:'',unitsTotal:16,unitsOccupied:11}
+    ],
+    roomTypes:[
+      {id:1,propertyId:1,name:'Luxury Tent',guests:2,units:6,sto:220,pub:320,location:'Main camp',amenities:['En-suite','Private deck','Mosquito net'],notes:'',images:[]},
+      {id:2,propertyId:1,name:'Family Suite',guests:4,units:2,sto:350,pub:450,location:'Riverside',amenities:['En-suite','View','Wi-Fi'],notes:'',images:[]},
+      {id:3,propertyId:2,name:'Standard Room',guests:2,units:10,sto:130,pub:180,location:'Main block',amenities:['En-suite','Wi-Fi'],notes:'',images:[]}
+    ],
+    reservations:[
+      {id:'R-1042',operator:'Dreamtrails Expeditions',propertyId:1,room:'Luxury Tent',checkIn:'2026-10-22',checkOut:'2026-10-25',guests:2,amount:660,payment:'Paid',status:'paid',createdAt:Date.now()-3600000,repliedAt:Date.now()-3000000,notes:'Honeymoon couple'},
+      {id:'R-1043',operator:'Serengeti Trails Ltd',propertyId:1,room:'Family Suite',checkIn:'2026-10-24',checkOut:'2026-10-27',guests:4,amount:1050,payment:'Deposit',status:'booked',createdAt:Date.now()-7200000,repliedAt:null,notes:'Family of 4'},
+      {id:'R-1044',operator:'Kilimanjaro Voyages',propertyId:2,room:'Standard Room',checkIn:'2026-10-26',checkOut:'2026-10-28',guests:2,amount:260,payment:'Pending',status:'reserved',createdAt:Date.now()-25*60000,repliedAt:null,notes:'Awaiting confirmation'},
+      {id:'R-1045',operator:'Safari Circle TZ',propertyId:1,room:'Luxury Tent',checkIn:'2026-10-18',checkOut:'2026-10-19',guests:2,amount:220,payment:'Refunded',status:'cancelled',createdAt:Date.now()-86400000*3,repliedAt:Date.now()-86400000*2,notes:'Cancelled by operator'}
+    ],
+    vehicles:[
+      {id:1,plate:'T 234 ABC',category:'Safari car (extended 4x4)',model:'Toyota Land Cruiser 79 Extended',year:2022,seats:7,base:'Arusha',dayRate:180,safariDayRate:220,transferRate:90,status:'On hire',availableFrom:'2026-10-26',features:['Pop-up roof','4WD','Fridge','Charging ports','Spotting seats','Seat belts','First aid kit','Spare tyre','Recovery gear'],images:[],preview:'',insuranceExpiry:'2027-03-12',parkReg:true},
+      {id:2,plate:'T 512 KLM',category:'Safari car (extended 4x4)',model:'Toyota Land Cruiser 76',year:2021,seats:9,base:'Arusha',dayRate:200,safariDayRate:240,transferRate:100,status:'Available',availableFrom:'2026-10-20',features:['Pop-up roof','4WD','Fridge','Charging ports','Binoculars','Cooler box'],images:[],preview:'',insuranceExpiry:'2027-01-20',parkReg:true},
+      {id:3,plate:'T 088 NBO',category:'Minibus',model:'Toyota Coaster',year:2019,seats:18,base:'Moshi',dayRate:150,safariDayRate:180,transferRate:80,status:'Available',availableFrom:'2026-10-20',features:['AC','Seat belts','Luggage space','PA system'],images:[],preview:'',insuranceExpiry:'2026-12-01',parkReg:false},
+      {id:4,plate:'T 701 ARU',category:'Van',model:'Toyota Hiace',year:2023,seats:10,base:'Arusha',dayRate:120,safariDayRate:140,transferRate:70,status:'Available',availableFrom:'2026-10-20',features:['AC','Charging ports','Luggage space'],images:[],preview:'',insuranceExpiry:'2027-06-01',parkReg:false}
+    ],
+    charters:[
+      {ref:'CH-901',operator:'Dreamtrails Expeditions',vehicleId:1,plate:'T 234 ABC',start:'2026-10-18',end:'2026-10-25',route:'Arusha-Serengeti-Ngorongoro',driver:'Juma Kimaro',value:1260,status:'On trip',createdAt:Date.now()-86400000},
+      {ref:'CH-902',operator:'Serengeti Trails Ltd',vehicleId:2,plate:'T 512 KLM',start:'2026-10-22',end:'2026-10-28',route:'Tarangire-Seronera',driver:'Amina Mwanga',value:1200,status:'Confirmed',createdAt:Date.now()-3600000},
+      {ref:'CH-903',operator:'Kilimanjaro Voyages',vehicleId:3,plate:'T 088 NBO',start:'2026-10-21',end:'2026-10-21',route:'JRO-Moshi transfer',driver:'Peter N.',value:150,status:'Reserved',createdAt:Date.now()-1800000},
+      {ref:'CH-904',operator:'Safari Circle TZ',vehicleId:1,plate:'T 234 ABC',start:'2026-10-10',end:'2026-10-14',route:'Northern circuit',driver:'Juma Kimaro',value:720,status:'Completed',createdAt:Date.now()-86400000*10}
+    ],
+    drivers:[
+      {id:1,name:'Juma Kimaro',phone:'+255 754 111 222',lic:'E',lang:'English, Swahili',status:'On trip',rating:4.8,trips:120,base:'Arusha',notes:'Senior safari driver'},
+      {id:2,name:'Amina Mwanga',phone:'+255 755 333 444',lic:'C',lang:'English, Swahili, French',status:'Available',rating:4.9,trips:85,base:'Arusha',notes:'French-speaking groups'}
+    ],
+    agreements:[
+      {id:'HA-220',operator:'Dreamtrails Expeditions',plate:'T 234 ABC',period:'18-25 Oct 2026',terms:'With driver · Fuel by operator · 200 km/day included · Damage excess $500',status:'Signed',operatorAgreed:true,signedAt:'2026-10-17'},
+      {id:'HA-221',operator:'Serengeti Trails Ltd',plate:'T 512 KLM',period:'22-28 Oct 2026',terms:'With driver · Fuel by operator · Night stop allowed in parks',status:'Pending operator',operatorAgreed:false,signedAt:null}
+    ],
+    guides:[{
+      id:1,name:'Daniel Mwamba',years:9,phone:'+255 762 000 111',base:'Arusha',rate:80,halfDay:50,overnight:95,mountain:120,
+      bio:'Northern circuit safari guide. Strong on big cats, guest hosting, multi-day mobile camps.',
+      languages:['English','Swahili','French','Japanese'],skills:['Big cats','Photography','Walking safari','First aid'],
+      regions:['Serengeti NP','Ngorongoro','Tarangire','Lake Manyara'],image:'',rating:4.9,reviewsCount:47,
+      services:[{id:1,name:'Game drive guide',cat:'Game drives',rate:80,desc:'Full-day vehicle guiding'},{id:2,name:'Walking safari',cat:'Walking safari',rate:95,desc:'Where permitted'}],
+      certs:[{name:'Tour guide licence',issuer:'MNRT / TTBIH',validTo:'2027-12-01'},{name:'First aid',issuer:'Red Cross TZ',validTo:'2027-06-01'}],
+      blocks:[],reviews:[{operator:'Dreamtrails Expeditions',score:5,text:'Excellent cat tracking and guest care.',park:'Serengeti'}]
+    }],
+    guideJobs:[
+      {ref:'GJ-440',operator:'Dreamtrails Expeditions',service:'Game drive guide',park:'Serengeti NP',start:'2026-10-22',end:'2026-10-27',fee:480,status:'Confirmed'},
+      {ref:'GJ-441',operator:'Serengeti Trails Ltd',service:'Walking safari',park:'Ngorongoro',start:'2026-10-20',end:'2026-10-21',fee:190,status:'In progress'},
+      {ref:'GJ-442',operator:'Kilimanjaro Voyages',service:'Game drive guide',park:'Tarangire',start:'2026-10-05',end:'2026-10-08',fee:320,status:'Completed'}
+    ],
+    guideRequests:[
+      {id:1,operator:'Coast & Crater Safaris',service:'Game drive guide',park:'Serengeti NP',dates:'1-6 Nov 2026',fee:480,note:'Need English + Japanese for Tokyo guests'},
+      {id:2,operator:'Safari Circle TZ',service:'Birding',park:'Lake Manyara',dates:'12-13 Nov 2026',fee:160,note:'Private couple, early starts'}
+    ],
+    messages:[
+      {id:1,side:'accommodation',from:'Dreamtrails Expeditions',initials:'DT',text:'Reservation R-1042 confirmed — Luxury Tent 22-25 Oct.',time:Date.now()-3600000,type:'info',related:'R-1042'},
+      {id:2,side:'accommodation',from:'SafariLink Reminder',initials:'SL',text:'Reminder: R-1044 from Kilimanjaro Voyages is unreplied. Confirm or decline. Email notice queued.',time:Date.now()-600000,type:'reminder',related:'R-1044',unread:true},
+      {id:3,side:'fleet',from:'Dreamtrails Expeditions',initials:'DT',text:'CH-901 on the road — Serengeti leg starts tomorrow.',time:Date.now()-7200000,type:'info'},
+      {id:4,side:'guide',from:'Dreamtrails Expeditions',initials:'DT',text:'GJ-440 pickup at Arusha Coffee Lodge, 07:00 on 22 Oct.',time:Date.now()-5400000,type:'info'}
+    ],
+    team:{accommodation:[{id:1,name:'Camp Admin',email:'admin@serengetihill.tz',role:'Admin'},{id:2,name:'Front Office Manager',email:'manager@serengetihill.tz',role:'Manager'},{id:3,name:'Sales Lead',email:'sales@serengetihill.tz',role:'Sales'}],fleet:[{id:1,name:'Dispatch Lead',email:'dispatch@safarifleet.tz',role:'Admin'}],guide:[]},
+    manualStats:{extraBookings:0,extraRevenue:0,extraOccNights:0},
+    calendarBlocks:{accommodation:{},fleet:{},guide:{}}
+  };
+  slSave(d);return d;
 }
+function slGet(){return slEnsure()}
+function slUpdate(mutator){var d=slGet();mutator(d);slSave(d);return d}
+function slOnChange(cb){window.addEventListener('storage',function(e){if(e.key===SL_KEY||e.key===SL_KEY+'_tick')cb()});setInterval(cb,8000)}
+function esc(s){var d=document.createElement('div');d.textContent=s==null?'':String(s);return d.innerHTML}
+function badge(s){var k=String(s).toLowerCase().replace(/\s+/g,'');return '<span class="badge badge-'+k+'">'+esc(s)+'</span>'}
+function money(n){return '$'+Number(n||0).toLocaleString()}
+function fileToDataUrl(file){return new Promise(function(resolve,reject){var r=new FileReader();r.onload=function(){resolve(r.result)};r.onerror=reject;r.readAsDataURL(file)})}
 
-var titles = {
-  dashboard: ['Dashboard', 'Central Serengeti · Manage inventory, rates & reservations'],
-  reservations: ['Reservations', 'Reserved, booked, paid and cancelled stays'],
-  properties: ['My Properties', 'All properties and availability'],
-  'room-type': ['Add Room Type', 'Amenities, pricing and location'],
-  rates: ['Rates & Pricing', 'STO and public nightly rates'],
-  gallery: ['Photo Gallery', 'Property and room photos'],
-  messages: ['Messages', 'Operator and system messages'],
-  revenue: ['Revenue Analytics', 'Performance over time'],
-  occupancy: ['Occupancy Analytics', 'Fill rates by room type'],
-  guests: ['Guest Insights', 'Operators and guest patterns'],
-  account: ['Account', 'Business profile and team access']
-};
 
-function showPage(id) {
-  document.querySelectorAll('.page-view').forEach(function(p) { p.classList.remove('active'); });
-  var el = document.getElementById('page-' + id);
-  if (el) el.classList.add('active');
-  document.querySelectorAll('.sidebar-link').forEach(function(a) {
-    a.classList.toggle('active', a.getAttribute('data-page') === id);
-  });
-  var t = titles[id] || ['Dashboard', ''];
-  document.getElementById('pageTitle').textContent = t[0];
-  document.getElementById('pageSubtitle').textContent = t[1];
-  if (id === 'reservations') renderReservations();
-  if (id === 'properties') renderProperties();
-  if (id === 'room-type') { fillPropertySelect(); renderRoomTypes(); }
-  if (id === 'rates') renderRates();
-  if (id === 'gallery') renderGallery();
-  if (id === 'messages') renderMessages();
-  if (id === 'occupancy') renderOccupancy();
-  if (id === 'account') renderMembers();
-  lucide.createIcons();
-}
-
-function store(key, val) { localStorage.setItem('sl_acc_' + key, JSON.stringify(val)); }
-function load(key, fallback) {
-  try {
-    var v = localStorage.getItem('sl_acc_' + key);
-    return v ? JSON.parse(v) : fallback;
-  } catch (e) { return fallback; }
-}
-
-/* Seed data */
-function seed() {
-  if (!load('seeded', false)) {
-    store('properties', [
-      { id: 1, name: 'Serengeti Hill Camp', location: 'Central Serengeti', type: 'Camp', status: 'available', desc: 'Tented camp with wildlife views' },
-      { id: 2, name: 'Ngoro View Lodge', location: 'Ngorongoro', type: 'Lodge', status: 'available', desc: 'Lodge overlooking the crater rim' }
-    ]);
-    store('rooms', [
-      { id: 1, name: 'Luxury Tent', propertyId: 1, guests: 2, units: 6, sto: 220, pub: 320, location: 'Main camp', amenities: ['Wi‑Fi','En-suite','Private deck'], notes: '' },
-      { id: 2, name: 'Family Suite', propertyId: 1, guests: 4, units: 2, sto: 350, pub: 450, location: 'Riverside', amenities: ['Wi‑Fi','En-suite','View'], notes: '' },
-      { id: 3, name: 'Standard Room', propertyId: 2, guests: 2, units: 10, sto: 130, pub: 180, location: 'Main block', amenities: ['Wi‑Fi','En-suite'], notes: '' }
-    ]);
-    store('reservations', [
-      { id: 'R-1042', operator: 'Dreamtrails Expeditions', room: 'Luxury Tent', checkIn: '2026-10-20', checkOut: '2026-10-23', guests: 2, amount: 660, payment: 'Paid', status: 'paid' },
-      { id: 'R-1043', operator: 'Serengeti Trails Ltd', room: 'Family Suite', checkIn: '2026-10-22', checkOut: '2026-10-25', guests: 4, amount: 1050, payment: 'Deposit', status: 'booked' },
-      { id: 'R-1044', operator: 'Kilimanjaro Voyages', room: 'Standard Room', checkIn: '2026-10-25', checkOut: '2026-10-27', guests: 2, amount: 260, payment: 'Pending', status: 'reserved' },
-      { id: 'R-1045', operator: 'Safari Circle TZ', room: 'Luxury Tent', checkIn: '2026-10-18', checkOut: '2026-10-19', guests: 2, amount: 220, payment: 'Refunded', status: 'cancelled' },
-      { id: 'R-1046', operator: 'Dreamtrails Expeditions', room: 'Standard Room', checkIn: '2026-11-01', checkOut: '2026-11-04', guests: 2, amount: 390, payment: 'Paid', status: 'paid' }
-    ]);
-    store('members', [
-      { id: 1, name: 'Camp Manager', email: 'manager@serengetihill.tz', role: 'Manager' }
-    ]);
-    store('gallery', []);
-    store('seeded', true);
-  }
-}
-
-function statusBadge(s) {
-  var map = { reserved: 'badge-reserved', booked: 'badge-booked', paid: 'badge-paid', cancelled: 'badge-cancelled',
-    available: 'badge-available', unavailable: 'badge-unavailable', maintenance: 'badge-maintenance' };
-  return '<span class="badge ' + (map[s] || '') + '">' + s.charAt(0).toUpperCase() + s.slice(1) + '</span>';
-}
-
-function renderReservations() {
-  var list = load('reservations', []);
-  var status = document.getElementById('resFilterStatus').value;
-  var q = (document.getElementById('resSearch').value || '').toLowerCase();
-  var counts = { reserved: 0, booked: 0, paid: 0, cancelled: 0 };
-  list.forEach(function(r) { if (counts[r.status] != null) counts[r.status]++; });
-  document.getElementById('cReserved').textContent = counts.reserved;
-  document.getElementById('cBooked').textContent = counts.booked;
-  document.getElementById('cPaid').textContent = counts.paid;
-  document.getElementById('cCancelled').textContent = counts.cancelled;
-  document.getElementById('resBadge').textContent = counts.reserved + counts.booked;
-  document.getElementById('statOpenRes').textContent = counts.reserved + counts.booked;
-
-  var filtered = list.filter(function(r) {
-    if (status !== 'all' && r.status !== status) return false;
-    if (q && (r.operator + r.room + r.id).toLowerCase().indexOf(q) === -1) return false;
-    return true;
-  });
-  document.getElementById('resTable').innerHTML = filtered.map(function(r) {
-    return '<tr><td>' + r.id + '</td><td>' + r.operator + '</td><td>' + r.room + '</td><td>' + r.checkIn +
-      '</td><td>' + r.checkOut + '</td><td>' + r.guests + '</td><td>$' + r.amount +
-      '</td><td>' + r.payment + '</td><td>' + statusBadge(r.status) + '</td></tr>';
-  }).join('') || '<tr><td colspan="9" class="empty-hint">No reservations match.</td></tr>';
-
-  document.getElementById('dashResTable').innerHTML = list.slice(0, 5).map(function(r) {
-    return '<tr><td>' + r.operator + '</td><td>' + r.room + '</td><td>' + r.checkIn +
-      '</td><td>' + statusBadge(r.status) + '</td><td>$' + r.amount + '</td></tr>';
-  }).join('');
-}
-
-function renderProperties() {
-  var list = load('properties', []);
-  var f = document.getElementById('propFilter').value;
-  var filtered = list.filter(function(p) { return f === 'all' || p.status === f; });
-  document.getElementById('propGrid').innerHTML = filtered.map(function(p) {
-    return '<div class="prop-card"><h4>' + esc(p.name) + '</h4>' +
-      '<div class="prop-meta">' + esc(p.type) + ' · ' + esc(p.location) + '</div>' +
-      '<div style="margin-bottom:10px;">' + statusBadge(p.status) + '</div>' +
-      '<p style="font-size:0.85rem;color:var(--warm-gray);">' + esc(p.desc || '') + '</p></div>';
-  }).join('') || '<div class="empty-hint">No properties yet. Add one above.</div>';
-}
-
-function addProperty() {
-  var name = document.getElementById('propName').value.trim();
-  var location = document.getElementById('propLocation').value.trim();
-  if (!name || !location) { alert('Name and location are required'); return; }
-  var list = load('properties', []);
-  list.push({
-    id: Date.now(),
-    name: name,
-    location: location,
-    type: document.getElementById('propType').value,
-    status: document.getElementById('propStatus').value,
-    desc: document.getElementById('propDesc').value.trim()
-  });
-  store('properties', list);
-  document.getElementById('propFormWrap').style.display = 'none';
-  ['propName','propLocation','propDesc'].forEach(function(id) { document.getElementById(id).value = ''; });
-  renderProperties();
-  fillPropertySelect();
-}
-
-function fillPropertySelect() {
-  var sel = document.getElementById('roomProperty');
-  var list = load('properties', []);
-  sel.innerHTML = list.map(function(p) {
-    return '<option value="' + p.id + '">' + esc(p.name) + '</option>';
-  }).join('') || '<option value="">Add a property first</option>';
-}
-
-function addRoomType() {
-  var name = document.getElementById('roomName').value.trim();
-  var sto = Number(document.getElementById('roomSto').value);
-  var propId = Number(document.getElementById('roomProperty').value);
-  if (!name || !propId || !sto) { alert('Name, property and STO rate are required'); return; }
-  var amenities = [];
-  document.querySelectorAll('#amenityList input:checked').forEach(function(c) { amenities.push(c.value); });
-  var list = load('rooms', []);
-  list.push({
-    id: Date.now(),
-    name: name,
-    propertyId: propId,
-    guests: Number(document.getElementById('roomGuests').value) || 2,
-    units: Number(document.getElementById('roomUnits').value) || 1,
-    sto: sto,
-    pub: Number(document.getElementById('roomPublic').value) || sto,
-    location: document.getElementById('roomLocation').value.trim(),
-    amenities: amenities,
-    notes: document.getElementById('roomNotes').value.trim()
-  });
-  store('rooms', list);
-  document.getElementById('roomName').value = '';
-  document.getElementById('roomNotes').value = '';
-  document.querySelectorAll('#amenityList input').forEach(function(c) { c.checked = false; });
-  alert('Room type saved');
-  renderRoomTypes();
-}
-
-function propName(id) {
-  var p = load('properties', []).find(function(x) { return x.id === id; });
-  return p ? p.name : '—';
-}
-
-function renderRoomTypes() {
-  var list = load('rooms', []);
-  document.getElementById('roomTypeList').innerHTML = list.map(function(r) {
-    return '<div class="prop-card"><h4>' + esc(r.name) + '</h4>' +
-      '<div class="prop-meta">' + esc(propName(r.propertyId)) + ' · ' + esc(r.location || '—') + '</div>' +
-      '<div style="font-size:0.85rem;margin-bottom:6px;">STO $' + r.sto + ' · Public $' + r.pub + ' · ' + r.units + ' units · max ' + r.guests + ' guests</div>' +
-      '<div style="font-size:0.78rem;color:var(--warm-gray);">' + esc((r.amenities || []).join(' · ')) + '</div></div>';
-  }).join('') || '<div class="empty-hint">No room types yet.</div>';
-}
-
-function renderRates() {
-  var list = load('rooms', []);
-  document.getElementById('ratesTable').innerHTML = list.map(function(r) {
-    return '<tr><td>' + esc(r.name) + '</td><td>' + esc(propName(r.propertyId)) +
-      '</td><td><input type="number" id="sto_' + r.id + '" value="' + r.sto + '" style="width:90px;padding:6px;"></td>' +
-      '<td><input type="number" id="pub_' + r.id + '" value="' + r.pub + '" style="width:90px;padding:6px;"></td>' +
-      '<td><button class="topbar-btn primary" onclick="saveRate(' + r.id + ')">Save</button></td></tr>';
-  }).join('') || '<tr><td colspan="5" class="empty-hint">Add room types first.</td></tr>';
-}
-
-function saveRate(id) {
-  var list = load('rooms', []);
-  list = list.map(function(r) {
-    if (r.id === id) {
-      r.sto = Number(document.getElementById('sto_' + id).value) || r.sto;
-      r.pub = Number(document.getElementById('pub_' + id).value) || r.pub;
-    }
-    return r;
-  });
-  store('rooms', list);
-  alert('Rates updated');
-}
-
-function renderGallery() {
-  var list = load('gallery', []);
-  var grid = document.getElementById('galleryGrid');
-  if (!list.length) {
-    grid.innerHTML = '<div class="empty-hint" style="grid-column:1/-1;">No photos yet. Upload images above.</div>';
-    return;
-  }
-  grid.innerHTML = list.map(function(g, i) {
-    return '<div class="gallery-item"><img src="' + g + '" alt="Photo ' + (i+1) + '"></div>';
-  }).join('');
-}
-
-function addGalleryFiles(e) {
-  var files = Array.from(e.target.files || []);
-  if (!files.length) return;
-  var list = load('gallery', []);
-  var left = files.length;
-  files.forEach(function(f) {
-    var reader = new FileReader();
-    reader.onload = function() {
-      list.push(reader.result);
-      left--;
-      if (left === 0) { store('gallery', list); renderGallery(); }
-    };
-    reader.readAsDataURL(f);
-  });
-  e.target.value = '';
-}
-
-function renderMessages() {
-  var msgs = [
-    { from: 'Dreamtrails Expeditions', initials: 'DT', text: 'Please confirm availability for 4 luxury tents, 20–23 Oct.', time: '2h ago' },
-    { from: 'Serengeti Trails Ltd', initials: 'ST', text: 'Deposit paid for R-1043. Looking forward to arrival.', time: '5h ago' },
-    { from: 'SafariLink System', initials: 'SL', text: 'Your STO rates were viewed 14 times this week.', time: '1d ago' },
-    { from: 'Kilimanjaro Voyages', initials: 'KV', text: 'Can we extend R-1044 by one night?', time: '1d ago' },
-    { from: 'Safari Circle TZ', initials: 'SC', text: 'Cancellation for R-1045 processed.', time: '2d ago' }
-  ];
-  document.getElementById('msgList').innerHTML = msgs.map(function(m) {
-    return '<div class="msg-row"><div class="msg-avatar">' + m.initials + '</div><div class="msg-body">' +
-      '<h4>' + m.from + ' <span style="font-weight:400;color:var(--warm-gray);font-size:0.75rem;">· ' + m.time + '</span></h4>' +
-      '<p>' + m.text + '</p></div></div>';
-  }).join('');
-}
-
-function renderOccupancy() {
-  var rooms = load('rooms', []);
-  var totalUnits = rooms.reduce(function(s, r) { return s + (r.units || 0); }, 0);
-  document.getElementById('occUnits').textContent = totalUnits || '—';
-  document.getElementById('occByRoom').innerHTML = rooms.map(function(r) {
-    var pct = 55 + (r.id % 40);
-    return '<div style="margin-bottom:14px;"><div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:4px;">' +
-      '<span>' + esc(r.name) + '</span><strong>' + pct + '%</strong></div>' +
-      '<div style="height:8px;background:var(--khaki);border-radius:4px;overflow:hidden;">' +
-      '<div style="height:100%;width:' + pct + '%;background:var(--accent-green);"></div></div></div>';
-  }).join('') || '<div class="empty-hint">Add room types to see occupancy.</div>';
-}
-
-function renderMembers() {
-  var list = load('members', []);
-  document.getElementById('memberList').innerHTML = list.map(function(m) {
-    return '<div class="team-row"><div><strong>' + esc(m.name) + '</strong><div style="font-size:0.8rem;color:var(--warm-gray);">' +
-      esc(m.email) + ' · ' + esc(m.role) + '</div></div>' +
-      '<button class="topbar-btn" onclick="removeMember(' + m.id + ')">Remove</button></div>';
-  }).join('') || '<div class="empty-hint">No team members yet.</div>';
-}
-
-function addMember() {
-  var name = document.getElementById('memName').value.trim();
-  var email = document.getElementById('memEmail').value.trim();
-  if (!name || !email) { alert('Name and email required'); return; }
-  var list = load('members', []);
-  list.push({ id: Date.now(), name: name, email: email, role: document.getElementById('memRole').value });
-  store('members', list);
-  document.getElementById('memName').value = '';
-  document.getElementById('memEmail').value = '';
-  document.getElementById('memberForm').style.display = 'none';
-  renderMembers();
-}
-
-function removeMember(id) {
-  var list = load('members', []).filter(function(m) { return m.id !== id; });
-  store('members', list);
-  renderMembers();
-}
-
-function saveAccount() {
-  store('account', {
-    name: document.getElementById('accName').value,
-    email: document.getElementById('accEmail').value,
-    phone: document.getElementById('accPhone').value,
-    region: document.getElementById('accRegion').value
-  });
-  alert('Account saved');
-}
-
-function esc(s) {
-  var d = document.createElement('div');
-  d.textContent = s == null ? '' : String(s);
-  return d.innerHTML;
-}
-
-seed();
-renderReservations();
+function logout(){sessionStorage.removeItem('safariLinkUser');try{localStorage.removeItem('safarilink_user')}catch(e){}location.href='index.html'}
+var TITLES={dashboard:['Dashboard','Live occupancy & operator reservations'],reservations:['Reservations','Example statuses + Dreamtrails bookings'],properties:['My Properties','Preview image cards'],rooms:['Room Types','Inventory for operators'],availability:['Availability','Month calendar — expand by year'],rates:['Rates','STO / public'],gallery:['Gallery','Property & room photos'],messages:['Messages','30-min unreplied reminders'],revenue:['Revenue','Paid + manual tracking'],occupancy:['Occupancy','From inventory'],guests:['Guest Insights','From reservations'],account:['Account','Admin / Manager / Sales']};
+var calMonth=new Date();calMonth.setDate(1);
+function go(id){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});document.getElementById('page-'+id).classList.add('active');document.querySelectorAll('.sidebar-link').forEach(function(a){a.classList.toggle('active',a.getAttribute('data-p')===id)});var t=TITLES[id]||['',''];document.getElementById('title').textContent=t[0];document.getElementById('sub').innerHTML='<span class="live-dot"></span>'+t[1];refresh();lucide.createIcons()}
+function cta(){go('rooms')}
+function propName(id){var p=slGet().properties.find(function(x){return x.id===id});return p?p.name:'—'}
+function stats(){var d=slGet(),units=0;d.roomTypes.forEach(function(r){units+=r.units||0});var today=new Date().toISOString().slice(0,10);var occ=d.reservations.filter(function(r){return (r.status==='paid'||r.status==='booked')&&r.checkIn<=today&&r.checkOut>today}).length;var open=d.reservations.filter(function(r){return r.status==='reserved'||r.status==='booked'}).length;var paid=d.reservations.filter(function(r){return r.status==='paid'});var rev=paid.reduce(function(s,r){return s+r.amount},0)+(d.manualStats.extraRevenue||0);var avg=d.roomTypes.length?Math.round(d.roomTypes.reduce(function(s,r){return s+r.sto},0)/d.roomTypes.length):0;return{units:units,occ:Math.min(units,occ),pct:units?Math.round(Math.min(units,occ)/units*100):0,open:open,rev:rev,avg:avg,paid:paid}}
+function renderDash(){var s=stats();document.getElementById('stOcc').textContent=s.pct+'%';document.getElementById('stOpen').textContent=s.open;document.getElementById('stRev').textContent=money(s.rev);document.getElementById('stAvg').textContent=money(s.avg);document.getElementById('dashRes').innerHTML=slGet().reservations.slice(0,5).map(function(r){return '<tr><td>'+esc(r.operator)+'</td><td>'+esc(r.room)+'</td><td>'+r.checkIn+'</td><td>'+badge(r.status)+'</td><td>'+money(r.amount)+'</td></tr>'}).join('')}
+function renderRes(){var d=slGet(),f=document.getElementById('resFilter').value,q=(document.getElementById('resQ').value||'').toLowerCase(),c={reserved:0,booked:0,paid:0,cancelled:0};d.reservations.forEach(function(r){if(c[r.status]!=null)c[r.status]++});document.getElementById('cR').textContent=c.reserved;document.getElementById('cB').textContent=c.booked;document.getElementById('cP').textContent=c.paid;document.getElementById('cC').textContent=c.cancelled;document.getElementById('bRes').textContent=c.reserved+c.booked;document.getElementById('resTable').innerHTML=d.reservations.filter(function(r){return(f==='all'||r.status===f)&&(!q||(r.operator+r.room+r.id).toLowerCase().indexOf(q)>=0)}).map(function(r){return '<tr><td>'+r.id+'</td><td>'+esc(r.operator)+'</td><td>'+esc(r.room)+'</td><td>'+r.checkIn+'</td><td>'+r.checkOut+'</td><td>'+esc(r.payment)+'</td><td>'+badge(r.status)+'</td><td><button class="btn" onclick="replyRes(\''+r.id+'\')">Reply</button></td></tr>'}).join('')}
+function replyRes(id){slUpdate(function(d){d.reservations.forEach(function(r){if(r.id===id){r.repliedAt=Date.now();if(r.status==='reserved')r.status='booked'}})});refresh()}
+function simOpBooking(){slUpdate(function(d){var id='R-'+Math.floor(1000+Math.random()*9000);d.reservations.unshift({id:id,operator:'Dreamtrails Expeditions',propertyId:1,room:'Luxury Tent',checkIn:'2026-11-05',checkOut:'2026-11-08',guests:2,amount:660,payment:'Pending',status:'reserved',createdAt:Date.now(),repliedAt:null,notes:'Live'});d.messages.unshift({id:Date.now(),side:'accommodation',from:'Dreamtrails Expeditions',initials:'DT',text:'New reservation '+id+' — please confirm.',time:Date.now(),type:'info',related:id,unread:true})});alert('Operator booking received');go('reservations')}
+function checkReminders(){slUpdate(function(d){var now=Date.now();d.reservations.forEach(function(r){if((r.status==='reserved'||r.status==='booked')&&!r.repliedAt&&(now-r.createdAt)>30*60*1000){var exists=d.messages.some(function(m){return m.type==='reminder'&&m.related===r.id&&(now-m.time)<30*60*1000});if(!exists)d.messages.unshift({id:now+Math.random(),side:'accommodation',from:'SafariLink Reminder',initials:'SL',text:'Reminder: '+r.id+' from '+r.operator+' unreplied 30+ min. Email queued to property.',time:now,type:'reminder',related:r.id,unread:true})}})})}
+async function addProp(){var n=document.getElementById('pName').value.trim(),l=document.getElementById('pLoc').value.trim();if(!n||!l){alert('Required');return}var files=document.getElementById('pImg').files,imgs=[];for(var i=0;i<files.length;i++)imgs.push(await fileToDataUrl(files[i]));slUpdate(function(d){d.properties.push({id:Date.now(),name:n,location:l,type:document.getElementById('pType').value,status:document.getElementById('pStatus').value,desc:document.getElementById('pDesc').value,amenities:(document.getElementById('pAm').value||'').split(',').map(function(s){return s.trim()}).filter(Boolean),images:imgs,preview:imgs[0]||'',contact:'',region:l,unitsTotal:0,unitsOccupied:0})});document.getElementById('propForm').style.display='none';renderProps()}
+function renderProps(){document.getElementById('propGrid').innerHTML=slGet().properties.map(function(p){var img=p.preview?'<img src="'+p.preview+'">':'No photo';return '<div class="prop-card" onclick="openProp('+p.id+')"><div class="img">'+img+'</div><div class="body"><h4>'+esc(p.name)+'</h4><div class="meta">'+esc(p.type)+' · '+esc(p.location)+'</div><div style="margin-top:6px">'+badge(p.status)+'</div><div class="meta" style="margin-top:6px">'+esc((p.amenities||[]).slice(0,3).join(' · '))+'</div><div style="color:var(--forest-green);font-size:.8rem;font-weight:600;margin-top:6px">View details →</div></div></div>'}).join('')}
+function openProp(id){var p=slGet().properties.find(function(x){return x.id===id});if(!p)return;var rooms=slGet().roomTypes.filter(function(r){return r.propertyId===id});var imgs=(p.images||[]).map(function(s,i){return '<div class="g"><img src="'+s+'"><div class="cap">'+(i?'Photo '+(i+1):'Preview')+'</div></div>'}).join('');document.getElementById('modalBody').innerHTML='<h3>'+esc(p.name)+'</h3><p class="meta">'+esc(p.type)+' · '+esc(p.location)+'</p><p style="margin:10px 0">'+esc(p.desc||'')+'</p><p><strong>Amenities:</strong> '+esc((p.amenities||[]).join(', '))+'</p><div class="gallery" style="margin:12px 0">'+imgs+'</div><h4>Rooms</h4>'+rooms.map(function(r){return '<div class="meta">'+esc(r.name)+' · STO '+money(r.sto)+'</div>'}).join('')+'<br><button class="btn" onclick="document.getElementById(\'modal\').classList.remove(\'show\')">Close</button>';document.getElementById('modal').classList.add('show')}
+async function addRoom(){var n=document.getElementById('rName').value.trim(),sto=Number(document.getElementById('rSto').value),pid=Number(document.getElementById('rProp').value);if(!n||!sto||!pid){alert('Required');return}var files=document.getElementById('rImg').files,imgs=[];for(var i=0;i<files.length;i++)imgs.push(await fileToDataUrl(files[i]));slUpdate(function(d){d.roomTypes.push({id:Date.now(),propertyId:pid,name:n,guests:Number(document.getElementById('rGuests').value)||2,units:Number(document.getElementById('rUnits').value)||1,sto:sto,pub:Number(document.getElementById('rPub').value)||sto,location:'',amenities:(document.getElementById('rAm').value||'').split(',').map(function(s){return s.trim()}).filter(Boolean),images:imgs,notes:''})});renderRooms()}
+function renderRooms(){document.getElementById('rProp').innerHTML=slGet().properties.map(function(p){return '<option value="'+p.id+'">'+esc(p.name)+'</option>'}).join('');document.getElementById('roomGrid').innerHTML=slGet().roomTypes.map(function(r){var img=(r.images&&r.images[0])?'<img src="'+r.images[0]+'">':'Room';return '<div class="prop-card"><div class="img">'+img+'</div><div class="body"><h4>'+esc(r.name)+'</h4><div class="meta">'+esc(propName(r.propertyId))+' · STO '+money(r.sto)+' · '+r.units+' units</div><div class="meta">'+esc((r.amenities||[]).join(' · '))+'</div></div></div>'}).join('')}
+function renderRates(){document.getElementById('rateTable').innerHTML=slGet().roomTypes.map(function(r){return '<tr><td>'+esc(r.name)+'</td><td><input type="number" id="sto'+r.id+'" value="'+r.sto+'" style="width:90px"></td><td><input type="number" id="pub'+r.id+'" value="'+r.pub+'" style="width:90px"></td><td><button class="btn btn-primary" onclick="saveRate('+r.id+')">Save</button></td></tr>'}).join('')}
+function saveRate(id){slUpdate(function(d){d.roomTypes.forEach(function(r){if(r.id===id){r.sto=Number(document.getElementById('sto'+id).value)||r.sto;r.pub=Number(document.getElementById('pub'+id).value)||r.pub}})});alert('Saved')}
+function renderGallery(){var items=[];slGet().properties.forEach(function(p){(p.images||[]).forEach(function(s,i){items.push({s:s,n:p.name+(i?'':' (preview)')})})});slGet().roomTypes.forEach(function(r){(r.images||[]).forEach(function(s){items.push({s:s,n:r.name})})});document.getElementById('galleryGrid').innerHTML=items.map(function(g){return '<div class="g"><img src="'+g.s+'"><div class="cap">'+esc(g.n)+'</div></div>'}).join('')||'<div class="meta">Upload on properties/rooms</div>'}
+function renderMessages(){checkReminders();var msgs=slGet().messages.filter(function(m){return m.side==='accommodation'});document.getElementById('bMsg').textContent=msgs.filter(function(m){return m.unread}).length||msgs.length;document.getElementById('msgList').innerHTML=msgs.map(function(m){return '<div class="msg-row '+(m.type==='reminder'?'reminder':'')+'"><div class="msg-av">'+esc(m.initials)+'</div><div><strong>'+esc(m.from)+'</strong> <span class="meta">'+new Date(m.time).toLocaleString()+'</span><div>'+esc(m.text)+'</div></div></div>'}).join('')}
+function renderRevenue(){var s=stats(),man=slGet().manualStats||{};document.getElementById('revPaid').textContent=money(s.paid.reduce(function(a,r){return a+r.amount},0));document.getElementById('revMan').textContent=money(man.extraRevenue||0);document.getElementById('revTot').textContent=money(s.rev);document.getElementById('revAvg').textContent=s.paid.length?money(Math.round(s.paid.reduce(function(a,r){return a+r.amount},0)/s.paid.length)):'—'}
+function saveManual(){slUpdate(function(d){d.manualStats={extraRevenue:Number(document.getElementById('mRev').value)||0,extraOccNights:Number(document.getElementById('mOcc').value)||0,extraBookings:0}});refresh()}
+function renderOcc(){var s=stats();document.getElementById('occN').textContent=s.pct+'%';document.getElementById('occU').textContent=s.units;document.getElementById('occO').textContent=s.occ;document.getElementById('occD').textContent=s.open;document.getElementById('occByRoom').innerHTML=slGet().roomTypes.map(function(r){var pct=45+(r.id%40);return '<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:.84rem"><span>'+esc(r.name)+'</span><strong>'+pct+'%</strong></div><div style="height:8px;background:var(--khaki);border-radius:4px"><div style="width:'+pct+'%;height:100%;background:var(--accent-green);border-radius:4px"></div></div></div>'}).join('')}
+function renderGuests(){var map={};slGet().reservations.forEach(function(r){if(!map[r.operator])map[r.operator]={stays:0,guests:0,rev:0};map[r.operator].stays++;map[r.operator].guests+=r.guests;if(r.status==='paid')map[r.operator].rev+=r.amount});document.getElementById('guestTable').innerHTML=Object.keys(map).map(function(k){var g=map[k];return '<tr><td>'+esc(k)+'</td><td>'+g.stays+'</td><td>'+g.guests+'</td><td>'+money(g.rev)+'</td></tr>'}).join('')}
+function renderTeam(){document.getElementById('teamList').innerHTML=(slGet().team.accommodation||[]).map(function(m){return '<div class="team-row"><div><strong>'+esc(m.name)+'</strong><div class="meta">'+esc(m.email)+' · '+esc(m.role)+'</div></div></div>'}).join('')}
+function addMember(){var n=document.getElementById('mName').value.trim(),e=document.getElementById('mEmail').value.trim();if(!n||!e)return;slUpdate(function(d){d.team.accommodation.push({id:Date.now(),name:n,email:e,role:document.getElementById('mRole').value})});document.getElementById('memF').style.display='none';renderTeam()}
+function calShift(n){calMonth.setMonth(calMonth.getMonth()+n);renderCal()}
+function renderCal(){var y=calMonth.getFullYear(),m=calMonth.getMonth();document.getElementById('calLabel').textContent=calMonth.toLocaleString('default',{month:'long',year:'numeric'});var first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate(),blocks=slGet().calendarBlocks.accommodation||{},busy={};slGet().reservations.forEach(function(r){if(r.status==='cancelled')return;for(var t=new Date(r.checkIn);t<new Date(r.checkOut);t.setDate(t.getDate()+1)){if(t.getMonth()===m&&t.getFullYear()===y)busy[t.getDate()]=1}});var h=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(function(d){return '<div class="hd">'+d+'</div>'}).join('');for(var i=0;i<first;i++)h+='<div class="day muted"></div>';for(var d=1;d<=days;d++){var key=y+'-'+(m+1)+'-'+d,cls=blocks[key]||busy[d]?'busy':'free';h+='<div class="day '+cls+'" onclick="toggleBlock(\''+key+'\')">'+d+'</div>'}document.getElementById('calGrid').innerHTML=h}
+function toggleBlock(key){slUpdate(function(d){if(!d.calendarBlocks.accommodation)d.calendarBlocks.accommodation={};if(d.calendarBlocks.accommodation[key])delete d.calendarBlocks.accommodation[key];else d.calendarBlocks.accommodation[key]=1});renderCal()}
+function refresh(){renderDash();renderRes();renderProps();renderRooms();renderRates();renderGallery();renderMessages();renderRevenue();renderOcc();renderGuests();renderTeam();renderCal()}
+document.getElementById('memF')&&document.querySelector('[onclick*=memF]')&&null;
+slEnsure();checkReminders();refresh();slOnChange(refresh);
 lucide.createIcons();
 </script>
 </body>
