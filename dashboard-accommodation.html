@@ -1,20 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SafariLink — Accommodation</title>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <style>
-:root{
-  --forest-green:#1a5a3a;
-  --forest-green-light:#2d7a52;
-  --accent-green:#3fb983;
-  --warm-off-white:#f8f7f4;
-  --khaki:#e8e5dd;
-  --charcoal:#2c2c2c;
-  --warm-gray:#a39e95;
-  --border-light:#d4cfc6}
+:root{--forest-green:#1a5a3a;--forest-green-light:#2d7a52;--accent-green:#3fb983;--warm-off-white:#f8f7f4;--khaki:#e8e5dd;--charcoal:#2c2c2c;--warm-gray:#a39e95;--border-light:#d4cfc6}
 *{margin:0;padding:0;box-sizing:border-box}body{font-family:system-ui,sans-serif;background:var(--warm-off-white);color:var(--charcoal);display:flex;min-height:100vh}
 .sidebar{width:250px;background:var(--charcoal);color:#ccc;display:flex;flex-direction:column;flex-shrink:0}
 .sidebar-brand{padding:18px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;gap:10px;align-items:center}
@@ -48,8 +38,9 @@ input,select,textarea{padding:8px 10px;border:1px solid var(--border-light);bord
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.form-group{display:flex;flex-direction:column;gap:4px}.form-group.full{grid-column:1/-1}.form-group label{font-size:.75rem;font-weight:600}
 .prop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
 .prop-card{background:#fff;border:1px solid var(--border-light);border-radius:12px;overflow:hidden;cursor:pointer}.prop-card:hover{border-color:var(--accent-green)}
-.prop-card .img{height:140px;background:var(--khaki);display:flex;align-items:center;justify-content:center;overflow:hidden;color:var(--warm-gray)}
+.prop-card .img{height:140px;background:var(--khaki);display:flex;align-items:center;justify-content:center;overflow:hidden;color:var(--warm-gray);flex-direction:column;gap:6px}
 .prop-card .img img{width:100%;height:100%;object-fit:cover}.prop-card .body{padding:12px}
+.prop-card .img .ph-icon{width:28px;height:28px;opacity:.45}
 .meta{font-size:.76rem;color:var(--warm-gray)}
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;align-items:center;justify-content:center;padding:14px}
 .modal-bg.show{display:flex}.modal{background:#fff;border-radius:12px;max-width:700px;width:100%;max-height:90vh;overflow:auto;padding:20px}
@@ -68,8 +59,7 @@ input,select,textarea{padding:8px 10px;border:1px solid var(--border-light);bord
 .chips{display:flex;flex-wrap:wrap;gap:6px}.chips label{font-size:.75rem;padding:5px 10px;border:1px solid var(--border-light);border-radius:99px;background:var(--warm-off-white);cursor:pointer;display:flex;gap:5px;align-items:center}
 @media(max-width:900px){.stats{grid-template-columns:1fr 1fr}.form-grid{grid-template-columns:1fr}}
 @media(max-width:700px){.sidebar{display:none}}
-</style>
-</head>
+</style></head>
 <script>
 (function(){function ru(){try{var a=sessionStorage.getItem('safariLinkUser');if(a)return JSON.parse(a)}catch(e){}try{var b=localStorage.getItem('safarilink_user');if(b)return JSON.parse(b)}catch(e){}return null}
 var u=ru();if(!u){location.href='login.html';return}
@@ -79,11 +69,7 @@ var page=location.pathname.split('/').pop();if(map[page]&&map[page].indexOf(u.ro
 </script>
 <body>
 <aside class="sidebar">
-<div class="sidebar-brand">
-  <div class="logo-icon">SL</div>
-  <div class="logo-text">Safari<span>Link</span>
-  </div>
-</div>
+<div class="sidebar-brand"><div class="logo-icon">SL</div><div class="logo-text">Safari<span>Link</span></div></div>
 <nav class="sidebar-nav">
 <div class="sidebar-section">Main</div>
 <a class="sidebar-link active" data-p="dashboard" onclick="go('dashboard')"><i data-lucide="layout-dashboard"></i>Dashboard</a>
@@ -106,7 +92,7 @@ var page=location.pathname.split('/').pop();if(map[page]&&map[page].indexOf(u.ro
 </aside>
 <div class="main">
 <header class="topbar"><div><h2 id="title">Dashboard</h2><p id="sub"><span class="live-dot"></span>Live platform</p></div>
-<div style="display:flex;gap:8px"><button class="btn" onclick="logout()">Log out</button><button class="btn btn-primary" id="ctaBtn" onclick="cta()">Action</button></div></header>
+<div style="display:flex;gap:8px"><button class="btn" onclick="logout()"><i data-lucide="log-out"></i> Log out</button><button class="btn btn-primary" id="ctaBtn" onclick="cta()"><i data-lucide="plus"></i> Action</button></div></header>
 <div class="content">
 <div class="page active" id="page-dashboard">
 <div class="stats">
@@ -121,13 +107,13 @@ var page=location.pathname.split('/').pop();if(map[page]&&map[page].indexOf(u.ro
 <div class="filters">
 <select id="resFilter" onchange="renderRes()"><option value="all">All</option><option>reserved</option><option>booked</option><option>paid</option><option>cancelled</option></select>
 <input id="resQ" placeholder="Search…" oninput="renderRes()">
-<button class="btn" onclick="simOpBooking()">Simulate operator booking</button>
+<button class="btn" onclick="simOpBooking()"><i data-lucide="zap"></i> Simulate operator booking</button>
 </div>
 <div class="stats"><div class="stat"><div class="lbl">Reserved</div><div class="val" id="cR">0</div></div><div class="stat"><div class="lbl">Booked</div><div class="val" id="cB">0</div></div><div class="stat"><div class="lbl">Paid</div><div class="val" id="cP">0</div></div><div class="stat"><div class="lbl">Cancelled</div><div class="val" id="cC">0</div></div></div>
 <div class="card" style="overflow-x:auto"><table><thead><tr><th>ID</th><th>Operator</th><th>Room</th><th>In</th><th>Out</th><th>Pay</th><th>Status</th><th></th></tr></thead><tbody id="resTable"></tbody></table></div>
 </div>
 <div class="page" id="page-properties">
-<div class="filters"><button class="btn btn-primary" onclick="document.getElementById('propForm').style.display='block'">Add property</button></div>
+<div class="filters"><button class="btn btn-primary" onclick="document.getElementById('propForm').style.display='block'"><i data-lucide="plus"></i> Add property</button></div>
 <div id="propForm" class="card" style="display:none;padding:16px;margin-bottom:14px">
 <div class="form-grid">
 <div class="form-group"><label>Name *</label><input id="pName"></div>
@@ -138,7 +124,7 @@ var page=location.pathname.split('/').pop();if(map[page]&&map[page].indexOf(u.ro
 <div class="form-group full"><label>Amenities</label><input id="pAm" placeholder="Wi-Fi, Restaurant, Pool"></div>
 <div class="form-group full"><label>Images (first = preview)</label><input type="file" id="pImg" accept="image/*" multiple></div>
 </div>
-<button class="btn btn-primary" style="margin-top:10px" onclick="addProp()">Save</button>
+<button class="btn btn-primary" style="margin-top:10px" onclick="addProp()"><i data-lucide="save"></i> Save</button>
 </div>
 <div class="prop-grid" id="propGrid"></div>
 </div>
@@ -154,12 +140,12 @@ var page=location.pathname.split('/').pop();if(map[page]&&map[page].indexOf(u.ro
 <div class="form-group full"><label>Amenities</label><input id="rAm"></div>
 <div class="form-group full"><label>Images</label><input type="file" id="rImg" accept="image/*" multiple></div>
 </div>
-<button class="btn btn-primary" style="margin-top:10px" onclick="addRoom()">Save room type</button>
+<button class="btn btn-primary" style="margin-top:10px" onclick="addRoom()"><i data-lucide="save"></i> Save room type</button>
 </div>
 <div class="prop-grid" id="roomGrid"></div>
 </div>
 <div class="page" id="page-availability">
-<div class="filters"><button class="btn" onclick="calShift(-1)">Prev</button><strong id="calLabel"></strong><button class="btn" onclick="calShift(1)">Next</button><button class="btn" onclick="calShift(12)">+Year</button></div>
+<div class="filters"><button class="btn" onclick="calShift(-1)"><i data-lucide="chevron-left"></i> Prev</button><strong id="calLabel"></strong><button class="btn" onclick="calShift(1)">Next <i data-lucide="chevron-right"></i></button><button class="btn" onclick="calShift(12)"><i data-lucide="calendar"></i> +Year</button></div>
 <div class="card" style="padding:14px"><div class="cal" id="calGrid"></div><p class="meta" style="margin-top:8px">Green free · Red busy/blocked · Click to toggle block</p></div>
 </div>
 <div class="page" id="page-rates"><div class="card" style="overflow-x:auto"><table><thead><tr><th>Room</th><th>STO</th><th>Public</th><th></th></tr></thead><tbody id="rateTable"></tbody></table></div></div>
@@ -170,7 +156,7 @@ var page=location.pathname.split('/').pop();if(map[page]&&map[page].indexOf(u.ro
 <div class="card" style="padding:16px;margin-bottom:12px"><h3 style="margin-bottom:8px">Add offline tracking</h3>
 <div class="form-grid"><div class="form-group"><label>Extra revenue $</label><input type="number" id="mRev" value="0"></div>
 <div class="form-group"><label>Extra occ nights</label><input type="number" id="mOcc" value="0"></div></div>
-<button class="btn btn-primary" style="margin-top:8px" onclick="saveManual()">Save</button></div>
+<button class="btn btn-primary" style="margin-top:8px" onclick="saveManual()"><i data-lucide="save"></i> Save</button></div>
 </div>
 <div class="page" id="page-occupancy">
 <div class="stats"><div class="stat"><div class="lbl">Tonight</div><div class="val" id="occN">—</div></div><div class="stat"><div class="lbl">Units</div><div class="val" id="occU">—</div></div><div class="stat"><div class="lbl">Occupied</div><div class="val" id="occO">—</div></div><div class="stat"><div class="lbl">Open demand</div><div class="val" id="occD">—</div></div></div>
@@ -179,13 +165,13 @@ var page=location.pathname.split('/').pop();if(map[page]&&map[page].indexOf(u.ro
 <div class="page" id="page-guests"><div class="card" style="overflow-x:auto"><table><thead><tr><th>Operator</th><th>Stays</th><th>Guests</th><th>Revenue</th></tr></thead><tbody id="guestTable"></tbody></table></div></div>
 <div class="page" id="page-account">
 <div class="card" style="padding:16px;max-width:640px;margin-bottom:12px"><h3>Team roles: Admin · Manager · Sales</h3>
-<div class="filters"><button class="btn btn-primary" onclick="document.getElementById('memF').style.display='block'">Add member</button></div>
+<div class="filters"><button class="btn btn-primary" onclick="document.getElementById('memF').style.display='block'"><i data-lucide="user-plus"></i> Add member</button></div>
 <div id="memF" style="display:none" class="form-grid">
 <div class="form-group"><label>Name</label><input id="mName"></div>
 <div class="form-group"><label>Email</label><input id="mEmail"></div>
 <div class="form-group"><label>Role</label><select id="mRole"><option>Admin</option><option>Manager</option><option>Sales</option></select></div>
 </div>
-<button class="btn btn-primary" style="margin-top:8px;display:none" id="memSave" onclick="addMember()">Save member</button>
+<button class="btn btn-primary" style="margin-top:8px;display:none" id="memSave" onclick="addMember()"><i data-lucide="save"></i> Save member</button>
 <div id="teamList"></div></div>
 </div>
 </div></div>
@@ -286,10 +272,10 @@ function replyRes(id){slUpdate(function(d){d.reservations.forEach(function(r){if
 function simOpBooking(){slUpdate(function(d){var id='R-'+Math.floor(1000+Math.random()*9000);d.reservations.unshift({id:id,operator:'Dreamtrails Expeditions',propertyId:1,room:'Luxury Tent',checkIn:'2026-11-05',checkOut:'2026-11-08',guests:2,amount:660,payment:'Pending',status:'reserved',createdAt:Date.now(),repliedAt:null,notes:'Live'});d.messages.unshift({id:Date.now(),side:'accommodation',from:'Dreamtrails Expeditions',initials:'DT',text:'New reservation '+id+' — please confirm.',time:Date.now(),type:'info',related:id,unread:true})});alert('Operator booking received');go('reservations')}
 function checkReminders(){slUpdate(function(d){var now=Date.now();d.reservations.forEach(function(r){if((r.status==='reserved'||r.status==='booked')&&!r.repliedAt&&(now-r.createdAt)>30*60*1000){var exists=d.messages.some(function(m){return m.type==='reminder'&&m.related===r.id&&(now-m.time)<30*60*1000});if(!exists)d.messages.unshift({id:now+Math.random(),side:'accommodation',from:'SafariLink Reminder',initials:'SL',text:'Reminder: '+r.id+' from '+r.operator+' unreplied 30+ min. Email queued to property.',time:now,type:'reminder',related:r.id,unread:true})}})})}
 async function addProp(){var n=document.getElementById('pName').value.trim(),l=document.getElementById('pLoc').value.trim();if(!n||!l){alert('Required');return}var files=document.getElementById('pImg').files,imgs=[];for(var i=0;i<files.length;i++)imgs.push(await fileToDataUrl(files[i]));slUpdate(function(d){d.properties.push({id:Date.now(),name:n,location:l,type:document.getElementById('pType').value,status:document.getElementById('pStatus').value,desc:document.getElementById('pDesc').value,amenities:(document.getElementById('pAm').value||'').split(',').map(function(s){return s.trim()}).filter(Boolean),images:imgs,preview:imgs[0]||'',contact:'',region:l,unitsTotal:0,unitsOccupied:0})});document.getElementById('propForm').style.display='none';renderProps()}
-function renderProps(){document.getElementById('propGrid').innerHTML=slGet().properties.map(function(p){var img=p.preview?'<img src="'+p.preview+'">':'No photo';return '<div class="prop-card" onclick="openProp('+p.id+')"><div class="img">'+img+'</div><div class="body"><h4>'+esc(p.name)+'</h4><div class="meta">'+esc(p.type)+' · '+esc(p.location)+'</div><div style="margin-top:6px">'+badge(p.status)+'</div><div class="meta" style="margin-top:6px">'+esc((p.amenities||[]).slice(0,3).join(' · '))+'</div><div style="color:var(--forest-green);font-size:.8rem;font-weight:600;margin-top:6px">View details →</div></div></div>'}).join('')}
-function openProp(id){var p=slGet().properties.find(function(x){return x.id===id});if(!p)return;var rooms=slGet().roomTypes.filter(function(r){return r.propertyId===id});var imgs=(p.images||[]).map(function(s,i){return '<div class="g"><img src="'+s+'"><div class="cap">'+(i?'Photo '+(i+1):'Preview')+'</div></div>'}).join('');document.getElementById('modalBody').innerHTML='<h3>'+esc(p.name)+'</h3><p class="meta">'+esc(p.type)+' · '+esc(p.location)+'</p><p style="margin:10px 0">'+esc(p.desc||'')+'</p><p><strong>Amenities:</strong> '+esc((p.amenities||[]).join(', '))+'</p><div class="gallery" style="margin:12px 0">'+imgs+'</div><h4>Rooms</h4>'+rooms.map(function(r){return '<div class="meta">'+esc(r.name)+' · STO '+money(r.sto)+'</div>'}).join('')+'<br><button class="btn" onclick="document.getElementById(\'modal\').classList.remove(\'show\')">Close</button>';document.getElementById('modal').classList.add('show')}
+function renderProps(){document.getElementById('propGrid').innerHTML=slGet().properties.map(function(p){var img=p.preview?'<img src="'+p.preview+'">':'<i data-lucide="building-2" class="ph-icon"></i><span style="font-size:.75rem">No photo</span>';return '<div class="prop-card" onclick="openProp('+p.id+')"><div class="img">'+img+'</div><div class="body"><h4>'+esc(p.name)+'</h4><div class="meta">'+esc(p.type)+' · '+esc(p.location)+'</div><div style="margin-top:6px">'+badge(p.status)+'</div><div class="meta" style="margin-top:6px">'+esc((p.amenities||[]).slice(0,3).join(' · '))+'</div><div style="color:var(--forest-green);font-size:.8rem;font-weight:600;margin-top:6px">View details →</div></div></div>'}).join('');lucide.createIcons()}
+function openProp(id){var p=slGet().properties.find(function(x){return x.id===id});if(!p)return;var rooms=slGet().roomTypes.filter(function(r){return r.propertyId===id});var imgs=(p.images||[]).map(function(s,i){return '<div class="g"><img src="'+s+'"><div class="cap">'+(i?'Photo '+(i+1):'Preview')+'</div></div>'}).join('');document.getElementById('modalBody').innerHTML='<h3>'+esc(p.name)+'</h3><p class="meta">'+esc(p.type)+' · '+esc(p.location)+'</p><p style="margin:10px 0">'+esc(p.desc||'')+'</p><p><strong>Amenities:</strong> '+esc((p.amenities||[]).join(', '))+'</p><div class="gallery" style="margin:12px 0">'+imgs+'</div><h4>Rooms</h4>'+rooms.map(function(r){return '<div class="meta">'+esc(r.name)+' · STO '+money(r.sto)+'</div>'}).join('')+'<br><button class="btn" onclick="document.getElementById(\'modal\').classList.remove(\'show\')"><i data-lucide="x"></i> Close</button>';document.getElementById('modal').classList.add('show');lucide.createIcons()}
 async function addRoom(){var n=document.getElementById('rName').value.trim(),sto=Number(document.getElementById('rSto').value),pid=Number(document.getElementById('rProp').value);if(!n||!sto||!pid){alert('Required');return}var files=document.getElementById('rImg').files,imgs=[];for(var i=0;i<files.length;i++)imgs.push(await fileToDataUrl(files[i]));slUpdate(function(d){d.roomTypes.push({id:Date.now(),propertyId:pid,name:n,guests:Number(document.getElementById('rGuests').value)||2,units:Number(document.getElementById('rUnits').value)||1,sto:sto,pub:Number(document.getElementById('rPub').value)||sto,location:'',amenities:(document.getElementById('rAm').value||'').split(',').map(function(s){return s.trim()}).filter(Boolean),images:imgs,notes:''})});renderRooms()}
-function renderRooms(){document.getElementById('rProp').innerHTML=slGet().properties.map(function(p){return '<option value="'+p.id+'">'+esc(p.name)+'</option>'}).join('');document.getElementById('roomGrid').innerHTML=slGet().roomTypes.map(function(r){var img=(r.images&&r.images[0])?'<img src="'+r.images[0]+'">':'Room';return '<div class="prop-card"><div class="img">'+img+'</div><div class="body"><h4>'+esc(r.name)+'</h4><div class="meta">'+esc(propName(r.propertyId))+' · STO '+money(r.sto)+' · '+r.units+' units</div><div class="meta">'+esc((r.amenities||[]).join(' · '))+'</div></div></div>'}).join('')}
+function renderRooms(){document.getElementById('rProp').innerHTML=slGet().properties.map(function(p){return '<option value="'+p.id+'">'+esc(p.name)+'</option>'}).join('');document.getElementById('roomGrid').innerHTML=slGet().roomTypes.map(function(r){var img=(r.images&&r.images[0])?'<img src="'+r.images[0]+'">':'<i data-lucide="bed-double" class="ph-icon"></i><span style="font-size:.75rem">No photo</span>';return '<div class="prop-card"><div class="img">'+img+'</div><div class="body"><h4>'+esc(r.name)+'</h4><div class="meta">'+esc(propName(r.propertyId))+' · STO '+money(r.sto)+' · '+r.units+' units</div><div class="meta">'+esc((r.amenities||[]).join(' · '))+'</div></div></div>'}).join('');lucide.createIcons()}
 function renderRates(){document.getElementById('rateTable').innerHTML=slGet().roomTypes.map(function(r){return '<tr><td>'+esc(r.name)+'</td><td><input type="number" id="sto'+r.id+'" value="'+r.sto+'" style="width:90px"></td><td><input type="number" id="pub'+r.id+'" value="'+r.pub+'" style="width:90px"></td><td><button class="btn btn-primary" onclick="saveRate('+r.id+')">Save</button></td></tr>'}).join('')}
 function saveRate(id){slUpdate(function(d){d.roomTypes.forEach(function(r){if(r.id===id){r.sto=Number(document.getElementById('sto'+id).value)||r.sto;r.pub=Number(document.getElementById('pub'+id).value)||r.pub}})});alert('Saved')}
 function renderGallery(){var items=[];slGet().properties.forEach(function(p){(p.images||[]).forEach(function(s,i){items.push({s:s,n:p.name+(i?'':' (preview)')})})});slGet().roomTypes.forEach(function(r){(r.images||[]).forEach(function(s){items.push({s:s,n:r.name})})});document.getElementById('galleryGrid').innerHTML=items.map(function(g){return '<div class="g"><img src="'+g.s+'"><div class="cap">'+esc(g.n)+'</div></div>'}).join('')||'<div class="meta">Upload on properties/rooms</div>'}
@@ -306,7 +292,6 @@ function toggleBlock(key){slUpdate(function(d){if(!d.calendarBlocks.accommodatio
 function refresh(){renderDash();renderRes();renderProps();renderRooms();renderRates();renderGallery();renderMessages();renderRevenue();renderOcc();renderGuests();renderTeam();renderCal()}
 document.getElementById('memF')&&document.querySelector('[onclick*=memF]')&&null;
 slEnsure();checkReminders();refresh();slOnChange(refresh);
+
 lucide.createIcons();
-</script>
-</body>
-</html>
+</script></body></html>
