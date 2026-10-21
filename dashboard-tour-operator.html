@@ -41,8 +41,25 @@
   .sidebar {
     width: 240px; background: var(--charcoal); color: #ccc;
     overflow-y: auto; position: fixed; top: 0; left: 0; height: 100vh; z-index: 1000;
-    transition: transform 0.3s; display: flex; flex-direction: column;
+    transition: transform 0.3s ease, width 0.3s ease; display: flex; flex-direction: column;
   }
+  .sidebar.collapsed { width: 68px; }
+  .sidebar.collapsed .logo-text,
+  .sidebar.collapsed .nav-section-title,
+  .sidebar.collapsed .nav-item span,
+  .sidebar.collapsed .nav-item { font-size: 0; justify-content: center; padding: 12px 0; gap: 0; }
+  .sidebar.collapsed .nav-item i, .sidebar.collapsed .nav-item svg { margin: 0; width: 22px; height: 22px; }
+  .sidebar.collapsed .nav-section-title { display: none; }
+  .sidebar.collapsed .logo-text { display: none; }
+  .main-content { transition: margin-left 0.3s ease; }
+  .main-content.sidebar-collapsed { margin-left: 68px; }
+  .sidebar-collapse-btn {
+    position: absolute; top: 18px; right: -14px; width: 28px; height: 28px;
+    background: var(--forest-green); color: #fff; border: 2px solid #fff; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1101;
+    box-shadow: 0 2px 6px rgba(0,0,0,.2);
+  }
+  .sidebar-collapse-btn i { width: 14px; height: 14px; }
 
   .sidebar-header {
     padding: 20px 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.08);
@@ -79,6 +96,7 @@
 
   .main-content {
     margin-left: 240px; flex: 1; padding: 28px 32px; min-height: 100vh;
+    transition: margin-left 0.3s ease;
   }
 
   /* ── PAGES ── */
@@ -390,6 +408,9 @@
 
     <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
+        <button class="sidebar-collapse-btn" onclick="toggleSidebarCollapse()" title="Collapse menu">
+            <i data-lucide="chevrons-left" id="collapseIcon"></i>
+        </button>
         <div class="sidebar-header">
             <div class="sidebar-logo" onclick="navigateTo('homepage')">
                 <div class="logo-icon">SL</div>
@@ -400,37 +421,46 @@
             <div class="nav-section">
                 <div class="nav-section-title">Main</div>
                 <div class="nav-item active" onclick="switchPage('dashboard')">
-                    <i data-lucide="layout-dashboard"></i> Dashboard
+                    <i data-lucide="layout-dashboard"></i> <span>Dashboard</span>
                 </div>
                 <div class="nav-item" onclick="switchPage('itinerary')">
-                    <i data-lucide="route"></i> Itineraries
+                    <i data-lucide="route"></i> <span>Itineraries</span>
                 </div>
                 <div class="nav-item" onclick="switchPage('trips')">
-                    <i data-lucide="map"></i> Trips
+                    <i data-lucide="map"></i> <span>Trips</span>
                 </div>
             </div>
             <div class="nav-section">
                 <div class="nav-section-title">Sourcing</div>
                 <div class="nav-item" onclick="switchPage('accommodation')">
-                    <i data-lucide="bed-double"></i> Accommodation
+                    <i data-lucide="bed-double"></i> <span>Accommodation</span>
                 </div>
                 <div class="nav-item" onclick="switchPage('fleet')">
-                    <i data-lucide="car"></i> Fleet
+                    <i data-lucide="car"></i> <span>Fleet</span>
                 </div>
                 <div class="nav-item" onclick="switchPage('guides')">
-                    <i data-lucide="users"></i> Guides
+                    <i data-lucide="users"></i> <span>Guides</span>
                 </div>
             </div>
             <div class="nav-section">
                 <div class="nav-section-title">Operations</div>
                 <div class="nav-item" onclick="switchPage('quotes')">
-                    <i data-lucide="file-text"></i> Quotes
+                    <i data-lucide="file-text"></i> <span>Quotes</span>
                 </div>
                 <div class="nav-item" onclick="switchPage('tasks')">
-                    <i data-lucide="clipboard-list"></i> Tasks
+                    <i data-lucide="clipboard-list"></i> <span>Tasks</span>
                 </div>
                 <div class="nav-item" onclick="switchPage('favorites')">
-                    <i data-lucide="star"></i> Favorites
+                    <i data-lucide="star"></i> <span>Favorites</span>
+                </div>
+                <div class="nav-item" onclick="switchPage('messages')">
+                    <i data-lucide="message-square"></i> <span>Messages</span>
+                </div>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Settings</div>
+                <div class="nav-item" onclick="switchPage('accounts')">
+                    <i data-lucide="users-round"></i> <span>Accounts</span>
                 </div>
             </div>
         </nav>
@@ -1025,6 +1055,50 @@
             <div class="card"><div class="card-body"><p style="color:var(--warm-gray);">Active trips will appear here.</p></div></div>
         </div>
 
+        <!-- ========== MESSAGES PAGE ========== -->
+        <div id="messages-page" class="page">
+            <div class="page-header">
+                <div>
+                    <div class="page-title">Messages</div>
+                    <div class="page-subtitle">Conversations with accommodation, fleet and guide partners</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body" id="opMsgList">
+                    <p style="color:var(--warm-gray);">Loading messages from shared platform…</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== ACCOUNTS PAGE ========== -->
+        <div id="accounts-page" class="page">
+            <div class="page-header">
+                <div>
+                    <div class="page-title">Accounts &amp; Team</div>
+                    <div class="page-subtitle">Company profile, team roles and billing</div>
+                </div>
+                <button class="create-btn" onclick="showToast('Invite team member — coming soon')"><i data-lucide="user-plus"></i> Invite member</button>
+            </div>
+            <div class="kpi-grid" style="margin-bottom:20px;">
+                <div class="kpi-card"><div class="kpi-label">Company</div><div class="kpi-value" style="font-size:1.2rem;">Dreamtrails Expeditions</div></div>
+                <div class="kpi-card"><div class="kpi-label">Plan</div><div class="kpi-value" style="font-size:1.2rem;">Operator Pro</div></div>
+                <div class="kpi-card"><div class="kpi-label">Team seats</div><div class="kpi-value">3</div></div>
+            </div>
+            <div class="card">
+                <div class="card-header"><div class="card-title">Team members</div></div>
+                <div class="card-body">
+                    <table>
+                        <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th></tr></thead>
+                        <tbody>
+                            <tr><td>Admin</td><td>dreamtrailsexpedictions@gmail.com</td><td>Owner</td><td><span class="badge badge-success">Active</span></td></tr>
+                            <tr><td>Sales Manager</td><td>sales@dreamtrails.tz</td><td>Manager</td><td><span class="badge badge-success">Active</span></td></tr>
+                            <tr><td>Operations</td><td>ops@dreamtrails.tz</td><td>Staff</td><td><span class="badge badge-info">Pending</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </div><!-- /main-content -->
 </div><!-- /dashboard-view -->
 
@@ -1035,6 +1109,33 @@
 /* ============================================
    CORE UTILITY FUNCTIONS
    ============================================ */
+
+/* ── Shared Platform Store (interlink with partner dashboards) ── */
+var SL_KEY = 'safarilink_platform_v1';
+function slLoad(){ try { var r = localStorage.getItem(SL_KEY); if (r) return JSON.parse(r); } catch(e){} return null; }
+function slSave(d){ localStorage.setItem(SL_KEY, JSON.stringify(d)); try { localStorage.setItem(SL_KEY+'_tick', String(Date.now())); } catch(e){} }
+function slEnsure(){
+  var d = slLoad(); if (d && d.version) return d;
+  // Minimal bootstrap if partners haven't opened yet
+  d = { version: 2, properties: [], roomTypes: [], reservations: [], vehicles: [], charters: [], drivers: [], agreements: [], guides: [], guideJobs: [], guideRequests: [], messages: [], team: {}, manualStats: {}, calendarBlocks: {} };
+  slSave(d); return d;
+}
+function slGet(){ return slEnsure(); }
+function slUpdate(fn){ var d = slGet(); fn(d); slSave(d); return d; }
+function slOnChange(cb){ window.addEventListener('storage', function(e){ if (e.key === SL_KEY || e.key === SL_KEY+'_tick') cb(); }); setInterval(cb, 8000); }
+
+function renderOpMessages(){
+  var el = document.getElementById('opMsgList');
+  if (!el) return;
+  var msgs = (slGet().messages || []).slice().reverse();
+  if (!msgs.length) { el.innerHTML = '<p style="color:var(--warm-gray);">No messages yet. Bookings and partner replies will appear here.</p>'; return; }
+  el.innerHTML = msgs.map(function(m){
+    return '<div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border-light);">' +
+      '<div style="width:36px;height:36px;border-radius:50%;background:var(--forest-green);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex-shrink:0;">' + (m.initials||'SL') + '</div>' +
+      '<div><strong>' + (m.from||'') + '</strong> <span style="font-size:.75rem;color:var(--warm-gray);">· ' + (m.side||'') + '</span>' +
+      '<div style="margin-top:2px;">' + (m.text||'') + '</div></div></div>';
+  }).join('');
+}
 
 /* ── Page Switching ── */
 window.switchPage = function(pageName) {
@@ -1058,6 +1159,7 @@ window.switchPage = function(pageName) {
     if (pageName === 'accommodation') { accomRenderCards(accommodations); }
     if (pageName === 'fleet') { fleetRenderCards(fleet); }
     if (pageName === 'guides') { guideRenderCards(guides); }
+    if (pageName === 'messages') { renderOpMessages(); }
     // Close mobile sidebar
     document.getElementById('sidebar').classList.remove('open');
     document.getElementById('sidebar-overlay').classList.remove('active');
@@ -1067,6 +1169,19 @@ window.switchPage = function(pageName) {
 window.toggleSidebar = function() {
     document.getElementById('sidebar').classList.toggle('open');
     document.getElementById('sidebar-overlay').classList.toggle('active');
+};
+
+/* ── Sidebar Collapse (Desktop slide in/out) ── */
+window.toggleSidebarCollapse = function() {
+    var sb = document.getElementById('sidebar');
+    var main = document.querySelector('.main-content');
+    var icon = document.getElementById('collapseIcon');
+    sb.classList.toggle('collapsed');
+    if (main) main.classList.toggle('sidebar-collapsed');
+    if (icon) {
+        icon.setAttribute('data-lucide', sb.classList.contains('collapsed') ? 'chevrons-right' : 'chevrons-left');
+        if (window.lucide) lucide.createIcons();
+    }
 };
 
 /* ── Modals ── */
@@ -1217,6 +1332,11 @@ window.initImagePlaceholders = function() {
                 vehicle: existing.vehicle || '',
                 guide: existing.guide || '',
                 activities: existing.activities || '',
+                morning: existing.morning || '',
+                afternoon: existing.afternoon || '',
+                evening: existing.evening || '',
+                meals: existing.meals || '',
+                parkFees: existing.parkFees || '',
                 notes: existing.notes || ''
             });
         }
@@ -1226,38 +1346,48 @@ window.initImagePlaceholders = function() {
     window.ibRenderDays = function() {
         var container = document.getElementById('ibDayCards');
         if (!container) return;
+        var plat = (typeof slGet === 'function') ? slGet() : null;
+        var propOpts = (plat && plat.properties || []).map(function(p){ return '<option value="'+esc(p.name)+'">'; }).join('');
+        var vehOpts = (plat && plat.vehicles || []).map(function(v){ return '<option value="'+esc(v.plate+' — '+v.model)+'">'; }).join('');
+        var guideOpts = (plat && plat.guides || []).map(function(g){ return '<option value="'+esc(g.name)+'">'; }).join('');
+
         container.innerHTML = ibDays.map(function(day, i) {
-            return '<div class="day-card">' +
-                '<div class="day-card-header">' +
+            return '<div class="day-card" style="border:1px solid var(--border);border-radius:12px;margin-bottom:14px;overflow:hidden;background:#fff;">' +
+                '<div class="day-card-header" style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--bg);border-bottom:1px solid var(--border);">' +
                     '<div style="display:flex;align-items:center;gap:12px;">' +
-                        '<strong style="color:var(--primary);">' + esc(day.label) + '</strong>' +
+                        '<strong style="color:var(--primary);font-size:1rem;">' + esc(day.label) + '</strong>' +
                         '<span style="font-size:.8rem;color:var(--text-secondary);">' + esc(day.date) + '</span>' +
                     '</div>' +
-                    '<div class="day-card-actions">' +
-                        '<button onclick="ibDupDay(' + i + ')" title="Duplicate">📋</button>' +
-                        '<button onclick="ibDelDay(' + i + ')" title="Delete">🗑</button>' +
+                    '<div style="display:flex;gap:6px;">' +
+                        '<button class="btn btn-secondary btn-sm" onclick="ibDupDay(' + i + ')" title="Duplicate"><i data-lucide="copy" style="width:14px;height:14px;"></i></button>' +
+                        '<button class="btn btn-secondary btn-sm" onclick="ibDelDay(' + i + ')" title="Delete"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>' +
                     '</div>' +
                 '</div>' +
-                '<div class="day-card-body">' +
-                    '<div class="day-field-row">' +
-                        '<input type="text" placeholder="Location / Park" value="' + esc(day.location) + '" onchange="ibUpdateDay(' + i + ',\'location\',this.value)">' +
-                        '<input type="text" placeholder="Accommodation" value="' + esc(day.accommodation) + '" onchange="ibUpdateDay(' + i + ',\'accommodation\',this.value)">' +
+                '<div class="day-card-body" style="padding:14px 16px;">' +
+                    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">' +
+                        '<div><label style="font-size:.72rem;font-weight:600;color:var(--warm-gray);">Location / Park</label><input type="text" list="parkList" placeholder="e.g. Serengeti NP" value="' + esc(day.location||'') + '" onchange="ibUpdateDay(' + i + ',\'location\',this.value)" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:.85rem;"></div>' +
+                        '<div><label style="font-size:.72rem;font-weight:600;color:var(--warm-gray);">Accommodation</label><input type="text" list="propList" placeholder="Lodge / camp" value="' + esc(day.accommodation||'') + '" onchange="ibUpdateDay(' + i + ',\'accommodation\',this.value)" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:.85rem;"></div>' +
                     '</div>' +
-                    '<div class="day-field-row">' +
-                        '<input type="text" placeholder="Vehicle" value="' + esc(day.vehicle) + '" onchange="ibUpdateDay(' + i + ',\'vehicle\',this.value)">' +
-                        '<input type="text" placeholder="Guide" value="' + esc(day.guide) + '" onchange="ibUpdateDay(' + i + ',\'guide\',this.value)">' +
+                    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">' +
+                        '<div><label style="font-size:.72rem;font-weight:600;color:var(--warm-gray);">Vehicle</label><input type="text" list="vehList" placeholder="Safari car / van" value="' + esc(day.vehicle||'') + '" onchange="ibUpdateDay(' + i + ',\'vehicle\',this.value)" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:.85rem;"></div>' +
+                        '<div><label style="font-size:.72rem;font-weight:600;color:var(--warm-gray);">Guide</label><input type="text" list="guideList" placeholder="Guide name" value="' + esc(day.guide||'') + '" onchange="ibUpdateDay(' + i + ',\'guide\',this.value)" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:.85rem;"></div>' +
                     '</div>' +
-                    '<div class="day-field-row" style="grid-template-columns:1fr;">' +
-                        '<input type="text" placeholder="Activities (morning, afternoon, evening)" value="' + esc(day.activities) + '" onchange="ibUpdateDay(' + i + ',\'activities\',this.value)">' +
+                    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;">' +
+                        '<div><label style="font-size:.72rem;font-weight:600;color:var(--warm-gray);">Morning</label><input type="text" placeholder="Game drive" value="' + esc(day.morning||'') + '" onchange="ibUpdateDay(' + i + ',\'morning\',this.value)" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:.85rem;"></div>' +
+                        '<div><label style="font-size:.72rem;font-weight:600;color:var(--warm-gray);">Afternoon</label><input type="text" placeholder="Activity" value="' + esc(day.afternoon||'') + '" onchange="ibUpdateDay(' + i + ',\'afternoon\',this.value)" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:.85rem;"></div>' +
+                        '<div><label style="font-size:.72rem;font-weight:600;color:var(--warm-gray);">Evening</label><input type="text" placeholder="Sundowner" value="' + esc(day.evening||'') + '" onchange="ibUpdateDay(' + i + ',\'evening\',this.value)" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:.85rem;"></div>' +
                     '</div>' +
-                    '<div class="day-field-row" style="grid-template-columns:1fr;">' +
-                        '<input type="text" placeholder="Notes" value="' + esc(day.notes) + '" onchange="ibUpdateDay(' + i + ',\'notes\',this.value)">' +
+                    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">' +
+                        '<div><label style="font-size:.72rem;font-weight:600;color:var(--warm-gray);">Meals</label><input type="text" placeholder="B / L / D" value="' + esc(day.meals||'') + '" onchange="ibUpdateDay(' + i + ',\'meals\',this.value)" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:.85rem;"></div>' +
+                        '<div><label style="font-size:.72rem;font-weight:600;color:var(--warm-gray);">Park fees (est. $)</label><input type="number" placeholder="0" value="' + (day.parkFees||'') + '" onchange="ibUpdateDay(' + i + ',\'parkFees\',this.value)" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:.85rem;"></div>' +
                     '</div>' +
+                    '<div><label style="font-size:.72rem;font-weight:600;color:var(--warm-gray);">Notes</label><input type="text" placeholder="Transfers, special requests" value="' + esc(day.notes||'') + '" onchange="ibUpdateDay(' + i + ',\'notes\',this.value)" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:.85rem;"></div>' +
                 '</div>' +
             '</div>';
-        }).join('');
-
-        // Also update cost items quantities
+        }).join('') +
+        '<datalist id="propList">'+propOpts+'</datalist><datalist id="vehList">'+vehOpts+'</datalist><datalist id="guideList">'+guideOpts+'</datalist>' +
+        '<datalist id="parkList"><option value="Serengeti NP"><option value="Ngorongoro Conservation Area"><option value="Tarangire NP"><option value="Lake Manyara NP"><option value="Arusha NP"><option value="Kilimanjaro NP"><option value="Zanzibar"></datalist>';
+        if (window.lucide) lucide.createIcons();
         ibCalcCosts();
     };
 
@@ -1271,7 +1401,8 @@ window.initImagePlaceholders = function() {
         ibDays.push({
             label: 'Day ' + (ibDays.length + 1),
             date: lastDate.toISOString().split('T')[0],
-            location: '', accommodation: '', vehicle: '', guide: '', activities: '', notes: ''
+            location: '', accommodation: '', vehicle: '', guide: '', activities: '',
+            morning: '', afternoon: '', evening: '', meals: '', parkFees: '', notes: ''
         });
         ibRenderDays();
     };
