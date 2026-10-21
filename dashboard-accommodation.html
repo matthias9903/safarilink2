@@ -53,12 +53,13 @@
   .sidebar.collapsed .sidebar-badge { display: none; }
   .sidebar.collapsed .sidebar-link { justify-content: center; padding: 12px 0; }
   .sidebar-collapse-btn {
-    position: absolute; top: 18px; right: -12px; width: 24px; height: 24px;
+    position: fixed; top: 72px; left: 236px; width: 28px; height: 28px;
     background: var(--forest-green); color: #fff; border: 2px solid #fff;
     border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    cursor: pointer; z-index: 5; box-shadow: 0 2px 6px rgba(0,0,0,.2);
+    cursor: pointer; z-index: 1101; box-shadow: 0 2px 8px rgba(0,0,0,.25);
+    transition: left .3s ease;
   }
-  .sidebar-collapse-btn i { width: 12px; height: 12px; }
+  .sidebar-collapse-btn i { width: 14px; height: 14px; }
   .sidebar-brand {
     padding: 18px; border-bottom: 1px solid rgba(255,255,255,.08);
     display: flex; gap: 10px; align-items: center;
@@ -253,7 +254,7 @@ var page=location.pathname.split('/').pop();if(map[page]&&map[page].indexOf(u.ro
      ============================================================ -->
 <aside class="sidebar" id="sidebar">
 
-<button class="sidebar-collapse-btn" onclick="toggleCollapse()" title="Collapse menu"><i data-lucide="chevrons-left" id="collapseIcon"></i></button>
+
 <div class="sidebar-brand"><div class="logo-icon">SL</div><div class="logo-text">Safari<span>Link</span></div></div>
 <nav class="sidebar-nav">
 <div class="sidebar-section">Main</div>
@@ -277,6 +278,8 @@ var page=location.pathname.split('/').pop();if(map[page]&&map[page].indexOf(u.ro
 <div class="sidebar-footer">
 <div style="color:#fff;font-weight:600">Serengeti Hill Camp</div><div style="opacity:.5;font-size:.7rem"><span class="live-dot"></span>Accommodation · Live</div></div>
 </aside>
+<button class="sidebar-collapse-btn" onclick="toggleCollapse()" title="Collapse menu"><i data-lucide="chevrons-left" id="collapseIcon"></i></button>
+
 
 <!-- ============================================================
      MAIN CONTENT AREA
@@ -516,7 +519,7 @@ function fileToDataUrl(file){return new Promise(function(resolve,reject){var r=n
 
 
 /* ---------- Sidebar collapse (slide in/out) ---------- */
-function toggleCollapse(){var sb=document.getElementById('sidebar');var icon=document.getElementById('collapseIcon');sb.classList.toggle('collapsed');if(icon){icon.setAttribute('data-lucide',sb.classList.contains('collapsed')?'chevrons-right':'chevrons-left');lucide.createIcons()}}
+function toggleCollapse(){var sb=document.getElementById('sidebar');var icon=document.getElementById('collapseIcon');var btn=document.querySelector('.sidebar-collapse-btn');sb.classList.toggle('collapsed');if(btn)btn.style.left=sb.classList.contains('collapsed')?'54px':'236px';if(icon){icon.setAttribute('data-lucide',sb.classList.contains('collapsed')?'chevrons-right':'chevrons-left');lucide.createIcons()}}
 /* ---------- Auth logout ---------- */
 function logout(){sessionStorage.removeItem('safariLinkUser');try{localStorage.removeItem('safarilink_user')}catch(e){}location.href='index.html'}
 /* ---------- Page titles shown in top bar ---------- */
