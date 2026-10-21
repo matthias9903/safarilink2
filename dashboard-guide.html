@@ -1,22 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-  <meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>
       SafariLink — Guide
     </title>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js">
-  </script>
+</script>
     <style>
-:root{
-  --forest-green:#1a5a3a;
-  --accent-green:#3fb983;
-  --warm-off-white:#f8f7f4;
-  --khaki:#e8e5dd;
-  --charcoal:#2c2c2c;
-  --warm-gray:#a39e95;
-  --border-light:#d4cfc6}
+:root{--forest-green:#1a5a3a;--accent-green:#3fb983;--warm-off-white:#f8f7f4;--khaki:#e8e5dd;--charcoal:#2c2c2c;--warm-gray:#a39e95;--border-light:#d4cfc6}
 *{margin:0;padding:0;box-sizing:border-box}body{font-family:system-ui,sans-serif;background:var(--warm-off-white);color:var(--charcoal);display:flex;min-height:100vh}
 .sidebar{width:250px;background:var(--charcoal);color:#ccc;display:flex;flex-direction:column;flex-shrink:0}
 .sidebar-brand{padding:18px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;gap:10px;align-items:center}
@@ -66,15 +59,9 @@ input,select,textarea{padding:8px 10px;border:1px solid var(--border-light);bord
 .team-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border-light)}
 @media(max-width:900px){.stats{grid-template-columns:1fr 1fr}.form-grid{grid-template-columns:1fr}}
 @media(max-width:700px){.sidebar{display:none}}
-</style>
-  </head>
+</style></head>
 <script>(function(){function ru(){try{var a=sessionStorage.getItem('safariLinkUser');if(a)return JSON.parse(a)}catch(e){}try{var b=localStorage.getItem('safarilink_user');if(b)return JSON.parse(b)}catch(e){}return null}var u=ru();if(!u){location.href='login.html';return}var map={'dashboard-fleet.html':['fleet','fleet-owner'],'dashboard-accommodation.html':['accommodation','accommodation-provider'],'dashboard-tour-operator.html':['tour-operator','service-offering'],'dashboard-guide.html':['guide']};var page=location.pathname.split('/').pop();if(map[page]&&map[page].indexOf(u.role)===-1)location.href='login.html';})();</script><body>
-<aside class="sidebar">
-  <div class="sidebar-brand">
-    <div class="logo-icon">SL</div>
-    <div class="logo-text">Safari<span>Link</span>
-    </div>
-  </div>
+<aside class="sidebar"><div class="sidebar-brand"><div class="logo-icon">SL</div><div class="logo-text">Safari<span>Link</span></div></div>
 <nav class="sidebar-nav">
 <div class="sidebar-section">Main</div>
 <a class="sidebar-link active" data-p="dashboard" onclick="go('dashboard')"><i data-lucide="layout-dashboard"></i>Dashboard</a>
@@ -95,35 +82,35 @@ input,select,textarea{padding:8px 10px;border:1px solid var(--border-light);bord
 </nav>
 <div class="sidebar-footer"><div style="color:#fff;font-weight:600">Daniel Mwamba</div><div style="opacity:.5;font-size:.7rem"><span class="live-dot"></span>Guide · Live</div></div></aside>
 <div class="main"><header class="topbar"><div><h2 id="title">Dashboard</h2><p id="sub">Live</p></div>
-<div style="display:flex;gap:8px"><button class="btn" onclick="logout()">Log out</button><button class="btn btn-primary" onclick="go('profile')">Edit profile</button></div></header>
+<div style="display:flex;gap:8px"><button class="btn" onclick="logout()"><i data-lucide="log-out"></i> Log out</button><button class="btn btn-primary" onclick="go('profile')"><i data-lucide="user-circle"></i> Edit profile</button></div></header>
 <div class="content">
 <div class="page active" id="page-dashboard"><div class="stats"><div class="stat"><div class="lbl">Upcoming</div><div class="val" id="gUp">0</div></div><div class="stat"><div class="lbl">Requests</div><div class="val" id="gReq">0</div></div><div class="stat"><div class="lbl">Earnings</div><div class="val" id="gEarn">$0</div></div><div class="stat"><div class="lbl">Rating</div><div class="val" id="gRate">—</div></div></div>
 <div class="card" style="overflow-x:auto"><table><thead><tr><th>Operator</th><th>Service</th><th>Park</th><th>Dates</th><th>Status</th></tr></thead><tbody id="dashJobs"></tbody></table></div></div>
 <div class="page" id="page-schedule"><div class="card" style="overflow-x:auto"><table><thead><tr><th>Ref</th><th>Operator</th><th>Service</th><th>Park</th><th>Start</th><th>End</th><th>Fee</th><th>Status</th></tr></thead><tbody id="schTable"></tbody></table></div></div>
 <div class="page" id="page-requests"><div id="reqList"></div></div>
-<div class="page" id="page-services"><div class="filters"><button class="btn btn-primary" onclick="document.getElementById('svcF').style.display='block'">Add service</button></div>
-<div id="svcF" class="card" style="display:none;padding:14px;margin-bottom:12px"><div class="form-grid"><div class="form-group"><label>Name</label><input id="sName"></div><div class="form-group"><label>Category</label><select id="sCat"><option>Game drives</option><option>Walking safari</option><option>Birding</option><option>Photographic</option><option>Cultural</option><option>Mountain / trekking</option></select></div><div class="form-group"><label>Rate</label><input type="number" id="sRate" value="80"></div><div class="form-group full"><label>Description</label><textarea id="sDesc"></textarea></div></div><button class="btn btn-primary" style="margin-top:8px" onclick="addService()">Save</button></div>
+<div class="page" id="page-services"><div class="filters"><button class="btn btn-primary" onclick="document.getElementById('svcF').style.display='block'"><i data-lucide="plus"></i> Add service</button></div>
+<div id="svcF" class="card" style="display:none;padding:14px;margin-bottom:12px"><div class="form-grid"><div class="form-group"><label>Name</label><input id="sName"></div><div class="form-group"><label>Category</label><select id="sCat"><option>Game drives</option><option>Walking safari</option><option>Birding</option><option>Photographic</option><option>Cultural</option><option>Mountain / trekking</option></select></div><div class="form-group"><label>Rate</label><input type="number" id="sRate" value="80"></div><div class="form-group full"><label>Description</label><textarea id="sDesc"></textarea></div></div><button class="btn btn-primary" style="margin-top:8px" onclick="addService()"><i data-lucide="save"></i> Save</button></div>
 <div class="prop-grid" id="svcGrid"></div></div>
-<div class="page" id="page-availability"><div class="filters"><button class="btn" onclick="calShift(-1)">Prev</button><strong id="calLabel"></strong><button class="btn" onclick="calShift(1)">Next</button><button class="btn" onclick="calShift(12)">+Year</button></div>
+<div class="page" id="page-availability"><div class="filters"><button class="btn" onclick="calShift(-1)"><i data-lucide="chevron-left"></i> Prev</button><strong id="calLabel"></strong><button class="btn" onclick="calShift(1)">Next <i data-lucide="chevron-right"></i></button><button class="btn" onclick="calShift(12)"><i data-lucide="calendar"></i> +Year</button></div>
 <div class="card" style="padding:14px"><div class="cal" id="calGrid"></div>
 <div class="form-grid" style="margin-top:12px"><div class="form-group"><label>Block from</label><input type="date" id="blFrom"></div><div class="form-group"><label>to</label><input type="date" id="blTo"></div></div>
-<button class="btn btn-primary" style="margin-top:8px" onclick="addBlock()">Block dates</button></div></div>
+<button class="btn btn-primary" style="margin-top:8px" onclick="addBlock()"><i data-lucide="lock"></i> Block dates</button></div></div>
 <div class="page" id="page-profile"><div class="card" style="padding:16px;max-width:700px"><div class="form-grid">
 <div class="form-group"><label>Name</label><input id="prName"></div><div class="form-group"><label>Years</label><input type="number" id="prYears"></div>
 <div class="form-group"><label>Phone</label><input id="prPhone"></div><div class="form-group"><label>Base</label><input id="prBase"></div>
 <div class="form-group"><label>Day rate</label><input type="number" id="prRate"></div><div class="form-group"><label>Photo</label><input type="file" id="prImg" accept="image/*"></div>
 <div class="form-group full"><label>Bio</label><textarea id="prBio"></textarea></div></div>
-<button class="btn btn-primary" style="margin-top:10px" onclick="saveProfile()">Save (syncs to operators)</button><div id="prPreview" style="margin-top:14px"></div></div></div>
+<button class="btn btn-primary" style="margin-top:10px" onclick="saveProfile()"><i data-lucide="save"></i> Save (syncs to operators)</button><div id="prPreview" style="margin-top:14px"></div></div></div>
 <div class="page" id="page-pricing"><div class="card" style="padding:16px;max-width:560px"><div class="form-grid">
 <div class="form-group"><label>Day</label><input type="number" id="pDay"></div><div class="form-group"><label>Half day</label><input type="number" id="pHalf"></div>
 <div class="form-group"><label>Overnight</label><input type="number" id="pNight"></div><div class="form-group"><label>Mountain</label><input type="number" id="pMtn"></div>
-</div><button class="btn btn-primary" style="margin-top:10px" onclick="savePricing()">Save</button></div></div>
+</div><button class="btn btn-primary" style="margin-top:10px" onclick="savePricing()"><i data-lucide="save"></i> Save</button></div></div>
 <div class="page" id="page-regions"><div class="chips" id="regionChips">
 <label><input type="checkbox" value="Serengeti NP"> Serengeti NP</label><label><input type="checkbox" value="Ngorongoro"> Ngorongoro</label>
 <label><input type="checkbox" value="Tarangire"> Tarangire</label><label><input type="checkbox" value="Lake Manyara"> Lake Manyara</label>
 <label><input type="checkbox" value="Arusha NP"> Arusha NP</label><label><input type="checkbox" value="Kilimanjaro"> Kilimanjaro</label>
 <label><input type="checkbox" value="Ruaha"> Ruaha</label><label><input type="checkbox" value="Nyerere / Selous"> Nyerere / Selous</label>
-</div><button class="btn btn-primary" style="margin-top:12px" onclick="saveRegions()">Save</button></div>
+</div><button class="btn btn-primary" style="margin-top:12px" onclick="saveRegions()"><i data-lucide="save"></i> Save</button></div>
 <div class="page" id="page-languages"><div class="chips" id="langChips">
 <label><input type="checkbox" value="English"> English</label><label><input type="checkbox" value="Swahili"> Swahili</label>
 <label><input type="checkbox" value="French"> French</label><label><input type="checkbox" value="German"> German</label>
@@ -134,19 +121,15 @@ input,select,textarea{padding:8px 10px;border:1px solid var(--border-light);bord
 <label><input type="checkbox" value="Big cats"> Big cats</label><label><input type="checkbox" value="Birding"> Birding</label>
 <label><input type="checkbox" value="Photography"> Photography</label><label><input type="checkbox" value="Walking safari"> Walking safari</label>
 <label><input type="checkbox" value="First aid"> First aid</label>
-</div><button class="btn btn-primary" style="margin-top:12px" onclick="saveLang()">Save</button>
-</div>
-<div class="page" id="page-certs"><div class="prop-grid" id="certGrid"></div>
-</div>
-<div class="page" id="page-reviews"><div class="card" style="padding:16px" id="revList"></div>
-</div>
-<div class="page" id="page-messages"><div class="card" style="padding:8px 16px" id="msgList"></div>
-</div>
+</div><button class="btn btn-primary" style="margin-top:12px" onclick="saveLang()"><i data-lucide="save"></i> Save</button></div>
+<div class="page" id="page-certs"><div class="prop-grid" id="certGrid"></div></div>
+<div class="page" id="page-reviews"><div class="card" style="padding:16px" id="revList"></div></div>
+<div class="page" id="page-messages"><div class="card" style="padding:8px 16px" id="msgList"></div></div>
 <div class="page" id="page-earnings"><div class="stats"><div class="stat"><div class="lbl">Confirmed</div><div class="val" id="eConf">—</div></div><div class="stat"><div class="lbl">Completed</div><div class="val" id="eDone">—</div></div><div class="stat"><div class="lbl">Pending</div><div class="val" id="ePend">—</div></div><div class="stat"><div class="lbl">Jobs</div><div class="val" id="eJobs">—</div></div></div>
 <div class="card" style="overflow-x:auto"><table><thead><tr><th>Ref</th><th>Operator</th><th>Fee</th><th>Status</th></tr></thead><tbody id="earnTable"></tbody></table></div></div>
-</div>
-</div>
+</div></div>
 <script>
+
 var SL_KEY='safarilink_platform_v1';
 function slLoad(){try{var r=localStorage.getItem(SL_KEY);if(r)return JSON.parse(r)}catch(e){}return null}
 function slSave(d){localStorage.setItem(SL_KEY,JSON.stringify(d));try{localStorage.setItem(SL_KEY+'_tick',String(Date.now()))}catch(e){}}
@@ -189,7 +172,7 @@ function declineReq(id){slUpdate(function(d){d.guideRequests=d.guideRequests.fil
 function renderServices(){document.getElementById('svcGrid').innerHTML=(guide().services||[]).map(function(s){return '<div class="prop-card"><div class="body"><h4>'+esc(s.name)+'</h4><div class="meta">'+esc(s.cat)+' · '+money(s.rate)+'/day</div><p class="meta">'+esc(s.desc)+'</p></div></div>'}).join('')}
 function addService(){var n=document.getElementById('sName').value.trim();if(!n)return;slUpdate(function(d){d.guides[0].services.push({id:Date.now(),name:n,cat:document.getElementById('sCat').value,rate:Number(document.getElementById('sRate').value)||80,desc:document.getElementById('sDesc').value})});document.getElementById('svcF').style.display='none';renderServices()}
 function fillProfile(){var g=guide();document.getElementById('prName').value=g.name||'';document.getElementById('prYears').value=g.years||0;document.getElementById('prPhone').value=g.phone||'';document.getElementById('prBase').value=g.base||'';document.getElementById('prRate').value=g.rate||80;document.getElementById('prBio').value=g.bio||'';renderPreview()}
-function renderPreview(){var g=guide();var img=g.image?'<img src="'+g.image+'" style="width:72px;height:72px;border-radius:50%;object-fit:cover">':'';document.getElementById('prPreview').innerHTML='<div class="card" style="padding:14px"><div style="display:flex;gap:12px;align-items:center">'+img+'<div><h4>'+esc(g.name)+'</h4><div class="meta">'+g.years+' yrs · '+esc(g.base)+' · '+money(g.rate)+'/day · ★'+g.rating+'</div><div class="meta">'+esc((g.languages||[]).join(', '))+'</div><div class="meta">'+esc((g.regions||[]).join(' · '))+'</div></div></div><p style="margin-top:8px;font-size:.85rem">'+esc(g.bio||'')+'</p></div>'}
+function renderPreview(){var g=guide();var img=g.image?'<img src="'+g.image+'" style="width:72px;height:72px;border-radius:50%;object-fit:cover">':'<div style="width:72px;height:72px;border-radius:50%;background:var(--khaki);display:flex;align-items:center;justify-content:center"><i data-lucide="user" style="width:28px;height:28px;opacity:.45"></i></div>';document.getElementById('prPreview').innerHTML='<div class="card" style="padding:14px"><div style="display:flex;gap:12px;align-items:center">'+img+'<div><h4>'+esc(g.name)+'</h4><div class="meta">'+g.years+' yrs · '+esc(g.base)+' · '+money(g.rate)+'/day · ★'+g.rating+'</div><div class="meta">'+esc((g.languages||[]).join(', '))+'</div><div class="meta">'+esc((g.regions||[]).join(' · '))+'</div></div></div><p style="margin-top:8px;font-size:.85rem">'+esc(g.bio||'')+'</p></div>';lucide.createIcons()}
 async function saveProfile(){var file=document.getElementById('prImg').files[0];var img=guide().image;if(file)img=await fileToDataUrl(file);slUpdate(function(d){var g=d.guides[0];g.name=document.getElementById('prName').value;g.years=Number(document.getElementById('prYears').value)||g.years;g.phone=document.getElementById('prPhone').value;g.base=document.getElementById('prBase').value;g.rate=Number(document.getElementById('prRate').value)||g.rate;g.bio=document.getElementById('prBio').value;g.image=img});alert('Profile synced for operators');renderPreview()}
 function fillPricing(){var g=guide();document.getElementById('pDay').value=g.rate;document.getElementById('pHalf').value=g.halfDay;document.getElementById('pNight').value=g.overnight;document.getElementById('pMtn').value=g.mountain}
 function savePricing(){slUpdate(function(d){var g=d.guides[0];g.rate=Number(document.getElementById('pDay').value)||g.rate;g.halfDay=Number(document.getElementById('pHalf').value)||g.halfDay;g.overnight=Number(document.getElementById('pNight').value)||g.overnight;g.mountain=Number(document.getElementById('pMtn').value)||g.mountain});alert('Saved')}
@@ -206,6 +189,4 @@ function renderCal(){var y=calMonth.getFullYear(),m=calMonth.getMonth();document
 function addBlock(){var f=document.getElementById('blFrom').value,t=document.getElementById('blTo').value;if(!f||!t){alert('Select dates');return}slUpdate(function(d){d.guides[0].blocks=d.guides[0].blocks||[];d.guides[0].blocks.push({from:f,to:t})});renderCal()}
 function refresh(){renderDash();renderSchedule();renderRequests();renderServices();fillProfile();fillPricing();fillRegions();fillLang();renderCerts();renderReviews();renderMessages();renderEarnings();renderCal()}
 slEnsure();refresh();slOnChange(refresh);lucide.createIcons();
-</script>
-</body>
-</html>
+</script></body></html>
