@@ -1,613 +1,211 @@
 <!DOCTYPE html>
-<html lang="en"> 
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SafariLink — Guide Partner Dashboard</title>
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-
-<style>
-  :root {
-    --forest-green: #1a5a3a; --forest-green-light: #2d7a52; --accent-green: #3fb983;
-    --warm-off-white: #f8f7f4; --khaki: #e8e5dd; --charcoal: #2c2c2c;
-    --warm-gray: #a39e95; --border-light: #d4cfc6;
-    --status-available: #10b981; --status-pending: #f59e0b; --status-unavailable: #dc2626;
-    --status-info: #0891b2; --status-maintenance: #8b5cf6;
-    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05); --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-    --radius-sm: 6px; --radius-md: 10px; --radius-lg: 16px;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
-    background: var(--warm-off-white); color: var(--charcoal); line-height: 1.6;
-    display: flex; min-height: 100vh;
-  }
-  .sidebar {
-    width: 240px; min-height: 100vh; background: var(--charcoal); color: #ccc;
-    display: flex; flex-direction: column; flex-shrink: 0;
-  }
-  .sidebar-brand {
-    padding: 20px 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.08);
-    display: flex; align-items: center; gap: 10px;
-  }
-  .sidebar-brand .logo-icon {
-    width: 34px; height: 34px; background: var(--forest-green);
-    border-radius: var(--radius-sm); display: flex; align-items: center;
-    justify-content: center; color: #fff; font-weight: 700; font-size: 16px;
-  }
-  .sidebar-brand .logo-text { font-size: 1.1rem; font-weight: 700; color: #fff; }
-  .sidebar-brand .logo-text span { color: var(--accent-green); }
-  .sidebar-nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
-  .sidebar-section { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
-    color: rgba(255,255,255,0.35); padding: 16px 8px 8px; font-weight: 600; }
-  .sidebar-link {
-    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
-    border-radius: var(--radius-sm); color: #bbb; text-decoration: none;
-    font-size: 0.88rem; transition: all 0.15s; cursor: pointer; margin-bottom: 2px;
-  }
-  .sidebar-link:hover, .sidebar-link.active { background: rgba(255,255,255,0.08); color: #fff; }
-  .sidebar-link.active { background: rgba(63,185,131,0.15); color: var(--accent-green); }
-  .sidebar-link i { width: 18px; height: 18px; flex-shrink: 0; }
-  .sidebar-badge {
-    margin-left: auto; background: var(--status-pending); color: #000;
-    font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; font-weight: 700;
-  }
-  .sidebar-footer { padding: 16px; border-top: 1px solid rgba(255,255,255,0.08); }
-  .sidebar-user { display: flex; align-items: center; gap: 10px; color: #ccc; font-size: 0.85rem; }
-  .sidebar-user-avatar {
-    width: 32px; height: 32px; border-radius: 50%; background: var(--status-info);
-    display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 13px;
-  }
-  .main-wrapper { flex: 1; display: flex; flex-direction: column; min-width: 0; }
-  .topbar {
-    background: #fff; padding: 14px 28px; display: flex; align-items: center;
-    justify-content: space-between; border-bottom: 1px solid var(--border-light);
-    position: sticky; top: 0; z-index: 50; flex-wrap: wrap; gap: 10px;
-  }
-  .topbar-left h2 { font-size: 1.25rem; font-weight: 700; }
-  .topbar-left p { font-size: 0.8rem; color: var(--warm-gray); margin-top: 2px; }
-  .topbar-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .topbar-btn {
-    background: none; border: 1px solid var(--border-light); padding: 8px 14px;
-    border-radius: var(--radius-sm); cursor: pointer; font-size: 0.85rem;
-    display: flex; align-items: center; gap: 6px; color: var(--charcoal); font-family: inherit;
-  }
-  .topbar-btn:hover { background: var(--khaki); }
-  .topbar-btn.primary { background: var(--forest-green); color: #fff; border-color: var(--forest-green); }
-  .topbar-btn.primary:hover { background: var(--forest-green-light); }
-  .dashboard-content { padding: 28px; flex: 1; }
-  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-  .stat-card {
-    background: #fff; border-radius: var(--radius-md); padding: 18px;
-    box-shadow: var(--shadow-sm); border: 1px solid var(--border-light);
-  }
-  .stat-card-label { font-size: 0.78rem; color: var(--warm-gray); }
-  .stat-card-value { font-size: 1.7rem; font-weight: 700; margin-top: 4px; }
-  .stat-card-trend { font-size: 0.75rem; margin-top: 4px; color: var(--warm-gray); }
-  .stat-card-trend.up { color: var(--status-available); }
-  table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-  th { text-align: left; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em;
-    color: var(--warm-gray); padding: 10px 12px; border-bottom: 1px solid var(--border-light); }
-  td { padding: 12px; border-bottom: 1px solid var(--border-light); }
-  .card { background: #fff; border: 1px solid var(--border-light); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
-  .page-view { display: none; }
-  .page-view.active { display: block; }
-  .filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; align-items: center; }
-  .filters select, .filters input, .form-group input, .form-group select, .form-group textarea {
-    padding: 8px 12px; border: 1px solid var(--border-light); border-radius: var(--radius-sm);
-    font-family: inherit; font-size: 0.85rem; background: #fff;
-  }
-  .badge { display: inline-block; padding: 3px 10px; border-radius: 100px; font-size: 0.72rem; font-weight: 600; }
-  .badge-available, .badge-active, .badge-confirmed, .badge-paid, .badge-completed { background: #d1fae5; color: #065f46; }
-  .badge-reserved, .badge-pending, .badge-quoted { background: #fef3c7; color: #92400e; }
-  .badge-ontrip, .badge-inprogress { background: #e0f2fe; color: #075985; }
-  .badge-maintenance, .badge-unavailable, .badge-cancelled { background: #fee2e2; color: #991b1b; }
-  .badge-idle { background: #ede9fe; color: #5b21b6; }
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .form-group { display: flex; flex-direction: column; gap: 6px; }
-  .form-group.full { grid-column: 1 / -1; }
-  .form-group label { font-size: 0.8rem; font-weight: 600; }
-  .form-group textarea { min-height: 72px; resize: vertical; }
-  .item-card { background: #fff; border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 16px; }
-  .item-card h4 { margin-bottom: 6px; }
-  .meta { font-size: 0.8rem; color: var(--warm-gray); margin-bottom: 8px; }
-  .quick-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
-  .quick-action {
-    background: #fff; border: 1px solid var(--border-light); border-radius: var(--radius-md);
-    padding: 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 0.88rem; font-weight: 600;
-  }
-  .quick-action:hover { border-color: var(--accent-green); box-shadow: var(--shadow-md); }
-  .quick-action-icon {
-    width: 40px; height: 40px; border-radius: 50%; background: var(--warm-off-white);
-    display: flex; align-items: center; justify-content: center; color: var(--forest-green);
-  }
-  .msg-row { display: flex; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--border-light); }
-  .msg-avatar {
-    width: 40px; height: 40px; border-radius: 50%; background: var(--forest-green); color: #fff;
-    display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;
-  }
-  .team-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-light); }
-  .empty-hint { text-align: center; padding: 28px; color: var(--warm-gray); }
-  .chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
-  .chip-row label {
-    display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: var(--warm-off-white);
-    border: 1px solid var(--border-light); border-radius: 100px; font-size: 0.8rem; cursor: pointer;
-  }
-  @media (max-width: 1100px) {
-    .stats-row, .quick-actions { grid-template-columns: repeat(2, 1fr); }
-  }
-  @media (max-width: 768px) {
-    .sidebar { display: none; }
-    .stats-row, .quick-actions, .form-grid { grid-template-columns: 1fr; }
-  }
+<html lang="en">
+  <head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>
+      SafariLink — Guide
+    </title>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js">
+  </script>
+    <style>
+:root{
+  --forest-green:#1a5a3a;
+  --accent-green:#3fb983;
+  --warm-off-white:#f8f7f4;
+  --khaki:#e8e5dd;
+  --charcoal:#2c2c2c;
+  --warm-gray:#a39e95;
+  --border-light:#d4cfc6}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:system-ui,sans-serif;background:var(--warm-off-white);color:var(--charcoal);display:flex;min-height:100vh}
+.sidebar{width:250px;background:var(--charcoal);color:#ccc;display:flex;flex-direction:column;flex-shrink:0}
+.sidebar-brand{padding:18px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;gap:10px;align-items:center}
+.logo-icon{width:34px;height:34px;background:var(--forest-green);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+.logo-text{font-weight:700;color:#fff}.logo-text span{color:var(--accent-green)}
+.sidebar-nav{padding:12px;flex:1;overflow-y:auto}
+.sidebar-section{font-size:.68rem;text-transform:uppercase;color:rgba(255,255,255,.35);padding:12px 8px 6px}
+.sidebar-link{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:6px;color:#bbb;font-size:.85rem;cursor:pointer}
+.sidebar-link:hover{background:rgba(255,255,255,.08);color:#fff}
+.sidebar-link.active{background:rgba(63,185,131,.15);color:var(--accent-green)}
+.sidebar-link i{width:17px;height:17px}.sidebar-badge{margin-left:auto;background:#f59e0b;color:#000;font-size:.68rem;padding:2px 7px;border-radius:10px;font-weight:700}
+.sidebar-footer{padding:14px;border-top:1px solid rgba(255,255,255,.08);font-size:.8rem}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{background:#fff;padding:14px 22px;border-bottom:1px solid var(--border-light);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;position:sticky;top:0;z-index:20}
+.btn{border:1px solid var(--border-light);background:#fff;padding:8px 12px;border-radius:6px;cursor:pointer;font:inherit;font-size:.82rem}
+.btn-primary{background:var(--forest-green);color:#fff;border-color:var(--forest-green)}
+.content{padding:22px;flex:1}.page{display:none}.page.active{display:block}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.stat{background:#fff;border:1px solid var(--border-light);border-radius:10px;padding:14px}
+.stat .lbl{font-size:.72rem;color:var(--warm-gray)}.stat .val{font-size:1.45rem;font-weight:700}
+.card{background:#fff;border:1px solid var(--border-light);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:.84rem}th,td{padding:10px 11px;border-bottom:1px solid var(--border-light);text-align:left}
+th{font-size:.68rem;text-transform:uppercase;color:var(--warm-gray)}
+.badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:.68rem;font-weight:600}
+.badge-paid,.badge-available,.badge-signed,.badge-confirmed,.badge-completed{background:#d1fae5;color:#065f46}
+.badge-booked,.badge-pending,.badge-reserved,.badge-pendingoperator{background:#fef3c7;color:#92400e}
+.badge-ontrip,.badge-inprogress,.badge-onhire{background:#e0f2fe;color:#075985}
+.badge-cancelled,.badge-maintenance{background:#fee2e2;color:#991b1b}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+input,select,textarea{padding:8px 10px;border:1px solid var(--border-light);border-radius:6px;font:inherit;font-size:.84rem}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.form-group{display:flex;flex-direction:column;gap:4px}.form-group.full{grid-column:1/-1}.form-group label{font-size:.75rem;font-weight:600}
+.prop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.prop-card{background:#fff;border:1px solid var(--border-light);border-radius:12px;overflow:hidden;cursor:pointer}
+.prop-card .img{height:140px;background:var(--khaki);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.prop-card .img img{width:100%;height:100%;object-fit:cover}.prop-card .body{padding:12px}
+.meta{font-size:.76rem;color:var(--warm-gray)}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;align-items:center;justify-content:center;padding:14px}
+.modal-bg.show{display:flex}.modal{background:#fff;border-radius:12px;max-width:700px;width:100%;max-height:90vh;overflow:auto;padding:20px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;font-size:.78rem}
+.cal .hd{text-align:center;font-weight:600;color:var(--warm-gray);padding:4px}
+.cal .day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:5px;border:1px solid var(--border-light);background:#fff;cursor:pointer}
+.cal .day.busy{background:#fee2e2;color:#991b1b}.cal .day.free{background:#d1fae5;color:#065f46}.cal .day.muted{opacity:.3}
+.msg-row{display:flex;gap:10px;padding:11px 0;border-bottom:1px solid var(--border-light)}
+.msg-av{width:36px;height:36px;border-radius:50%;background:var(--forest-green);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex-shrink:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.chips label{font-size:.75rem;padding:5px 10px;border:1px solid var(--border-light);border-radius:99px;background:var(--warm-off-white);cursor:pointer;display:flex;gap:5px;align-items:center}
+.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#10b981;margin-right:5px}
+.team-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border-light)}
+@media(max-width:900px){.stats{grid-template-columns:1fr 1fr}.form-grid{grid-template-columns:1fr}}
+@media(max-width:700px){.sidebar{display:none}}
 </style>
-
-</head>
-
-<script>
-(function () {
-  function readUser() {
-    try { var a = sessionStorage.getItem('safariLinkUser'); if (a) return JSON.parse(a); } catch (e) {}
-    try { var b = localStorage.getItem('safarilink_user'); if (b) return JSON.parse(b); } catch (e) {}
-    return null;
-  }
-  var user = readUser();
-  if (!user) { window.location.href = 'login.html'; return; }
-  var map = {
-    'dashboard-fleet.html': ['fleet', 'fleet-owner'],
-    'dashboard-accommodation.html': ['accommodation', 'accommodation-provider'],
-    'dashboard-tour-operator.html': ['tour-operator', 'service-offering'],
-    'dashboard-guide.html': ['guide']
-  };
-  var page = window.location.pathname.split('/').pop();
-  if (map[page] && map[page].indexOf(user.role) === -1) window.location.href = 'login.html';
-})();
-</script>
-
-<body>
+  </head>
+<script>(function(){function ru(){try{var a=sessionStorage.getItem('safariLinkUser');if(a)return JSON.parse(a)}catch(e){}try{var b=localStorage.getItem('safarilink_user');if(b)return JSON.parse(b)}catch(e){}return null}var u=ru();if(!u){location.href='login.html';return}var map={'dashboard-fleet.html':['fleet','fleet-owner'],'dashboard-accommodation.html':['accommodation','accommodation-provider'],'dashboard-tour-operator.html':['tour-operator','service-offering'],'dashboard-guide.html':['guide']};var page=location.pathname.split('/').pop();if(map[page]&&map[page].indexOf(u.role)===-1)location.href='login.html';})();</script><body>
 <aside class="sidebar">
   <div class="sidebar-brand">
     <div class="logo-icon">SL</div>
-    <div class="logo-text">Safari<span>Link</span></div>
-  </div>
-  <nav class="sidebar-nav">
-
-    <div class="sidebar-section">Main</div>
-    <a class="sidebar-link active" data-page="dashboard" onclick="showPage('dashboard')"><i data-lucide="layout-dashboard"></i>Dashboard</a>
-    <a class="sidebar-link" data-page="schedule" onclick="showPage('schedule')"><i data-lucide="calendar-days"></i>My Schedule<span class="sidebar-badge" id="schBadge">0</span></a>
-    <a class="sidebar-link" data-page="requests" onclick="showPage('requests')"><i data-lucide="inbox"></i>Job Requests<span class="sidebar-badge" id="reqBadge">0</span></a>
-    <a class="sidebar-link" data-page="services" onclick="showPage('services')"><i data-lucide="briefcase"></i>My Services</a>
-    <div class="sidebar-section">Profile & Offer</div>
-    <a class="sidebar-link" data-page="pricing" onclick="showPage('pricing')"><i data-lucide="tag"></i>Day Rates & Fees</a>
-    <a class="sidebar-link" data-page="regions" onclick="showPage('regions')"><i data-lucide="map"></i>Parks & Regions</a>
-    <a class="sidebar-link" data-page="languages" onclick="showPage('languages')"><i data-lucide="languages"></i>Languages & Skills</a>
-    <a class="sidebar-link" data-page="availability" onclick="showPage('availability')"><i data-lucide="calendar-check"></i>Availability</a>
-    <a class="sidebar-link" data-page="messages" onclick="showPage('messages')"><i data-lucide="message-square"></i>Messages<span class="sidebar-badge">3</span></a>
-    <div class="sidebar-section">Performance</div>
-    <a class="sidebar-link" data-page="reviews" onclick="showPage('reviews')"><i data-lucide="star"></i>Reviews & Ratings</a>
-    <a class="sidebar-link" data-page="earnings" onclick="showPage('earnings')"><i data-lucide="bar-chart-3"></i>Earnings</a>
-    <a class="sidebar-link" data-page="certificates" onclick="showPage('certificates')"><i data-lucide="award"></i>Licences & Certs</a>
-    <div class="sidebar-section">Settings</div>
-    <a class="sidebar-link" data-page="profile" onclick="showPage('profile')"><i data-lucide="user-circle"></i>Profile</a>
-    <a class="sidebar-link" data-page="account" onclick="showPage('account')"><i data-lucide="settings"></i>Account</a>
-
-  </nav>
-  <div class="sidebar-footer">
-    <div class="sidebar-user">
-      <div class="sidebar-user-avatar">DM</div>
-      <div>
-        <div style="color:#fff;font-weight:600;font-size:0.85rem;">Daniel Mwamba</div>
-        <div style="font-size:0.7rem;color:rgba(255,255,255,0.45);">Safari Guide</div>
-      </div>
+    <div class="logo-text">Safari<span>Link</span>
     </div>
   </div>
-</aside>
-<div class="main-wrapper">
-  <header class="topbar">
-    <div class="topbar-left">
-      <h2 id="pageTitle">Dashboard</h2>
-      <p id="pageSubtitle"></p>
-    </div>
-    <div class="topbar-actions">
-      <button class="topbar-btn" onclick="logout()"><i data-lucide="log-out"></i> Log out</button>
-      <button class="topbar-btn primary" id="primaryCta" onclick="onPrimaryCta()"><i data-lucide="plus-circle"></i> <span id="ctaLabel">Add</span></button>
-    </div>
-  </header>
-  <div class="dashboard-content">
-
-    <div class="page-view active" id="page-dashboard">
-      <div class="stats-row">
-        <div class="stat-card"><div class="stat-card-label">Upcoming trips</div><div class="stat-card-value" id="gUp">0</div></div>
-        <div class="stat-card"><div class="stat-card-label">Open requests</div><div class="stat-card-value" id="gReq">0</div></div>
-        <div class="stat-card"><div class="stat-card-label">Month earnings</div><div class="stat-card-value">$3,420</div></div>
-        <div class="stat-card"><div class="stat-card-label">Operator rating</div><div class="stat-card-value">4.9</div></div>
-      </div>
-      <div class="quick-actions">
-        <div class="quick-action" onclick="showPage('requests')"><span class="quick-action-icon"><i data-lucide="inbox"></i></span>Job requests</div>
-        <div class="quick-action" onclick="showPage('schedule')"><span class="quick-action-icon"><i data-lucide="calendar"></i></span>Schedule</div>
-        <div class="quick-action" onclick="showPage('availability')"><span class="quick-action-icon"><i data-lucide="calendar-check"></i></span>Set availability</div>
-        <div class="quick-action" onclick="showPage('pricing')"><span class="quick-action-icon"><i data-lucide="tag"></i></span>Update rates</div>
-      </div>
-      <div class="card"><div style="overflow-x:auto;"><table>
-        <thead><tr><th>Operator</th><th>Service</th><th>Park / area</th><th>Dates</th><th>Status</th></tr></thead>
-        <tbody id="dashJobs"></tbody>
-      </table></div></div>
-    </div>
-
-    <div class="page-view" id="page-schedule">
-      <div class="filters">
-        <select id="schFilter" onchange="renderSchedule()">
-          <option value="all">All</option>
-          <option>Confirmed</option>
-          <option>In progress</option>
-          <option>Completed</option>
-        </select>
-      </div>
-      <div class="card"><div style="overflow-x:auto;"><table>
-        <thead><tr><th>Ref</th><th>Operator</th><th>Service</th><th>Park</th><th>Start</th><th>End</th><th>Fee</th><th>Status</th></tr></thead>
-        <tbody id="schTable"></tbody>
-      </table></div></div>
-    </div>
-
-    <div class="page-view" id="page-requests">
-      <p class="meta" style="margin-bottom:12px;">Incoming requests from tour operators. Accept to move onto your schedule.</p>
-      <div id="reqList" style="display:grid;gap:12px;"></div>
-    </div>
-
-    <div class="page-view" id="page-services">
-      <div class="filters"><button class="topbar-btn primary" onclick="document.getElementById('svcForm').style.display='block'">Add service</button></div>
-      <div id="svcForm" class="card" style="display:none;padding:20px;margin-bottom:16px;">
-        <div class="form-grid">
-          <div class="form-group"><label>Service name</label><input id="sName" placeholder="e.g. Game drive guide"></div>
-          <div class="form-group"><label>Category</label>
-            <select id="sCat"><option>Game drives</option><option>Walking safari</option><option>Mountain / trekking</option><option>Cultural</option><option>Birding</option><option>Photographic</option></select>
-          </div>
-          <div class="form-group"><label>Day rate (USD)</label><input id="sRate" type="number" value="80"></div>
-          <div class="form-group full"><label>Description</label><textarea id="sDesc"></textarea></div>
-        </div>
-        <button class="topbar-btn primary" style="margin-top:10px;" onclick="addService()">Save</button>
-      </div>
-      <div id="svcList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;"></div>
-    </div>
-
-    <div class="page-view" id="page-pricing">
-      <div class="card" style="padding:20px;max-width:640px;">
-        <div class="form-grid">
-          <div class="form-group"><label>Standard day rate (USD)</label><input id="pDay" type="number" value="80"></div>
-          <div class="form-group"><label>Half day</label><input id="pHalf" type="number" value="50"></div>
-          <div class="form-group"><label>Overnight safari (per day)</label><input id="pNight" type="number" value="95"></div>
-          <div class="form-group"><label>Mountain / trek day</label><input id="pMtn" type="number" value="120"></div>
-          <div class="form-group full"><label>Notes for operators</label><textarea id="pNotes">Park fees and transport not included. English guiding standard.</textarea></div>
-        </div>
-        <button class="topbar-btn primary" style="margin-top:12px;" onclick="savePricing()">Save rates</button>
-      </div>
-    </div>
-
-    <div class="page-view" id="page-regions">
-      <p class="meta" style="margin-bottom:12px;">Select parks and regions you work. Operators filter by this.</p>
-      <div class="chip-row" id="regionChips">
-        <label><input type="checkbox" value="Serengeti NP" checked> Serengeti NP</label>
-        <label><input type="checkbox" value="Ngorongoro" checked> Ngorongoro</label>
-        <label><input type="checkbox" value="Tarangire" checked> Tarangire</label>
-        <label><input type="checkbox" value="Lake Manyara"> Lake Manyara</label>
-        <label><input type="checkbox" value="Arusha NP"> Arusha NP</label>
-        <label><input type="checkbox" value="Kilimanjaro"> Kilimanjaro</label>
-        <label><input type="checkbox" value="Ruaha"> Ruaha</label>
-        <label><input type="checkbox" value="Nyerere / Selous"> Nyerere / Selous</label>
-        <label><input type="checkbox" value="Zanzibar"> Zanzibar</label>
-        <label><input type="checkbox" value="Mahale / Katavi"> Mahale / Katavi</label>
-      </div>
-      <button class="topbar-btn primary" style="margin-top:16px;" onclick="saveRegions()">Save regions</button>
-      <div id="regionSaved" class="meta" style="margin-top:10px;"></div>
-    </div>
-
-    <div class="page-view" id="page-languages">
-      <div class="card" style="padding:20px;max-width:640px;">
-        <div class="form-grid">
-          <div class="form-group full"><label>Languages</label>
-            <div class="chip-row">
-              <label><input type="checkbox" value="English" checked> English</label>
-              <label><input type="checkbox" value="Swahili" checked> Swahili</label>
-              <label><input type="checkbox" value="French"> French</label>
-              <label><input type="checkbox" value="German"> German</label>
-              <label><input type="checkbox" value="Spanish"> Spanish</label>
-              <label><input type="checkbox" value="Italian"> Italian</label>
-            </div>
-          </div>
-          <div class="form-group full"><label>Specialisations</label>
-            <div class="chip-row">
-              <label><input type="checkbox" value="Big cats" checked> Big cats</label>
-              <label><input type="checkbox" value="Birding"> Birding</label>
-              <label><input type="checkbox" value="Photography" checked> Photography</label>
-              <label><input type="checkbox" value="Walking safari" checked> Walking safari</label>
-              <label><input type="checkbox" value="Cultural"> Cultural</label>
-              <label><input type="checkbox" value="First aid"> First aid</label>
-            </div>
-          </div>
-        </div>
-        <button class="topbar-btn primary" style="margin-top:12px;" onclick="alert('Languages & skills saved')">Save</button>
-      </div>
-    </div>
-
-    <div class="page-view" id="page-availability">
-      <div class="card" style="padding:20px;max-width:560px;">
-        <p class="meta" style="margin-bottom:12px;">Block dates when you are not available for operator bookings.</p>
-        <div class="form-grid">
-          <div class="form-group"><label>From</label><input type="date" id="avFrom"></div>
-          <div class="form-group"><label>To</label><input type="date" id="avTo"></div>
-          <div class="form-group full"><label>Reason</label><input id="avReason" placeholder="Personal / other job / rest"></div>
-        </div>
-        <button class="topbar-btn primary" style="margin-top:12px;" onclick="addBlock()">Block dates</button>
-        <div id="blockList" style="margin-top:16px;"></div>
-      </div>
-    </div>
-
-    <div class="page-view" id="page-messages">
-      <div class="card" style="padding:8px 20px;" id="gMsgList"></div>
-    </div>
-
-    <div class="page-view" id="page-reviews">
-      <div class="stats-row">
-        <div class="stat-card"><div class="stat-card-label">Overall</div><div class="stat-card-value">4.9 ★</div></div>
-        <div class="stat-card"><div class="stat-card-label">Reviews</div><div class="stat-card-value">47</div></div>
-        <div class="stat-card"><div class="stat-card-label">Would rebook</div><div class="stat-card-value">96%</div></div>
-      </div>
-      <div class="card" style="padding:16px 20px;">
-        <div style="padding:12px 0;border-bottom:1px solid var(--border-light);"><strong>Dreamtrails Expeditions</strong> · 5.0 · Serengeti 5-day<br><span class="meta">“Excellent cat tracking and guest care.”</span></div>
-        <div style="padding:12px 0;border-bottom:1px solid var(--border-light);"><strong>Serengeti Trails Ltd</strong> · 4.8 · Ngorongoro<br><span class="meta">“Punctual, great French for our group.”</span></div>
-        <div style="padding:12px 0;"><strong>Kilimanjaro Voyages</strong> · 5.0 · Tarangire<br><span class="meta">“Strong birding knowledge.”</span></div>
-      </div>
-    </div>
-
-    <div class="page-view" id="page-earnings">
-      <div class="stats-row">
-        <div class="stat-card"><div class="stat-card-label">This month</div><div class="stat-card-value">$3,420</div></div>
-        <div class="stat-card"><div class="stat-card-label">Pending payout</div><div class="stat-card-value">$680</div></div>
-        <div class="stat-card"><div class="stat-card-label">YTD</div><div class="stat-card-value">$28.1k</div></div>
-        <div class="stat-card"><div class="stat-card-label">Days worked (30d)</div><div class="stat-card-value">18</div></div>
-      </div>
-      <div class="card"><div style="overflow-x:auto;"><table>
-        <thead><tr><th>Date</th><th>Operator</th><th>Service</th><th>Days</th><th>Amount</th><th>Status</th></tr></thead>
-        <tbody>
-          <tr><td>12 Oct</td><td>Dreamtrails Expeditions</td><td>Game drive guide</td><td>5</td><td>$475</td><td><span class="badge badge-paid">Paid</span></td></tr>
-          <tr><td>5 Oct</td><td>Serengeti Trails Ltd</td><td>Walking safari</td><td>3</td><td>$285</td><td><span class="badge badge-paid">Paid</span></td></tr>
-          <tr><td>28 Sep</td><td>Kilimanjaro Voyages</td><td>Game drive guide</td><td>4</td><td>$320</td><td><span class="badge badge-pending">Pending</span></td></tr>
-        </tbody>
-      </table></div></div>
-    </div>
-
-    <div class="page-view" id="page-certificates">
-      <div class="card" style="padding:20px;">
-        <div class="form-grid">
-          <div class="item-card"><h4>Tour guide licence</h4><div class="meta">MNRT / TTBIH</div><p>Valid to Dec 2027</p></div>
-          <div class="item-card"><h4>First aid</h4><div class="meta">Red Cross TZ</div><p>Valid to Jun 2027</p></div>
-          <div class="item-card"><h4>Walking safari endorsement</h4><div class="meta">Northern circuit</div><p>Active</p></div>
-          <div class="item-card"><h4>Park knowledge</h4><div class="meta">Serengeti · Ngorongoro · Tarangire</div><p>Operator-verified</p></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="page-view" id="page-profile">
-      <div class="card" style="padding:24px;max-width:640px;">
-        <div class="form-grid">
-          <div class="form-group"><label>Display name</label><input id="prName" value="Daniel Mwamba"></div>
-          <div class="form-group"><label>Years guiding</label><input id="prYears" type="number" value="9"></div>
-          <div class="form-group full"><label>Bio for operators</label><textarea id="prBio">Northern circuit safari guide based in Arusha. Strong on big cats, guest hosting, and multi-day mobile camps.</textarea></div>
-          <div class="form-group"><label>Base town</label><input id="prBase" value="Arusha"></div>
-          <div class="form-group"><label>Phone</label><input id="prPhone" value="+255 762 000 111"></div>
-        </div>
-        <button class="topbar-btn primary" style="margin-top:12px;" onclick="alert('Profile saved')">Save profile</button>
-      </div>
-    </div>
-
-    <div class="page-view" id="page-account">
-      <div class="card" style="padding:24px;max-width:640px;">
-        <div class="form-grid">
-          <div class="form-group"><label>Login email</label><input value="dreamtrailsexpedictions@gmail.com"></div>
-          <div class="form-group"><label>Payout mobile money</label><input placeholder="M-Pesa / Mixx number"></div>
-          <div class="form-group"><label>Bank (optional)</label><input placeholder="Account name"></div>
-          <div class="form-group"><label>Notify new jobs</label><select><option>Email + SMS</option><option>Email only</option></select></div>
-        </div>
-        <button class="topbar-btn primary" style="margin-top:12px;" onclick="alert('Account settings saved')">Save</button>
-      </div>
-    </div>
-
-  </div>
+<nav class="sidebar-nav">
+<div class="sidebar-section">Main</div>
+<a class="sidebar-link active" data-p="dashboard" onclick="go('dashboard')"><i data-lucide="layout-dashboard"></i>Dashboard</a>
+<a class="sidebar-link" data-p="schedule" onclick="go('schedule')"><i data-lucide="calendar-days"></i>My Schedule<span class="sidebar-badge" id="bSch">0</span></a>
+<a class="sidebar-link" data-p="requests" onclick="go('requests')"><i data-lucide="inbox"></i>Job Requests<span class="sidebar-badge" id="bReq">0</span></a>
+<a class="sidebar-link" data-p="services" onclick="go('services')"><i data-lucide="briefcase"></i>My Services</a>
+<a class="sidebar-link" data-p="availability" onclick="go('availability')"><i data-lucide="calendar-range"></i>Availability</a>
+<div class="sidebar-section">Profile</div>
+<a class="sidebar-link" data-p="profile" onclick="go('profile')"><i data-lucide="user-circle"></i>Guide Profile</a>
+<a class="sidebar-link" data-p="pricing" onclick="go('pricing')"><i data-lucide="tag"></i>Day Rates</a>
+<a class="sidebar-link" data-p="regions" onclick="go('regions')"><i data-lucide="map"></i>Parks & Regions</a>
+<a class="sidebar-link" data-p="languages" onclick="go('languages')"><i data-lucide="languages"></i>Languages & Skills</a>
+<a class="sidebar-link" data-p="certs" onclick="go('certs')"><i data-lucide="award"></i>Licences</a>
+<a class="sidebar-link" data-p="reviews" onclick="go('reviews')"><i data-lucide="star"></i>Reviews</a>
+<div class="sidebar-section">Ops</div>
+<a class="sidebar-link" data-p="messages" onclick="go('messages')"><i data-lucide="message-square"></i>Messages</a>
+<a class="sidebar-link" data-p="earnings" onclick="go('earnings')"><i data-lucide="bar-chart-3"></i>Earnings</a>
+</nav>
+<div class="sidebar-footer"><div style="color:#fff;font-weight:600">Daniel Mwamba</div><div style="opacity:.5;font-size:.7rem"><span class="live-dot"></span>Guide · Live</div></div></aside>
+<div class="main"><header class="topbar"><div><h2 id="title">Dashboard</h2><p id="sub">Live</p></div>
+<div style="display:flex;gap:8px"><button class="btn" onclick="logout()">Log out</button><button class="btn btn-primary" onclick="go('profile')">Edit profile</button></div></header>
+<div class="content">
+<div class="page active" id="page-dashboard"><div class="stats"><div class="stat"><div class="lbl">Upcoming</div><div class="val" id="gUp">0</div></div><div class="stat"><div class="lbl">Requests</div><div class="val" id="gReq">0</div></div><div class="stat"><div class="lbl">Earnings</div><div class="val" id="gEarn">$0</div></div><div class="stat"><div class="lbl">Rating</div><div class="val" id="gRate">—</div></div></div>
+<div class="card" style="overflow-x:auto"><table><thead><tr><th>Operator</th><th>Service</th><th>Park</th><th>Dates</th><th>Status</th></tr></thead><tbody id="dashJobs"></tbody></table></div></div>
+<div class="page" id="page-schedule"><div class="card" style="overflow-x:auto"><table><thead><tr><th>Ref</th><th>Operator</th><th>Service</th><th>Park</th><th>Start</th><th>End</th><th>Fee</th><th>Status</th></tr></thead><tbody id="schTable"></tbody></table></div></div>
+<div class="page" id="page-requests"><div id="reqList"></div></div>
+<div class="page" id="page-services"><div class="filters"><button class="btn btn-primary" onclick="document.getElementById('svcF').style.display='block'">Add service</button></div>
+<div id="svcF" class="card" style="display:none;padding:14px;margin-bottom:12px"><div class="form-grid"><div class="form-group"><label>Name</label><input id="sName"></div><div class="form-group"><label>Category</label><select id="sCat"><option>Game drives</option><option>Walking safari</option><option>Birding</option><option>Photographic</option><option>Cultural</option><option>Mountain / trekking</option></select></div><div class="form-group"><label>Rate</label><input type="number" id="sRate" value="80"></div><div class="form-group full"><label>Description</label><textarea id="sDesc"></textarea></div></div><button class="btn btn-primary" style="margin-top:8px" onclick="addService()">Save</button></div>
+<div class="prop-grid" id="svcGrid"></div></div>
+<div class="page" id="page-availability"><div class="filters"><button class="btn" onclick="calShift(-1)">Prev</button><strong id="calLabel"></strong><button class="btn" onclick="calShift(1)">Next</button><button class="btn" onclick="calShift(12)">+Year</button></div>
+<div class="card" style="padding:14px"><div class="cal" id="calGrid"></div>
+<div class="form-grid" style="margin-top:12px"><div class="form-group"><label>Block from</label><input type="date" id="blFrom"></div><div class="form-group"><label>to</label><input type="date" id="blTo"></div></div>
+<button class="btn btn-primary" style="margin-top:8px" onclick="addBlock()">Block dates</button></div></div>
+<div class="page" id="page-profile"><div class="card" style="padding:16px;max-width:700px"><div class="form-grid">
+<div class="form-group"><label>Name</label><input id="prName"></div><div class="form-group"><label>Years</label><input type="number" id="prYears"></div>
+<div class="form-group"><label>Phone</label><input id="prPhone"></div><div class="form-group"><label>Base</label><input id="prBase"></div>
+<div class="form-group"><label>Day rate</label><input type="number" id="prRate"></div><div class="form-group"><label>Photo</label><input type="file" id="prImg" accept="image/*"></div>
+<div class="form-group full"><label>Bio</label><textarea id="prBio"></textarea></div></div>
+<button class="btn btn-primary" style="margin-top:10px" onclick="saveProfile()">Save (syncs to operators)</button><div id="prPreview" style="margin-top:14px"></div></div></div>
+<div class="page" id="page-pricing"><div class="card" style="padding:16px;max-width:560px"><div class="form-grid">
+<div class="form-group"><label>Day</label><input type="number" id="pDay"></div><div class="form-group"><label>Half day</label><input type="number" id="pHalf"></div>
+<div class="form-group"><label>Overnight</label><input type="number" id="pNight"></div><div class="form-group"><label>Mountain</label><input type="number" id="pMtn"></div>
+</div><button class="btn btn-primary" style="margin-top:10px" onclick="savePricing()">Save</button></div></div>
+<div class="page" id="page-regions"><div class="chips" id="regionChips">
+<label><input type="checkbox" value="Serengeti NP"> Serengeti NP</label><label><input type="checkbox" value="Ngorongoro"> Ngorongoro</label>
+<label><input type="checkbox" value="Tarangire"> Tarangire</label><label><input type="checkbox" value="Lake Manyara"> Lake Manyara</label>
+<label><input type="checkbox" value="Arusha NP"> Arusha NP</label><label><input type="checkbox" value="Kilimanjaro"> Kilimanjaro</label>
+<label><input type="checkbox" value="Ruaha"> Ruaha</label><label><input type="checkbox" value="Nyerere / Selous"> Nyerere / Selous</label>
+</div><button class="btn btn-primary" style="margin-top:12px" onclick="saveRegions()">Save</button></div>
+<div class="page" id="page-languages"><div class="chips" id="langChips">
+<label><input type="checkbox" value="English"> English</label><label><input type="checkbox" value="Swahili"> Swahili</label>
+<label><input type="checkbox" value="French"> French</label><label><input type="checkbox" value="German"> German</label>
+<label><input type="checkbox" value="Spanish"> Spanish</label><label><input type="checkbox" value="Italian"> Italian</label>
+<label><input type="checkbox" value="Japanese"> Japanese</label><label><input type="checkbox" value="Chinese"> Chinese</label>
+<label><input type="checkbox" value="Korean"> Korean</label>
+</div><p class="meta" style="margin:12px 0">Skills</p><div class="chips" id="skillChips">
+<label><input type="checkbox" value="Big cats"> Big cats</label><label><input type="checkbox" value="Birding"> Birding</label>
+<label><input type="checkbox" value="Photography"> Photography</label><label><input type="checkbox" value="Walking safari"> Walking safari</label>
+<label><input type="checkbox" value="First aid"> First aid</label>
+</div><button class="btn btn-primary" style="margin-top:12px" onclick="saveLang()">Save</button>
+</div>
+<div class="page" id="page-certs"><div class="prop-grid" id="certGrid"></div>
+</div>
+<div class="page" id="page-reviews"><div class="card" style="padding:16px" id="revList"></div>
+</div>
+<div class="page" id="page-messages"><div class="card" style="padding:8px 16px" id="msgList"></div>
+</div>
+<div class="page" id="page-earnings"><div class="stats"><div class="stat"><div class="lbl">Confirmed</div><div class="val" id="eConf">—</div></div><div class="stat"><div class="lbl">Completed</div><div class="val" id="eDone">—</div></div><div class="stat"><div class="lbl">Pending</div><div class="val" id="ePend">—</div></div><div class="stat"><div class="lbl">Jobs</div><div class="val" id="eJobs">—</div></div></div>
+<div class="card" style="overflow-x:auto"><table><thead><tr><th>Ref</th><th>Operator</th><th>Fee</th><th>Status</th></tr></thead><tbody id="earnTable"></tbody></table></div></div>
+</div>
 </div>
 <script>
-function logout() {
-  sessionStorage.removeItem('safariLinkUser');
-  try { localStorage.removeItem('safarilink_user'); } catch (e) {}
-  window.location.href = 'index.html';
+var SL_KEY='safarilink_platform_v1';
+function slLoad(){try{var r=localStorage.getItem(SL_KEY);if(r)return JSON.parse(r)}catch(e){}return null}
+function slSave(d){localStorage.setItem(SL_KEY,JSON.stringify(d));try{localStorage.setItem(SL_KEY+'_tick',String(Date.now()))}catch(e){}}
+function slEnsure(){
+ var d=slLoad(); if(d&&d.version===2)return d;
+ d={version:2,
+ properties:[{id:1,name:'Serengeti Hill Camp',type:'Tented Camp',location:'Central Serengeti',status:'available',desc:'Wildlife views on the plains.',amenities:['Wi-Fi','Restaurant','Bar'],contact:'+255 754 100 200',region:'Serengeti',images:[],preview:'',unitsTotal:12,unitsOccupied:9},{id:2,name:'Ngoro View Lodge',type:'Lodge',location:'Ngorongoro Rim',status:'available',desc:'Crater rim lodge.',amenities:['Wi-Fi','Restaurant','View'],contact:'+255 754 100 201',region:'Ngorongoro',images:[],preview:'',unitsTotal:16,unitsOccupied:11}],
+ roomTypes:[{id:1,propertyId:1,name:'Luxury Tent',guests:2,units:6,sto:220,pub:320,location:'Main camp',amenities:['En-suite','Private deck'],notes:'',images:[]},{id:2,propertyId:1,name:'Family Suite',guests:4,units:2,sto:350,pub:450,location:'Riverside',amenities:['En-suite','View'],notes:'',images:[]},{id:3,propertyId:2,name:'Standard Room',guests:2,units:10,sto:130,pub:180,location:'Main block',amenities:['En-suite'],notes:'',images:[]}],
+ reservations:[{id:'R-1042',operator:'Dreamtrails Expeditions',propertyId:1,room:'Luxury Tent',checkIn:'2026-10-22',checkOut:'2026-10-25',guests:2,amount:660,payment:'Paid',status:'paid',createdAt:Date.now()-3600000,repliedAt:Date.now()-3000000,notes:'Honeymoon'},{id:'R-1043',operator:'Serengeti Trails Ltd',propertyId:1,room:'Family Suite',checkIn:'2026-10-24',checkOut:'2026-10-27',guests:4,amount:1050,payment:'Deposit',status:'booked',createdAt:Date.now()-7200000,repliedAt:null,notes:''},{id:'R-1044',operator:'Kilimanjaro Voyages',propertyId:2,room:'Standard Room',checkIn:'2026-10-26',checkOut:'2026-10-28',guests:2,amount:260,payment:'Pending',status:'reserved',createdAt:Date.now()-25*60000,repliedAt:null,notes:''},{id:'R-1045',operator:'Safari Circle TZ',propertyId:1,room:'Luxury Tent',checkIn:'2026-10-18',checkOut:'2026-10-19',guests:2,amount:220,payment:'Refunded',status:'cancelled',createdAt:Date.now()-86400000*3,repliedAt:Date.now()-86400000*2,notes:''}],
+ vehicles:[{id:1,plate:'T 234 ABC',category:'Safari car (extended 4x4)',model:'Toyota Land Cruiser Extended',year:2022,seats:7,base:'Arusha',dayRate:180,safariDayRate:220,transferRate:90,status:'On hire',availableFrom:'2026-10-26',features:['Pop-up roof','4WD','Fridge','Charging ports','Spotting seats','Seat belts','First aid kit','Spare tyre','Recovery gear'],images:[],preview:'',insuranceExpiry:'2027-03-12',parkReg:true},{id:2,plate:'T 512 KLM',category:'Safari car (extended 4x4)',model:'Toyota Land Cruiser 76',year:2021,seats:9,base:'Arusha',dayRate:200,safariDayRate:240,transferRate:100,status:'Available',availableFrom:'2026-10-20',features:['Pop-up roof','4WD','Fridge','Binoculars'],images:[],preview:'',insuranceExpiry:'2027-01-20',parkReg:true},{id:3,plate:'T 088 NBO',category:'Minibus',model:'Toyota Coaster',year:2019,seats:18,base:'Moshi',dayRate:150,safariDayRate:180,transferRate:80,status:'Available',availableFrom:'2026-10-20',features:['AC','Seat belts','Luggage space'],images:[],preview:'',insuranceExpiry:'2026-12-01',parkReg:false},{id:4,plate:'T 701 ARU',category:'Van',model:'Toyota Hiace',year:2023,seats:10,base:'Arusha',dayRate:120,safariDayRate:140,transferRate:70,status:'Available',availableFrom:'2026-10-20',features:['AC','Charging ports'],images:[],preview:'',insuranceExpiry:'2027-06-01',parkReg:false}],
+ charters:[{ref:'CH-901',operator:'Dreamtrails Expeditions',vehicleId:1,plate:'T 234 ABC',start:'2026-10-18',end:'2026-10-25',route:'Arusha-Serengeti-Ngorongoro',driver:'Juma Kimaro',value:1260,status:'On trip',createdAt:Date.now()-86400000},{ref:'CH-902',operator:'Serengeti Trails Ltd',vehicleId:2,plate:'T 512 KLM',start:'2026-10-22',end:'2026-10-28',route:'Tarangire-Seronera',driver:'Amina Mwanga',value:1200,status:'Confirmed',createdAt:Date.now()-3600000},{ref:'CH-903',operator:'Kilimanjaro Voyages',vehicleId:3,plate:'T 088 NBO',start:'2026-10-21',end:'2026-10-21',route:'JRO-Moshi',driver:'Peter N.',value:150,status:'Reserved',createdAt:Date.now()-1800000},{ref:'CH-904',operator:'Safari Circle TZ',vehicleId:1,plate:'T 234 ABC',start:'2026-10-10',end:'2026-10-14',route:'Northern circuit',driver:'Juma Kimaro',value:720,status:'Completed',createdAt:Date.now()-86400000*10}],
+ drivers:[{id:1,name:'Juma Kimaro',phone:'+255 754 111 222',lic:'E',lang:'English, Swahili',status:'On trip',rating:4.8,trips:120,base:'Arusha',notes:'Senior safari'},{id:2,name:'Amina Mwanga',phone:'+255 755 333 444',lic:'C',lang:'English, Swahili, French',status:'Available',rating:4.9,trips:85,base:'Arusha',notes:''}],
+ agreements:[{id:'HA-220',operator:'Dreamtrails Expeditions',plate:'T 234 ABC',period:'18-25 Oct 2026',terms:'With driver · Fuel by operator · 200km/day · Excess $500',status:'Signed',operatorAgreed:true,signedAt:'2026-10-17'},{id:'HA-221',operator:'Serengeti Trails Ltd',plate:'T 512 KLM',period:'22-28 Oct 2026',terms:'With driver · Night stops in parks OK',status:'Pending operator',operatorAgreed:false,signedAt:null}],
+ guides:[{id:1,name:'Daniel Mwamba',years:9,phone:'+255 762 000 111',base:'Arusha',rate:80,halfDay:50,overnight:95,mountain:120,bio:'Northern circuit guide. Big cats, guest hosting, mobile camps.',languages:['English','Swahili','French','Japanese','Chinese','Korean','German'],skills:['Big cats','Photography','Walking safari','First aid'],regions:['Serengeti NP','Ngorongoro','Tarangire','Lake Manyara'],image:'',rating:4.9,reviewsCount:47,services:[{id:1,name:'Game drive guide',cat:'Game drives',rate:80,desc:'Full-day guiding'},{id:2,name:'Walking safari',cat:'Walking safari',rate:95,desc:'Where permitted'}],certs:[{name:'Tour guide licence',issuer:'MNRT / TTBIH',validTo:'2027-12-01'},{name:'First aid',issuer:'Red Cross TZ',validTo:'2027-06-01'}],blocks:[],reviews:[{operator:'Dreamtrails Expeditions',score:5,text:'Excellent cat tracking.',park:'Serengeti'}]}],
+ guideJobs:[{ref:'GJ-440',operator:'Dreamtrails Expeditions',service:'Game drive guide',park:'Serengeti NP',start:'2026-10-22',end:'2026-10-27',fee:480,status:'Confirmed'},{ref:'GJ-441',operator:'Serengeti Trails Ltd',service:'Walking safari',park:'Ngorongoro',start:'2026-10-20',end:'2026-10-21',fee:190,status:'In progress'},{ref:'GJ-442',operator:'Kilimanjaro Voyages',service:'Game drive guide',park:'Tarangire',start:'2026-10-05',end:'2026-10-08',fee:320,status:'Completed'}],
+ guideRequests:[{id:1,operator:'Coast & Crater Safaris',service:'Game drive guide',park:'Serengeti NP',dates:'1-6 Nov 2026',fee:480,note:'English + Japanese for Tokyo guests'},{id:2,operator:'Safari Circle TZ',service:'Birding',park:'Lake Manyara',dates:'12-13 Nov 2026',fee:160,note:'Private couple'}],
+ messages:[{id:1,side:'accommodation',from:'Dreamtrails Expeditions',initials:'DT',text:'R-1042 confirmed — Luxury Tent 22-25 Oct.',time:Date.now()-3600000,type:'info',related:'R-1042'},{id:2,side:'accommodation',from:'SafariLink Reminder',initials:'SL',text:'Reminder: R-1044 unreplied 30+ min. Email queued.',time:Date.now()-600000,type:'reminder',related:'R-1044',unread:true},{id:3,side:'fleet',from:'Dreamtrails Expeditions',initials:'DT',text:'CH-901 on the road.',time:Date.now()-7200000,type:'info'},{id:4,side:'guide',from:'Dreamtrails Expeditions',initials:'DT',text:'GJ-440 pickup 07:00 on 22 Oct.',time:Date.now()-5400000,type:'info'}],
+ team:{accommodation:[{id:1,name:'Camp Admin',email:'admin@serengetihill.tz',role:'Admin'},{id:2,name:'Manager',email:'manager@serengetihill.tz',role:'Manager'},{id:3,name:'Sales',email:'sales@serengetihill.tz',role:'Sales'}],fleet:[{id:1,name:'Dispatch',email:'dispatch@safarifleet.tz',role:'Admin'}],guide:[]},
+ manualStats:{extraBookings:0,extraRevenue:0,extraOccNights:0},calendarBlocks:{accommodation:{},fleet:{},guide:{}}
+ }; slSave(d); return d;
 }
-function esc(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
-function store(k, v) { localStorage.setItem(PREFIX + k, JSON.stringify(v)); }
-function load(k, fb) { try { var v = localStorage.getItem(PREFIX + k); return v ? JSON.parse(v) : fb; } catch (e) { return fb; } }
-function badge(s) {
-  var c = 'badge-' + String(s).toLowerCase().replace(/\s+/g, '');
-  return '<span class="badge ' + c + '">' + esc(s) + '</span>';
-}
+function slGet(){return slEnsure()}
+function slUpdate(fn){var d=slGet();fn(d);slSave(d);return d}
+function slOnChange(cb){window.addEventListener('storage',function(e){if(e.key===SL_KEY||e.key===SL_KEY+'_tick')cb()});setInterval(cb,8000)}
+function esc(s){var d=document.createElement('div');d.textContent=s==null?'':String(s);return d.innerHTML}
+function badge(s){return '<span class="badge badge-'+String(s).toLowerCase().replace(/\s+/g,'')+'">'+esc(s)+'</span>'}
+function money(n){return '$'+Number(n||0).toLocaleString()}
+function fileToDataUrl(f){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(r.result)};r.onerror=rej;r.readAsDataURL(f)})}
 
-var PREFIX = 'sl_guide_';
-var TITLES = {
-  dashboard: ['Dashboard', 'Guide network · Northern & southern circuits', 'Set availability'],
-  schedule: ['My Schedule', 'Confirmed and active operator assignments', 'Set availability'],
-  requests: ['Job Requests', 'Operators requesting your guiding days', 'Set availability'],
-  services: ['My Services', 'Game drives, walking, trek, cultural, birding', 'Add service'],
-  pricing: ['Day Rates & Fees', 'What operators see when they book you', 'Save rates'],
-  regions: ['Parks & Regions', 'Where you take guests', 'Save regions'],
-  languages: ['Languages & Skills', 'Match the guests operators bring', 'Save'],
-  availability: ['Availability', 'Block dates you cannot take jobs', 'Block dates'],
-  messages: ['Messages', 'Operators and SafariLink', 'Set availability'],
-  reviews: ['Reviews & Ratings', 'Feedback from tour operators', 'Set availability'],
-  earnings: ['Earnings', 'Fees earned and payouts', 'Set availability'],
-  certificates: ['Licences & Certs', 'Guide licence, first aid, endorsements', 'Set availability'],
-  profile: ['Profile', 'How you appear to operators', 'Save profile'],
-  account: ['Account', 'Login, payouts, notifications', 'Save']
-};
-
-function showPage(id) {
-  document.querySelectorAll('.page-view').forEach(function(p) { p.classList.remove('active'); });
-  var el = document.getElementById('page-' + id);
-  if (el) el.classList.add('active');
-  document.querySelectorAll('.sidebar-link').forEach(function(a) {
-    a.classList.toggle('active', a.getAttribute('data-page') === id);
-  });
-  var t = TITLES[id] || ['Dashboard', ''];
-  document.getElementById('pageTitle').textContent = t[0];
-  document.getElementById('pageSubtitle').textContent = t[1];
-  document.getElementById('ctaLabel').textContent = t[2] || 'Add';
-  CURRENT = id;
-  if (window.refreshPage) refreshPage(id);
-  lucide.createIcons();
-}
-var CURRENT = 'dashboard';
-function onPrimaryCta() {
-  if (window.primaryAction) primaryAction(CURRENT);
-}
-
-function seed() {
-  if (load('seeded', false)) return;
-  store('jobs', [
-    { ref: 'GJ-440', operator: 'Dreamtrails Expeditions', service: 'Game drive guide', park: 'Serengeti NP', start: '2026-10-20', end: '2026-10-25', fee: 475, status: 'Confirmed' },
-    { ref: 'GJ-441', operator: 'Serengeti Trails Ltd', service: 'Walking safari', park: 'Ngorongoro', start: '2026-10-18', end: '2026-10-19', fee: 160, status: 'In progress' },
-    { ref: 'GJ-442', operator: 'Kilimanjaro Voyages', service: 'Game drive guide', park: 'Tarangire', start: '2026-10-05', end: '2026-10-08', fee: 320, status: 'Completed' }
-  ]);
-  store('requests', [
-    { id: 1, operator: 'Coast & Crater Safaris', service: 'Game drive guide', park: 'Serengeti NP', dates: '1–6 Nov 2026', fee: 480, note: 'Need English + basic German' },
-    { id: 2, operator: 'Safari Circle TZ', service: 'Birding', park: 'Lake Manyara', dates: '12–13 Nov 2026', fee: 160, note: 'Private couple, early starts' }
-  ]);
-  store('services', [
-    { id: 1, name: 'Game drive guide', cat: 'Game drives', rate: 80, desc: 'Full-day vehicle guiding, northern parks' },
-    { id: 2, name: 'Walking safari', cat: 'Walking safari', rate: 95, desc: 'Armed walk where permitted' }
-  ]);
-  store('blocks', []);
-  store('seeded', true);
-}
-
-
-function primaryAction(id) {
-  if (id === 'services') { document.getElementById('svcForm').style.display = 'block'; showPage('services'); return; }
-  if (id === 'pricing') { showPage('pricing'); return; }
-  if (id === 'regions') { showPage('regions'); return; }
-  if (id === 'availability') { showPage('availability'); return; }
-  if (id === 'profile' || id === 'account') { showPage(id); return; }
-  showPage('availability');
-}
-function renderSchedule() {
-  var list = load('jobs', []);
-  var st = document.getElementById('schFilter').value;
-  var f = list.filter(function(j){ return st === 'all' || j.status === st; });
-  var upcoming = list.filter(function(j){ return j.status === 'Confirmed' || j.status === 'In progress'; }).length;
-  document.getElementById('schBadge').textContent = upcoming;
-  document.getElementById('gUp').textContent = upcoming;
-  document.getElementById('schTable').innerHTML = f.map(function(j) {
-    return '<tr><td>'+j.ref+'</td><td>'+esc(j.operator)+'</td><td>'+esc(j.service)+'</td><td>'+esc(j.park)+
-      '</td><td>'+j.start+'</td><td>'+j.end+'</td><td>$'+j.fee+'</td><td>'+badge(j.status)+'</td></tr>';
-  }).join('') || '<tr><td colspan="8" class="empty-hint">No jobs</td></tr>';
-  document.getElementById('dashJobs').innerHTML = list.slice(0,5).map(function(j) {
-    return '<tr><td>'+esc(j.operator)+'</td><td>'+esc(j.service)+'</td><td>'+esc(j.park)+
-      '</td><td>'+j.start+' → '+j.end+'</td><td>'+badge(j.status)+'</td></tr>';
-  }).join('');
-}
-function renderRequests() {
-  var list = load('requests', []);
-  document.getElementById('reqBadge').textContent = list.length;
-  document.getElementById('gReq').textContent = list.length;
-  document.getElementById('reqList').innerHTML = list.map(function(r) {
-    return '<div class="item-card"><h4>'+esc(r.operator)+'</h4><div class="meta">'+esc(r.service)+' · '+esc(r.park)+
-      ' · '+esc(r.dates)+'</div><p style="font-size:0.85rem;margin:8px 0;">'+esc(r.note)+'</p><div class="meta">Offered $'+r.fee+
-      '</div><div style="margin-top:10px;display:flex;gap:8px;">'+
-      '<button class="topbar-btn primary" onclick="acceptReq('+r.id+')">Accept</button>'+
-      '<button class="topbar-btn" onclick="declineReq('+r.id+')">Decline</button></div></div>';
-  }).join('') || '<div class="empty-hint">No open requests</div>';
-}
-function acceptReq(id) {
-  var reqs = load('requests', []);
-  var r = reqs.find(function(x){ return x.id === id; });
-  if (!r) return;
-  var jobs = load('jobs', []);
-  jobs.unshift({ ref: 'GJ-'+Math.floor(Math.random()*900+100), operator: r.operator, service: r.service, park: r.park,
-    start: r.dates.split('–')[0].trim() || '2026-11-01', end: r.dates.split('–')[1] ? r.dates.split('–')[1].trim() : '',
-    fee: r.fee, status: 'Confirmed' });
-  store('jobs', jobs);
-  store('requests', reqs.filter(function(x){ return x.id !== id; }));
-  alert('Job accepted and added to schedule');
-  renderRequests(); renderSchedule();
-}
-function declineReq(id) {
-  store('requests', load('requests', []).filter(function(x){ return x.id !== id; }));
-  renderRequests();
-}
-function renderServices() {
-  var list = load('services', []);
-  document.getElementById('svcList').innerHTML = list.map(function(s) {
-    return '<div class="item-card"><h4>'+esc(s.name)+'</h4><div class="meta">'+esc(s.cat)+' · $'+s.rate+'/day</div><p class="meta">'+esc(s.desc)+'</p></div>';
-  }).join('') || '<div class="empty-hint">Add services operators can book</div>';
-}
-function addService() {
-  var name = document.getElementById('sName').value.trim();
-  if (!name) { alert('Name required'); return; }
-  var list = load('services', []);
-  list.push({ id: Date.now(), name: name, cat: document.getElementById('sCat').value,
-    rate: Number(document.getElementById('sRate').value)||80, desc: document.getElementById('sDesc').value.trim() });
-  store('services', list);
-  document.getElementById('svcForm').style.display = 'none';
-  renderServices();
-}
-function savePricing() { alert('Day rates saved for operators'); }
-function saveRegions() {
-  var sel = [];
-  document.querySelectorAll('#regionChips input:checked').forEach(function(c){ sel.push(c.value); });
-  store('regions', sel);
-  document.getElementById('regionSaved').textContent = 'Saved: ' + sel.join(', ');
-}
-function addBlock() {
-  var from = document.getElementById('avFrom').value;
-  var to = document.getElementById('avTo').value;
-  if (!from || !to) { alert('Select from and to dates'); return; }
-  var list = load('blocks', []);
-  list.push({ id: Date.now(), from: from, to: to, reason: document.getElementById('avReason').value.trim() });
-  store('blocks', list);
-  renderBlocks();
-}
-function renderBlocks() {
-  var list = load('blocks', []);
-  document.getElementById('blockList').innerHTML = list.map(function(b) {
-    return '<div class="team-row"><div>'+b.from+' → '+b.to+'<div class="meta">'+esc(b.reason||'')+
-      '</div></div><button class="topbar-btn" onclick="removeBlock('+b.id+')">Remove</button></div>';
-  }).join('') || '<div class="meta">No blocked dates</div>';
-}
-function removeBlock(id) {
-  store('blocks', load('blocks', []).filter(function(b){ return b.id !== id; }));
-  renderBlocks();
-}
-function renderMessages() {
-  var msgs = [
-    { i: 'DT', f: 'Dreamtrails Expeditions', t: 'Confirm pickup time for GJ-440 at Arusha.' },
-    { i: 'ST', f: 'Serengeti Trails Ltd', t: 'Walking group prefers early start tomorrow.' },
-    { i: 'SL', f: 'SafariLink', t: 'Your profile was viewed by 6 operators this week.' }
-  ];
-  document.getElementById('gMsgList').innerHTML = msgs.map(function(m) {
-    return '<div class="msg-row"><div class="msg-avatar">'+m.i+'</div><div><strong>'+m.f+'</strong><div class="meta">'+m.t+'</div></div></div>';
-  }).join('');
-}
-function refreshPage(id) {
-  if (id === 'dashboard' || id === 'schedule') renderSchedule();
-  if (id === 'requests') renderRequests();
-  if (id === 'services') renderServices();
-  if (id === 'availability') renderBlocks();
-  if (id === 'messages') renderMessages();
-  if (id === 'regions') {
-    var saved = load('regions', null);
-    if (saved) document.getElementById('regionSaved').textContent = 'Saved: ' + saved.join(', ');
-  }
-}
-seed();
-renderSchedule();
-renderRequests();
-
-lucide.createIcons();
+function logout(){sessionStorage.removeItem('safariLinkUser');try{localStorage.removeItem('safarilink_user')}catch(e){}location.href='index.html'}
+var TITLES={dashboard:['Dashboard','Jobs from operators'],schedule:['Schedule','Assignments'],requests:['Job Requests','Accept/decline'],services:['Services','Offerings'],availability:['Availability','Calendar'],profile:['Profile','Operator card data'],pricing:['Rates','Fees'],regions:['Regions','Parks'],languages:['Languages','Incl. JP/CN/KR'],certs:['Licences','Certs'],reviews:['Reviews','Feedback'],messages:['Messages','Ops'],earnings:['Earnings','Fees']};
+var calMonth=new Date();calMonth.setDate(1);
+function guide(){return slGet().guides[0]}
+function go(id){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});document.getElementById('page-'+id).classList.add('active');document.querySelectorAll('.sidebar-link').forEach(function(a){a.classList.toggle('active',a.getAttribute('data-p')===id)});var t=TITLES[id]||['',''];document.getElementById('title').textContent=t[0];document.getElementById('sub').textContent=t[1];refresh();lucide.createIcons()}
+function renderDash(){var d=slGet(),g=guide(),up=d.guideJobs.filter(function(j){return j.status==='Confirmed'||j.status==='In progress'}).length;document.getElementById('gUp').textContent=up;document.getElementById('gReq').textContent=d.guideRequests.length;document.getElementById('gEarn').textContent=money(d.guideJobs.reduce(function(s,j){return s+j.fee},0));document.getElementById('gRate').textContent=(g.rating||'—')+' ★';document.getElementById('dashJobs').innerHTML=d.guideJobs.slice(0,5).map(function(j){return '<tr><td>'+esc(j.operator)+'</td><td>'+esc(j.service)+'</td><td>'+esc(j.park)+'</td><td>'+j.start+' → '+j.end+'</td><td>'+badge(j.status)+'</td></tr>'}).join('')}
+function renderSchedule(){var list=slGet().guideJobs;document.getElementById('bSch').textContent=list.filter(function(j){return j.status==='Confirmed'||j.status==='In progress'}).length;document.getElementById('schTable').innerHTML=list.map(function(j){return '<tr><td>'+j.ref+'</td><td>'+esc(j.operator)+'</td><td>'+esc(j.service)+'</td><td>'+esc(j.park)+'</td><td>'+j.start+'</td><td>'+j.end+'</td><td>'+money(j.fee)+'</td><td>'+badge(j.status)+'</td></tr>'}).join('')}
+function renderRequests(){var list=slGet().guideRequests;document.getElementById('bReq').textContent=list.length;document.getElementById('reqList').innerHTML=list.map(function(r){return '<div class="card" style="padding:14px;margin-bottom:10px"><h4>'+esc(r.operator)+'</h4><div class="meta">'+esc(r.service)+' · '+esc(r.park)+' · '+esc(r.dates)+'</div><p style="margin:8px 0;font-size:.85rem">'+esc(r.note)+'</p><div class="meta">'+money(r.fee)+'</div><div style="margin-top:8px;display:flex;gap:8px"><button class="btn btn-primary" onclick="acceptReq('+r.id+')">Accept</button><button class="btn" onclick="declineReq('+r.id+')">Decline</button></div></div>'}).join('')||'<div class="meta">No requests</div>'}
+function acceptReq(id){slUpdate(function(d){var r=d.guideRequests.find(function(x){return x.id===id});if(!r)return;d.guideJobs.unshift({ref:'GJ-'+Math.floor(100+Math.random()*900),operator:r.operator,service:r.service,park:r.park,start:'2026-11-01',end:'2026-11-06',fee:r.fee,status:'Confirmed'});d.guideRequests=d.guideRequests.filter(function(x){return x.id!==id})});refresh()}
+function declineReq(id){slUpdate(function(d){d.guideRequests=d.guideRequests.filter(function(x){return x.id!==id})});refresh()}
+function renderServices(){document.getElementById('svcGrid').innerHTML=(guide().services||[]).map(function(s){return '<div class="prop-card"><div class="body"><h4>'+esc(s.name)+'</h4><div class="meta">'+esc(s.cat)+' · '+money(s.rate)+'/day</div><p class="meta">'+esc(s.desc)+'</p></div></div>'}).join('')}
+function addService(){var n=document.getElementById('sName').value.trim();if(!n)return;slUpdate(function(d){d.guides[0].services.push({id:Date.now(),name:n,cat:document.getElementById('sCat').value,rate:Number(document.getElementById('sRate').value)||80,desc:document.getElementById('sDesc').value})});document.getElementById('svcF').style.display='none';renderServices()}
+function fillProfile(){var g=guide();document.getElementById('prName').value=g.name||'';document.getElementById('prYears').value=g.years||0;document.getElementById('prPhone').value=g.phone||'';document.getElementById('prBase').value=g.base||'';document.getElementById('prRate').value=g.rate||80;document.getElementById('prBio').value=g.bio||'';renderPreview()}
+function renderPreview(){var g=guide();var img=g.image?'<img src="'+g.image+'" style="width:72px;height:72px;border-radius:50%;object-fit:cover">':'';document.getElementById('prPreview').innerHTML='<div class="card" style="padding:14px"><div style="display:flex;gap:12px;align-items:center">'+img+'<div><h4>'+esc(g.name)+'</h4><div class="meta">'+g.years+' yrs · '+esc(g.base)+' · '+money(g.rate)+'/day · ★'+g.rating+'</div><div class="meta">'+esc((g.languages||[]).join(', '))+'</div><div class="meta">'+esc((g.regions||[]).join(' · '))+'</div></div></div><p style="margin-top:8px;font-size:.85rem">'+esc(g.bio||'')+'</p></div>'}
+async function saveProfile(){var file=document.getElementById('prImg').files[0];var img=guide().image;if(file)img=await fileToDataUrl(file);slUpdate(function(d){var g=d.guides[0];g.name=document.getElementById('prName').value;g.years=Number(document.getElementById('prYears').value)||g.years;g.phone=document.getElementById('prPhone').value;g.base=document.getElementById('prBase').value;g.rate=Number(document.getElementById('prRate').value)||g.rate;g.bio=document.getElementById('prBio').value;g.image=img});alert('Profile synced for operators');renderPreview()}
+function fillPricing(){var g=guide();document.getElementById('pDay').value=g.rate;document.getElementById('pHalf').value=g.halfDay;document.getElementById('pNight').value=g.overnight;document.getElementById('pMtn').value=g.mountain}
+function savePricing(){slUpdate(function(d){var g=d.guides[0];g.rate=Number(document.getElementById('pDay').value)||g.rate;g.halfDay=Number(document.getElementById('pHalf').value)||g.halfDay;g.overnight=Number(document.getElementById('pNight').value)||g.overnight;g.mountain=Number(document.getElementById('pMtn').value)||g.mountain});alert('Saved')}
+function fillRegions(){var set={};(guide().regions||[]).forEach(function(r){set[r]=1});document.querySelectorAll('#regionChips input').forEach(function(c){c.checked=!!set[c.value]})}
+function saveRegions(){var sel=[];document.querySelectorAll('#regionChips input:checked').forEach(function(c){sel.push(c.value)});slUpdate(function(d){d.guides[0].regions=sel});alert('Saved')}
+function fillLang(){var set={},sk={};(guide().languages||[]).forEach(function(r){set[r]=1});(guide().skills||[]).forEach(function(r){sk[r]=1});document.querySelectorAll('#langChips input').forEach(function(c){c.checked=!!set[c.value]});document.querySelectorAll('#skillChips input').forEach(function(c){c.checked=!!sk[c.value]})}
+function saveLang(){var L=[],S=[];document.querySelectorAll('#langChips input:checked').forEach(function(c){L.push(c.value)});document.querySelectorAll('#skillChips input:checked').forEach(function(c){S.push(c.value)});slUpdate(function(d){d.guides[0].languages=L;d.guides[0].skills=S});alert('Saved')}
+function renderCerts(){document.getElementById('certGrid').innerHTML=(guide().certs||[]).map(function(c){return '<div class="prop-card"><div class="body"><h4>'+esc(c.name)+'</h4><div class="meta">'+esc(c.issuer)+' · to '+esc(c.validTo)+'</div></div></div>'}).join('')}
+function renderReviews(){document.getElementById('revList').innerHTML=(guide().reviews||[]).map(function(r){return '<div style="padding:10px 0;border-bottom:1px solid var(--border-light)"><strong>'+esc(r.operator)+'</strong> · '+r.score+' ★ · '+esc(r.park)+'<div class="meta">'+esc(r.text)+'</div></div>'}).join('')}
+function renderMessages(){document.getElementById('msgList').innerHTML=slGet().messages.filter(function(m){return m.side==='guide'}).map(function(m){return '<div class="msg-row"><div class="msg-av">'+esc(m.initials)+'</div><div><strong>'+esc(m.from)+'</strong><div>'+esc(m.text)+'</div></div></div>'}).join('')}
+function renderEarnings(){var jobs=slGet().guideJobs;var conf=jobs.filter(function(j){return j.status==='Confirmed'}).reduce(function(s,j){return s+j.fee},0);var done=jobs.filter(function(j){return j.status==='Completed'}).reduce(function(s,j){return s+j.fee},0);document.getElementById('eConf').textContent=money(conf);document.getElementById('eDone').textContent=money(done);document.getElementById('ePend').textContent=money(conf);document.getElementById('eJobs').textContent=jobs.length;document.getElementById('earnTable').innerHTML=jobs.map(function(j){return '<tr><td>'+j.ref+'</td><td>'+esc(j.operator)+'</td><td>'+money(j.fee)+'</td><td>'+badge(j.status)+'</td></tr>'}).join('')}
+function calShift(n){calMonth.setMonth(calMonth.getMonth()+n);renderCal()}
+function renderCal(){var y=calMonth.getFullYear(),m=calMonth.getMonth();document.getElementById('calLabel').textContent=calMonth.toLocaleString('default',{month:'long',year:'numeric'});var first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate(),busy={};slGet().guideJobs.forEach(function(j){for(var t=new Date(j.start);t<=new Date(j.end);t.setDate(t.getDate()+1)){if(t.getMonth()===m&&t.getFullYear()===y)busy[t.getDate()]=1}});(guide().blocks||[]).forEach(function(b){for(var t=new Date(b.from);t<=new Date(b.to);t.setDate(t.getDate()+1)){if(t.getMonth()===m&&t.getFullYear()===y)busy[t.getDate()]=1}});var h=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(function(d){return '<div class="hd">'+d+'</div>'}).join('');for(var i=0;i<first;i++)h+='<div class="day muted"></div>';for(var d=1;d<=days;d++)h+='<div class="day '+(busy[d]?'busy':'free')+'">'+d+'</div>';document.getElementById('calGrid').innerHTML=h}
+function addBlock(){var f=document.getElementById('blFrom').value,t=document.getElementById('blTo').value;if(!f||!t){alert('Select dates');return}slUpdate(function(d){d.guides[0].blocks=d.guides[0].blocks||[];d.guides[0].blocks.push({from:f,to:t})});renderCal()}
+function refresh(){renderDash();renderSchedule();renderRequests();renderServices();fillProfile();fillPricing();fillRegions();fillLang();renderCerts();renderReviews();renderMessages();renderEarnings();renderCal()}
+slEnsure();refresh();slOnChange(refresh);lucide.createIcons();
 </script>
 </body>
 </html>
