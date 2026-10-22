@@ -1121,9 +1121,72 @@ function slLoad(){ try { var r = localStorage.getItem(SL_KEY); if (r) return JSO
 function slSave(d){ localStorage.setItem(SL_KEY, JSON.stringify(d)); try { localStorage.setItem(SL_KEY+'_tick', String(Date.now())); } catch(e){} }
 function slEnsure(){
   var d = slLoad(); if (d && d.version) return d;
-  // Minimal bootstrap if partners haven't opened yet
-  d = { version: 2, properties: [], roomTypes: [], reservations: [], vehicles: [], charters: [], drivers: [], agreements: [], guides: [], guideJobs: [], guideRequests: [], messages: [], team: {}, manualStats: {}, calendarBlocks: {} };
-  slSave(d); return d;
+  // Same seed as partner dashboards — properties, fleet, guides stay in sync
+  d={version:2,
+    properties:[
+      {id:1,name:'Serengeti Hill Camp',type:'Tented Camp',location:'Central Serengeti',status:'available',desc:'Tented camp with wildlife views on the central plains.',amenities:['Wi-Fi','Restaurant','Bar','Laundry'],contact:'+255 754 100 200',region:'Serengeti',images:[],preview:'',unitsTotal:12,unitsOccupied:9},
+      {id:2,name:'Ngoro View Lodge',type:'Lodge',location:'Ngorongoro Rim',status:'available',desc:'Lodge on the crater rim with sundowner decks.',amenities:['Wi-Fi','Restaurant','Fireplace','View'],contact:'+255 754 100 201',region:'Ngorongoro',images:[],preview:'',unitsTotal:16,unitsOccupied:11}
+    ],
+    roomTypes:[
+      {id:1,propertyId:1,name:'Luxury Tent',guests:2,units:6,sto:220,pub:320,location:'Main camp',amenities:['En-suite','Private deck','Mosquito net'],notes:'',images:[]},
+      {id:2,propertyId:1,name:'Family Suite',guests:4,units:2,sto:350,pub:450,location:'Riverside',amenities:['En-suite','View','Wi-Fi'],notes:'',images:[]},
+      {id:3,propertyId:2,name:'Standard Room',guests:2,units:10,sto:130,pub:180,location:'Main block',amenities:['En-suite','Wi-Fi'],notes:'',images:[]}
+    ],
+    reservations:[
+      {id:'R-1042',operator:'Dreamtrails Expeditions',propertyId:1,room:'Luxury Tent',checkIn:'2026-10-22',checkOut:'2026-10-25',guests:2,amount:660,payment:'Paid',status:'paid',createdAt:Date.now()-3600000,repliedAt:Date.now()-3000000,notes:'Honeymoon couple'},
+      {id:'R-1043',operator:'Serengeti Trails Ltd',propertyId:1,room:'Family Suite',checkIn:'2026-10-24',checkOut:'2026-10-27',guests:4,amount:1050,payment:'Deposit',status:'booked',createdAt:Date.now()-7200000,repliedAt:null,notes:'Family of 4'},
+      {id:'R-1044',operator:'Kilimanjaro Voyages',propertyId:2,room:'Standard Room',checkIn:'2026-10-26',checkOut:'2026-10-28',guests:2,amount:260,payment:'Pending',status:'reserved',createdAt:Date.now()-25*60000,repliedAt:null,notes:'Awaiting confirmation'},
+      {id:'R-1045',operator:'Safari Circle TZ',propertyId:1,room:'Luxury Tent',checkIn:'2026-10-18',checkOut:'2026-10-19',guests:2,amount:220,payment:'Refunded',status:'cancelled',createdAt:Date.now()-86400000*3,repliedAt:Date.now()-86400000*2,notes:'Cancelled by operator'}
+    ],
+    vehicles:[
+      {id:1,plate:'T 234 ABC',category:'Safari car (extended 4x4)',model:'Toyota Land Cruiser 79 Extended',year:2022,seats:7,base:'Arusha',dayRate:180,safariDayRate:220,transferRate:90,status:'On hire',availableFrom:'2026-10-26',features:['Pop-up roof','4WD','Fridge','Charging ports','Spotting seats','Seat belts','First aid kit','Spare tyre','Recovery gear'],images:[],preview:'',insuranceExpiry:'2027-03-12',parkReg:true},
+      {id:2,plate:'T 512 KLM',category:'Safari car (extended 4x4)',model:'Toyota Land Cruiser 76',year:2021,seats:9,base:'Arusha',dayRate:200,safariDayRate:240,transferRate:100,status:'Available',availableFrom:'2026-10-20',features:['Pop-up roof','4WD','Fridge','Charging ports','Binoculars','Cooler box'],images:[],preview:'',insuranceExpiry:'2027-01-20',parkReg:true},
+      {id:3,plate:'T 088 NBO',category:'Minibus',model:'Toyota Coaster',year:2019,seats:18,base:'Moshi',dayRate:150,safariDayRate:180,transferRate:80,status:'Available',availableFrom:'2026-10-20',features:['AC','Seat belts','Luggage space','PA system'],images:[],preview:'',insuranceExpiry:'2026-12-01',parkReg:false},
+      {id:4,plate:'T 701 ARU',category:'Van',model:'Toyota Hiace',year:2023,seats:10,base:'Arusha',dayRate:120,safariDayRate:140,transferRate:70,status:'Available',availableFrom:'2026-10-20',features:['AC','Charging ports','Luggage space'],images:[],preview:'',insuranceExpiry:'2027-06-01',parkReg:false}
+    ],
+    charters:[
+      {ref:'CH-901',operator:'Dreamtrails Expeditions',vehicleId:1,plate:'T 234 ABC',start:'2026-10-18',end:'2026-10-25',route:'Arusha-Serengeti-Ngorongoro',driver:'Juma Kimaro',value:1260,status:'On trip',createdAt:Date.now()-86400000},
+      {ref:'CH-902',operator:'Serengeti Trails Ltd',vehicleId:2,plate:'T 512 KLM',start:'2026-10-22',end:'2026-10-28',route:'Tarangire-Seronera',driver:'Amina Mwanga',value:1200,status:'Confirmed',createdAt:Date.now()-3600000},
+      {ref:'CH-903',operator:'Kilimanjaro Voyages',vehicleId:3,plate:'T 088 NBO',start:'2026-10-21',end:'2026-10-21',route:'JRO-Moshi transfer',driver:'Peter N.',value:150,status:'Reserved',createdAt:Date.now()-1800000},
+      {ref:'CH-904',operator:'Safari Circle TZ',vehicleId:1,plate:'T 234 ABC',start:'2026-10-10',end:'2026-10-14',route:'Northern circuit',driver:'Juma Kimaro',value:720,status:'Completed',createdAt:Date.now()-86400000*10}
+    ],
+    drivers:[
+      {id:1,name:'Juma Kimaro',phone:'+255 754 111 222',lic:'E',lang:'English, Swahili',status:'On trip',rating:4.8,trips:120,base:'Arusha',notes:'Senior safari driver'},
+      {id:2,name:'Amina Mwanga',phone:'+255 755 333 444',lic:'C',lang:'English, Swahili, French',status:'Available',rating:4.9,trips:85,base:'Arusha',notes:'French-speaking groups'}
+    ],
+    agreements:[
+      {id:'HA-220',operator:'Dreamtrails Expeditions',plate:'T 234 ABC',period:'18-25 Oct 2026',terms:'With driver · Fuel by operator · 200 km/day included · Damage excess $500',status:'Signed',operatorAgreed:true,signedAt:'2026-10-17'},
+      {id:'HA-221',operator:'Serengeti Trails Ltd',plate:'T 512 KLM',period:'22-28 Oct 2026',terms:'With driver · Fuel by operator · Night stop allowed in parks',status:'Pending operator',operatorAgreed:false,signedAt:null}
+    ],
+    guides:[{
+      id:1,name:'Daniel Mwamba',years:9,phone:'+255 762 000 111',base:'Arusha',rate:80,halfDay:50,overnight:95,mountain:120,
+      bio:'Northern circuit safari guide. Strong on big cats, guest hosting, multi-day mobile camps.',
+      languages:['English','Swahili','French','Japanese'],skills:['Big cats','Photography','Walking safari','First aid'],
+      regions:['Serengeti NP','Ngorongoro','Tarangire','Lake Manyara'],image:'',rating:4.9,reviewsCount:47,
+      services:[{id:1,name:'Game drive guide',cat:'Game drives',rate:80,desc:'Full-day vehicle guiding'},{id:2,name:'Walking safari',cat:'Walking safari',rate:95,desc:'Where permitted'}],
+      certs:[{name:'Tour guide licence',issuer:'MNRT / TTBIH',validTo:'2027-12-01'},{name:'First aid',issuer:'Red Cross TZ',validTo:'2027-06-01'}],
+      blocks:[],reviews:[{operator:'Dreamtrails Expeditions',score:5,text:'Excellent cat tracking and guest care.',park:'Serengeti'}]
+    }],
+    guideJobs:[
+      {ref:'GJ-440',operator:'Dreamtrails Expeditions',service:'Game drive guide',park:'Serengeti NP',start:'2026-10-22',end:'2026-10-27',fee:480,status:'Confirmed'},
+      {ref:'GJ-441',operator:'Serengeti Trails Ltd',service:'Walking safari',park:'Ngorongoro',start:'2026-10-20',end:'2026-10-21',fee:190,status:'In progress'},
+      {ref:'GJ-442',operator:'Kilimanjaro Voyages',service:'Game drive guide',park:'Tarangire',start:'2026-10-05',end:'2026-10-08',fee:320,status:'Completed'}
+    ],
+    guideRequests:[
+      {id:1,operator:'Coast & Crater Safaris',service:'Game drive guide',park:'Serengeti NP',dates:'1-6 Nov 2026',fee:480,note:'Need English + Japanese for Tokyo guests'},
+      {id:2,operator:'Safari Circle TZ',service:'Birding',park:'Lake Manyara',dates:'12-13 Nov 2026',fee:160,note:'Private couple, early starts'}
+    ],
+    messages:[
+      {id:1,side:'accommodation',from:'Dreamtrails Expeditions',initials:'DT',text:'Reservation R-1042 confirmed — Luxury Tent 22-25 Oct.',time:Date.now()-3600000,type:'info',related:'R-1042'},
+      {id:2,side:'accommodation',from:'SafariLink Reminder',initials:'SL',text:'Reminder: R-1044 from Kilimanjaro Voyages is unreplied. Confirm or decline. Email notice queued.',time:Date.now()-600000,type:'reminder',related:'R-1044',unread:true},
+      {id:3,side:'fleet',from:'Dreamtrails Expeditions',initials:'DT',text:'CH-901 on the road — Serengeti leg starts tomorrow.',time:Date.now()-7200000,type:'info'},
+      {id:4,side:'guide',from:'Dreamtrails Expeditions',initials:'DT',text:'GJ-440 pickup at Arusha Coffee Lodge, 07:00 on 22 Oct.',time:Date.now()-5400000,type:'info'}
+    ],
+    team:{accommodation:[{id:1,name:'Camp Admin',email:'admin@serengetihill.tz',role:'Admin'},{id:2,name:'Front Office Manager',email:'manager@serengetihill.tz',role:'Manager'},{id:3,name:'Sales Lead',email:'sales@serengetihill.tz',role:'Sales'}],fleet:[{id:1,name:'Dispatch Lead',email:'dispatch@safarifleet.tz',role:'Admin'}],guide:[]},
+    manualStats:{extraBookings:0,extraRevenue:0,extraOccNights:0},
+    calendarBlocks:{accommodation:{},fleet:{},guide:{}}
+  };
+  slSave(d);return d;
 }
 function slGet(){ return slEnsure(); }
 function slUpdate(fn){ var d = slGet(); fn(d); slSave(d); return d; }
@@ -1142,54 +1205,52 @@ function renderOpMessages(){
   }).join('');
 }
 
-/* Live sourcing from partner dashboards (shared store). Falls back to seed data. */
+/* Live sourcing — ONLY partner data from shared store (no static cards) */
 function getLiveAccommodations(){
   var d = slGet();
-  if (d.properties && d.properties.length) {
-    return d.properties.map(function(p){
-      var rooms = (d.roomTypes||[]).filter(function(r){ return r.propertyId === p.id; });
-      var minSto = rooms.length ? Math.min.apply(null, rooms.map(function(r){ return r.sto||999; })) : 0;
-      return {
-        id: p.id, name: p.name, type: p.type||'Lodge', location: p.location||'',
-        budget: minSto >= 400 ? 'Luxury' : (minSto >= 200 ? 'Premium' : 'Mid-range'),
-        rating: 4.6, pricePerNight: minSto || 250,
-        amenities: (p.amenities||[]).join(','), description: p.desc||'', contact: p.contact||'',
-        status: p.status||'available', preview: p.preview||'', unitsTotal: p.unitsTotal||0, unitsOccupied: p.unitsOccupied||0
-      };
-    });
-  }
-  return typeof accommodations !== 'undefined' ? accommodations : [];
+  return (d.properties || []).map(function(p){
+    var rooms = (d.roomTypes||[]).filter(function(r){ return r.propertyId === p.id; });
+    var rates = rooms.map(function(r){ return Number(r.sto)||0; }).filter(function(n){ return n > 0; });
+    var minSto = rates.length ? Math.min.apply(null, rates) : 0;
+    return {
+      id: p.id, name: p.name, type: p.type||'Lodge', location: p.location||'',
+      region: p.region||'', budget: minSto >= 400 ? 'Luxury' : (minSto >= 200 ? 'Premium' : 'Mid-range'),
+      rating: 4.6, pricePerNight: minSto,
+      amenities: Array.isArray(p.amenities) ? p.amenities.join(', ') : (p.amenities||''),
+      description: p.desc||'', contact: p.contact||'',
+      status: p.status||'available', preview: p.preview||'', images: p.images||[],
+      unitsTotal: p.unitsTotal||0, unitsOccupied: p.unitsOccupied||0, rooms: rooms
+    };
+  });
 }
 function getLiveFleet(){
   var d = slGet();
-  if (d.vehicles && d.vehicles.length) {
-    return d.vehicles.map(function(v){
-      return {
-        id: v.id, name: (v.model||v.plate) + ' ' + (v.plate||''), type: v.category||'Vehicle',
-        seats: v.seats||7, budget: (v.dayRate||0) >= 200 ? 'Premium' : 'Mid-range',
-        year: v.year||2022, ratePerDay: v.dayRate||150, status: v.status||'Available',
-        features: (v.features||[]).join(','), description: (v.model||'') + ' based in ' + (v.base||'Arusha'),
-        preview: v.preview||'', plate: v.plate||''
-      };
-    });
-  }
-  return typeof fleet !== 'undefined' ? fleet : [];
+  return (d.vehicles || []).map(function(v){
+    return {
+      id: v.id, name: (v.model||'') + (v.plate ? ' · ' + v.plate : ''), type: v.category||'Vehicle',
+      seats: v.seats||7, year: v.year||2022,
+      ratePerDay: v.dayRate||0, safariDayRate: v.safariDayRate||0, transferRate: v.transferRate||0,
+      status: v.status||'Available', availableFrom: v.availableFrom||'',
+      features: Array.isArray(v.features) ? v.features.join(', ') : (v.features||''),
+      description: (v.model||'') + ' · base ' + (v.base||'Arusha'),
+      preview: v.preview||'', plate: v.plate||'', base: v.base||'',
+      insuranceExpiry: v.insuranceExpiry||'', parkReg: !!v.parkReg
+    };
+  });
 }
 function getLiveGuides(){
   var d = slGet();
-  if (d.guides && d.guides.length) {
-    return d.guides.map(function(g){
-      return {
-        id: g.id, name: g.name, special: (g.skills&&g.skills[0])||'Game drives',
-        location: g.base||'Arusha', years: g.years||5,
-        cert: (g.certs&&g.certs[0]&&g.certs[0].name)||'Licensed Guide',
-        avail: 'Available', dailyRate: g.rate||80, rating: g.rating||4.8,
-        languages: g.languages||['English','Swahili'], vehicle: 'Client vehicle',
-        highlight: g.bio||'', image: g.image||''
-      };
-    });
-  }
-  return typeof guides !== 'undefined' ? guides : [];
+  return (d.guides || []).map(function(g){
+    return {
+      id: g.id, name: g.name, special: (g.skills&&g.skills[0])||'Game drives',
+      location: g.base||'Arusha', years: g.years||0, phone: g.phone||'',
+      cert: (g.certs&&g.certs[0]&&g.certs[0].name)||'Licensed Guide',
+      avail: 'Available', dailyRate: g.rate||0, halfDay: g.halfDay||0,
+      rating: g.rating||0, reviewsCount: g.reviewsCount||0,
+      languages: g.languages||[], skills: g.skills||[], regions: g.regions||[],
+      highlight: g.bio||'', image: g.image||'', services: g.services||[], reviews: g.reviews||[]
+    };
+  });
 }
 
 /* ── Page Switching ── */
@@ -1565,25 +1626,25 @@ window.initImagePlaceholders = function() {
         showToast('Quote generated for ' + firstName + ' ' + lastName + ' — ' + tourTitle);
     };
 
-    /* ── Supplier Modal ── */
-    var allSuppliers = [];
-    (function buildSuppliers() {
-        // Merge data from fleet, accommodation, guides
-        if (typeof accommodations !== 'undefined') {
-            accommodations.forEach(function(a) { allSuppliers.push({ name: a.name, type: 'Accommodation', location: a.location, subtype: a.type }); });
-        }
-        if (typeof fleet !== 'undefined') {
-            fleet.forEach(function(v) { allSuppliers.push({ name: v.name, type: 'Safari Vehicle', subtype: v.type, seats: v.seats }); });
-        }
-        if (typeof guides !== 'undefined') {
-            guides.forEach(function(g) { allSuppliers.push({ name: g.name, type: 'Professional Guide', subtype: g.special, location: g.location }); });
-        }
-    })();
+    /* ── Supplier Modal — live partners only ── */
+    function buildLiveSuppliers() {
+        var all = [];
+        getLiveAccommodations().forEach(function(a) {
+            all.push({ name: a.name, type: 'Accommodation', location: a.location, subtype: a.type });
+        });
+        getLiveFleet().forEach(function(v) {
+            all.push({ name: v.plate || v.name, type: 'Safari Vehicle', subtype: v.type, seats: v.seats, location: v.base });
+        });
+        getLiveGuides().forEach(function(g) {
+            all.push({ name: g.name, type: 'Professional Guide', subtype: g.special, location: g.location });
+        });
+        return all;
+    }
 
     window.ibFilterSuppliers = function() {
         var query = (document.getElementById('supplierSearch').value || '').toLowerCase();
         var grid = document.getElementById('supplierGrid');
-        var filtered = allSuppliers.filter(function(s) {
+        var filtered = buildLiveSuppliers().filter(function(s) {
             return s.name.toLowerCase().indexOf(query) !== -1 || s.type.toLowerCase().indexOf(query) !== -1;
         });
         grid.innerHTML = filtered.map(function(s) {
@@ -1591,7 +1652,7 @@ window.initImagePlaceholders = function() {
                 '<div class="supplier-card-name">' + esc(s.name) + '</div>' +
                 '<div class="supplier-card-type">' + esc(s.type) + (s.location ? ' · ' + esc(s.location) : '') + '</div>' +
             '</div>';
-        }).join('') || '<div style="grid-column:1/-1;text-align:center;color:var(--warm-gray);padding:20px;">No suppliers found.</div>';
+        }).join('') || '<div style="grid-column:1/-1;text-align:center;color:var(--warm-gray);padding:20px;">No partners listed yet.</div>';
     };
 
     window.openSupplierModal = function() {
@@ -1629,45 +1690,43 @@ window.initImagePlaceholders = function() {
 
 
 /* ============================================
-   ACCOMMODATION DATA & LOGIC (from original)
+   ACCOMMODATION — live from partner dashboard only
    ============================================ */
-var accommodations = [
-    { id:1, name:'Serengeti Heritage Camp', type:'Tented Camp', location:'Central Serengeti', budget:'Premium', rating:4.8, pricePerNight:650, amenities:'WiFi,Pool,Restaurant,Bar,Laundry', description:'Luxury tented camp in the heart of Serengeti, offering unparalleled wildlife viewing.', contact:'+255 787 123 456' },
-    { id:2, name:'Ngorongoro Crater Lodge', type:'Lodge', location:'Ngorongoro Rim', budget:'Luxury', rating:4.9, pricePerNight:1200, amenities:'WiFi,Pool,Spa,Restaurant,Fireplace', description:'Perched on the rim of Ngorongoro Crater with breathtaking views.', contact:'+255 787 234 567' },
-    { id:3, name:'Tarangire Safari Lodge', type:'Lodge', location:'Tarangire NP', budget:'Mid-range', rating:4.5, pricePerNight:380, amenities:'Restaurant,Bar,Pool', description:'Classic lodge overlooking the Tarangire River, famous for elephant sightings.', contact:'+255 787 345 678' },
-    { id:4, name:'Zanzibar Beach Resort', type:'Resort', location:'Nungwi, Zanzibar', budget:'Premium', rating:4.6, pricePerNight:520, amenities:'WiFi,Pool,Spa,Restaurant,Beach Access', description:'Beachfront resort on the pristine shores of Nungwi.', contact:'+255 787 456 789' },
-    { id:5, name:'Arusha Coffee Lodge', type:'Lodge', location:'Arusha', budget:'Mid-range', rating:4.3, pricePerNight:280, amenities:'WiFi,Restaurant,Coffee Tour', description:'Charming lodge set within a coffee plantation, perfect for pre/post safari.', contact:'+255 787 567 890' },
-    { id:6, name:'Lake Manyara Tree Lodge', type:'Lodge', location:'Lake Manyara', budget:'Luxury', rating:4.7, pricePerNight:950, amenities:'WiFi,Pool,Spa,Restaurant', description:'Unique treehouse-style lodge tucked in a mahogany forest.', contact:'+255 787 678 901' }
-];
-
 (function() {
+
     window.accomRenderCards = function(data) {
     var grid = document.getElementById('accomGrid');
     if (!grid) return;
+    if (!data || !data.length) {
+      grid.innerHTML = '<div class="card" style="padding:24px;grid-column:1/-1;"><p style="color:var(--warm-gray);">No properties from accommodation partners yet. When partners add or update properties on their dashboard, they appear here live.</p></div>';
+      return;
+    }
     grid.innerHTML = data.map(function(a) {
-        return '<div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;box-shadow:var(--shadow-sm);cursor:pointer;" onclick="accomViewDetail(' + a.id + ')">' +
-            '<div class="img-placeholder" id="accomImg_' + a.id + '" onclick="event.stopPropagation();">' +
-                '<input type="file" accept="image/*" onchange="handleImageUpload(this,\'accomImg_' + a.id + '\')" style="display:none;">' +
-                '<div class="img-placeholder-icon"><i data-lucide="camera" style="width:24px;height:24px;opacity:.5;"></i><span>Upload photo</span></div>' +
-            '</div>' +
+        var img = a.preview
+          ? '<img src="'+a.preview+'" style="width:100%;height:140px;object-fit:cover;" alt="">'
+          : '<div style="height:140px;background:var(--bg,#f0ede6);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;color:var(--warm-gray);"><i data-lucide="building-2" style="width:28px;height:28px;opacity:.45;"></i><span style="font-size:.75rem;">No photo yet</span></div>';
+        var occ = (a.unitsTotal ? Math.round((a.unitsOccupied||0)/a.unitsTotal*100) : 0);
+        return '<div style="background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--shadow-sm);cursor:pointer;" onclick="accomViewDetail(' + a.id + ')">' +
+            img +
             '<div style="padding:14px;">' +
-                '<div style="display:flex;justify-content:space-between;align-items:start;">' +
+                '<div style="display:flex;justify-content:space-between;align-items:start;gap:8px;">' +
                     '<div style="font-weight:700;font-size:.92rem;">' + esc(a.name) + '</div>' +
                     '<span class="badge badge-info">' + esc(a.type) + '</span>' +
                 '</div>' +
-                '<div style="font-size:.78rem;color:var(--warm-gray);margin-top:4px;"><i data-lucide="map-pin" style="width:12px;height:12px;display:inline;vertical-align:-2px;"></i> ' + esc(a.location) + ' · ' + esc(a.budget) + '</div>' +
+                '<div style="font-size:.78rem;color:var(--warm-gray);margin-top:4px;display:flex;align-items:center;gap:4px;"><i data-lucide="map-pin" style="width:12px;height:12px;"></i> ' + esc(a.location) + (a.region?' · '+esc(a.region):'') + '</div>' +
+                '<div style="font-size:.75rem;color:var(--warm-gray);margin-top:4px;">' + esc(a.amenities||'') + '</div>' +
                 '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">' +
-                    '<div><span style="font-weight:700;color:var(--primary);">$' + a.pricePerNight + '</span> <span style="font-size:.75rem;color:var(--warm-gray);">/night</span></div>' +
-                    '<div style="font-size:.82rem;"><i data-lucide="star" style="width:12px;height:12px;display:inline;vertical-align:-2px;"></i> ' + a.rating.toFixed(1) + '</div>' +
+                    '<div><span style="font-weight:700;color:var(--primary);">' + (a.pricePerNight?('\$'+a.pricePerNight):'—') + '</span> <span style="font-size:.75rem;color:var(--warm-gray);">STO /night</span></div>' +
+                    '<span class="badge ' + (a.status==='available'?'badge-success':'badge-pending') + '">' + esc(a.status) + '</span>' +
                 '</div>' +
+                (a.unitsTotal ? '<div style="font-size:.72rem;color:var(--warm-gray);margin-top:6px;">' + (a.unitsOccupied||0) + '/' + a.unitsTotal + ' units · ' + occ + '% occ</div>' : '') +
                 '<div style="display:flex;gap:8px;margin-top:10px;">' +
-                    '<button class="btn btn-secondary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();accomViewDetail(' + a.id + ')">View Details</button>' +
-                    '<button class="btn btn-primary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();accomReserve(' + a.id + ')">Reserve</button>' +
+                    '<button class="btn btn-secondary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();accomViewDetail(' + a.id + ')">Details</button>' +
+                    '<button class="btn btn-primary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();accomReserve(' + a.id + ')"><i data-lucide="send" style="width:14px;height:14px;"></i> Reserve</button>' +
                 '</div>' +
             '</div>' +
         '</div>';
     }).join('');
-    initImagePlaceholders();
     if (window.lucide) lucide.createIcons();
 };
 
@@ -1684,7 +1743,7 @@ var accommodations = [
     };
 
     window.accomViewDetail = function(id) {
-        var a = accommodations.find(function(x) { return x.id === id; });
+        var a = getLiveAccommodations().find(function(x) { return x.id === id; });
         if (!a) return;
         document.getElementById('accomDetailTitle').textContent = a.name;
         document.getElementById('accomDetailBody').innerHTML =
@@ -1748,43 +1807,42 @@ var accommodations = [
 
 
 /* ============================================
-   FLEET DATA & LOGIC (from original)
+   FLEET — live from partner dashboard only
    ============================================ */
-var fleet = [
-    { id:1, name:'Toyota Land Cruiser TZ-456', type:'4x4 Safari Jeep', seats:7, budget:'Premium', year:2022, ratePerDay:200, status:'Available', features:'Pop-up roof,AC,Fridge,Charging ports,First aid kit', description:'Well-maintained Land Cruiser with pop-up roof, ideal for game drives.' },
-    { id:2, name:'Safari Minibus TZ-112', type:'Minibus', seats:10, budget:'Mid-range', year:2021, ratePerDay:160, status:'Available', features:'AC,Charging ports,Audio system', description:'Comfortable minibus for larger groups, perfect for road transfers.' },
-    { id:3, name:'Overland Truck TZ-890', type:'Overland Truck', seats:18, budget:'Budget', year:2020, ratePerDay:280, status:'Unavailable', features:'Kitchen,Storage,Camping gear,Roof tents', description:'Fully equipped overland truck for multi-day camping safaris.' },
-    { id:4, name:'Luxury SUV TZ-234', type:'Luxury SUV', seats:5, budget:'Luxury', year:2023, ratePerDay:350, status:'Available', features:'Leather seats,WiFi,Fridge,Sunroof,AC', description:'Premium SUV for executive transfers and private tours.' },
-    { id:5, name:'Safari Jeep TZ-789', type:'4x4 Safari Jeep', seats:6, budget:'Mid-range', year:2021, ratePerDay:180, status:'Available', features:'Pop-up roof,AC,Charging ports', description:'Reliable safari jeep with excellent game-viewing setup.' },
-    { id:6, name:'Minibus TZ-445', type:'Minibus', seats:8, budget:'Budget', year:2019, ratePerDay:130, status:'Available', features:'AC,Audio system', description:'Economical minibus for budget-conscious group transfers.' }
-];
-
 (function() {
+
     window.fleetRenderCards = function(data) {
         var grid = document.getElementById('fleetGrid');
         if (!grid) return;
-        var statusColors = { 'Available': 'var(--status-available)', 'Unavailable': 'var(--status-unavailable)' };
+        if (!data || !data.length) {
+          grid.innerHTML = '<div class="card" style="padding:24px;grid-column:1/-1;"><p style="color:var(--warm-gray);">No vehicles from fleet partners yet. When fleet owners add or update units, they appear here live.</p></div>';
+          return;
+        }
         grid.innerHTML = data.map(function(v) {
-            return '<div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;box-shadow:var(--shadow-sm);cursor:pointer;" onclick="fleetViewDetail(' + v.id + ')">' +
-                '<div class="img-placeholder" id="fleetImg_' + v.id + '" onclick="event.stopPropagation();">' +
-                    '<input type="file" accept="image/*" onchange="handleImageUpload(this,\'fleetImg_' + v.id + '\')" style="display:none;">' +
-                    '<div class="img-placeholder-icon"><i data-lucide="car" style="width:24px;height:24px;opacity:.5;"></i><span>Upload photo</span></div>' +
-                '</div>' +
+            var img = v.preview
+              ? '<img src="'+v.preview+'" style="width:100%;height:140px;object-fit:cover;" alt="">'
+              : '<div style="height:140px;background:var(--bg,#f0ede6);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;color:var(--warm-gray);"><i data-lucide="car" style="width:28px;height:28px;opacity:.45;"></i><span style="font-size:.75rem;">No photo yet</span></div>';
+            var st = String(v.status||'Available');
+            var ok = st.toLowerCase().indexOf('avail') >= 0 || st === 'Available';
+            return '<div style="background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--shadow-sm);cursor:pointer;" onclick="fleetViewDetail(' + v.id + ')">' +
+                img +
                 '<div style="padding:14px;">' +
-                    '<div style="display:flex;justify-content:space-between;align-items:start;">' +
-                        '<div style="font-weight:700;font-size:.92rem;">' + esc(v.name) + '</div>' +
-                        '<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:' + (statusColors[v.status] || '#999') + ';"></span>' +
+                    '<div style="display:flex;justify-content:space-between;align-items:start;gap:8px;">' +
+                        '<div style="font-weight:700;font-size:.92rem;">' + esc(v.plate || v.name) + '</div>' +
+                        '<span class="badge ' + (ok ? 'badge-success' : 'badge-pending') + '">' + esc(st) + '</span>' +
                     '</div>' +
-                    '<div style="font-size:.78rem;color:var(--warm-gray);margin-top:4px;">' + esc(v.type) + ' · ' + v.seats + ' seats · ' + esc(v.budget) + '</div>' +
+                    '<div style="font-size:.78rem;color:var(--warm-gray);margin-top:4px;">' + esc(v.type) + ' · ' + v.seats + ' seats · ' + esc(v.base||'') + '</div>' +
+                    '<div style="font-size:.75rem;color:var(--warm-gray);margin-top:4px;">' + esc((v.features||'').split(',').slice(0,4).join(' · ')) + '</div>' +
                     '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">' +
-                        '<div><span style="font-weight:700;color:var(--primary);">$' + v.ratePerDay + '</span> <span style="font-size:.75rem;color:var(--warm-gray);">/day</span></div>' +
-                        '<span class="badge ' + (v.status === 'Available' ? 'badge-success' : 'badge-danger') + '">' + v.status + '</span>' +
+                        '<div><span style="font-weight:700;color:var(--primary);">$' + (v.ratePerDay||0) + '</span> <span style="font-size:.75rem;color:var(--warm-gray);">/day</span>' +
+                        (v.safariDayRate ? ' · <span style="font-size:.75rem;">Safari $'+v.safariDayRate+'</span>' : '') + '</div>' +
                     '</div>' +
-                    '<button class="btn btn-primary btn-sm" style="margin-top:10px;width:100%;justify-content:center;" onclick="event.stopPropagation();fleetLease(' + v.id + ')">Lease Vehicle</button>' +
+                    (v.availableFrom ? '<div style="font-size:.72rem;color:var(--warm-gray);margin-top:4px;">Free from ' + esc(v.availableFrom) + '</div>' : '') +
+                    '<button class="btn btn-primary btn-sm" style="margin-top:10px;width:100%;justify-content:center;" onclick="event.stopPropagation();fleetLease(' + v.id + ')"><i data-lucide="key" style="width:14px;height:14px;"></i> Lease Vehicle</button>' +
                 '</div>' +
             '</div>';
         }).join('');
-        initImagePlaceholders();
+        if (window.lucide) lucide.createIcons();
     };
 
     window.fleetApplyFilters = function() {
@@ -1805,7 +1863,7 @@ var fleet = [
     };
 
     window.fleetViewDetail = function(id) {
-        var v = fleet.find(function(x) { return x.id === id; });
+        var v = getLiveFleet().find(function(x) { return x.id === id; });
         if (!v) return;
         document.getElementById('fleetDetailTitle').textContent = v.name;
         document.getElementById('fleetDetailBody').innerHTML =
@@ -1865,46 +1923,43 @@ var fleet = [
 
 
 /* ============================================
-   GUIDES DATA & LOGIC (from original)
+   GUIDES — live from partner dashboard only
    ============================================ */
-var guides = [
-    { id:1, name:'Joseph Mwangi', special:'Big Cats', location:'Arusha', years:15, cert:'FGASA Level 3', avail:'Available', dailyRate:150, rating:4.9, languages:['English','Swahili','French'], vehicle:'4x4 provided', highlight:'Expert tracker with 15+ years guiding in Serengeti. Known for finding leopards and cheetahs.' },
-    { id:2, name:'Grace Ntuli', special:'Birding', location:'Moshi', years:10, cert:'KPSGA Silver', avail:'Available', dailyRate:130, rating:4.7, languages:['English','Swahili','German'], vehicle:'Client vehicle', highlight:'Ornithologist with deep knowledge of East African birds. Over 600 species identified.' },
-    { id:3, name:'Mathias Mwembe', special:'Photography', location:'Arusha', years:8, cert:'FGASA Level 2', avail:'Limited', dailyRate:180, rating:4.8, languages:['English','Swahili','Italian'], vehicle:'4x4 provided', highlight:'Professional wildlife photographer. Helps guests capture award-winning safari shots.' },
-    { id:4, name:'Amina Hassan', special:'Cultural', location:'Zanzibar', years:12, cert:'Licensed Guide', avail:'Available', dailyRate:120, rating:4.6, languages:['English','Swahili','Arabic','Spanish'], vehicle:'Client vehicle', highlight:'Cultural specialist offering immersive experiences in Maasai and Hadzabe communities.' }
-];
-
 (function() {
+
     window.guideRenderCards = function(data) {
     var grid = document.getElementById('guideGrid');
     if (!grid) return;
-    var availColors = { 'Available': 'var(--status-available)', 'Limited': 'var(--status-pending)', 'Unavailable': 'var(--status-unavailable)' };
+    if (!data || !data.length) {
+      grid.innerHTML = '<div class="card" style="padding:24px;grid-column:1/-1;"><p style="color:var(--warm-gray);">No guides from partner profiles yet. When guides update their profile on their dashboard, they appear here live.</p></div>';
+      return;
+    }
     grid.innerHTML = data.map(function(g) {
-        var langTags = g.languages.map(function(l) { return '<span style="display:inline-block;background:var(--bg);padding:2px 8px;border-radius:4px;font-size:.7rem;">' + esc(l) + '</span>'; }).join(' ');
-        return '<div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;box-shadow:var(--shadow-sm);cursor:pointer;" onclick="guideViewDetail(' + g.id + ')">' +
-            '<div class="img-placeholder" id="guideImg_' + g.id + '" onclick="event.stopPropagation();">' +
-                '<input type="file" accept="image/*" onchange="handleImageUpload(this,\'guideImg_' + g.id + '\')" style="display:none;">' +
-                '<div class="img-placeholder-icon"><i data-lucide="user" style="width:24px;height:24px;opacity:.5;"></i><span>Upload photo</span></div>' +
-            '</div>' +
+        var langs = (g.languages||[]).map(function(l){ return '<span style="display:inline-block;background:var(--bg,#f0ede6);padding:2px 8px;border-radius:4px;font-size:.7rem;">'+esc(l)+'</span>'; }).join(' ');
+        var img = g.image
+          ? '<img src="'+g.image+'" style="width:100%;height:140px;object-fit:cover;" alt="">'
+          : '<div style="height:140px;background:var(--bg,#f0ede6);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;color:var(--warm-gray);"><i data-lucide="user" style="width:28px;height:28px;opacity:.45;"></i><span style="font-size:.75rem;">No photo yet</span></div>';
+        return '<div style="background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--shadow-sm);cursor:pointer;" onclick="guideViewDetail(' + g.id + ')">' +
+            img +
             '<div style="padding:14px;">' +
-                '<div style="display:flex;justify-content:space-between;align-items:start;">' +
+                '<div style="display:flex;justify-content:space-between;align-items:start;gap:8px;">' +
                     '<div style="font-weight:700;font-size:.92rem;">' + esc(g.name) + '</div>' +
                     '<span class="badge badge-info">' + esc(g.special) + '</span>' +
                 '</div>' +
-                '<div style="font-size:.78rem;color:var(--warm-gray);margin-top:4px;"><i data-lucide="map-pin" style="width:12px;height:12px;display:inline;vertical-align:-2px;"></i> ' + esc(g.location) + ' · ' + g.years + ' yrs exp</div>' +
-                '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;">' + langTags + '</div>' +
+                '<div style="font-size:.78rem;color:var(--warm-gray);margin-top:4px;display:flex;align-items:center;gap:4px;"><i data-lucide="map-pin" style="width:12px;height:12px;"></i> ' + esc(g.location) + ' · ' + g.years + ' yrs</div>' +
+                '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;">' + langs + '</div>' +
+                '<div style="font-size:.75rem;color:var(--warm-gray);margin-top:6px;">' + esc((g.regions||[]).slice(0,3).join(' · ')) + '</div>' +
                 '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">' +
-                    '<div><span style="font-weight:700;color:var(--primary);">$' + g.dailyRate + '</span> <span style="font-size:.75rem;color:var(--warm-gray);">/da</span></div>' +
-                    '<div style="font-size:.82rem;"><i data-lucide="star" style="width:12px;height:12px;display:inline;vertical-align:-2px;"></i> ' + g.rating.toFixed(1) + '</div>' +
+                    '<div><span style="font-weight:700;color:var(--primary);">$' + (g.dailyRate||0) + '</span> <span style="font-size:.75rem;color:var(--warm-gray);">/day</span></div>' +
+                    '<div style="font-size:.82rem;display:flex;align-items:center;gap:4px;"><i data-lucide="star" style="width:12px;height:12px;"></i> ' + Number(g.rating||0).toFixed(1) + (g.reviewsCount?' · '+g.reviewsCount:'') + '</div>' +
                 '</div>' +
                 '<div style="display:flex;gap:8px;margin-top:10px;">' +
-                    '<button class="btn btn-secondary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();guideViewDetail(' + g.id + ')">View Details</button>' +
-                    '<button class="btn btn-primary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();guideRequest(' + g.id + ')">Request Guide</button>' +
+                    '<button class="btn btn-secondary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();guideViewDetail(' + g.id + ')">Details</button>' +
+                    '<button class="btn btn-primary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();guideRequest(' + g.id + ')"><i data-lucide="compass" style="width:14px;height:14px;"></i> Request</button>' +
                 '</div>' +
             '</div>' +
         '</div>';
     }).join('');
-    initImagePlaceholders();
     if (window.lucide) lucide.createIcons();
 };
 
@@ -1921,7 +1976,7 @@ var guides = [
     };
 
     window.guideViewDetail = function(id) {
-        var g = guides.find(function(x) { return x.id === id; });
+        var g = getLiveGuides().find(function(x) { return x.id === id; });
         if (!g) return;
         var langTags = g.languages.map(function(l) { return '<span style="display:inline-block;background:var(--bg);padding:3px 10px;border-radius:4px;font-size:.78rem;">' + esc(l) + '</span>'; }).join(' ');
         document.getElementById('guideDetailTitle').textContent = g.name;
@@ -1992,6 +2047,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Show dashboard by default
     switchPage('dashboard');
+
+    // When partners update properties / fleet / guides, refresh open sourcing page
+    slOnChange(function() {
+      var active = document.querySelector('.page.active');
+      if (!active) return;
+      var id = active.id || '';
+      if (id === 'accommodation-page') accomRenderCards(getLiveAccommodations());
+      else if (id === 'fleet-page') fleetRenderCards(getLiveFleet());
+      else if (id === 'guides-page') guideRenderCards(getLiveGuides());
+      else if (id === 'messages-page') renderOpMessages();
+    });
 });
 </script>
 
