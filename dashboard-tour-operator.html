@@ -953,33 +953,20 @@
              ========================================== -->
         <div id="quotes-page" class="page">
             <div class="page-header">
-                <div class="page-title">Quotes</div>
-                <button class="create-btn"><i data-lucide="plus"></i> New Quote</button>
+                <div>
+                    <div class="page-title">Quotes</div>
+                    <div class="page-subtitle">Generated quotes — mark booked to create a trip</div>
+                </div>
+                <button class="create-btn" onclick="switchPage('itinerary')"><i data-lucide="plus"></i> Build quote</button>
             </div>
             <div class="card">
-                <div class="card-header"><div class="card-title">Recent Quotes</div></div>
-                <div class="card-body">
+                <div class="card-header"><div class="card-title">All quotes</div></div>
+                <div class="card-body" style="overflow-x:auto;">
                     <table>
                         <thead>
-                            <tr><th>Quote ID</th><th>Client</th><th>Trip</th><th>Amount</th><th>Status</th></tr>
+                            <tr><th>Quote ID</th><th>Client</th><th>Trip</th><th>Amount</th><th>Status</th><th>Booking</th><th></th></tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>QT-2024-041</strong></td><td>James Williams</td>
-                                <td>5-Day Serengeti &amp; Ngorongoro</td><td>$24,500</td>
-                                <td><span class="badge badge-success">Sent</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>QT-2024-040</strong></td><td>Sarah Johnson</td>
-                                <td>7-Day Serengeti Migration</td><td>$28,500</td>
-                                <td><span class="badge badge-pending">Draft</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>QT-2024-039</strong></td><td>Michael Chen</td>
-                                <td>Kilimanjaro + Safari</td><td>$42,000</td>
-                                <td><span class="badge badge-success">Confirmed</span></td>
-                            </tr>
-                        </tbody>
+                        <tbody id="quotesTableBody"></tbody>
                     </table>
                 </div>
             </div>
@@ -1049,15 +1036,16 @@
         <!-- ==========================================
              TRIPS PAGE (placeholder)
              ========================================== -->
-        <div id="trips-page" class="page">
+                <div id="trips-page" class="page">
             <div class="page-header">
-                <div class="page-title">Trips</div>
-                <button class="create-btn"><i data-lucide="plus"></i> New Trip</button>
+                <div>
+                    <div class="page-title">Trips</div>
+                    <div class="page-subtitle">Booked quotes become trips — progress updates with the schedule</div>
+                </div>
             </div>
-            <div class="card"><div class="card-body"><p style="color:var(--warm-gray);">Active trips will appear here.</p></div></div>
+            <div id="tripsListLive"></div>
         </div>
 
-        <!-- ========== MESSAGES PAGE ========== -->
         <div id="messages-page" class="page">
             <div class="page-header">
                 <div>
@@ -1309,19 +1297,42 @@ function renderOpTeam(){
   var cnt = document.getElementById('opTeamCount');
   if (cnt) cnt.textContent = OP_TEAM.length;
   if (!body) return;
-  body.innerHTML = OP_TEAM.map(function(m){
-    return '<tr><td>'+esc(m.name)+'</td><td>'+esc(m.email)+'</td><td>'+esc(m.role)+'</td><td>'+badgeOp(m.status)+'</td></tr>';
+  body.innerHTML = OP_TEAM.map(function(m, i){
+    var actions = '';
+    if (m.status === 'Pending' && m.role !== 'Admin') {
+      actions = ' <button class="btn btn-primary btn-sm" onclick="approveTeamMember('+i+')">Approve</button>';
+    }
+    var roleLabel = m.role === 'Admin' ? 'Admin · Main' : m.role;
+    return '<tr><td>'+esc(m.name)+'</td><td>'+esc(m.email)+'</td><td>'+esc(roleLabel)+'</td><td>'+badgeOp(m.status)+actions+'</td></tr>';
   }).join('');
 }
 function opAddMember(){
   var n = (document.getElementById('opMemName')||{}).value; n = (n||'').trim();
   var e = (document.getElementById('opMemEmail')||{}).value; e = (e||'').trim();
-  var r = (document.getElementById('opMemRole')||{}).value || 'Staff';
+  var r = (document.getElementById('opMemRole')||{}).value || 'Sales';
   if (!n || !e) { showToast('Name and email required'); return; }
+  var extras = OP_TEAM.filter(function(m){ return m.role !== 'Admin'; });
+  if (extras.length >= 2) { showToast('Admin can add at most Sales and Manager'); return; }
   OP_TEAM.push({name:n, email:e, role:r, status:'Pending'});
-  document.getElementById('opMemF').style.display = 'none';
+  try { document.getElementById('opMemF').style.display = 'none'; } catch(err){}
   renderOpTeam();
-  showToast('Team member invited');
+  showToast('Member added — pending Admin approval');
+}
+function approveTeamMember(i){
+  var m = OP_TEAM[i];
+  if (!m || m.status !== 'Pending') return;
+  m.status = 'Active';
+  // Simulated email with login details
+  showToast('Approved — login details sent to '+m.email+' (role: '+m.role+')');
+  // Log as task activity
+  try {
+    var s = opActivityGet();
+    s.tasks = s.tasks || [];
+    s.tasks.unshift({ id: Date.now(), task: 'Team access granted: '+m.name+' ('+m.role+')', related: m.email, due: new Date().toISOString().slice(0,10), assignee: 'Admin', status: 'Done' });
+    opActivitySave(s);
+  } catch(e){}
+  renderOpTeam();
+  if (window.renderTasksPage) renderTasksPage();
 }
 
 /* Live sourcing — ONLY partner data from shared store (no static cards) */
@@ -1397,6 +1408,9 @@ window.switchPage = function(pageName) {
     if (pageName === 'messages') { renderOpMessages(); }
     if (pageName === 'dashboard') { renderOpDashboard(); }
     if (pageName === 'accounts') { renderOpTeam(); if (window.loadCompanyProfile) loadCompanyProfile(); }
+    if (pageName === 'quotes') { renderQuotesPage(); }
+    if (pageName === 'trips') { renderTripsPage(); }
+    if (pageName === 'tasks') { renderTasksPage(); }
     // Close mobile sidebar
     document.getElementById('sidebar').classList.remove('open');
     document.getElementById('sidebar-overlay').classList.remove('active');
@@ -1675,7 +1689,7 @@ window.initImagePlaceholders = function() {
         if (ibCostItems[i]) {
             ibCostItems[i][field] = (field === 'unitCost' || field === 'qty') ? parseFloat(value) || 0 : value;
         }
-        ibCalcCosts();
+        ibRenderCosts();
     };
 
     function ibRenderCosts() {
@@ -1693,10 +1707,12 @@ window.initImagePlaceholders = function() {
                 '<td><select class="cost-input" style="width:130px;" onchange="ibUpdateCostItem(' + i + ',\'category\',this.value)">' +
                     '<option' + (item.category === 'Accommodation' ? ' selected' : '') + '>Accommodation</option>' +
                     '<option' + (item.category === 'Transport' ? ' selected' : '') + '>Transport</option>' +
+                    '<option' + (item.category === 'Transfer Fee' ? ' selected' : '') + '>Transfer Fee</option>' +
                     '<option' + (item.category === 'Guide' ? ' selected' : '') + '>Guide</option>' +
                     '<option' + (item.category === 'Park Fees' ? ' selected' : '') + '>Park Fees</option>' +
                     '<option' + (item.category === 'Meals' ? ' selected' : '') + '>Meals</option>' +
                     '<option' + (item.category === 'Activities' ? ' selected' : '') + '>Activities</option>' +
+                    '<option' + (item.category === 'Insurance' ? ' selected' : '') + '>Insurance</option>' +
                     '<option' + (item.category === 'Other' ? ' selected' : '') + '>Other</option>' +
                 '</select></td>' +
                 '<td><input class="cost-input" style="width:120px;" value="' + esc(item.supplier) + '" placeholder="Supplier" onchange="ibUpdateCostItem(' + i + ',\'supplier\',this.value)"></td>' +
@@ -1710,39 +1726,60 @@ window.initImagePlaceholders = function() {
     }
 
     window.ibCalcCosts = function() {
-        // Update quantities to match day count
-        ibCostItems.forEach(function(item) { item.qty = ibDays.length || 1; });
-        ibRenderCosts();
-
+        // Keep user-edited quantities — do not reset qty to day count
         var totalCost = ibCostItems.reduce(function(sum, item) {
             return sum + (item.unitCost || 0) * (item.qty || 1);
         }, 0);
 
-        var margin = parseFloat(document.getElementById('ibMargin').value) || 0;
-        var tax = parseFloat(document.getElementById('ibTax').value) || 0;
+        var margin = parseFloat((document.getElementById('ibMargin')||{}).value) || 0;
+        var tax = parseFloat((document.getElementById('ibTax')||{}).value) || 0;
         var markup = totalCost * (margin / 100);
         var subtotal = totalCost + markup;
         var taxAmount = subtotal * (tax / 100);
         var quoteTotal = subtotal + taxAmount;
 
-        document.getElementById('ibCostTotal').textContent = '$' + totalCost.toFixed(2);
-        document.getElementById('ibSummaryCost').textContent = '$' + totalCost.toFixed(2);
-        document.getElementById('ibSummaryMarginPct').textContent = margin;
-        document.getElementById('ibSummaryMarkup').textContent = '$' + markup.toFixed(2);
-        document.getElementById('ibSummarySubtotal').textContent = '$' + subtotal.toFixed(2);
-        document.getElementById('ibSummaryTaxPct').textContent = tax;
-        document.getElementById('ibSummaryTax').textContent = '$' + taxAmount.toFixed(2);
-        document.getElementById('ibSummaryTotal').textContent = '$' + quoteTotal.toFixed(2);
+        var el;
+        if ((el=document.getElementById('ibCostTotal'))) el.textContent = '$' + totalCost.toFixed(2);
+        if ((el=document.getElementById('ibSummaryCost'))) el.textContent = '$' + totalCost.toFixed(2);
+        if ((el=document.getElementById('ibSummaryMarginPct'))) el.textContent = margin;
+        if ((el=document.getElementById('ibSummaryMarkup'))) el.textContent = '$' + markup.toFixed(2);
+        if ((el=document.getElementById('ibSummarySubtotal'))) el.textContent = '$' + subtotal.toFixed(2);
+        if ((el=document.getElementById('ibSummaryTaxPct'))) el.textContent = tax;
+        if ((el=document.getElementById('ibSummaryTax'))) el.textContent = '$' + taxAmount.toFixed(2);
+        if ((el=document.getElementById('ibSummaryTotal'))) el.textContent = '$' + quoteTotal.toFixed(2);
+        return { totalCost: totalCost, margin: margin, tax: tax, markup: markup, subtotal: subtotal, taxAmount: taxAmount, quoteTotal: quoteTotal };
     };
 
     /* ── Generate Quote ── */
     window.ibGenerateQuote = function() {
-        var firstName = document.getElementById('ibFirstName').value.trim();
-        var lastName = document.getElementById('ibLastName').value.trim();
-        var tourTitle = document.getElementById('ibTourTitle').value.trim();
-        if (!firstName || !lastName) { showToast('Please enter client first and last name (Step 1).'); ibGoToStep(1); return; }
-        if (!tourTitle) { showToast('Please enter a tour title (Step 2).'); ibGoToStep(2); return; }
-        showToast('Quote generated for ' + firstName + ' ' + lastName + ' — ' + tourTitle);
+        var firstName = (document.getElementById('ibFirstName')||{}).value; firstName = (firstName||'').trim();
+        var lastName = (document.getElementById('ibLastName')||{}).value; lastName = (lastName||'').trim();
+        var tourTitle = (document.getElementById('ibTourTitle')||{}).value; tourTitle = (tourTitle||'').trim();
+        if (!firstName || !lastName) { showToast('Please enter client first and last name (Step 1).'); if (window.ibGoToStep) ibGoToStep(1); return; }
+        if (!tourTitle) { showToast('Please enter a tour title (Step 2).'); if (window.ibGoToStep) ibGoToStep(2); return; }
+        var totals = ibCalcCosts();
+        var clientName = firstName + ' ' + lastName;
+        var qid = 'QT-' + new Date().getFullYear() + '-' + String(Date.now()).slice(-4);
+        var days = (typeof ibDays !== 'undefined' && ibDays.length) ? ibDays.length : 1;
+        var quote = {
+          id: qid, client: clientName, trip: tourTitle, days: days,
+          amount: totals.quoteTotal, cost: totals.totalCost, margin: totals.margin, tax: totals.tax,
+          status: 'Draft', booked: false, created: new Date().toISOString().slice(0,10),
+          items: ibCostItems.map(function(it){ return { name: it.name, category: it.category, supplier: it.supplier, unitCost: it.unitCost, qty: it.qty, line: (it.unitCost||0)*(it.qty||1) }; }),
+          daysDetail: (typeof ibDays !== 'undefined') ? ibDays.map(function(d){ return { label: d.label, location: d.location||'', accommodation: d.accommodation||'', vehicle: d.vehicle||'', guide: d.guide||'' }; }) : []
+        };
+        // Save internal digital quote (full breakdown)
+        var store = opActivityGet();
+        store.quotes = store.quotes || [];
+        store.quotes.unshift(quote);
+        store.tasks = store.tasks || [];
+        store.tasks.unshift({ id: Date.now(), task: 'Review & send quote '+qid+' to '+clientName, related: qid, due: quote.created, assignee: 'Admin', status: 'Open' });
+        opActivitySave(store);
+        // Client-facing download (final price only — no cost breakdown)
+        downloadClientQuotePdf(quote);
+        showToast('Quote '+qid+' saved · client PDF downloaded');
+        if (window.renderQuotesPage) renderQuotesPage();
+        if (window.renderTasksPage) renderTasksPage();
     };
 
     /* ── Supplier Modal — live partners only ── */
@@ -2250,6 +2287,154 @@ window.loadCompanyProfile = function() {
       if (box) box.innerHTML = '<img src="'+p.logo+'" style="width:100%;height:100%;object-fit:cover;">';
     }
   } catch(e){}
+};
+
+
+/* ── Operator activity store (quotes, trips, tasks) ── */
+function opActivityGet(){
+  try {
+    var raw = localStorage.getItem('safarilink_op_activity');
+    if (raw) return JSON.parse(raw);
+  } catch(e){}
+  return {
+    quotes: [
+      { id:'QT-2026-041', client:'James Williams', trip:'5-Day Serengeti & Ngorongoro', amount:24500, cost:18000, status:'Sent', booked:false, created:'2026-10-15', items:[], daysDetail:[] },
+      { id:'QT-2026-040', client:'Sarah Johnson', trip:'7-Day Serengeti Migration', amount:28500, cost:21000, status:'Draft', booked:false, created:'2026-10-14', items:[], daysDetail:[] }
+    ],
+    trips: [],
+    tasks: [
+      { id:1, task:'Follow up quote QT-2026-040', related:'QT-2026-040', due:'2026-10-24', assignee:'Admin', status:'Open' },
+      { id:2, task:'Confirm Serengeti Hill Camp dates', related:'Accommodation', due:'2026-10-23', assignee:'Manager', status:'In progress' }
+    ]
+  };
+}
+function opActivitySave(s){ try { localStorage.setItem('safarilink_op_activity', JSON.stringify(s)); } catch(e){} }
+
+/** Client PDF-style HTML: final price only (no cost breakdown) */
+window.downloadClientQuotePdf = function(quote) {
+  var html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+quote.id+' — '+quote.client+'</title>' +
+    '<style>body{font-family:system-ui,sans-serif;max-width:640px;margin:40px auto;color:#2c2c2c;line-height:1.5}' +
+    'h1{font-size:1.4rem;margin:0 0 8px}.muted{color:#a39e95;font-size:.85rem}' +
+    '.box{border:1px solid #d4cfc6;border-radius:10px;padding:20px;margin:20px 0}' +
+    '.total{font-size:1.8rem;font-weight:700;color:#1a5a3a}.foot{font-size:.75rem;color:#a39e95;margin-top:32px}</style></head><body>' +
+    '<div style="display:flex;justify-content:space-between;align-items:center"><div><strong style="color:#1a5a3a">SafariLink</strong> · Dreamtrails Expeditions</div>' +
+    '<div class="muted">'+quote.created+'</div></div>' +
+    '<h1>Safari Quote</h1>' +
+    '<p class="muted">Quote <strong>'+quote.id+'</strong> for <strong>'+quote.client+'</strong></p>' +
+    '<div class="box">' +
+    '<div style="font-size:1.1rem;font-weight:600;margin-bottom:8px">'+quote.trip+'</div>' +
+    (quote.days ? '<p class="muted">'+quote.days+' day(s)</p>' : '') +
+    '<p style="margin-top:16px">Total investment</p>' +
+    '<div class="total">$'+Number(quote.amount||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})+'</div>' +
+    '<p class="muted" style="margin-top:8px">All-inclusive package price as quoted. Valid for 14 days.</p>' +
+    '</div>' +
+    '<p>We look forward to hosting you on safari.</p>' +
+    '<div class="foot">This document shows the final package price only. Generated via SafariLink for Dreamtrails Expeditions.</div>' +
+    '<script>window.onload=function(){setTimeout(function(){window.print()},400)}<\/script>' +
+    '</body></html>';
+  var blob = new Blob([html], { type: 'text/html' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = quote.id + '_client_quote.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+  // Also open print-friendly window
+  var w = window.open('', '_blank');
+  if (w) { w.document.write(html); w.document.close(); }
+};
+
+window.renderQuotesPage = function() {
+  var body = document.getElementById('quotesTableBody');
+  if (!body) return;
+  var quotes = opActivityGet().quotes || [];
+  body.innerHTML = quotes.map(function(q){
+    var st = q.booked ? 'badge-success' : (q.status==='Sent' ? 'badge-info' : 'badge-pending');
+    var bookCell = q.booked
+      ? '<span class="badge badge-success">Booked</span>'
+      : '<button class="btn btn-primary btn-sm" onclick="markQuoteBooked(\''+q.id+'\')">Mark booked</button>';
+    return '<tr>' +
+      '<td><strong>'+esc(q.id)+'</strong></td>' +
+      '<td>'+esc(q.client)+'</td>' +
+      '<td>'+esc(q.trip)+'</td>' +
+      '<td>$'+Number(q.amount||0).toLocaleString()+'</td>' +
+      '<td><span class="badge '+st+'">'+esc(q.booked?'Booked':(q.status||'Draft'))+'</span></td>' +
+      '<td>'+bookCell+'</td>' +
+      '<td><button class="btn btn-secondary btn-sm" onclick="redownloadClientQuote(\''+q.id+'\')">Client PDF</button></td>' +
+      '</tr>';
+  }).join('') || '<tr><td colspan="7" style="color:var(--warm-gray);">No quotes yet — generate one from Itineraries.</td></tr>';
+};
+window.redownloadClientQuote = function(id) {
+  var q = (opActivityGet().quotes||[]).find(function(x){ return x.id === id; });
+  if (q) downloadClientQuotePdf(q);
+};
+window.markQuoteBooked = function(id) {
+  var s = opActivityGet();
+  var q = (s.quotes||[]).find(function(x){ return x.id === id; });
+  if (!q || q.booked) return;
+  q.booked = true;
+  q.status = 'Booked';
+  s.trips = s.trips || [];
+  var tripId = 'TR-' + String(Date.now()).slice(-4);
+  var start = new Date(); start.setDate(start.getDate()+7);
+  var end = new Date(start); end.setDate(end.getDate() + (q.days||5) - 1);
+  s.trips.unshift({
+    id: tripId, quoteId: q.id, name: q.trip, client: q.client,
+    guests: 2, start: start.toISOString().slice(0,10), end: end.toISOString().slice(0,10),
+    status: 'Upcoming', progress: 0, days: q.days||5, dayNow: 0, amount: q.amount
+  });
+  s.tasks = s.tasks || [];
+  s.tasks.unshift({ id: Date.now(), task: 'Prepare trip '+tripId+' for '+q.client, related: tripId, due: start.toISOString().slice(0,10), assignee: 'Admin', status: 'Open' });
+  opActivitySave(s);
+  renderQuotesPage();
+  renderTripsPage();
+  renderTasksPage();
+  showToast('Quote booked → trip '+tripId+' created');
+};
+
+window.renderTripsPage = function() {
+  var list = document.getElementById('tripsListLive');
+  if (!list) return;
+  // Auto-update progress from schedule
+  var s = opActivityGet();
+  var today = new Date().toISOString().slice(0,10);
+  (s.trips||[]).forEach(function(tr){
+    if (tr.status === 'Completed') return;
+    if (tr.end && tr.end < today) { tr.status = 'Completed'; tr.progress = 100; tr.dayNow = tr.days; }
+    else if (tr.start && tr.start <= today && tr.end >= today) {
+      tr.status = 'In progress';
+      var elapsed = Math.round((new Date(today)-new Date(tr.start))/86400000)+1;
+      tr.dayNow = Math.min(tr.days||1, Math.max(1, elapsed));
+      tr.progress = Math.min(100, Math.round((tr.dayNow/(tr.days||1))*100));
+    } else {
+      tr.status = 'Upcoming'; tr.progress = 0; tr.dayNow = 0;
+    }
+  });
+  opActivitySave(s);
+  var trips = s.trips || [];
+  list.innerHTML = trips.length ? trips.map(function(tr){
+    var color = tr.status==='Completed' ? 'var(--status-available)' : (tr.status==='In progress' ? 'var(--status-info)' : 'var(--status-pending)');
+    return '<div class="card" style="margin-bottom:14px;"><div class="card-body">' +
+      '<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px;">' +
+      '<div><strong>'+esc(tr.name)+'</strong><div style="font-size:.8rem;color:var(--warm-gray);">'+esc(tr.id)+(tr.quoteId?' · from '+esc(tr.quoteId):'')+' · '+esc(tr.client)+'</div></div>' +
+      '<span class="badge '+(tr.status==='Completed'?'badge-success':(tr.status==='In progress'?'badge-info':'badge-pending'))+'">'+esc(tr.status)+'</span></div>' +
+      '<div style="font-size:.8rem;color:var(--warm-gray);margin-bottom:6px;">'+esc(tr.start)+' → '+esc(tr.end)+(tr.status==='In progress'?' · Day '+tr.dayNow+' of '+tr.days:'')+'</div>' +
+      '<div style="height:10px;background:var(--khaki);border-radius:6px;overflow:hidden;"><div style="width:'+tr.progress+'%;height:100%;background:'+color+';border-radius:6px;"></div></div>' +
+      '<div style="font-size:.75rem;color:var(--warm-gray);margin-top:4px;">Progress '+tr.progress+'%'+(tr.amount?' · $'+Number(tr.amount).toLocaleString():'')+'</div>' +
+      '</div></div>';
+  }).join('') : '<div class="card"><div class="card-body"><p style="color:var(--warm-gray);">No trips yet. Mark a quote as <strong>Booked</strong> to create a trip.</p></div></div>';
+};
+
+window.renderTasksPage = function() {
+  var body = document.getElementById('tasksTableBody');
+  if (!body) return;
+  var tasks = opActivityGet().tasks || [];
+  body.innerHTML = tasks.map(function(tk){
+    var st = tk.status==='Done'?'badge-success':(tk.status==='In progress'?'badge-info':'badge-pending');
+    return '<tr><td>'+esc(tk.task)+'</td><td>'+esc(tk.related)+'</td><td>'+esc(tk.due)+'</td><td>'+esc(tk.assignee)+'</td><td><span class="badge '+st+'">'+esc(tk.status)+'</span></td></tr>';
+  }).join('') || '<tr><td colspan="5" style="color:var(--warm-gray);">No tasks — they appear as you generate quotes and book trips.</td></tr>';
 };
 
 /* ============================================
