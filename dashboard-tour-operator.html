@@ -479,90 +479,82 @@
             <div class="page-header">
                 <div>
                     <div class="page-title">Dashboard</div>
-                    <div class="page-subtitle">Welcome back. Here's your operation overview.</div>
+                    <div class="page-subtitle"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#10b981;margin-right:6px;"></span>Live overview — linked to accommodation, fleet &amp; guide partners</div>
                 </div>
                 <button class="create-btn" onclick="switchPage('itinerary')">
                     <i data-lucide="plus"></i> New Itinerary
                 </button>
             </div>
 
-            <!-- KPI Cards -->
             <div class="kpi-grid">
                 <div class="kpi-card">
-                    <div class="kpi-label">Active Itineraries</div>
-                    <div class="kpi-value">24</div>
-                    <div class="kpi-change up">↑ 12% vs last month</div>
+                    <div class="kpi-label">Open reservations</div>
+                    <div class="kpi-value" id="kpiRes">—</div>
+                    <div class="kpi-change" id="kpiResSub">To accommodation partners</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-label">Pending Quotes</div>
-                    <div class="kpi-value">8</div>
-                    <div class="kpi-change down">↓ 3 vs last week</div>
+                    <div class="kpi-label">Active charters</div>
+                    <div class="kpi-value" id="kpiChar">—</div>
+                    <div class="kpi-change" id="kpiCharSub">Fleet on hire / confirmed</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-label">Revenue (MTD)</div>
-                    <div class="kpi-value">$142,800</div>
-                    <div class="kpi-change up">↑ 8.5% vs last month</div>
+                    <div class="kpi-label">Guide jobs</div>
+                    <div class="kpi-value" id="kpiJobs">—</div>
+                    <div class="kpi-change" id="kpiJobsSub">Confirmed &amp; in progress</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-label">Conversion Rate</div>
-                    <div class="kpi-value">32%</div>
-                    <div class="kpi-change up">↑ 5% vs last month</div>
+                    <div class="kpi-label">Partner inventory</div>
+                    <div class="kpi-value" id="kpiInv">—</div>
+                    <div class="kpi-change" id="kpiInvSub">Properties · vehicles · guides</div>
                 </div>
             </div>
 
-            <!-- Smart Assistant -->
             <div class="card" style="margin-bottom:20px;">
                 <div class="card-header">
-                    <div class="card-title">Smart Operations Assistant</div>
+                    <div class="card-title">Operations alerts</div>
                 </div>
-                <div class="card-body">
-                    <div style="display:flex;flex-direction:column;gap:12px;">
-                        <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:var(--warm-off-white);border-radius:var(--radius-sm);border-left:3px solid var(--status-pending);">
-                            <i data-lucide="alert-triangle" style="width:18px;height:18px;color:var(--status-pending);flex-shrink:0;margin-top:2px;"></i>
-                            <div><strong>2 vehicles due for maintenance</strong> — Toyota Land Cruiser (TZ-456) and Safari Jeep (TZ-789) have service dates approaching.</div>
-                        </div>
-                        <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:var(--warm-off-white);border-radius:var(--radius-sm);border-left:3px solid var(--status-info);">
-                            <i data-lucide="info" style="width:18px;height:18px;color:var(--status-info);flex-shrink:0;margin-top:2px;"></i>
-                            <div><strong>3 quotes expiring this week</strong> — Follow up with clients for QT-2024-041, QT-2024-038, and QT-2024-035.</div>
-                        </div>
-                    </div>
+                <div class="card-body" id="opAlerts">
+                    <p style="color:var(--warm-gray);">Loading live alerts…</p>
                 </div>
             </div>
 
-            <!-- Recent Bookings -->
-            <div class="card">
+            <div class="card" style="margin-bottom:20px;">
                 <div class="card-header">
-                    <div class="card-title">Recent Bookings</div>
+                    <div class="card-title">Recent partner activity</div>
+                    <button class="btn btn-secondary btn-sm" onclick="switchPage('messages')"><i data-lucide="message-square" style="width:14px;height:14px;"></i> Messages</button>
                 </div>
-                <div class="card-body">
+                <div class="card-body" style="overflow-x:auto;">
                     <table>
                         <thead>
-                            <tr><th>Client</th><th>Trip</th><th>Dates</th><th>Amount</th><th>Status</th></tr>
+                            <tr><th>Type</th><th>Partner / Ref</th><th>Detail</th><th>Status</th><th>Amount</th></tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>Sarah Johnson</strong></td>
-                                <td>7-Day Serengeti Migration</td>
-                                <td>15-22 Oct 2024</td>
-                                <td>$28,500</td>
-                                <td><span class="badge badge-success">Confirmed</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Michael Chen</strong></td>
-                                <td>Kilimanjaro Trek + Safari</td>
-                                <td>01-12 Nov 2024</td>
-                                <td>$42,000</td>
-                                <td><span class="badge badge-pending">Pending</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Emma &amp; David Wright</strong></td>
-                                <td>Zanzibar Beach Holiday</td>
-                                <td>20-27 Dec 2024</td>
-                                <td>$15,200</td>
-                                <td><span class="badge badge-success">Confirmed</span></td>
-                            </tr>
+                        <tbody id="opRecentBody">
+                            <tr><td colspan="5" style="color:var(--warm-gray);">Loading…</td></tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+
+            <div class="kpi-grid" style="margin-bottom:8px;">
+                <div class="kpi-card" style="cursor:pointer;" onclick="switchPage('accommodation')">
+                    <div class="kpi-label">Accommodation partners</div>
+                    <div class="kpi-value" id="kpiProp">—</div>
+                    <div class="kpi-change">Browse live properties</div>
+                </div>
+                <div class="kpi-card" style="cursor:pointer;" onclick="switchPage('fleet')">
+                    <div class="kpi-label">Fleet partners</div>
+                    <div class="kpi-value" id="kpiVeh">—</div>
+                    <div class="kpi-change">Browse live vehicles</div>
+                </div>
+                <div class="kpi-card" style="cursor:pointer;" onclick="switchPage('guides')">
+                    <div class="kpi-label">Guide partners</div>
+                    <div class="kpi-value" id="kpiGuide">—</div>
+                    <div class="kpi-change">Browse live guides</div>
+                </div>
+                <div class="kpi-card" style="cursor:pointer;" onclick="switchPage('accounts')">
+                    <div class="kpi-label">Team accounts</div>
+                    <div class="kpi-value" id="kpiTeam">—</div>
+                    <div class="kpi-change">Manage Accounts</div>
                 </div>
             </div>
         </div>
@@ -1080,26 +1072,47 @@
             <div class="page-header">
                 <div>
                     <div class="page-title">Accounts &amp; Team</div>
-                    <div class="page-subtitle">Company profile, team roles and billing</div>
+                    <div class="page-subtitle">Company profile, login roles, and team access for Dreamtrails Expeditions</div>
                 </div>
-                <button class="create-btn" onclick="showToast('Invite team member — coming soon')"><i data-lucide="user-plus"></i> Invite member</button>
+                <button class="create-btn" onclick="document.getElementById('opMemF').style.display='block'"><i data-lucide="user-plus"></i> Invite member</button>
             </div>
             <div class="kpi-grid" style="margin-bottom:20px;">
-                <div class="kpi-card"><div class="kpi-label">Company</div><div class="kpi-value" style="font-size:1.2rem;">Dreamtrails Expeditions</div></div>
-                <div class="kpi-card"><div class="kpi-label">Plan</div><div class="kpi-value" style="font-size:1.2rem;">Operator Pro</div></div>
-                <div class="kpi-card"><div class="kpi-label">Team seats</div><div class="kpi-value">3</div></div>
+                <div class="kpi-card"><div class="kpi-label">Company</div><div class="kpi-value" style="font-size:1.15rem;">Dreamtrails Expeditions</div></div>
+                <div class="kpi-card"><div class="kpi-label">Login email</div><div class="kpi-value" style="font-size:.95rem;">dreamtrailsexpedictions@gmail.com</div></div>
+                <div class="kpi-card"><div class="kpi-label">Plan</div><div class="kpi-value" style="font-size:1.15rem;">Operator Pro</div></div>
+                <div class="kpi-card"><div class="kpi-label">Team seats</div><div class="kpi-value" id="opTeamCount">3</div></div>
+            </div>
+            <div id="opMemF" class="card" style="display:none;padding:16px;margin-bottom:16px;">
+                <div class="form-row">
+                    <div class="form-group"><label>Name</label><input id="opMemName" placeholder="Full name"></div>
+                    <div class="form-group"><label>Email</label><input id="opMemEmail" placeholder="email@dreamtrails.tz"></div>
+                    <div class="form-group"><label>Role</label>
+                        <select id="opMemRole"><option>Admin</option><option>Manager</option><option>Sales</option><option>Operations</option></select>
+                    </div>
+                </div>
+                <button class="btn btn-primary" style="margin-top:10px;" onclick="opAddMember()"><i data-lucide="save" style="width:14px;height:14px;"></i> Save member</button>
             </div>
             <div class="card">
                 <div class="card-header"><div class="card-title">Team members</div></div>
                 <div class="card-body">
                     <table>
                         <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th></tr></thead>
-                        <tbody>
-                            <tr><td>Admin</td><td>dreamtrailsexpedictions@gmail.com</td><td>Owner</td><td><span class="badge badge-success">Active</span></td></tr>
-                            <tr><td>Sales Manager</td><td>sales@dreamtrails.tz</td><td>Manager</td><td><span class="badge badge-success">Active</span></td></tr>
-                            <tr><td>Operations</td><td>ops@dreamtrails.tz</td><td>Staff</td><td><span class="badge badge-info">Pending</span></td></tr>
-                        </tbody>
+                        <tbody id="opTeamBody"></tbody>
                     </table>
+                </div>
+            </div>
+            <div class="card" style="margin-top:16px;">
+                <div class="card-header"><div class="card-title">Company profile</div></div>
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group"><label>Trading name</label><input value="Dreamtrails Expeditions" readonly></div>
+                        <div class="form-group"><label>Base</label><input value="Arusha / Dar es Salaam, Tanzania" readonly></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Primary contact</label><input value="dreamtrailsexpedictions@gmail.com" readonly></div>
+                        <div class="form-group"><label>Phone</label><input value="+255 754 000 000" readonly></div>
+                    </div>
+                    <p style="font-size:.82rem;color:var(--warm-gray);margin-top:8px;">This account can source accommodation, fleet and guides on SafariLink. Partner updates appear live on Sourcing pages.</p>
                 </div>
             </div>
         </div>
@@ -1205,6 +1218,96 @@ function renderOpMessages(){
   }).join('');
 }
 
+/* Live operator home dashboard from shared platform */
+function moneyOp(n){ return '$' + Number(n||0).toLocaleString(); }
+function badgeOp(s){
+  var k = String(s||'').toLowerCase().replace(/\s+/g,'');
+  var cls = 'badge-info';
+  if (/paid|confirmed|available|completed|signed|active/.test(k)) cls = 'badge-success';
+  else if (/pending|reserved|booked|limited/.test(k)) cls = 'badge-pending';
+  else if (/cancel|unavail|maint/.test(k)) cls = 'badge-danger';
+  return '<span class="badge '+cls+'">'+String(s||'')+'</span>';
+}
+function renderOpDashboard(){
+  var d = slGet();
+  var res = d.reservations || [];
+  var openRes = res.filter(function(r){ return r.status==='reserved'||r.status==='booked'||r.status==='paid'; });
+  var chars = d.charters || [];
+  var activeCh = chars.filter(function(c){ return c.status==='On trip'||c.status==='Confirmed'||c.status==='Reserved'; });
+  var jobs = d.guideJobs || [];
+  var activeJobs = jobs.filter(function(j){ return j.status==='Confirmed'||j.status==='In progress'; });
+  var props = (d.properties||[]).length, vehs = (d.vehicles||[]).length, guides = (d.guides||[]).length;
+
+  var el;
+  if ((el=document.getElementById('kpiRes'))) el.textContent = openRes.length;
+  if ((el=document.getElementById('kpiChar'))) el.textContent = activeCh.length;
+  if ((el=document.getElementById('kpiJobs'))) el.textContent = activeJobs.length;
+  if ((el=document.getElementById('kpiInv'))) el.textContent = props + vehs + guides;
+  if ((el=document.getElementById('kpiProp'))) el.textContent = props;
+  if ((el=document.getElementById('kpiVeh'))) el.textContent = vehs;
+  if ((el=document.getElementById('kpiGuide'))) el.textContent = guides;
+
+  // Alerts from live data
+  var alerts = [];
+  var unreplied = res.filter(function(r){ return !r.repliedAt && (r.status==='reserved'||r.status==='booked'); });
+  if (unreplied.length) alerts.push({icon:'alert-triangle', color:'var(--status-pending)', text:'<strong>'+unreplied.length+' accommodation reservation(s) awaiting partner reply</strong> — e.g. '+(unreplied[0].id||'')+' · '+(unreplied[0].operator||'')});
+  var onHire = (d.vehicles||[]).filter(function(v){ return String(v.status).toLowerCase().indexOf('hire')>=0 || v.status==='On hire'; });
+  if (onHire.length) alerts.push({icon:'car', color:'var(--status-info)', text:'<strong>'+onHire.length+' vehicle(s) currently on hire</strong> — '+(onHire.map(function(v){return v.plate;}).join(', '))});
+  var reqs = d.guideRequests||[];
+  if (reqs.length) alerts.push({icon:'inbox', color:'var(--status-pending)', text:'<strong>'+reqs.length+' open guide request(s)</strong> waiting on guide partners'});
+  if (!alerts.length) alerts.push({icon:'check-circle', color:'var(--status-available)', text:'<strong>All clear</strong> — no urgent partner actions right now.'});
+  var alertEl = document.getElementById('opAlerts');
+  if (alertEl) {
+    alertEl.innerHTML = '<div style="display:flex;flex-direction:column;gap:12px;">' + alerts.map(function(a){
+      return '<div style="display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:var(--warm-off-white);border-radius:8px;border-left:3px solid '+a.color+';"><i data-lucide="'+a.icon+'" style="width:18px;height:18px;color:'+a.color+';flex-shrink:0;margin-top:2px;"></i><div>'+a.text+'</div></div>';
+    }).join('') + '</div>';
+  }
+
+  // Recent activity table
+  var rows = [];
+  res.slice().sort(function(a,b){return (b.createdAt||0)-(a.createdAt||0);}).slice(0,4).forEach(function(r){
+    rows.push({type:'Accommodation', ref:r.id, detail:(r.room||'')+' · '+(r.checkIn||'')+' → '+(r.checkOut||''), status:r.status, amount:r.amount});
+  });
+  chars.slice().sort(function(a,b){return (b.createdAt||0)-(a.createdAt||0);}).slice(0,3).forEach(function(c){
+    rows.push({type:'Fleet', ref:c.ref, detail:(c.plate||'')+' · '+(c.route||''), status:c.status, amount:c.value});
+  });
+  jobs.slice(0,3).forEach(function(j){
+    rows.push({type:'Guide', ref:j.ref, detail:(j.service||'')+' · '+(j.park||''), status:j.status, amount:j.fee});
+  });
+  var body = document.getElementById('opRecentBody');
+  if (body) {
+    body.innerHTML = rows.length ? rows.map(function(r){
+      return '<tr><td>'+r.type+'</td><td><strong>'+esc(r.ref)+'</strong></td><td>'+esc(r.detail)+'</td><td>'+badgeOp(r.status)+'</td><td>'+moneyOp(r.amount)+'</td></tr>';
+    }).join('') : '<tr><td colspan="5" style="color:var(--warm-gray);">No partner activity yet. Use Sourcing to reserve / lease / request.</td></tr>';
+  }
+  if (window.lucide) lucide.createIcons();
+}
+
+var OP_TEAM = [
+  {name:'Admin', email:'dreamtrailsexpedictions@gmail.com', role:'Owner', status:'Active'},
+  {name:'Sales Manager', email:'sales@dreamtrails.tz', role:'Manager', status:'Active'},
+  {name:'Operations', email:'ops@dreamtrails.tz', role:'Staff', status:'Pending'}
+];
+function renderOpTeam(){
+  var body = document.getElementById('opTeamBody');
+  var cnt = document.getElementById('opTeamCount');
+  if (cnt) cnt.textContent = OP_TEAM.length;
+  if (!body) return;
+  body.innerHTML = OP_TEAM.map(function(m){
+    return '<tr><td>'+esc(m.name)+'</td><td>'+esc(m.email)+'</td><td>'+esc(m.role)+'</td><td>'+badgeOp(m.status)+'</td></tr>';
+  }).join('');
+}
+function opAddMember(){
+  var n = (document.getElementById('opMemName')||{}).value; n = (n||'').trim();
+  var e = (document.getElementById('opMemEmail')||{}).value; e = (e||'').trim();
+  var r = (document.getElementById('opMemRole')||{}).value || 'Staff';
+  if (!n || !e) { showToast('Name and email required'); return; }
+  OP_TEAM.push({name:n, email:e, role:r, status:'Pending'});
+  document.getElementById('opMemF').style.display = 'none';
+  renderOpTeam();
+  showToast('Team member invited');
+}
+
 /* Live sourcing — ONLY partner data from shared store (no static cards) */
 function getLiveAccommodations(){
   var d = slGet();
@@ -1276,6 +1379,8 @@ window.switchPage = function(pageName) {
     if (pageName === 'fleet') { fleetRenderCards(getLiveFleet()); }
     if (pageName === 'guides') { guideRenderCards(getLiveGuides()); }
     if (pageName === 'messages') { renderOpMessages(); }
+    if (pageName === 'dashboard') { renderOpDashboard(); }
+    if (pageName === 'accounts') { renderOpTeam(); }
     // Close mobile sidebar
     document.getElementById('sidebar').classList.remove('open');
     document.getElementById('sidebar-overlay').classList.remove('active');
@@ -2045,22 +2150,25 @@ document.addEventListener('DOMContentLoaded', function() {
     // Pre-populate itinerary dates
     ibInitDates();
 
-    // Show dashboard by default
+    // Show dashboard by default (live KPIs)
     switchPage('dashboard');
+    renderOpDashboard();
+    renderOpTeam();
 
-    // When partners update properties / fleet / guides, refresh open sourcing page
+    // When partners update data, refresh open pages
     slOnChange(function() {
       var active = document.querySelector('.page.active');
       if (!active) return;
       var id = active.id || '';
-      if (id === 'accommodation-page') accomRenderCards(getLiveAccommodations());
+      if (id === 'dashboard-page') renderOpDashboard();
+      else if (id === 'accommodation-page') accomRenderCards(getLiveAccommodations());
       else if (id === 'fleet-page') fleetRenderCards(getLiveFleet());
       else if (id === 'guides-page') guideRenderCards(getLiveGuides());
       else if (id === 'messages-page') renderOpMessages();
+      else if (id === 'accounts-page') renderOpTeam();
     });
 });
 </script>
 
 </body>
 </html>
-
