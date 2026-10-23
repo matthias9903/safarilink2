@@ -36,58 +36,56 @@
   .sidebar {
     width: 250px; background: var(--charcoal); color: #ccc;
     display: flex; flex-direction: column; flex-shrink: 0;
-    transition: width .25s ease; position: relative; overflow: hidden;
+    transition: width .3s ease; position: relative; overflow-x: visible;
   }
   .sidebar.collapsed { width: 68px; }
   .sidebar.collapsed .logo-text,
-  .sidebar.collapsed .logo-icon,
   .sidebar.collapsed .sidebar-section,
-  .sidebar.collapsed .sidebar-link span,
-  .sidebar.collapsed .sidebar-footer { display: none !important; }
-  .sidebar.collapsed .sidebar-link { justify-content: center; padding: 12px 0; gap: 0; }
-  .sidebar.collapsed .sidebar-link i,
-  .sidebar.collapsed .sidebar-link svg { margin: 0; width: 20px; height: 20px; }
-  .sidebar.collapsed .sidebar-nav { padding: 8px 6px; }
+  .sidebar.collapsed .sidebar-link span:not(.sidebar-badge),
+  .sidebar.collapsed .sidebar-footer > div:first-child,
+  .sidebar.collapsed .sidebar-badge { display: none; }
+  .sidebar.collapsed .sidebar-link { justify-content: center; padding: 12px 0; }
   .sidebar-brand {
     padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,.08);
     display: flex; gap: 10px; align-items: center; justify-content: space-between;
-    min-height: 64px;
-  }
-  .sidebar.collapsed .sidebar-brand {
-    justify-content: center; padding: 14px 0;
   }
   .sidebar-collapse-btn {
-    width: 34px; height: 34px; flex-shrink: 0;
-    background: rgba(255,255,255,0.08); color: #e5e5e5;
-    border: 1px solid rgba(255,255,255,0.12); border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; transition: background 0.15s, color 0.15s;
+    width: 36px; height: 36px; flex-shrink: 0;
+    background: var(--forest-green); color: #fff; border: none;
+    border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: background .15s;
   }
-  .sidebar-collapse-btn:hover { background: rgba(255,255,255,0.16); color: #fff; }
+  .sidebar-collapse-btn:hover { background: var(--forest-green-light, #2d7a52); }
   .sidebar-collapse-btn i, .sidebar-collapse-btn svg { width: 18px; height: 18px; pointer-events: none; }
+  .sidebar.collapsed .sidebar-brand { justify-content: center; padding: 14px 0; }
+  .sidebar.collapsed .logo-text, .sidebar.collapsed .logo-icon { display: none; }
+  .sidebar.collapsed .sidebar-collapse-btn { margin: 0 auto; }
+  .sidebar-brand {
+    padding: 18px; border-bottom: 1px solid rgba(255,255,255,.08);
+    display: flex; gap: 10px; align-items: center;
+  }
   .logo-icon {
     width: 34px; height: 34px; background: var(--forest-green); border-radius: 6px;
     display: flex; align-items: center; justify-content: center;
-    color: #fff; font-weight: 700; flex-shrink: 0;
+    color: #fff; font-weight: 700;
   }
-  .logo-text { font-weight: 700; color: #fff; font-size: 1.1rem; white-space: nowrap; }
+  .logo-text { font-weight: 700; color: #fff; }
   .logo-text span { color: var(--accent-green); }
-  .sidebar-nav { padding: 12px; flex: 1; overflow-y: auto; overflow-x: hidden; }
+  .sidebar-nav { padding: 12px; flex: 1; overflow-y: auto; }
   .sidebar-section {
-    font-size: .68rem; text-transform: uppercase; letter-spacing: .06em;
-    color: rgba(255,255,255,.35); padding: 12px 8px 6px; white-space: nowrap;
+    font-size: .68rem; text-transform: uppercase;
+    color: rgba(255,255,255,.35); padding: 12px 8px 6px;
   }
   .sidebar-link {
     display: flex; align-items: center; gap: 8px; padding: 9px 12px;
-    border-radius: 6px; color: #bbb; font-size: .85rem; cursor: pointer; margin-bottom: 2px;
-    white-space: nowrap;
+    border-radius: 6px; color: #bbb; font-size: .85rem; cursor: pointer;
   }
   .sidebar-link:hover { background: rgba(255,255,255,.08); color: #fff; }
   .sidebar-link.active { background: rgba(63,185,131,.15); color: var(--accent-green); }
-  .sidebar-link i, .sidebar-link svg { width: 17px; height: 17px; flex-shrink: 0; }
+  .sidebar-link i { width: 17px; height: 17px; }
   .sidebar-badge {
     margin-left: auto; background: #f59e0b; color: #000;
-    font-size: .65rem; font-weight: 700; padding: 1px 6px; border-radius: 10px;
+    font-size: .68rem; padding: 2px 7px; border-radius: 10px; font-weight: 700;
   }
   .sidebar-footer { padding: 14px; border-top: 1px solid rgba(255,255,255,.08); font-size: .8rem; }
 
@@ -313,7 +311,7 @@ function badge(s){return '<span class="badge badge-'+String(s).toLowerCase().rep
 function money(n){return '$'+Number(n||0).toLocaleString()}
 function fileToDataUrl(f){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(r.result)};r.onerror=rej;r.readAsDataURL(f)})}
 
-function toggleCollapse(){var sb=document.getElementById('sidebar');if(!sb)return;sb.classList.toggle('collapsed');var icon=document.getElementById('collapseIcon');if(icon){icon.setAttribute('data-lucide',sb.classList.contains('collapsed')?'chevrons-right':'chevrons-left');if(window.lucide)lucide.createIcons();}});if(icon){icon.setAttribute('data-lucide',sb.classList.contains('collapsed')?'panel-left-open':'panel-left-close');lucide.createIcons()}}
+function toggleCollapse(){var sb=document.getElementById('sidebar');var icon=document.getElementById('collapseIcon');sb.classList.toggle('collapsed');if(icon){icon.setAttribute('data-lucide',sb.classList.contains('collapsed')?'chevrons-right':'chevrons-left');lucide.createIcons()}}
 function logout(){sessionStorage.removeItem('safariLinkUser');try{localStorage.removeItem('safarilink_user')}catch(e){}location.href='index.html'}
 var TITLES={   dashboard:['Dashboard','Upcoming jobs, open requests, earnings and rating'],   schedule:['My Schedule','Confirmed and in-progress guide assignments'],   requests:['Job Requests','Accept or decline new operator requests'],   services:['My Services','Game drives, walking, birding and other offerings'],   availability:['Availability Calendar','Block dates you are not available'],   profile:['Guide Profile','Name, photo, years, bio — synced to operator cards'],   pricing:['Day Rates','Full day, half day, overnight and mountain fees'],   regions:['Parks & Regions','Areas you guide — shown on operator cards'],   languages:['Languages & Skills','Including Japanese, Chinese and Korean'],   certs:['Licences & Certificates','Tour guide licence and first aid'],   reviews:['Reviews','Operator feedback and ratings'],   messages:['Messages','Messages from operators'],   earnings:['Earnings','Confirmed and completed guide fees'] };
 var calMonth=new Date();calMonth.setDate(1);
