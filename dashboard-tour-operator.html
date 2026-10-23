@@ -56,12 +56,12 @@
   /* Grok-style menu toggle — sits in the sidebar header row */
   .sidebar-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .sidebar-collapse-btn {
-    width: 34px; height: 34px; flex-shrink: 0;
-    background: rgba(255,255,255,0.08); color: #e5e5e5; border: 1px solid rgba(255,255,255,0.12);
+    width: 36px; height: 36px; flex-shrink: 0;
+    background: var(--forest-green); color: #fff; border: none;
     border-radius: 8px; display: flex; align-items: center; justify-content: center;
-    cursor: pointer; transition: background 0.15s, color 0.15s;
+    cursor: pointer; transition: background 0.15s;
   }
-  .sidebar-collapse-btn:hover { background: rgba(255,255,255,0.16); color: #fff; }
+  .sidebar-collapse-btn:hover { background: var(--forest-green-light); }
   .sidebar-collapse-btn i, .sidebar-collapse-btn svg { width: 18px; height: 18px; }
   .sidebar.collapsed .sidebar-header { justify-content: center; padding-left: 0; padding-right: 0; }
   .sidebar.collapsed .sidebar-collapse-btn { margin: 0 auto; }
@@ -419,7 +419,7 @@
                 <div class="logo-text">Safari<span>Link</span></div>
             </div>
             <button class="sidebar-collapse-btn" onclick="toggleSidebarCollapse()" title="Collapse / expand menu">
-                <i data-lucide="panel-left-close" id="collapseIcon"></i>
+                <i data-lucide="chevrons-left" id="collapseIcon"></i>
             </button>
         </div>
         <nav class="sidebar-nav">
@@ -1400,7 +1400,7 @@ window.toggleSidebarCollapse = function() {
     sb.classList.toggle('collapsed');
     if (main) main.classList.toggle('sidebar-collapsed');
     if (icon) {
-        icon.setAttribute('data-lucide', sb.classList.contains('collapsed') ? 'panel-left-open' : 'panel-left-close');
+        icon.setAttribute('data-lucide', sb.classList.contains('collapsed') ? 'chevrons-right' : 'chevrons-left');
         if (window.lucide) lucide.createIcons();
     }
 };
@@ -1848,27 +1848,36 @@ window.initImagePlaceholders = function() {
     window.accomViewDetail = function(id) {
         var a = getLiveAccommodations().find(function(x) { return x.id === id; });
         if (!a) return;
+        var rooms = a.rooms || (slGet().roomTypes || []).filter(function(r){ return r.propertyId === a.id; });
+        var imgHtml = a.preview
+          ? '<img src="'+a.preview+'" style="width:100%;max-height:200px;object-fit:cover;border-radius:10px;margin-bottom:14px;" alt="">'
+          : '';
+        var roomRows = rooms.length ? rooms.map(function(r){
+          return '<tr><td><strong>'+esc(r.name)+'</strong></td><td>'+(r.guests||2)+'</td><td>'+(r.units||'—')+'</td>'+
+            '<td style="font-weight:700;color:var(--primary);">$'+(r.sto||0)+'</td><td>$'+(r.pub||r.sto||0)+'</td>'+
+            '<td style="font-size:.78rem;color:var(--warm-gray);">'+esc((Array.isArray(r.amenities)?r.amenities.join(', '):(r.amenities||'')))+'</td></tr>';
+        }).join('') : '<tr><td colspan="6" style="color:var(--warm-gray);">No room types listed yet — partner can add them in Room Types.</td></tr>';
         document.getElementById('accomDetailTitle').textContent = a.name;
         document.getElementById('accomDetailBody').innerHTML =
-            '<div class="detail-img-placeholder" id="accomDetailImg_' + a.id + '" onclick="event.stopPropagation();">' +
-                '<input type="file" accept="image/*" onchange="handleImageUpload(this,\'accomDetailImg_' + a.id + '\')" style="display:none;">' +
-                '<div class="img-placeholder-icon"><i data-lucide="camera" style="width:24px;height:24px;opacity:.5;"></i><span>Upload property photo</span></div>' +
+            imgHtml +
+            '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">' +
+                '<span class="badge badge-info">'+esc(a.type)+'</span>' +
+                '<span class="badge '+(a.status==='available'?'badge-success':'badge-pending')+'">'+esc(a.status||'available')+'</span>' +
             '</div>' +
-            '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;">' +
-                '<span class="badge badge-info">' + esc(a.type) + '</span>' +
-                '<span class="badge badge-success">' + esc(a.budget) + '</span>' +
-                '<span style="font-size:.85rem;"><i data-lucide="star" style="width:12px;height:12px;display:inline;vertical-align:-2px;"></i> ' + a.rating.toFixed(1) + '</span>' +
-            '</div>' +
-            '<div style="margin-bottom:8px;"><strong>Location:</strong> ' + esc(a.location) + '</div>' +
-            '<div style="margin-bottom:8px;"><strong>Rate:</strong> $' + a.pricePerNight + ' / night</div>' +
-            '<div style="margin-bottom:8px;"><strong>Amenities:</strong> ' + esc(a.amenities) + '</div>' +
-            '<div style="margin-bottom:12px;"><strong>Contact:</strong> ' + esc(a.contact) + '</div>' +
-            '<p style="color:var(--charcoal);line-height:1.5;">' + esc(a.description) + '</p>' +
-            '<div style="display:flex;gap:8px;margin-top:16px;">' +
-                '<button class="btn btn-primary" style="flex:1;justify-content:center;" onclick="accomReserve(' + a.id + ')"><i data-lucide="send" style="width:14px;height:14px;"></i> Reserve</button>' +
-                '<button class="btn btn-secondary" onclick="showToast(\'' + esc(a.name) + ' added to favorites\')"><i data-lucide="heart" style="width:14px;height:14px;"></i> Save</button>' +
+            '<div style="margin-bottom:6px;"><strong>Location:</strong> '+esc(a.location)+'</div>' +
+            '<div style="margin-bottom:6px;"><strong>Contact:</strong> '+esc(a.contact||'—')+'</div>' +
+            '<div style="margin-bottom:6px;"><strong>Amenities:</strong> '+esc(a.amenities||'—')+'</div>' +
+            '<p style="color:var(--charcoal);line-height:1.55;margin:10px 0 16px;">'+esc(a.description||'')+'</p>' +
+            '<div style="font-weight:700;margin-bottom:8px;">Room types &amp; STO rates</div>' +
+            '<div style="overflow-x:auto;margin-bottom:16px;"><table style="width:100%;font-size:.84rem;border-collapse:collapse;">' +
+              '<thead><tr style="text-align:left;border-bottom:1px solid var(--border);">' +
+              '<th style="padding:8px 6px;">Room type</th><th>Guests</th><th>Units</th><th>STO / night</th><th>Public</th><th>Amenities</th></tr></thead>' +
+              '<tbody>'+roomRows+'</tbody></table></div>' +
+            '<div style="display:flex;gap:8px;">' +
+                '<button class="btn btn-primary" style="flex:1;justify-content:center;" onclick="accomReserve('+a.id+')"><i data-lucide="send" style="width:14px;height:14px;"></i> Reserve</button>' +
+                '<button class="btn btn-secondary" onclick="showToast(\''+esc(a.name)+' saved\')"><i data-lucide="heart" style="width:14px;height:14px;"></i> Save</button>' +
             '</div>';
-        initImagePlaceholders();
+        if (window.lucide) lucide.createIcons();
         openModal('accomDetailModal');
     };
 
