@@ -345,6 +345,12 @@
             </div>
           </div>
 
+          <!-- Website (optional) -->
+          <div class="form-group">
+            <label for="website">Website <span style="font-weight:500;color:var(--warm-gray);">(optional)</span></label>
+            <input type="url" id="website" name="website" placeholder="https://www.yourcompany.co.tz" inputmode="url" autocomplete="url">
+          </div>
+
           <!-- Region -->
           <div class="form-group">
             <label for="region">Primary region of operation <span class="req">*</span></label>
@@ -595,6 +601,7 @@
         contactName: contactName,
         email: email,
         phone: phone,
+        website: (document.getElementById('website') && document.getElementById('website').value.trim()) || '',
         region: region,
         description: description || ''
       })
