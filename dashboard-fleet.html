@@ -36,49 +36,58 @@
   .sidebar {
     width: 250px; background: var(--charcoal); color: #ccc;
     display: flex; flex-direction: column; flex-shrink: 0;
-    transition: width .3s ease; position: relative;
+    transition: width .25s ease; position: relative; overflow: hidden;
   }
   .sidebar.collapsed { width: 68px; }
   .sidebar.collapsed .logo-text,
+  .sidebar.collapsed .logo-icon,
   .sidebar.collapsed .sidebar-section,
-  .sidebar.collapsed .sidebar-link span:not(.sidebar-badge),
-  .sidebar.collapsed .sidebar-footer > div:first-child,
-  .sidebar.collapsed .sidebar-badge { display: none; }
-  .sidebar.collapsed .sidebar-link { justify-content: center; padding: 12px 0; }
-  .sidebar-collapse-btn {
-    position: fixed; top: 72px; left: 236px; width: 28px; height: 28px;
-    background: var(--forest-green); color: #fff; border: 2px solid #fff;
-    border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    cursor: pointer; z-index: 1101; box-shadow: 0 2px 8px rgba(0,0,0,.25);
-    transition: left .3s ease;
-  }
-  .sidebar-collapse-btn i { width: 14px; height: 14px; }
+  .sidebar.collapsed .sidebar-link span,
+  .sidebar.collapsed .sidebar-footer { display: none !important; }
+  .sidebar.collapsed .sidebar-link { justify-content: center; padding: 12px 0; gap: 0; }
+  .sidebar.collapsed .sidebar-link i,
+  .sidebar.collapsed .sidebar-link svg { margin: 0; width: 20px; height: 20px; }
+  .sidebar.collapsed .sidebar-nav { padding: 8px 6px; }
   .sidebar-brand {
-    padding: 18px; border-bottom: 1px solid rgba(255,255,255,.08);
-    display: flex; gap: 10px; align-items: center;
+    padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,.08);
+    display: flex; gap: 10px; align-items: center; justify-content: space-between;
+    min-height: 64px;
   }
+  .sidebar.collapsed .sidebar-brand {
+    justify-content: center; padding: 14px 0;
+  }
+  .sidebar-collapse-btn {
+    width: 34px; height: 34px; flex-shrink: 0;
+    background: rgba(255,255,255,0.08); color: #e5e5e5;
+    border: 1px solid rgba(255,255,255,0.12); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: background 0.15s, color 0.15s;
+  }
+  .sidebar-collapse-btn:hover { background: rgba(255,255,255,0.16); color: #fff; }
+  .sidebar-collapse-btn i, .sidebar-collapse-btn svg { width: 18px; height: 18px; pointer-events: none; }
   .logo-icon {
     width: 34px; height: 34px; background: var(--forest-green); border-radius: 6px;
     display: flex; align-items: center; justify-content: center;
-    color: #fff; font-weight: 700;
+    color: #fff; font-weight: 700; flex-shrink: 0;
   }
-  .logo-text { font-weight: 700; color: #fff; }
+  .logo-text { font-weight: 700; color: #fff; font-size: 1.1rem; white-space: nowrap; }
   .logo-text span { color: var(--accent-green); }
-  .sidebar-nav { padding: 12px; flex: 1; overflow-y: auto; }
+  .sidebar-nav { padding: 12px; flex: 1; overflow-y: auto; overflow-x: hidden; }
   .sidebar-section {
-    font-size: .68rem; text-transform: uppercase;
-    color: rgba(255,255,255,.35); padding: 12px 8px 6px;
+    font-size: .68rem; text-transform: uppercase; letter-spacing: .06em;
+    color: rgba(255,255,255,.35); padding: 12px 8px 6px; white-space: nowrap;
   }
   .sidebar-link {
     display: flex; align-items: center; gap: 8px; padding: 9px 12px;
-    border-radius: 6px; color: #bbb; font-size: .85rem; cursor: pointer;
+    border-radius: 6px; color: #bbb; font-size: .85rem; cursor: pointer; margin-bottom: 2px;
+    white-space: nowrap;
   }
   .sidebar-link:hover { background: rgba(255,255,255,.08); color: #fff; }
   .sidebar-link.active { background: rgba(63,185,131,.15); color: var(--accent-green); }
-  .sidebar-link i { width: 17px; height: 17px; }
+  .sidebar-link i, .sidebar-link svg { width: 17px; height: 17px; flex-shrink: 0; }
   .sidebar-badge {
     margin-left: auto; background: #f59e0b; color: #000;
-    font-size: .68rem; padding: 2px 7px; border-radius: 10px; font-weight: 700;
+    font-size: .65rem; font-weight: 700; padding: 1px 6px; border-radius: 10px;
   }
   .sidebar-footer { padding: 14px; border-top: 1px solid rgba(255,255,255,.08); font-size: .8rem; }
 
@@ -206,7 +215,7 @@
 
 </style></head>
 <script>(function(){function ru(){try{var a=sessionStorage.getItem('safariLinkUser');if(a)return JSON.parse(a)}catch(e){}try{var b=localStorage.getItem('safarilink_user');if(b)return JSON.parse(b)}catch(e){}return null}var u=ru();if(!u){location.href='login.html';return}var map={'dashboard-fleet.html':['fleet','fleet-owner'],'dashboard-accommodation.html':['accommodation','accommodation-provider'],'dashboard-tour-operator.html':['tour-operator','service-offering'],'dashboard-guide.html':['guide']};var page=location.pathname.split('/').pop();if(map[page]&&map[page].indexOf(u.role)===-1)location.href='login.html';})();</script><body>
-<aside class="sidebar" id="sidebar"><div class="sidebar-brand"><div class="logo-icon">SL</div><div class="logo-text">Safari<span>Link</span></div></div>
+<aside class="sidebar" id="sidebar"><div class="sidebar-brand"><div class="logo-icon">SL</div><div class="logo-text">Safari<span>Link</span></div><button type="button" class="sidebar-collapse-btn" onclick="toggleCollapse()" title="Collapse / expand menu"><i data-lucide="chevrons-left" id="collapseIcon"></i></button></div>
 <nav class="sidebar-nav">
 <div class="sidebar-section">Main</div>
 <a class="sidebar-link active" data-p="dashboard" onclick="go('dashboard')"><i data-lucide="layout-dashboard"></i>Dashboard</a>
@@ -226,8 +235,6 @@
 <a class="sidebar-link" data-p="account" onclick="go('account')"><i data-lucide="settings"></i>Account & Team</a>
 </nav>
 <div class="sidebar-footer"><div style="color:#fff;font-weight:600">Safari Fleet Tanzania</div><div style="opacity:.5;font-size:.7rem"><span class="live-dot"></span>Fleet · Live</div></div></aside>
-<button class="sidebar-collapse-btn" onclick="toggleCollapse()" title="Collapse menu"><i data-lucide="chevrons-left" id="collapseIcon"></i></button>
-
 <div class="main"><header class="topbar"><div><h2 id="title">Dashboard</h2><p id="sub">Live platform</p></div>
 <div style="display:flex;gap:8px"><button class="btn" onclick="logout()"><i data-lucide="log-out"></i> Log out</button><button class="btn btn-primary" onclick="go('add')"><i data-lucide="plus"></i> Add vehicle</button></div></header>
 <div class="content">
@@ -293,7 +300,7 @@ function badge(s){return '<span class="badge badge-'+String(s).toLowerCase().rep
 function money(n){return '$'+Number(n||0).toLocaleString()}
 function fileToDataUrl(f){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(r.result)};r.onerror=rej;r.readAsDataURL(f)})}
 
-function toggleCollapse(){var sb=document.getElementById('sidebar');var icon=document.getElementById('collapseIcon');var btn=document.querySelector('.sidebar-collapse-btn');sb.classList.toggle('collapsed');if(btn)btn.style.left=sb.classList.contains('collapsed')?'54px':'236px';if(icon){icon.setAttribute('data-lucide',sb.classList.contains('collapsed')?'chevrons-right':'chevrons-left');lucide.createIcons()}}
+function toggleCollapse(){var sb=document.getElementById('sidebar');if(!sb)return;sb.classList.toggle('collapsed');var icon=document.getElementById('collapseIcon');if(icon){icon.setAttribute('data-lucide',sb.classList.contains('collapsed')?'chevrons-right':'chevrons-left');if(window.lucide)lucide.createIcons();}});if(icon){icon.setAttribute('data-lucide',sb.classList.contains('collapsed')?'panel-left-open':'panel-left-close');lucide.createIcons()}}
 function logout(){sessionStorage.removeItem('safariLinkUser');try{localStorage.removeItem('safarilink_user')}catch(e){}location.href='index.html'}
 var TITLES={   dashboard:['Dashboard','Vehicles on hire, available today and utilisation'],   fleet:['My Fleet','Safari cars, vans and minibuses with features and photos'],   add:['Add Vehicle','Register a new unit with required safari features'],   bookings:['Charter Bookings','Operator hires and trip status'],   drivers:['Drivers','Licences, languages, rating and trip history'],   availability:['Availability Calendar','Block vehicle dates by month or year'],   rates:['Rates & Packages','Day, safari-day and transfer rates'],   agreements:['Hire Agreements','Online terms — operator can accept'],   insurance:['Insurance & Compliance','Renewals, TANAPA/NCAA and pre-hire checks'],   messages:['Messages','Dispatch messages from operators'],   revenue:['Revenue & Utilisation','Completed charters and fleet utilisation'],   account:['Account & Team','Fleet admin and dispatch roles'] };
 var calMonth=new Date();calMonth.setDate(1);
