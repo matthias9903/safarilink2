@@ -1295,7 +1295,7 @@ var OP_TEAM = [{ name: 'Dreamtrails Admin', email: 'dreamtrailsexpedictions@gmai
 function renderOpTeam(){
   var body = document.getElementById('opTeamBody');
   var cnt = document.getElementById('opTeamCount');
-  if (cnt) cnt.textContent = OP_TEAM.length;
+  if (cnt) cnt.textContent = OP_TEAM.length; 
   if (!body) return;
   body.innerHTML = OP_TEAM.map(function(m, i){
     var actions = '';
