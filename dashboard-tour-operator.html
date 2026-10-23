@@ -43,14 +43,19 @@
     overflow-x: visible; overflow-y: auto; position: fixed; top: 0; left: 0; height: 100vh; z-index: 1000;
     transition: transform 0.3s ease, width 0.3s ease; display: flex; flex-direction: column;
   }
-  .sidebar.collapsed { width: 68px; }
+  .sidebar.collapsed { width: 68px; overflow-x: hidden; }
   .sidebar.collapsed .logo-text,
   .sidebar.collapsed .nav-section-title,
-  .sidebar.collapsed .nav-item span,
-  .sidebar.collapsed .nav-item { font-size: 0; justify-content: center; padding: 12px 0; gap: 0; }
-  .sidebar.collapsed .nav-item i, .sidebar.collapsed .nav-item svg { margin: 0; width: 22px; height: 22px; }
-  .sidebar.collapsed .nav-section-title { display: none; }
-  .sidebar.collapsed .logo-text { display: none; }
+  .sidebar.collapsed .nav-item span { display: none; }
+  .sidebar.collapsed .nav-item {
+    justify-content: center; padding: 12px 0; gap: 0;
+  }
+  .sidebar.collapsed .nav-item i, .sidebar.collapsed .nav-item svg {
+    margin: 0; width: 22px; height: 22px; display: block; flex-shrink: 0;
+  }
+  .sidebar.collapsed .sidebar-logo .logo-icon { display: none; }
+  .sidebar.collapsed .sidebar-header { justify-content: center; padding: 16px 0; }
+  .sidebar.collapsed .sidebar-collapse-btn { margin: 0 auto; }
   .main-content { transition: margin-left 0.3s ease; }
   .main-content.sidebar-collapsed { margin-left: 68px; }
   /* Grok-style menu toggle — sits in the sidebar header row */
@@ -948,77 +953,41 @@
              ========================================== -->
         <div id="quotes-page" class="page">
             <div class="page-header">
-                <div class="page-title">Quotes</div>
-                <button class="create-btn"><i data-lucide="plus"></i> New Quote</button>
+                <div>
+                    <div class="page-title">Quotes</div>
+                    <div class="page-subtitle">Quotes generated from itineraries — live activity</div>
+                </div>
+                <button class="create-btn" onclick="switchPage('itinerary')"><i data-lucide="plus"></i> Build quote</button>
             </div>
             <div class="card">
-                <div class="card-header"><div class="card-title">Recent Quotes</div></div>
-                <div class="card-body">
+                <div class="card-header"><div class="card-title">All quotes</div></div>
+                <div class="card-body" style="overflow-x:auto;">
                     <table>
-                        <thead>
-                            <tr><th>Quote ID</th><th>Client</th><th>Trip</th><th>Amount</th><th>Status</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>QT-2024-041</strong></td><td>James Williams</td>
-                                <td>5-Day Serengeti &amp; Ngorongoro</td><td>$24,500</td>
-                                <td><span class="badge badge-success">Sent</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>QT-2024-040</strong></td><td>Sarah Johnson</td>
-                                <td>7-Day Serengeti Migration</td><td>$28,500</td>
-                                <td><span class="badge badge-pending">Draft</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>QT-2024-039</strong></td><td>Michael Chen</td>
-                                <td>Kilimanjaro + Safari</td><td>$42,000</td>
-                                <td><span class="badge badge-success">Confirmed</span></td>
-                            </tr>
-                        </tbody>
+                        <thead><tr><th>Quote ID</th><th>Client</th><th>Trip</th><th>Amount</th><th>Status</th><th>Created</th></tr></thead>
+                        <tbody id="quotesTable"></tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- ==========================================
-             TASKS PAGE
-             ========================================== -->
         <div id="tasks-page" class="page">
             <div class="page-header">
-                <div class="page-title">Tasks</div>
-                <button class="create-btn"><i data-lucide="plus"></i> New Task</button>
+                <div>
+                    <div class="page-title">Tasks</div>
+                    <div class="page-subtitle">Follow-ups from quotes, reservations and trips</div>
+                </div>
+                <button class="create-btn" onclick="addOpTask()"><i data-lucide="plus"></i> New Task</button>
             </div>
             <div class="card">
-                <div class="card-body">
+                <div class="card-body" style="overflow-x:auto;">
                     <table>
-                        <thead>
-                            <tr><th>Task</th><th>Itinerary</th><th>Due Date</th><th>Assignee</th><th>Status</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>Confirm Serengeti Heritage Camp</strong></td><td>5-Day Serengeti</td>
-                                <td>12 Sep 2024</td><td>Grace Ntuli</td>
-                                <td><span class="badge badge-warning">Pending</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Send vehicle lease agreement</strong></td><td>5-Day Serengeti</td>
-                                <td>13 Sep 2024</td><td>Mathias Mwembe</td>
-                                <td><span class="badge badge-success">Completed</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Source accommodation for Zanzibar</strong></td><td>Zanzibar + Safari</td>
-                                <td>01 Oct 2024</td><td>Grace Ntuli</td>
-                                <td><span class="badge badge-info">To Do</span></td>
-                            </tr>
-                        </tbody>
+                        <thead><tr><th>Task</th><th>Related</th><th>Due</th><th>Assignee</th><th>Status</th></tr></thead>
+                        <tbody id="tasksTable"></tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- ==========================================
-             FAVORITES PAGE
-             ========================================== -->
         <div id="favorites-page" class="page">
             <div class="page-header"><div class="page-title">Favorites</div></div>
             <div class="card">
@@ -1046,13 +1015,21 @@
              ========================================== -->
         <div id="trips-page" class="page">
             <div class="page-header">
-                <div class="page-title">Trips</div>
-                <button class="create-btn"><i data-lucide="plus"></i> New Trip</button>
+                <div>
+                    <div class="page-title">Trips</div>
+                    <div class="page-subtitle">Active and upcoming safari trips with live progress</div>
+                </div>
+                <button class="create-btn" onclick="openNewTrip()"><i data-lucide="plus"></i> New Trip</button>
             </div>
-            <div class="card"><div class="card-body"><p style="color:var(--warm-gray);">Active trips will appear here.</p></div></div>
+            <div class="stats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;">
+                <div class="kpi-card"><div class="kpi-label">Active</div><div class="kpi-value" id="tripActive">0</div></div>
+                <div class="kpi-card"><div class="kpi-label">Upcoming</div><div class="kpi-value" id="tripUpcoming">0</div></div>
+                <div class="kpi-card"><div class="kpi-label">Completed</div><div class="kpi-value" id="tripDone">0</div></div>
+                <div class="kpi-card"><div class="kpi-label">Guests on trip</div><div class="kpi-value" id="tripGuests">0</div></div>
+            </div>
+            <div id="tripsList"></div>
         </div>
 
-        <!-- ========== MESSAGES PAGE ========== -->
         <div id="messages-page" class="page">
             <div class="page-header">
                 <div>
@@ -1071,53 +1048,68 @@
         <div id="accounts-page" class="page">
             <div class="page-header">
                 <div>
-                    <div class="page-title">Accounts &amp; Team</div>
-                    <div class="page-subtitle">Company profile, login roles, and team access for Dreamtrails Expeditions</div>
+                    <div class="page-title">Accounts</div>
+                    <div class="page-subtitle">Company profile and team accounts (Admin can add Sales &amp; Manager)</div>
                 </div>
-                <button class="create-btn" onclick="document.getElementById('opMemF').style.display='block'"><i data-lucide="user-plus"></i> Invite member</button>
             </div>
-            <div class="kpi-grid" style="margin-bottom:20px;">
-                <div class="kpi-card"><div class="kpi-label">Company</div><div class="kpi-value" style="font-size:1.15rem;">Dreamtrails Expeditions</div></div>
-                <div class="kpi-card"><div class="kpi-label">Login email</div><div class="kpi-value" style="font-size:.95rem;">dreamtrailsexpedictions@gmail.com</div></div>
-                <div class="kpi-card"><div class="kpi-label">Plan</div><div class="kpi-value" style="font-size:1.15rem;">Operator Pro</div></div>
-                <div class="kpi-card"><div class="kpi-label">Team seats</div><div class="kpi-value" id="opTeamCount">3</div></div>
-            </div>
-            <div id="opMemF" class="card" style="display:none;padding:16px;margin-bottom:16px;">
-                <div class="form-row">
-                    <div class="form-group"><label>Name</label><input id="opMemName" placeholder="Full name"></div>
-                    <div class="form-group"><label>Email</label><input id="opMemEmail" placeholder="email@dreamtrails.tz"></div>
-                    <div class="form-group"><label>Role</label>
-                        <select id="opMemRole"><option>Admin</option><option>Manager</option><option>Sales</option><option>Operations</option></select>
+
+            <div class="card" style="margin-bottom:20px;">
+                <div class="card-header"><div class="card-title">Company profile</div>
+                    <button class="btn btn-primary btn-sm" onclick="saveCompanyProfile()"><i data-lucide="save" style="width:14px;height:14px;"></i> Save profile</button>
+                </div>
+                <div class="card-body">
+                    <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;">
+                        <div style="text-align:center;">
+                            <div id="companyLogoBox" onclick="document.getElementById('companyLogoInput').click()" style="width:100px;height:100px;border-radius:12px;background:var(--khaki);border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;">
+                                <span style="font-size:.75rem;color:var(--warm-gray);text-align:center;padding:8px;">Upload logo</span>
+                            </div>
+                            <input type="file" id="companyLogoInput" accept="image/*" style="display:none;" onchange="handleCompanyLogo(this)">
+                            <div style="font-size:.72rem;color:var(--warm-gray);margin-top:6px;">Logo</div>
+                        </div>
+                        <div style="flex:1;min-width:260px;">
+                            <div class="form-row">
+                                <div class="form-group"><label>Company name</label><input id="coName" placeholder="Dreamtrails Expeditions"></div>
+                                <div class="form-group"><label>Trading name</label><input id="coTrading" placeholder="Optional"></div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group"><label>Email</label><input id="coEmail" type="email"></div>
+                                <div class="form-group"><label>Phone</label><input id="coPhone"></div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group"><label>Region</label><input id="coRegion" placeholder="Arusha"></div>
+                                <div class="form-group"><label>Website</label><input id="coWeb" placeholder="https://"></div>
+                            </div>
+                            <div class="form-group"><label>About the company</label><textarea id="coAbout" rows="3" placeholder="Brief company description for partners..."></textarea></div>
+                        </div>
                     </div>
                 </div>
-                <button class="btn btn-primary" style="margin-top:10px;" onclick="opAddMember()"><i data-lucide="save" style="width:14px;height:14px;"></i> Save member</button>
             </div>
+
             <div class="card">
-                <div class="card-header"><div class="card-title">Team members</div></div>
+                <div class="card-header">
+                    <div class="card-title">Team accounts <span id="opTeamCount" style="font-weight:500;color:var(--warm-gray);font-size:.85rem;"></span></div>
+                    <button class="btn btn-primary btn-sm" onclick="document.getElementById('opMemF').style.display='block'"><i data-lucide="user-plus" style="width:14px;height:14px;"></i> Add account</button>
+                </div>
                 <div class="card-body">
+                    <p style="font-size:.82rem;color:var(--warm-gray);margin-bottom:12px;">The first registered account is the <strong>Admin</strong> (main account). Admin can add up to two more: <strong>Sales</strong> and <strong>Manager</strong>.</p>
+                    <div id="opMemF" style="display:none;padding:14px;background:var(--bg);border-radius:8px;margin-bottom:14px;">
+                        <div class="form-row">
+                            <div class="form-group"><label>Name</label><input id="opMemName"></div>
+                            <div class="form-group"><label>Email</label><input id="opMemEmail" type="email"></div>
+                        </div>
+                        <div class="form-group"><label>Role</label>
+                            <select id="opMemRole"><option>Manager</option><option>Sales</option></select>
+                        </div>
+                        <button class="btn btn-primary" style="margin-top:8px;" onclick="opAddMember()"><i data-lucide="save" style="width:14px;height:14px;"></i> Save member</button>
+                    </div>
                     <table>
                         <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th></tr></thead>
                         <tbody id="opTeamBody"></tbody>
                     </table>
                 </div>
             </div>
-            <div class="card" style="margin-top:16px;">
-                <div class="card-header"><div class="card-title">Company profile</div></div>
-                <div class="card-body">
-                    <div class="form-row">
-                        <div class="form-group"><label>Trading name</label><input value="Dreamtrails Expeditions" readonly></div>
-                        <div class="form-group"><label>Base</label><input value="Arusha / Dar es Salaam, Tanzania" readonly></div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group"><label>Primary contact</label><input value="dreamtrailsexpedictions@gmail.com" readonly></div>
-                        <div class="form-group"><label>Phone</label><input value="+255 754 000 000" readonly></div>
-                    </div>
-                    <p style="font-size:.82rem;color:var(--warm-gray);margin-top:8px;">This account can source accommodation, fleet and guides on SafariLink. Partner updates appear live on Sourcing pages.</p>
-                </div>
-            </div>
         </div>
-
-    </div><!-- /main-content -->
+</div><!-- /main-content -->
 </div><!-- /dashboard-view -->
 
 <!-- TOAST CONTAINER -->
@@ -1206,16 +1198,44 @@ function slUpdate(fn){ var d = slGet(); fn(d); slSave(d); return d; }
 function slOnChange(cb){ window.addEventListener('storage', function(e){ if (e.key === SL_KEY || e.key === SL_KEY+'_tick') cb(); }); setInterval(cb, 8000); }
 
 function renderOpMessages(){
-  var el = document.getElementById('opMsgList');
-  if (!el) return;
-  var msgs = (slGet().messages || []).slice().reverse();
-  if (!msgs.length) { el.innerHTML = '<p style="color:var(--warm-gray);">No messages yet. Bookings and partner replies will appear here.</p>'; return; }
-  el.innerHTML = msgs.map(function(m){
-    return '<div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border-light);">' +
-      '<div style="width:36px;height:36px;border-radius:50%;background:var(--forest-green);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex-shrink:0;">' + (m.initials||'SL') + '</div>' +
-      '<div><strong>' + (m.from||'') + '</strong> <span style="font-size:.75rem;color:var(--warm-gray);">· ' + (m.side||'') + '</span>' +
-      '<div style="margin-top:2px;">' + (m.text||'') + '</div></div></div>';
-  }).join('');
+  var list = document.getElementById('opMsgList') || document.getElementById('msgList');
+  if (!list) {
+    // try messages page body
+    var page = document.getElementById('messages-page');
+    if (page && !document.getElementById('opMsgList')) {
+      var body = page.querySelector('.card-body') || page;
+      if (!document.getElementById('opMsgList')) {
+        var wrap = document.createElement('div');
+        wrap.id = 'opMsgList';
+        body.appendChild(wrap);
+        list = wrap;
+      }
+    }
+  }
+  list = document.getElementById('opMsgList') || document.getElementById('msgList');
+  if (!list) return;
+  var msgs = (slGet().messages || []).slice().sort(function(a,b){ return (b.time||0)-(a.time||0); });
+  var unread = msgs.filter(function(m){ return m.unread; }).length;
+  var badge = document.getElementById('opMsgBadge');
+  if (badge) badge.textContent = unread || '';
+  list.innerHTML = msgs.map(function(m){
+    var unreadCls = m.unread ? 'background:#f0faf5;border-left:3px solid var(--accent-green);' : '';
+    return '<div class="msg-row" style="padding:12px;border-bottom:1px solid var(--border);cursor:pointer;'+unreadCls+'" onclick="markMsgRead('+m.id+')">' +
+      '<div style="display:flex;gap:12px;align-items:flex-start;">' +
+      '<div style="width:36px;height:36px;border-radius:50%;background:var(--forest-green);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex-shrink:0;">'+esc(m.initials||'SL')+'</div>' +
+      '<div style="flex:1;min-width:0;">' +
+      '<div style="display:flex;justify-content:space-between;gap:8px;"><strong>'+esc(m.from||'')+'</strong>' +
+      '<span style="font-size:.75rem;color:var(--warm-gray);">'+ (m.time ? new Date(m.time).toLocaleString() : '') +'</span></div>' +
+      '<div style="font-size:.85rem;margin-top:4px;">'+esc(m.text||'')+'</div>' +
+      (m.unread ? '<span class="badge badge-info" style="margin-top:6px;">Unread</span>' : '<span style="font-size:.72rem;color:var(--warm-gray);margin-top:4px;display:inline-block;">Read</span>') +
+      '</div></div></div>';
+  }).join('') || '<p style="color:var(--warm-gray);padding:16px;">No messages yet.</p>';
+}
+function markMsgRead(id){
+  slUpdate(function(d){
+    (d.messages||[]).forEach(function(m){ if(m.id===id) m.unread=false; });
+  });
+  renderOpMessages();
 }
 
 /* Live operator home dashboard from shared platform */
@@ -1284,29 +1304,93 @@ function renderOpDashboard(){
 }
 
 var OP_TEAM = [
-  {name:'Admin', email:'dreamtrailsexpedictions@gmail.com', role:'Owner', status:'Active'},
-  {name:'Sales Manager', email:'sales@dreamtrails.tz', role:'Manager', status:'Active'},
-  {name:'Operations', email:'ops@dreamtrails.tz', role:'Staff', status:'Pending'}
+  { name: 'Dreamtrails Admin', email: 'dreamtrailsexpedictions@gmail.com', role: 'Admin', status: 'Active', isMain: true }
 ];
+function opAddMember(){
+  var extras = OP_TEAM.filter(function(m){ return m.role !== 'Admin'; });
+  if (extras.length >= 2) { showToast('Admin can add at most 2 accounts (Sales and Manager)'); return; }
+  var n = (document.getElementById('opMemName')||{}).value; n = (n||'').trim();
+  var e = (document.getElementById('opMemEmail')||{}).value; e = (e||'').trim();
+  var r = (document.getElementById('opMemRole')||{}).value || 'Sales';
+  if (!n || !e) { showToast('Name and email required'); return; }
+  if (OP_TEAM.some(function(m){ return m.role === r && r !== 'Admin'; })) {
+    showToast(r + ' account already exists'); return;
+  }
+  OP_TEAM.push({name:n, email:e, role:r, status:'Active', isMain:false});
+  try {
+    var f = document.getElementById('opMemF'); if (f) f.style.display = 'none';
+  } catch(err){}
+  renderOpTeam();
+    loadCompanyProfile();
+    renderTrips();
+    renderQuotes();
+    renderTasks();
+  showToast(r + ' account added');
+}
 function renderOpTeam(){
   var body = document.getElementById('opTeamBody');
   var cnt = document.getElementById('opTeamCount');
-  if (cnt) cnt.textContent = OP_TEAM.length;
+  if (cnt) cnt.textContent = '(' + OP_TEAM.length + ')';
   if (!body) return;
   body.innerHTML = OP_TEAM.map(function(m){
-    return '<tr><td>'+esc(m.name)+'</td><td>'+esc(m.email)+'</td><td>'+esc(m.role)+'</td><td>'+badgeOp(m.status)+'</td></tr>';
+    var roleBadge = m.role === 'Admin' ? '<span class="badge badge-success">Admin · Main</span>' : '<span class="badge badge-info">'+esc(m.role)+'</span>';
+    return '<tr><td><strong>'+esc(m.name)+'</strong></td><td>'+esc(m.email)+'</td><td>'+roleBadge+'</td><td>'+badgeOp(m.status||'Active')+'</td></tr>';
   }).join('');
 }
-function opAddMember(){
-  var n = (document.getElementById('opMemName')||{}).value; n = (n||'').trim();
-  var e = (document.getElementById('opMemEmail')||{}).value; e = (e||'').trim();
-  var r = (document.getElementById('opMemRole')||{}).value || 'Staff';
-  if (!n || !e) { showToast('Name and email required'); return; }
-  OP_TEAM.push({name:n, email:e, role:r, status:'Pending'});
-  document.getElementById('opMemF').style.display = 'none';
-  renderOpTeam();
-  showToast('Team member invited');
+function saveCompanyProfile(){
+  var profile = {
+    name: (document.getElementById('coName')||{}).value || '',
+    trading: (document.getElementById('coTrading')||{}).value || '',
+    email: (document.getElementById('coEmail')||{}).value || '',
+    phone: (document.getElementById('coPhone')||{}).value || '',
+    region: (document.getElementById('coRegion')||{}).value || '',
+    website: (document.getElementById('coWeb')||{}).value || '',
+    about: (document.getElementById('coAbout')||{}).value || '',
+    logo: (window._companyLogo || '')
+  };
+  try { localStorage.setItem('safarilink_company_profile', JSON.stringify(profile)); } catch(e){}
+  showToast('Company profile saved');
 }
+function loadCompanyProfile(){
+  try {
+    var raw = localStorage.getItem('safarilink_company_profile');
+    if (!raw) {
+      // defaults for Dreamtrails
+      var d = { name: 'Dreamtrails Expeditions', email: 'dreamtrailsexpedictions@gmail.com', phone: '+255 700 000 000', region: 'Arusha', website: '', about: 'Safari operator connecting guests with trusted partners across Tanzania.', trading: '', logo: '' };
+      if (document.getElementById('coName')) document.getElementById('coName').value = d.name;
+      if (document.getElementById('coEmail')) document.getElementById('coEmail').value = d.email;
+      if (document.getElementById('coPhone')) document.getElementById('coPhone').value = d.phone;
+      if (document.getElementById('coRegion')) document.getElementById('coRegion').value = d.region;
+      if (document.getElementById('coAbout')) document.getElementById('coAbout').value = d.about;
+      return;
+    }
+    var p = JSON.parse(raw);
+    if (document.getElementById('coName')) document.getElementById('coName').value = p.name || '';
+    if (document.getElementById('coTrading')) document.getElementById('coTrading').value = p.trading || '';
+    if (document.getElementById('coEmail')) document.getElementById('coEmail').value = p.email || '';
+    if (document.getElementById('coPhone')) document.getElementById('coPhone').value = p.phone || '';
+    if (document.getElementById('coRegion')) document.getElementById('coRegion').value = p.region || '';
+    if (document.getElementById('coWeb')) document.getElementById('coWeb').value = p.website || '';
+    if (document.getElementById('coAbout')) document.getElementById('coAbout').value = p.about || '';
+    if (p.logo) {
+      window._companyLogo = p.logo;
+      var box = document.getElementById('companyLogoBox');
+      if (box) box.innerHTML = '<img src="'+p.logo+'" style="width:100%;height:100%;object-fit:cover;">';
+    }
+  } catch(e){}
+}
+function handleCompanyLogo(input){
+  var file = input.files && input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(){
+    window._companyLogo = reader.result;
+    var box = document.getElementById('companyLogoBox');
+    if (box) box.innerHTML = '<img src="'+reader.result+'" style="width:100%;height:100%;object-fit:cover;">';
+  };
+  reader.readAsDataURL(file);
+}
+
 
 /* Live sourcing — ONLY partner data from shared store (no static cards) */
 function getLiveAccommodations(){
@@ -1380,7 +1464,11 @@ window.switchPage = function(pageName) {
     if (pageName === 'guides') { guideRenderCards(getLiveGuides()); }
     if (pageName === 'messages') { renderOpMessages(); }
     if (pageName === 'dashboard') { renderOpDashboard(); }
-    if (pageName === 'accounts') { renderOpTeam(); }
+    if (pageName === 'accounts') { renderOpTeam(); loadCompanyProfile(); }
+    if (pageName === 'trips') { renderTrips(); }
+    if (pageName === 'quotes') { renderQuotes(); }
+    if (pageName === 'tasks') { renderTasks(); }
+    if (pageName === 'messages') { renderOpMessages(); }
     // Close mobile sidebar
     document.getElementById('sidebar').classList.remove('open');
     document.getElementById('sidebar-overlay').classList.remove('active');
@@ -1721,6 +1809,22 @@ window.initImagePlaceholders = function() {
 
     /* ── Generate Quote ── */
     window.ibGenerateQuote = function() {
+        // Save quote to activity store
+        try {
+          var totalEl = document.getElementById('ibCostTotal');
+          var total = totalEl ? totalEl.textContent.replace(/[^0-9.]/g,'') : '0';
+          var client = (document.getElementById('ibClientName')||{}).value || (document.getElementById('clientName')||{}).value || 'Client';
+          var trip = (document.getElementById('ibTripName')||{}).value || (document.getElementById('tripName')||{}).value || 'Safari itinerary';
+          var s = opGetStore();
+          s.quotes = s.quotes || [];
+          var qid = 'QT-2026-' + String(30 + s.quotes.length).padStart(3,'0');
+          s.quotes.unshift({ id: qid, client: client, trip: trip, amount: Number(total)||0, status: 'Draft', created: new Date().toISOString().slice(0,10) });
+          s.tasks = s.tasks || [];
+          s.tasks.unshift({ id: Date.now(), task: 'Review and send quote '+qid, related: client, due: new Date().toISOString().slice(0,10), assignee: 'Admin', status: 'Open' });
+          opSaveStore(s);
+          showToast('Quote '+qid+' generated — see Quotes page');
+        } catch(err) { console.warn(err); }
+
         var firstName = document.getElementById('ibFirstName').value.trim();
         var lastName = document.getElementById('ibLastName').value.trim();
         var tourTitle = document.getElementById('ibTourTitle').value.trim();
@@ -1881,40 +1985,7 @@ window.initImagePlaceholders = function() {
         openModal('accomDetailModal');
     };
 
-    window.accomReserve = function(id) {
-        var list = getLiveAccommodations();
-        var a = list.find(function(x) { return x.id === id; });
-        if (!a) { showToast('Property not found'); return; }
-        var today = new Date();
-        var cin = new Date(today); cin.setDate(cin.getDate() + 3);
-        var cout = new Date(today); cout.setDate(cout.getDate() + 6);
-        slUpdate(function(d) {
-            if (!d.reservations) d.reservations = [];
-            d.reservations.push({
-                id: 'R-' + Date.now().toString().slice(-4),
-                operator: 'Dreamtrails Expeditions',
-                propertyId: a.id,
-                room: (d.roomTypes||[]).filter(function(r){return r.propertyId===a.id;})[0]?.name || 'Standard',
-                checkIn: cin.toISOString().slice(0,10),
-                checkOut: cout.toISOString().slice(0,10),
-                guests: 2,
-                amount: (a.pricePerNight||200) * 3,
-                payment: 'Pending',
-                status: 'reserved',
-                createdAt: Date.now(),
-                repliedAt: null,
-                notes: 'Requested from operator sourcing'
-            });
-            if (!d.messages) d.messages = [];
-            d.messages.push({
-                id: Date.now(), side: 'accommodation', from: 'Dreamtrails Expeditions', initials: 'DT',
-                text: 'New reservation request for ' + a.name + ' (3 nights).',
-                time: Date.now(), type: 'info', related: null, unread: true
-            });
-        });
-        showToast('Reservation sent to ' + a.name + ' — appears live on accommodation dashboard');
-        if (window.lucide) lucide.createIcons();
-    };
+    window.accomReserve = function(id){ openAccomBookForm(id); };
 })();
 
 
@@ -2003,37 +2074,7 @@ window.initImagePlaceholders = function() {
         openModal('fleetDetailModal');
     };
 
-    window.fleetLease = function(id) {
-        var list = getLiveFleet();
-        var v = list.find(function(x) { return x.id === id; });
-        if (!v) { showToast('Vehicle not found'); return; }
-        var today = new Date();
-        var start = new Date(today); start.setDate(start.getDate() + 2);
-        var end = new Date(today); end.setDate(end.getDate() + 7);
-        slUpdate(function(d) {
-            if (!d.charters) d.charters = [];
-            d.charters.push({
-                ref: 'CH-' + Date.now().toString().slice(-3),
-                operator: 'Dreamtrails Expeditions',
-                vehicleId: v.id,
-                plate: v.plate || v.name,
-                start: start.toISOString().slice(0,10),
-                end: end.toISOString().slice(0,10),
-                route: 'Northern circuit',
-                driver: '',
-                value: (v.ratePerDay||150) * 5,
-                status: 'Reserved',
-                createdAt: Date.now()
-            });
-            if (!d.messages) d.messages = [];
-            d.messages.push({
-                id: Date.now(), side: 'fleet', from: 'Dreamtrails Expeditions', initials: 'DT',
-                text: 'Charter request for ' + (v.plate||v.name) + ' — 5 days.',
-                time: Date.now(), type: 'info', unread: true
-            });
-        });
-        showToast('Lease request sent for ' + (v.plate||v.name) + ' — appears live on fleet dashboard');
-    };
+    window.fleetLease = function(id){ openFleetBookForm(id); };
 })();
 
 
@@ -2120,32 +2161,229 @@ window.initImagePlaceholders = function() {
         openModal('guideDetailModal');
     };
 
-    window.guideRequest = function(id) {
-        var list = getLiveGuides();
-        var g = list.find(function(x) { return x.id === id; });
-        if (!g) { showToast('Guide not found'); return; }
-        slUpdate(function(d) {
-            if (!d.guideRequests) d.guideRequests = [];
-            d.guideRequests.push({
-                id: Date.now(),
-                operator: 'Dreamtrails Expeditions',
-                service: g.special || 'Game drive guide',
-                park: 'Serengeti NP',
-                dates: 'Coming week',
-                fee: g.dailyRate || 80,
-                note: 'Requested from operator sourcing'
-            });
-            if (!d.messages) d.messages = [];
-            d.messages.push({
-                id: Date.now()+1, side: 'guide', from: 'Dreamtrails Expeditions', initials: 'DT',
-                text: 'Job request for ' + g.name + ' — ' + (g.special||'guiding') + '.',
-                time: Date.now(), type: 'info', unread: true
-            });
-        });
-        showToast('Guide request sent for ' + g.name + ' — appears live on guide dashboard');
-    };
-})();
+    window.guideRequest = function(id){ openGuideBookForm(id); };
+}
+function opSaveStore(s){ try { localStorage.setItem('safarilink_op_activity', JSON.stringify(s)); } catch(e){} }
 
+function renderTrips(){
+  var s = opGetStore();
+  var trips = s.trips || [];
+  var active = trips.filter(function(x){ return x.status === 'In progress'; }).length;
+  var up = trips.filter(function(x){ return x.status === 'Upcoming'; }).length;
+  var done = trips.filter(function(x){ return x.status === 'Completed'; }).length;
+  var guests = trips.filter(function(x){ return x.status === 'In progress'; }).reduce(function(a,x){ return a+(x.guests||0); },0);
+  var el;
+  if ((el=document.getElementById('tripActive'))) el.textContent = active;
+  if ((el=document.getElementById('tripUpcoming'))) el.textContent = up;
+  if ((el=document.getElementById('tripDone'))) el.textContent = done;
+  if ((el=document.getElementById('tripGuests'))) el.textContent = guests;
+  var list = document.getElementById('tripsList');
+  if (!list) return;
+  list.innerHTML = trips.map(function(tr){
+    var color = tr.status === 'Completed' ? 'var(--status-available)' : (tr.status === 'In progress' ? 'var(--status-info)' : 'var(--status-pending)');
+    return '<div class="card" style="margin-bottom:14px;"><div class="card-body">' +
+      '<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px;">' +
+      '<div><strong style="font-size:1rem;">'+esc(tr.name)+'</strong>' +
+      '<div style="font-size:.8rem;color:var(--warm-gray);margin-top:2px;">'+esc(tr.id)+' · '+esc(tr.client)+' · '+tr.guests+' guests</div></div>' +
+      '<span class="badge '+(tr.status==='Completed'?'badge-success':(tr.status==='In progress'?'badge-info':'badge-pending'))+'">'+esc(tr.status)+'</span></div>' +
+      '<div style="font-size:.8rem;color:var(--warm-gray);margin-bottom:6px;">'+esc(tr.start)+' → '+esc(tr.end)+(tr.status==='In progress'?' · Day '+tr.dayNow+' of '+tr.days:'')+'</div>' +
+      '<div style="height:10px;background:var(--khaki);border-radius:6px;overflow:hidden;">' +
+      '<div style="width:'+tr.progress+'%;height:100%;background:'+color+';border-radius:6px;transition:width .3s;"></div></div>' +
+      '<div style="font-size:.75rem;color:var(--warm-gray);margin-top:4px;">Progress: '+tr.progress+'%</div>' +
+      '</div></div>';
+  }).join('') || '<p style="color:var(--warm-gray);">No trips yet. Create one to track progress.</p>';
+}
+function openNewTrip(){
+  var name = prompt('Trip name', 'Serengeti Safari');
+  if (!name) return;
+  var client = prompt('Client name', 'New client') || 'Client';
+  var s = opGetStore();
+  var id = 'TR-' + (100 + (s.trips||[]).length + 1);
+  s.trips = s.trips || [];
+  s.trips.unshift({ id:id, name:name, client:client, guests:2, start: new Date().toISOString().slice(0,10), end: '', status: 'Upcoming', progress: 0, days: 5, dayNow: 0 });
+  s.tasks = s.tasks || [];
+  s.tasks.unshift({ id: Date.now(), task: 'Plan itinerary for '+name, related: id, due: new Date().toISOString().slice(0,10), assignee: 'Admin', status: 'Open' });
+  opSaveStore(s);
+  renderTrips();
+  renderTasks();
+  showToast('Trip '+id+' created');
+}
+
+function renderQuotes(){
+  var body = document.getElementById('quotesTable');
+  if (!body) return;
+  var quotes = (opGetStore().quotes || []);
+  body.innerHTML = quotes.map(function(q){
+    var st = q.status === 'Confirmed' ? 'badge-success' : (q.status === 'Sent' ? 'badge-info' : 'badge-pending');
+    return '<tr><td><strong>'+esc(q.id)+'</strong></td><td>'+esc(q.client)+'</td><td>'+esc(q.trip)+'</td><td>$'+Number(q.amount||0).toLocaleString()+'</td><td><span class="badge '+st+'">'+esc(q.status)+'</span></td><td>'+esc(q.created||'')+'</td></tr>';
+  }).join('') || '<tr><td colspan="6" style="color:var(--warm-gray);">No quotes yet — generate one from Itinerary.</td></tr>';
+}
+function renderTasks(){
+  var body = document.getElementById('tasksTable');
+  if (!body) return;
+  var tasks = (opGetStore().tasks || []);
+  body.innerHTML = tasks.map(function(tk){
+    var st = tk.status === 'Done' ? 'badge-success' : (tk.status === 'In progress' ? 'badge-info' : 'badge-pending');
+    return '<tr><td>'+esc(tk.task)+'</td><td>'+esc(tk.related)+'</td><td>'+esc(tk.due)+'</td><td>'+esc(tk.assignee)+'</td><td><span class="badge '+st+'">'+esc(tk.status)+'</span></td></tr>';
+  }).join('') || '<tr><td colspan="5" style="color:var(--warm-gray);">No tasks.</td></tr>';
+}
+function addOpTask(){
+  var task = prompt('Task description');
+  if (!task) return;
+  var s = opGetStore();
+  s.tasks = s.tasks || [];
+  s.tasks.unshift({ id: Date.now(), task: task, related: 'Manual', due: new Date().toISOString().slice(0,10), assignee: 'Admin', status: 'Open' });
+  opSaveStore(s);
+  renderTasks();
+  showToast('Task added');
+}
+
+/* Booking forms */
+function openAccomBookForm(id){
+  var a = getLiveAccommodations().find(function(x){ return x.id === id; });
+  if (!a) { showToast('Property not found'); return; }
+  document.getElementById('bookAccomId').value = id;
+  document.getElementById('bookAccomName').value = a.name;
+  var rooms = a.rooms || [];
+  var sel = document.getElementById('bookAccomRoom');
+  sel.innerHTML = rooms.length ? rooms.map(function(r){
+    return '<option value="'+esc(r.name)+'" data-sto="'+(r.sto||0)+'">'+esc(r.name)+' — STO $'+(r.sto||0)+'/night</option>';
+  }).join('') : '<option value="Standard">Standard</option>';
+  var t0 = new Date(); t0.setDate(t0.getDate()+3);
+  var t1 = new Date(); t1.setDate(t1.getDate()+6);
+  document.getElementById('bookAccomIn').value = t0.toISOString().slice(0,10);
+  document.getElementById('bookAccomOut').value = t1.toISOString().slice(0,10);
+  openModal('bookAccomModal');
+  if (window.lucide) lucide.createIcons();
+}
+function submitAccomBooking(){
+  var id = Number(document.getElementById('bookAccomId').value);
+  var a = getLiveAccommodations().find(function(x){ return x.id === id; });
+  if (!a) return;
+  var room = document.getElementById('bookAccomRoom').value;
+  var qty = Number(document.getElementById('bookAccomQty').value)||1;
+  var guests = Number(document.getElementById('bookAccomGuests').value)||2;
+  var cin = document.getElementById('bookAccomIn').value;
+  var cout = document.getElementById('bookAccomOut').value;
+  var notes = document.getElementById('bookAccomNotes').value;
+  if (!cin || !cout) { showToast('Select check-in and check-out'); return; }
+  var nights = Math.max(1, Math.round((new Date(cout)-new Date(cin))/(86400000)));
+  var sto = 0;
+  try { sto = Number(document.getElementById('bookAccomRoom').selectedOptions[0].getAttribute('data-sto'))||a.pricePerNight||0; } catch(e){ sto = a.pricePerNight||0; }
+  slUpdate(function(d){
+    if (!d.reservations) d.reservations = [];
+    d.reservations.unshift({
+      id: 'R-'+Date.now().toString().slice(-4),
+      operator: 'Dreamtrails Expeditions',
+      propertyId: a.id,
+      room: room + (qty>1 ? ' ×'+qty : ''),
+      checkIn: cin, checkOut: cout, guests: guests,
+      amount: sto * nights * qty,
+      payment: 'Pending', status: 'reserved',
+      createdAt: Date.now(), repliedAt: null,
+      notes: notes || 'Requested from operator sourcing'
+    });
+    if (!d.messages) d.messages = [];
+    d.messages.unshift({
+      id: Date.now(), side: 'accommodation', from: 'Dreamtrails Expeditions', initials: 'DT',
+      text: 'Reservation request: '+a.name+' · '+room+' · '+cin+' to '+cout+' · '+qty+' room(s).',
+      time: Date.now(), type: 'info', unread: true
+    });
+  });
+  var s = opGetStore();
+  s.tasks = s.tasks || [];
+  s.tasks.unshift({ id: Date.now(), task: 'Await confirmation: '+a.name+' ('+room+')', related: a.name, due: cin, assignee: 'Admin', status: 'Open' });
+  opSaveStore(s);
+  closeModal('bookAccomModal');
+  showToast('Reservation sent to '+a.name);
+}
+function openFleetBookForm(id){
+  var v = getLiveFleet().find(function(x){ return x.id === id; });
+  if (!v) { showToast('Vehicle not found'); return; }
+  document.getElementById('bookFleetId').value = id;
+  document.getElementById('bookFleetName').value = (v.plate||v.name)+' · '+(v.type||'');
+  var t0 = new Date(); t0.setDate(t0.getDate()+2);
+  var t1 = new Date(); t1.setDate(t1.getDate()+7);
+  document.getElementById('bookFleetStart').value = t0.toISOString().slice(0,10);
+  document.getElementById('bookFleetEnd').value = t1.toISOString().slice(0,10);
+  document.getElementById('bookFleetDays').value = 5;
+  document.getElementById('bookFleetStart').onchange = document.getElementById('bookFleetEnd').onchange = function(){
+    var a = document.getElementById('bookFleetStart').value, b = document.getElementById('bookFleetEnd').value;
+    if (a && b) document.getElementById('bookFleetDays').value = Math.max(1, Math.round((new Date(b)-new Date(a))/86400000));
+  };
+  openModal('bookFleetModal');
+  if (window.lucide) lucide.createIcons();
+}
+function submitFleetLease(){
+  var id = Number(document.getElementById('bookFleetId').value);
+  var v = getLiveFleet().find(function(x){ return x.id === id; });
+  if (!v) return;
+  var start = document.getElementById('bookFleetStart').value;
+  var end = document.getElementById('bookFleetEnd').value;
+  var days = Number(document.getElementById('bookFleetDays').value)||1;
+  var route = document.getElementById('bookFleetRoute').value;
+  if (!start || !end) { showToast('Select dates'); return; }
+  slUpdate(function(d){
+    if (!d.charters) d.charters = [];
+    d.charters.unshift({
+      ref: 'CH-'+Date.now().toString().slice(-3),
+      operator: 'Dreamtrails Expeditions',
+      vehicleId: v.id, plate: v.plate||v.name,
+      start: start, end: end, route: route||'Northern circuit',
+      driver: '', value: (v.ratePerDay||150)*days, status: 'Reserved', createdAt: Date.now()
+    });
+    if (!d.messages) d.messages = [];
+    d.messages.unshift({
+      id: Date.now(), side: 'fleet', from: 'Dreamtrails Expeditions', initials: 'DT',
+      text: 'Charter request: '+(v.plate||v.name)+' · '+start+' to '+end+' ('+days+' days).',
+      time: Date.now(), type: 'info', unread: true
+    });
+  });
+  closeModal('bookFleetModal');
+  showToast('Lease request sent for '+(v.plate||v.name));
+}
+function openGuideBookForm(id){
+  var g = getLiveGuides().find(function(x){ return x.id === id; });
+  if (!g) { showToast('Guide not found'); return; }
+  document.getElementById('bookGuideId').value = id;
+  document.getElementById('bookGuideName').value = g.name;
+  document.getElementById('bookGuideService').value = g.special || 'Game drive guide';
+  var t0 = new Date(); t0.setDate(t0.getDate()+5);
+  var t1 = new Date(); t1.setDate(t1.getDate()+10);
+  document.getElementById('bookGuideStart').value = t0.toISOString().slice(0,10);
+  document.getElementById('bookGuideEnd').value = t1.toISOString().slice(0,10);
+  document.getElementById('bookGuidePark').value = (g.regions&&g.regions[0]) || 'Serengeti NP';
+  openModal('bookGuideModal');
+  if (window.lucide) lucide.createIcons();
+}
+function submitGuideRequest(){
+  var id = Number(document.getElementById('bookGuideId').value);
+  var g = getLiveGuides().find(function(x){ return x.id === id; });
+  if (!g) return;
+  var start = document.getElementById('bookGuideStart').value;
+  var end = document.getElementById('bookGuideEnd').value;
+  var service = document.getElementById('bookGuideService').value;
+  var park = document.getElementById('bookGuidePark').value;
+  var notes = document.getElementById('bookGuideNotes').value;
+  if (!start || !end) { showToast('Select dates'); return; }
+  var days = Math.max(1, Math.round((new Date(end)-new Date(start))/86400000)+1);
+  slUpdate(function(d){
+    if (!d.guideRequests) d.guideRequests = [];
+    d.guideRequests.unshift({
+      id: Date.now(), operator: 'Dreamtrails Expeditions',
+      service: service, park: park, dates: start+' to '+end,
+      fee: (g.dailyRate||80)*days, note: notes||'Requested from operator sourcing'
+    });
+    if (!d.messages) d.messages = [];
+    d.messages.unshift({
+      id: Date.now()+1, side: 'guide', from: 'Dreamtrails Expeditions', initials: 'DT',
+      text: 'Guide request for '+g.name+': '+service+' · '+park+' · '+start+' to '+end+'.',
+      time: Date.now(), type: 'info', unread: true
+    });
+  });
+  closeModal('bookGuideModal');
+  showToast('Guide request sent for '+g.name);
+}
 
 /* ============================================
    INITIALIZE
@@ -2179,6 +2417,67 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
+
+<!-- Booking / Lease / Guide request forms -->
+<div class="modal-overlay" id="bookAccomModal">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-header"><div class="modal-title" id="bookAccomTitle">Reserve accommodation</div>
+      <button class="modal-close" onclick="closeModal('bookAccomModal')">&times;</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="bookAccomId">
+      <div class="form-group"><label>Property</label><input id="bookAccomName" readonly></div>
+      <div class="form-group"><label>Room type *</label><select id="bookAccomRoom"></select></div>
+      <div class="form-row">
+        <div class="form-group"><label>Number of rooms *</label><input type="number" id="bookAccomQty" min="1" value="1"></div>
+        <div class="form-group"><label>Guests</label><input type="number" id="bookAccomGuests" min="1" value="2"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Check-in *</label><input type="date" id="bookAccomIn"></div>
+        <div class="form-group"><label>Check-out *</label><input type="date" id="bookAccomOut"></div>
+      </div>
+      <div class="form-group"><label>Notes</label><textarea id="bookAccomNotes" rows="2" placeholder="Special requests..."></textarea></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="submitAccomBooking()"><i data-lucide="send" style="width:14px;height:14px;"></i> Send reservation to property</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="bookFleetModal">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-header"><div class="modal-title" id="bookFleetTitle">Lease vehicle</div>
+      <button class="modal-close" onclick="closeModal('bookFleetModal')">&times;</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="bookFleetId">
+      <div class="form-group"><label>Vehicle</label><input id="bookFleetName" readonly></div>
+      <div class="form-row">
+        <div class="form-group"><label>Start date *</label><input type="date" id="bookFleetStart"></div>
+        <div class="form-group"><label>End date *</label><input type="date" id="bookFleetEnd"></div>
+      </div>
+      <div class="form-group"><label>Number of days</label><input type="number" id="bookFleetDays" min="1" value="5" readonly></div>
+      <div class="form-group"><label>Route / notes</label><textarea id="bookFleetRoute" rows="2" placeholder="e.g. Arusha – Serengeti – Ngorongoro"></textarea></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="submitFleetLease()"><i data-lucide="key" style="width:14px;height:14px;"></i> Send lease request</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="bookGuideModal">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-header"><div class="modal-title" id="bookGuideTitle">Request guide</div>
+      <button class="modal-close" onclick="closeModal('bookGuideModal')">&times;</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="bookGuideId">
+      <div class="form-group"><label>Guide</label><input id="bookGuideName" readonly></div>
+      <div class="form-group"><label>Service</label><input id="bookGuideService" placeholder="Game drive guide"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Start date *</label><input type="date" id="bookGuideStart"></div>
+        <div class="form-group"><label>End date *</label><input type="date" id="bookGuideEnd"></div>
+      </div>
+      <div class="form-group"><label>Park / region</label><input id="bookGuidePark" placeholder="Serengeti NP"></div>
+      <div class="form-group"><label>Notes</label><textarea id="bookGuideNotes" rows="2" placeholder="Language needs, group size..."></textarea></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="submitGuideRequest()"><i data-lucide="compass" style="width:14px;height:14px;"></i> Send guide request</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
