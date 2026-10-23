@@ -53,16 +53,18 @@
   .sidebar.collapsed .logo-text { display: none; }
   .main-content { transition: margin-left 0.3s ease; }
   .main-content.sidebar-collapsed { margin-left: 68px; }
-  /* Collapse button sits on the right edge of the sidebar so it is always visible */
+  /* Grok-style menu toggle — sits in the sidebar header row */
+  .sidebar-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .sidebar-collapse-btn {
-    position: fixed; top: 72px; left: 226px; width: 28px; height: 28px;
-    background: var(--forest-green); color: #fff; border: 2px solid #fff; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1101;
-    box-shadow: 0 2px 8px rgba(0,0,0,.25); transition: left 0.3s ease;
+    width: 34px; height: 34px; flex-shrink: 0;
+    background: rgba(255,255,255,0.08); color: #e5e5e5; border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: background 0.15s, color 0.15s;
   }
-  .sidebar.collapsed ~ .main-content .sidebar-collapse-btn,
-  body:has(.sidebar.collapsed) .sidebar-collapse-btn { left: 54px; }
-  .sidebar-collapse-btn i { width: 14px; height: 14px; }
+  .sidebar-collapse-btn:hover { background: rgba(255,255,255,0.16); color: #fff; }
+  .sidebar-collapse-btn i, .sidebar-collapse-btn svg { width: 18px; height: 18px; }
+  .sidebar.collapsed .sidebar-header { justify-content: center; padding-left: 0; padding-right: 0; }
+  .sidebar.collapsed .sidebar-collapse-btn { margin: 0 auto; }
 
   .sidebar-header {
     padding: 20px 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.08);
@@ -416,6 +418,9 @@
                 <div class="logo-icon">SL</div>
                 <div class="logo-text">Safari<span>Link</span></div>
             </div>
+            <button class="sidebar-collapse-btn" onclick="toggleSidebarCollapse()" title="Collapse / expand menu">
+                <i data-lucide="panel-left-close" id="collapseIcon"></i>
+            </button>
         </div>
         <nav class="sidebar-nav">
             <div class="nav-section">
@@ -465,11 +470,6 @@
             </div>
         </nav>
     </aside>
-
-    <!-- Collapse menu button (outside sidebar so it is never clipped) -->
-    <button class="sidebar-collapse-btn" onclick="toggleSidebarCollapse()" title="Collapse / expand menu">
-        <i data-lucide="chevrons-left" id="collapseIcon"></i>
-    </button>
 
     <!-- MAIN CONTENT -->
     <div class="main-content">
@@ -1397,12 +1397,10 @@ window.toggleSidebarCollapse = function() {
     var sb = document.getElementById('sidebar');
     var main = document.querySelector('.main-content');
     var icon = document.getElementById('collapseIcon');
-    var btn = document.querySelector('.sidebar-collapse-btn');
     sb.classList.toggle('collapsed');
     if (main) main.classList.toggle('sidebar-collapsed');
-    if (btn) btn.style.left = sb.classList.contains('collapsed') ? '54px' : '226px';
     if (icon) {
-        icon.setAttribute('data-lucide', sb.classList.contains('collapsed') ? 'chevrons-right' : 'chevrons-left');
+        icon.setAttribute('data-lucide', sb.classList.contains('collapsed') ? 'panel-left-open' : 'panel-left-close');
         if (window.lucide) lucide.createIcons();
     }
 };
@@ -1943,7 +1941,10 @@ window.initImagePlaceholders = function() {
                         (v.safariDayRate ? ' · <span style="font-size:.75rem;">Safari $'+v.safariDayRate+'</span>' : '') + '</div>' +
                     '</div>' +
                     (v.availableFrom ? '<div style="font-size:.72rem;color:var(--warm-gray);margin-top:4px;">Free from ' + esc(v.availableFrom) + '</div>' : '') +
-                    '<button class="btn btn-primary btn-sm" style="margin-top:10px;width:100%;justify-content:center;" onclick="event.stopPropagation();fleetLease(' + v.id + ')"><i data-lucide="key" style="width:14px;height:14px;"></i> Lease Vehicle</button>' +
+                    '<div style="display:flex;gap:8px;margin-top:10px;">' +
+                    '<button class="btn btn-secondary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();fleetViewDetail(' + v.id + ')"><i data-lucide="eye" style="width:14px;height:14px;"></i> Details</button>' +
+                    '<button class="btn btn-primary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();fleetLease(' + v.id + ')"><i data-lucide="key" style="width:14px;height:14px;"></i> Lease</button>' +
+                '</div>' +
                 '</div>' +
             '</div>';
         }).join('');
