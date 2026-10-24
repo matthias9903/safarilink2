@@ -113,6 +113,25 @@
   .page { display: none; }
   .page.active { display: block; }
 
+  .op-topbar {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px; flex-wrap: wrap; margin-bottom: 8px; padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .op-topbar-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .btn-logout {
+    background: #fff; color: var(--charcoal); border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm); padding: 10px 16px; font-size: 0.85rem;
+    font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-logout:hover { background: var(--khaki); }
+  td.email-cell, .email-cell {
+    max-width: 160px !important; width: 160px;
+    overflow: hidden !important; text-overflow: ellipsis !important;
+    white-space: nowrap !important; font-size: 0.8rem;
+  }
+  #opTeamBody td { vertical-align: top; }
+  #opTeamBody td:last-child { max-width: 240px; overflow-wrap: anywhere; white-space: normal; }
   .page-header {
     display: flex; justify-content: space-between; align-items: flex-start;
     margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
@@ -482,16 +501,29 @@
     <!-- MAIN CONTENT -->
     <div class="main-content">
 
+        <!-- Global top actions (like other partner dashboards) -->
+        <div class="op-topbar">
+            <div style="font-size:.85rem;color:var(--warm-gray);">
+                <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#10b981;margin-right:6px;"></span>
+                Dreamtrails Expeditions · Tour operator
+            </div>
+            <div class="op-topbar-actions">
+                <button type="button" class="btn-logout" onclick="operatorLogout()">
+                    <i data-lucide="log-out" style="width:16px;height:16px;"></i> Log out
+                </button>
+                <button type="button" class="create-btn" onclick="switchPage('itinerary')">
+                    <i data-lucide="plus" style="width:16px;height:16px;"></i> New Itinerary
+                </button>
+            </div>
+        </div>
+
         <!-- ========== DASHBOARD PAGE ========== -->
         <div id="dashboard-page" class="page active">
             <div class="page-header">
                 <div>
                     <div class="page-title">Dashboard</div>
-                    <div class="page-subtitle"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#10b981;margin-right:6px;"></span>Live overview — linked to accommodation, fleet &amp; guide partners</div>
+                    <div class="page-subtitle">Live overview — linked to accommodation, fleet &amp; guide partners</div>
                 </div>
-                <button class="create-btn" onclick="switchPage('itinerary')">
-                    <i data-lucide="plus"></i> New Itinerary
-                </button>
             </div>
 
             <div class="kpi-grid">
@@ -1074,7 +1106,7 @@
             </div>
             <div class="kpi-grid" style="margin-bottom:20px;">
                 <div class="kpi-card"><div class="kpi-label">Company</div><div class="kpi-value" style="font-size:1.15rem;">Dreamtrails Expeditions</div></div>
-                <div class="kpi-card"><div class="kpi-label">Login email</div><div class="kpi-value" style="font-size:.75rem;">dreamtrailsexpedictions@gmail.com</div></div>
+                <div class="kpi-card"><div class="kpi-label">Login email</div><div class="kpi-value" style="font-size:.95rem;">dreamtrailsexpedictions@gmail.com</div></div>
                 <div class="kpi-card"><div class="kpi-label">Plan</div><div class="kpi-value" style="font-size:1.15rem;">Operator Pro</div></div>
                 <div class="kpi-card"><div class="kpi-label">Team seats</div><div class="kpi-value" id="opTeamCount">3</div></div>
             </div>
@@ -1333,7 +1365,7 @@ function renderOpTeam(){
     } else if (m.status === 'Active' && !m.isMain && m.role !== 'Admin') {
       actions = '<div style="font-size:.72rem;color:var(--warm-gray);margin-top:4px;max-width:220px;overflow-wrap:anywhere;">Approved by SafariLink · login emailed</div>';
     }
-    return '<tr><td><strong>'+esc(m.name)+'</strong></td><td class="email-cell" title="'+esc(m.email)+'">'+esc(m.email)+'</td><td>'+esc(roleLabel)+'</td><td>'+badgeOp(m.status)+actions+'</td></tr>';
+    return '<tr><td><strong>'+esc(m.name)+'</strong></td><td class="email-cell" title="'+esc(m.email)+'">'+esc(m.email)+'</td><td>'+esc(roleLabel)+'</td><td style="max-width:220px;overflow-wrap:anywhere;white-space:normal;">'+badgeOp(m.status)+actions+'</td></tr>';
   }).join('');
   if (window.lucide) lucide.createIcons();
   var banner = document.getElementById('opPendingBanner');
@@ -2679,3 +2711,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </body>
 </html>
+
