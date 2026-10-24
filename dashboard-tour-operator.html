@@ -125,13 +125,26 @@
     font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
   }
   .btn-logout:hover { background: var(--khaki); }
+  /* Team email: wrap fully — never clip long addresses */
   td.email-cell, .email-cell {
-    max-width: 160px !important; width: 160px;
-    overflow: hidden !important; text-overflow: ellipsis !important;
-    white-space: nowrap !important; font-size: 0.8rem;
+    max-width: none !important;
+    width: auto !important;
+    min-width: 200px;
+    overflow: visible !important;
+    text-overflow: unset !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+    word-break: break-all;
+    font-size: 0.82rem;
+    line-height: 1.4;
   }
   #opTeamBody td { vertical-align: top; }
-  #opTeamBody td:last-child { max-width: 240px; overflow-wrap: anywhere; white-space: normal; }
+  #opTeamBody td:last-child { max-width: 280px; overflow-wrap: anywhere; white-space: normal; }
+  #accounts-page .card-body { overflow-x: auto; }
+  #accounts-page table { width: 100%; table-layout: auto; }
+  #accounts-page table th:nth-child(2),
+  #accounts-page table td:nth-child(2) { min-width: 240px; width: 30%; }
+
   .page-header {
     display: flex; justify-content: space-between; align-items: flex-start;
     margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
@@ -185,24 +198,10 @@
   /* ── TABLES ── */
   table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
   th { text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--warm-gray); padding: 10px 12px; border-bottom: 1px solid var(--border-light); }
-  td { padding: 12px; border-bottom: 1px solid var(--border-light); color: var(--charcoal); word-break: break-word; max-width: 280px; }
+  td { padding: 12px; border-bottom: 1px solid var(--border-light); color: var(--charcoal); word-break: break-word; }
   td code { word-break: break-all; }
-td.email-cell, .email-cell {
-  max-width: none !important;
-  min-width: 200px;
-  overflow: visible !important;
-  white-space: normal !important;
-  overflow-wrap: anywhere;
-  word-break: break-all;
-  font-size: 0.82rem;
-  line-height: 1.4;
-}
-#accounts-page table th:nth-child(2),
-#accounts-page table td:nth-child(2) {
-  min-width: 240px;
-  width: 30%;
-}
   table { table-layout: auto; }
+
   tr:last-child td { border-bottom: none; }
 
   /* ── SIDEBAR TOGGLE (mobile) ── */
@@ -291,6 +290,14 @@ td.email-cell, .email-cell {
     outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(63,185,131,0.1);
   }
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  #accounts-page .form-group input,
+  #accounts-page .form-group textarea {
+    width: 100%; max-width: 100%; box-sizing: border-box;
+  }
+  /* Long login email on its own full-width row in company profile */
+  #accounts-page .email-full-row {
+    grid-column: 1 / -1;
+  }
 
   /* ── BUTTONS ── */
   .btn {
@@ -1118,16 +1125,32 @@ td.email-cell, .email-cell {
                 </div>
                 <button class="create-btn" onclick="document.getElementById('opMemF').style.display='block'"><i data-lucide="user-plus"></i> Invite member</button>
             </div>
-            <div class="kpi-grid" style="margin-bottom:20px;">
-                <div class="kpi-card"><div class="kpi-label">Company</div><div class="kpi-value" style="font-size:1.15rem;">Dreamtrails Expeditions</div></div>
-                <div class="kpi-card"><div class="kpi-label">Login email</div><div class="kpi-value" style="font-size:.95rem;">dreamtrailsexpedictions@gmail.com</div></div>
-                <div class="kpi-card"><div class="kpi-label">Plan</div><div class="kpi-value" style="font-size:1.15rem;">Operator Pro</div></div>
-                <div class="kpi-card"><div class="kpi-label">Team seats</div><div class="kpi-value" id="opTeamCount">3</div></div>
+            <!-- Row 1: company + plan -->
+            <div class="kpi-grid" style="margin-bottom:12px;grid-template-columns:1fr 1fr;">
+                <div class="kpi-card">
+                    <div class="kpi-label">Company</div>
+                    <div class="kpi-value" style="font-size:1.15rem;" id="kpiCompanyName">Dreamtrails Expeditions</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Plan</div>
+                    <div class="kpi-value" style="font-size:1.15rem;">Operator Pro</div>
+                </div>
+            </div>
+            <!-- Row 2: long login email + shorter team seats -->
+            <div class="kpi-grid" style="margin-bottom:20px;grid-template-columns:minmax(0,1fr) 140px;">
+                <div class="kpi-card" style="min-width:0;">
+                    <div class="kpi-label">Login email</div>
+                    <div class="kpi-value" id="kpiLoginEmail" style="font-size:0.95rem;font-weight:600;overflow-wrap:anywhere;word-break:break-all;white-space:normal;line-height:1.35;max-width:100%;">dreamtrailsexpedictions@gmail.com</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Team seats</div>
+                    <div class="kpi-value" id="opTeamCount">3</div>
+                </div>
             </div>
             <div id="opMemF" class="card" style="display:none;padding:16px;margin-bottom:16px;">
                 <div class="form-row">
                     <div class="form-group"><label>Name</label><input id="opMemName" placeholder="Full name"></div>
-                    <div class="form-group"><label>Email</label><input id="opMemEmail" placeholder="email@dreamtrails.tz"></div>
+                    <div class="form-group email-full-row" style="grid-column:1/-1;"><label>Login email</label><input id="opMemEmail" type="email" placeholder="long.email@company.co.tz" style="width:100%;"></div>
                     <div class="form-group"><label>Role</label>
                         <select id="opMemRole"><option>Manager</option><option>Sales</option></select>
                     </div>
@@ -1162,9 +1185,11 @@ td.email-cell, .email-cell {
                                 <div class="form-group"><label>Region / base</label><input id="coRegion" value="Arusha, Tanzania"></div>
                             </div>
                             <div class="form-row">
-                                <div class="form-group"><label>Email</label><input id="coEmail" value="dreamtrailsexpedictions@gmail.com"></div>
-                                <div class="form-group"><label>Phone</label><input id="coPhone" value="+255 754 000 000"></div>
+                                <div class="form-group email-full-row"><label>Login email</label><input id="coEmail" type="email" value="dreamtrailsexpedictions@gmail.com" style="width:100%;"></div>
                             </div>
+                            <div class="form-row">
+                                <div class="form-group"><label>Phone</label><input id="coPhone" value="+255 754 000 000"></div>
+                                </div>
                             <div class="form-group"><label>Website (optional)</label><input id="coWeb" placeholder="https://"></div>
                             <div class="form-group"><label>About</label><textarea id="coAbout" rows="2">Safari operator connecting guests with trusted partners across Tanzania.</textarea></div>
                         </div>
@@ -1576,7 +1601,18 @@ window.switchPage = function(pageName) {
     if (pageName === 'guides') { guideRenderCards(getLiveGuides()); }
     if (pageName === 'messages') { renderOpMessages(); }
     if (pageName === 'dashboard') { renderOpDashboard(); }
-    if (pageName === 'accounts') { renderOpTeam(); if (window.loadCompanyProfile) loadCompanyProfile(); }
+    if (pageName === 'accounts') {
+      renderOpTeam();
+      if (window.loadCompanyProfile) loadCompanyProfile();
+      try {
+        var em = (document.getElementById('coEmail')||{}).value || 'dreamtrailsexpedictions@gmail.com';
+        var el = document.getElementById('kpiLoginEmail');
+        if (el) el.textContent = em;
+        var cn = (document.getElementById('coName')||{}).value;
+        var kc = document.getElementById('kpiCompanyName');
+        if (kc && cn) kc.textContent = cn;
+      } catch (e) {}
+    }
     if (pageName === 'quotes') { renderQuotesPage(); }
     if (pageName === 'trips') { renderTripsPage(); }
     if (pageName === 'tasks') { renderTasksPage(); }
@@ -1586,6 +1622,12 @@ window.switchPage = function(pageName) {
 };
 
 /* ── Sidebar Toggle (Mobile) ── */
+window.operatorLogout = function() {
+  try { sessionStorage.removeItem('safariLinkUser'); } catch (e) {}
+  try { localStorage.removeItem('safarilink_user'); } catch (e) {}
+  try { sessionStorage.clear(); } catch (e) {}
+  window.location.href = 'login.html';
+};
 window.toggleSidebar = function() {
     document.getElementById('sidebar').classList.toggle('open');
     document.getElementById('sidebar-overlay').classList.toggle('active');
@@ -2447,6 +2489,10 @@ window.loadCompanyProfile = function() {
     if (document.getElementById('coName')) document.getElementById('coName').value = p.name||'';
     if (document.getElementById('coRegion')) document.getElementById('coRegion').value = p.region||'';
     if (document.getElementById('coEmail')) document.getElementById('coEmail').value = p.email||'';
+    var kpiE = document.getElementById('kpiLoginEmail');
+    if (kpiE && p.email) kpiE.textContent = p.email;
+    var kpiC = document.getElementById('kpiCompanyName');
+    if (kpiC && p.name) kpiC.textContent = p.name;
     if (document.getElementById('coPhone')) document.getElementById('coPhone').value = p.phone||'';
     if (document.getElementById('coWeb')) document.getElementById('coWeb').value = p.website||'';
     if (document.getElementById('coAbout')) document.getElementById('coAbout').value = p.about||'';
@@ -2725,4 +2771,3 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </body>
 </html>
-
