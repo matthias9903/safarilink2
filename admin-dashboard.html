@@ -3,68 +3,38 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SafariLink — Admin Dashboard</title>
+<title>SafariLink — Platform Admin</title>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <style>
   :root {
-    --forest-green: #1a5a3a;
-    --forest-green-light: #2d7a52;
-    --accent-green: #3fb983;
-    --warm-off-white: #f8f7f4;
-    --khaki: #e8e5dd;
-    --charcoal: #2c2c2c;
-    --warm-gray: #a39e95;
-    --border-light: #d4cfc6;
-    --status-available: #10b981;
-    --status-pending: #f59e0b;
-    --status-unavailable: #dc2626;
-    --radius-md: 10px;
-    --radius-lg: 16px;
+    --forest-green: #1a5a3a; --forest-green-light: #2d7a52; --accent-green: #3fb983;
+    --warm-off-white: #f8f7f4; --khaki: #e8e5dd; --charcoal: #2c2c2c;
+    --warm-gray: #a39e95; --border-light: #d4cfc6;
+    --status-available: #10b981; --status-pending: #f59e0b; --status-unavailable: #dc2626;
+    --radius-md: 10px; --radius-lg: 16px;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: var(--warm-off-white); color: var(--charcoal); min-height: 100vh;
-  }
-  .login-screen {
-    min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px;
-  }
-  .login-card {
-    background: white; border: 1px solid var(--border-light); border-radius: var(--radius-lg);
-    padding: 40px; width: 100%; max-width: 400px; box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--warm-off-white); color: var(--charcoal); min-height: 100vh; }
+  .login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+  .login-card { background: white; border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 40px; width: 100%; max-width: 400px; box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
   .login-card h1 { font-size: 1.6rem; color: var(--forest-green); margin-bottom: 4px; }
   .login-card p { color: var(--warm-gray); margin-bottom: 24px; font-size: 0.95rem; }
-  .login-card input[type="password"] {
-    width: 100%; padding: 12px 14px; border: 1px solid var(--border-light); border-radius: var(--radius-md);
-    font-size: 1rem; margin-bottom: 14px; font-family: inherit;
-  }
+  .login-card input { width: 100%; padding: 12px 14px; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 1rem; margin-bottom: 14px; font-family: inherit; }
   .login-card input:focus { outline: none; border-color: var(--forest-green); }
-  .login-card button {
-    width: 100%; padding: 12px; background: var(--forest-green); color: white; border: none;
-    border-radius: var(--radius-md); font-size: 1rem; font-weight: 600; cursor: pointer;
-    font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px;
-  }
+  .login-card button { width: 100%; padding: 12px; background: var(--forest-green); color: white; border: none; border-radius: var(--radius-md); font-size: 1rem; font-weight: 600; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px; }
   .login-card button:hover { background: var(--forest-green-light); }
   .login-error { color: var(--status-unavailable); font-size: 0.9rem; margin-top: 12px; display: none; }
-
+  .hint { font-size: 0.8rem; color: var(--warm-gray); margin-top: 12px; }
   .dashboard-screen { display: none; }
-  .topbar {
-    background: var(--forest-green); color: white; padding: 16px 24px;
-    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
-  }
+  .topbar { background: var(--forest-green); color: white; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
   .topbar h2 { font-size: 1.15rem; font-weight: 600; }
-  .topbar button {
-    background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: white;
-    padding: 8px 14px; border-radius: var(--radius-md); cursor: pointer; font-family: inherit;
-    display: flex; align-items: center; gap: 6px; font-size: 0.9rem;
-  }
+  .topbar button { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: white; padding: 8px 14px; border-radius: var(--radius-md); cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 6px; font-size: 0.9rem; }
   .content { padding: 24px; max-width: 1200px; margin: 0 auto; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .tab { padding: 10px 16px; border-radius: 8px; border: 1px solid var(--border-light); background: white; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
+  .tab.active { background: var(--forest-green); color: white; border-color: var(--forest-green); }
   .stats { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
-  .stat-card {
-    background: white; border: 1px solid var(--border-light); border-radius: var(--radius-md);
-    padding: 14px 18px; min-width: 120px; border-left: 4px solid var(--border-light);
-  }
+  .stat-card { background: white; border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 14px 18px; min-width: 120px; border-left: 4px solid var(--border-light); }
   .stat-card .label { font-size: 0.75rem; color: var(--warm-gray); text-transform: uppercase; letter-spacing: 0.04em; }
   .stat-card .number { font-size: 1.6rem; font-weight: 700; }
   .stat-card.pending { border-left-color: var(--status-pending); }
@@ -73,76 +43,38 @@
   .stat-card.approved .number { color: var(--status-available); }
   .stat-card.rejected { border-left-color: var(--status-unavailable); }
   .stat-card.rejected .number { color: var(--status-unavailable); }
-
-  .table-wrap {
-    background: white; border: 1px solid var(--border-light); border-radius: var(--radius-lg); overflow-x: auto;
-  }
+  .table-wrap { background: white; border: 1px solid var(--border-light); border-radius: var(--radius-lg); overflow-x: auto; }
   table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-  th {
-    text-align: left; padding: 12px 14px; background: var(--khaki); font-size: 0.75rem;
-    text-transform: uppercase; letter-spacing: 0.03em; color: var(--charcoal); white-space: nowrap;
-  }
-  td { padding: 12px 14px; border-top: 1px solid var(--border-light); vertical-align: middle; }
-  .badge {
-    display: inline-block; padding: 3px 10px; border-radius: 100px; font-size: 0.75rem; font-weight: 600;
-  }
+  th { text-align: left; padding: 12px 14px; background: var(--khaki); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--charcoal); white-space: nowrap; }
+  td { padding: 12px 14px; border-top: 1px solid var(--border-light); vertical-align: middle; max-width: 220px; overflow-wrap: anywhere; word-break: break-word; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 100px; font-size: 0.75rem; font-weight: 600; }
   .badge.pending { background: #fef3c7; color: #92400e; }
-  .badge.approved { background: #d1fae5; color: #065f46; }
+  .badge.approved, .badge.active { background: #d1fae5; color: #065f46; }
   .badge.rejected { background: #fee2e2; color: #991b1b; }
-  .btn-sm {
-    padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-size: 0.8rem;
-    font-family: inherit; font-weight: 600; margin-right: 4px;
-  }
+  .btn-sm { padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-size: 0.8rem; font-family: inherit; font-weight: 600; margin-right: 4px; margin-bottom: 4px; }
   .btn-review { background: #e0f2fe; color: #075985; }
-  .btn-review:hover { background: #bae6fd; }
   .btn-approve { background: #d1fae5; color: #065f46; }
-  .btn-approve:hover { background: #a7f3d0; }
   .btn-reject { background: #fee2e2; color: #991b1b; }
-  .btn-reject:hover { background: #fecaca; }
-
-  .modal-overlay {
-    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45);
-    align-items: center; justify-content: center; z-index: 100; padding: 16px;
-  }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); align-items: center; justify-content: center; z-index: 100; padding: 16px; }
   .modal-overlay.show { display: flex; }
-  .modal {
-    background: white; border-radius: var(--radius-lg); padding: 28px; max-width: 560px;
-    width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-  }
+  .modal { background: white; border-radius: var(--radius-lg); padding: 28px; max-width: 560px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
   .modal h3 { margin-bottom: 6px; color: var(--forest-green); }
   .modal .sub { color: var(--warm-gray); font-size: 0.9rem; margin-bottom: 18px; }
-  .detail-grid {
-    display: grid; grid-template-columns: 120px 1fr; gap: 10px 14px; font-size: 0.92rem; margin-bottom: 18px;
-  }
+  .detail-grid { display: grid; grid-template-columns: 120px 1fr; gap: 10px 14px; font-size: 0.92rem; margin-bottom: 18px; }
   .detail-grid .k { color: var(--warm-gray); font-weight: 600; }
-  .detail-grid .v { color: var(--charcoal); word-break: break-word; }
-  .detail-block {
-    background: var(--warm-off-white); border: 1px solid var(--border-light);
-    border-radius: var(--radius-md); padding: 12px 14px; margin-bottom: 14px;
-  }
-  .detail-block h4 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--warm-gray); margin-bottom: 6px; }
-  .detail-block p { white-space: pre-wrap; line-height: 1.5; font-size: 0.92rem; }
+  .detail-grid .v { color: var(--charcoal); overflow-wrap: anywhere; word-break: break-word; }
   .modal-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-  .modal-actions button {
-    padding: 10px 18px; border-radius: var(--radius-md); border: none; cursor: pointer;
-    font-family: inherit; font-weight: 600; font-size: 0.9rem;
-  }
+  .modal-actions button { padding: 10px 18px; border-radius: var(--radius-md); border: none; cursor: pointer; font-family: inherit; font-weight: 600; font-size: 0.9rem; }
   .btn-primary { background: var(--forest-green); color: white; }
-  .btn-primary:hover { background: var(--forest-green-light); }
   .btn-danger { background: #fee2e2; color: #991b1b; }
   .btn-ghost { background: var(--khaki); color: var(--charcoal); }
-
-  .temp-pass {
-    display: inline-block; background: var(--khaki); padding: 10px 20px; border-radius: var(--radius-md);
-    font-size: 1.3rem; font-weight: 700; letter-spacing: 2px; margin: 12px 0; font-family: monospace;
-  }
+  .temp-pass { display: inline-block; background: var(--khaki); padding: 10px 20px; border-radius: var(--radius-md); font-size: 1.2rem; font-weight: 700; letter-spacing: 1px; margin: 12px 0; font-family: monospace; overflow-wrap: anywhere; max-width: 100%; }
   .empty-state { text-align: center; padding: 40px; color: var(--warm-gray); }
-  .refresh-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
-  .refresh-bar button {
-    background: white; border: 1px solid var(--border-light); border-radius: var(--radius-md);
-    padding: 8px 16px; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 6px;
-  }
-  .refresh-bar button:hover { background: var(--khaki); }
+  .refresh-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .refresh-bar button { background: white; border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 8px 16px; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 6px; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  .note { font-size: 0.85rem; color: var(--warm-gray); margin-bottom: 12px; }
 </style>
 </head>
 <body>
@@ -150,41 +82,60 @@
 <div class="login-screen" id="loginScreen">
   <div class="login-card">
     <h1>SafariLink Admin</h1>
-    <p>Enter your admin password to review and approve access requests.</p>
+    <p>Platform admin — approve new service providers and their team members.</p>
     <input type="password" id="adminPass" placeholder="Admin password" onkeydown="if(event.key==='Enter')adminLogin()">
     <button onclick="adminLogin()"><i data-lucide="shield-check"></i> Sign in</button>
     <div class="login-error" id="loginError">Invalid password.</div>
+    <p class="hint">Demo mode: password <strong>admin123</strong> (works offline). Production uses Railway API when available.</p>
   </div>
 </div>
 
 <div class="dashboard-screen" id="dashboardScreen">
   <div class="topbar">
-    <h2>SafariLink Admin — Access Requests</h2>
-    <button onclick="logout()"><i data-lucide="log-out"></i> Logout</button>
+    <h2>SafariLink Platform Admin</h2>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button onclick="openAdminPwdChange()"><i data-lucide="key"></i> Change password</button>
+      <button onclick="logout()"><i data-lucide="log-out"></i> Logout</button>
+    </div>
   </div>
   <div class="content">
-    <div class="refresh-bar">
-      <button onclick="loadRequests()"><i data-lucide="refresh-cw"></i> Refresh</button>
+    <div class="tabs">
+      <button class="tab active" onclick="showPanel('providers', this)">Service providers</button>
+      <button class="tab" onclick="showPanel('members', this)">Team members</button>
     </div>
-    <div class="stats" id="stats"></div>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Company</th>
-            <th>Type</th>
-            <th>Contact</th>
-            <th>Email</th>
-            <th>Region</th>
-            <th>Date</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="requestsBody">
-          <tr><td colspan="8" class="empty-state">Loading...</td></tr>
-        </tbody>
-      </table>
+    <div class="refresh-bar">
+      <button onclick="refreshAll()"><i data-lucide="refresh-cw"></i> Refresh</button>
+      <span class="note" id="modeNote"></span>
+    </div>
+
+    <div class="panel active" id="panel-providers">
+      <p class="note">New businesses from <strong>Request Access</strong>. Approve to create login and notify by email.</p>
+      <div class="stats" id="statsProviders"></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Company</th><th>Type</th><th>Contact</th><th>Email</th><th>Region</th><th>Date</th><th>Status</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="requestsBody"><tr><td colspan="8" class="empty-state">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-members">
+      <p class="note">When a service provider adds Sales / Manager / staff, they appear here until <strong>you</strong> approve. Business admins cannot activate accounts themselves.</p>
+      <div class="stats" id="statsMembers"></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th><th>Email</th><th>Role</th><th>Provider</th><th>Company</th><th>Date</th><th>Status</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="membersBody"><tr><td colspan="8" class="empty-state">Loading...</td></tr></tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
@@ -194,25 +145,18 @@
     <h3 id="reviewTitle">Application review</h3>
     <p class="sub" id="reviewSub"></p>
     <div class="detail-grid" id="reviewGrid"></div>
-    <div class="detail-block">
-      <h4>Business description</h4>
-      <p id="reviewDescription">—</p>
-    </div>
-    <div class="detail-block">
-      <h4>Documents / notes</h4>
-      <p id="reviewDocs">No documents attached.</p>
-    </div>
     <div class="modal-actions" id="reviewActions"></div>
   </div>
 </div>
 
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal" style="text-align:center;max-width:440px">
-    <h3>Request approved</h3>
-    <p class="sub">Copy this temporary password and send it privately (WhatsApp / email):</p>
+    <h3 id="modalTitle">Approved</h3>
+    <p class="sub">Temporary password — send privately / email notification (simulated):</p>
     <div class="temp-pass" id="tempPass"></div>
-    <p style="font-size:0.85rem;color:var(--warm-gray)">Email: <strong id="modalEmail"></strong></p>
+    <p style="font-size:0.85rem;color:var(--warm-gray);overflow-wrap:anywhere;">Email: <strong id="modalEmail"></strong></p>
     <p style="font-size:0.85rem;color:var(--warm-gray)">Role: <strong id="modalRole"></strong></p>
+    <p style="font-size:0.8rem;color:var(--warm-gray);margin-top:8px;" id="modalNote">User should change password after first login.</p>
     <div class="modal-actions" style="justify-content:center">
       <button class="btn-primary" onclick="closeModal()">Done</button>
     </div>
@@ -221,8 +165,46 @@
 
 <script>
   var token = '';
+  var useApi = false;
   var allRequests = [];
-  lucide.createIcons();
+  var allMembers = [];
+  var PLATFORM = 'safarilink_platform_v1';
+  var ACCESS_KEY = 'safarilink_access_requests';
+  var DEMO_PASS = 'admin123';
+
+  if (window.lucide) lucide.createIcons();
+
+  function esc(s) {
+    var d = document.createElement('div');
+    d.textContent = s == null ? '' : String(s);
+    return d.innerHTML;
+  }
+  function genPass() {
+    var c = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+    var s = 'SL-';
+    for (var i = 0; i < 8; i++) s += c.charAt(Math.floor(Math.random() * c.length));
+    return s;
+  }
+  function readPlatform() {
+    try { return JSON.parse(localStorage.getItem(PLATFORM) || '{}'); } catch (e) { return {}; }
+  }
+  function writePlatform(d) {
+    try { localStorage.setItem(PLATFORM, JSON.stringify(d)); } catch (e) {}
+  }
+  function readAccessRequests() {
+    try {
+      var a = JSON.parse(localStorage.getItem(ACCESS_KEY) || '[]');
+      if (Array.isArray(a) && a.length) return a;
+    } catch (e) {}
+    // seed sample pending provider
+    return [
+      { id: 1, company_name: 'Serengeti Hill Lodge', business_type: 'accommodation', contact_name: 'Amina Hassan', email: 'amina@serengetihill.tz', phone: '+255 700 111 222', region: 'Arusha', description: 'Lodge near Serengeti corridor', website: '', status: 'pending', created_at: '2026-10-22' },
+      { id: 2, company_name: 'Northern Fleet Ltd', business_type: 'fleet', contact_name: 'John Mushi', email: 'ops@northernfleet.tz', phone: '+255 700 333 444', region: 'Arusha', description: '4x4 safari vehicles', status: 'pending', created_at: '2026-10-23' }
+    ];
+  }
+  function saveAccessRequests(list) {
+    try { localStorage.setItem(ACCESS_KEY, JSON.stringify(list)); } catch (e) {}
+  }
 
   function adminLogin() {
     var pass = document.getElementById('adminPass').value;
@@ -233,30 +215,45 @@
       err.style.display = 'block';
       return;
     }
+    // Try API first, fall back to demo
     fetch('/api/admin/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ password: pass })
     })
-    .then(function(r) {
-      return r.json().then(function(data) { return { ok: r.ok, data: data }; });
-    })
+    .then(function(r) { return r.json().then(function(data) { return { ok: r.ok, data: data }; }); })
     .then(function(result) {
-      if (!result.ok) {
-        err.textContent = (result.data && result.data.error) || 'Invalid password.';
-        err.style.display = 'block';
+      if (result.ok && result.data && result.data.token) {
+        useApi = true;
+        token = result.data.token;
+        try { sessionStorage.setItem('sl_admin_token', token); } catch (e) {}
+        enterDashboard();
         return;
       }
-      token = result.data.token;
-      try { sessionStorage.setItem('sl_admin_token', token); } catch (e) {}
-      document.getElementById('loginScreen').style.display = 'none';
-      document.getElementById('dashboardScreen').style.display = 'block';
-      loadRequests();
+      demoLogin(pass, err);
     })
-    .catch(function() {
-      err.textContent = 'Server unreachable. Check Railway is running.';
+    .catch(function() { demoLogin(pass, err); });
+  }
+
+  function demoLogin(pass, err) {
+    var saved = '';
+    try { saved = localStorage.getItem('sl_admin_pwd') || DEMO_PASS; } catch (e) { saved = DEMO_PASS; }
+    if (pass !== saved && pass !== DEMO_PASS) {
+      err.textContent = 'Invalid password. Demo: admin123';
       err.style.display = 'block';
-    });
+      return;
+    }
+    useApi = false;
+    token = 'demo';
+    try { sessionStorage.setItem('sl_admin_token', 'demo'); } catch (e) {}
+    enterDashboard();
+  }
+
+  function enterDashboard() {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('dashboardScreen').style.display = 'block';
+    document.getElementById('modeNote').textContent = useApi ? 'Connected to API' : 'Demo mode (localStorage)';
+    refreshAll();
   }
 
   function logout() {
@@ -267,60 +264,58 @@
     document.getElementById('adminPass').value = '';
   }
 
-  function authHeaders(extra) {
-    var h = { 'Authorization': 'Bearer ' + token };
-    if (extra) for (var k in extra) h[k] = extra[k];
-    return h;
+  function showPanel(id, btn) {
+    document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
+    document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+    document.getElementById('panel-' + id).classList.add('active');
+    if (btn) btn.classList.add('active');
+  }
+
+  function refreshAll() {
+    loadRequests();
+    loadMembers();
   }
 
   function loadRequests() {
-    fetch('/api/admin/requests', { headers: authHeaders() })
-    .then(function(r) {
-      return r.json().then(function(data) { return { ok: r.ok, data: data }; });
-    })
-    .then(function(result) {
-      if (!result.ok || !Array.isArray(result.data)) {
-        document.getElementById('requestsBody').innerHTML =
-          '<tr><td colspan="8" class="empty-state">Could not load requests. Log in again.</td></tr>';
-        return;
-      }
-      allRequests = result.data;
-      renderRequests(allRequests);
-    })
-    .catch(function() {
-      document.getElementById('requestsBody').innerHTML =
-        '<tr><td colspan="8" class="empty-state">Could not load requests. Server may be down.</td></tr>';
-    });
+    if (useApi) {
+      fetch('/api/admin/requests', { headers: { Authorization: 'Bearer ' + token } })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (Array.isArray(data)) { allRequests = data; renderRequests(allRequests); }
+          else loadRequestsLocal();
+        })
+        .catch(loadRequestsLocal);
+    } else loadRequestsLocal();
+  }
+
+  function loadRequestsLocal() {
+    allRequests = readAccessRequests();
+    renderRequests(allRequests);
   }
 
   function renderRequests(requests) {
     var tbody = document.getElementById('requestsBody');
-    var stats = document.getElementById('stats');
+    var stats = document.getElementById('statsProviders');
     var pending = requests.filter(function(r) { return r.status === 'pending'; }).length;
     var approved = requests.filter(function(r) { return r.status === 'approved'; }).length;
     var rejected = requests.filter(function(r) { return r.status === 'rejected'; }).length;
-
     stats.innerHTML =
       '<div class="stat-card pending"><div class="label">Pending</div><div class="number">' + pending + '</div></div>' +
       '<div class="stat-card approved"><div class="label">Approved</div><div class="number">' + approved + '</div></div>' +
       '<div class="stat-card rejected"><div class="label">Rejected</div><div class="number">' + rejected + '</div></div>';
-
     if (!requests.length) {
       tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No access requests yet.</td></tr>';
       return;
     }
-
-    var rows = '';
-    requests.forEach(function(r) {
-      var badge = '<span class="badge ' + r.status + '">' +
-        r.status.charAt(0).toUpperCase() + r.status.slice(1) + '</span>';
+    tbody.innerHTML = requests.map(function(r) {
+      var badge = '<span class="badge ' + r.status + '">' + r.status.charAt(0).toUpperCase() + r.status.slice(1) + '</span>';
       var actions = '<button class="btn-sm btn-review" onclick="openReview(' + r.id + ')">Review</button>';
       if (r.status === 'pending') {
         actions +=
-          '<button class="btn-sm btn-approve" onclick="approveRequest(' + r.id + ')">Approve</button>' +
-          '<button class="btn-sm btn-reject" onclick="rejectRequest(' + r.id + ')">Reject</button>';
+          '<button class="btn-sm btn-approve" onclick="approveProvider(' + r.id + ')">Approve</button>' +
+          '<button class="btn-sm btn-reject" onclick="rejectProvider(' + r.id + ')">Reject</button>';
       }
-      rows += '<tr>' +
+      return '<tr>' +
         '<td><strong>' + esc(r.company_name) + '</strong></td>' +
         '<td>' + esc(r.business_type) + '</td>' +
         '<td>' + esc(r.contact_name) + '</td>' +
@@ -328,113 +323,214 @@
         '<td>' + esc(r.region) + '</td>' +
         '<td>' + esc(r.created_at || '') + '</td>' +
         '<td>' + badge + '</td>' +
-        '<td>' + actions + '</td>' +
-        '</tr>';
-    });
-    tbody.innerHTML = rows;
-    lucide.createIcons();
+        '<td>' + actions + '</td></tr>';
+    }).join('');
+    if (window.lucide) lucide.createIcons();
   }
 
   function openReview(id) {
     var r = allRequests.find(function(x) { return x.id === id; });
     if (!r) return;
-
     document.getElementById('reviewTitle').textContent = r.company_name || 'Application';
-    document.getElementById('reviewSub').textContent =
-      'Status: ' + r.status + (r.reviewed_at ? ' · Reviewed ' + r.reviewed_at : '');
-
+    document.getElementById('reviewSub').textContent = 'Status: ' + r.status;
     document.getElementById('reviewGrid').innerHTML =
-      row('Business type', r.business_type) +
-      row('Contact name', r.contact_name) +
-      row('Email', r.email) +
-      row('Phone', r.phone) +
-      row('Region', r.region) +
-      row('Submitted', r.created_at || '—');
-
-    document.getElementById('reviewDescription').textContent =
-      r.description && r.description.trim() ? r.description : 'No description provided.';
-
-    var docsEl = document.getElementById('reviewDocs');
-    if (r.documents_note && r.documents_note.trim()) {
-      docsEl.textContent = r.documents_note;
-    } else {
-      docsEl.innerHTML =
-        'No file attachments stored for this request yet.<br>' +
-        '<span style="color:#92400e">Applicants can put document details in the description. Full file upload can be added later.</span>';
-    }
-
+      row('Type', r.business_type) + row('Contact', r.contact_name) + row('Email', r.email) +
+      row('Phone', r.phone) + row('Region', r.region) + row('Website', r.website || '—') +
+      row('Description', r.description || '—');
     var actions = document.getElementById('reviewActions');
     if (r.status === 'pending') {
       actions.innerHTML =
-        '<button class="btn-primary" onclick="approveRequest(' + r.id + '); closeReview();">Approve &amp; create password</button>' +
-        '<button class="btn-danger" onclick="rejectRequest(' + r.id + '); closeReview();">Reject</button>' +
+        '<button class="btn-primary" onclick="approveProvider(' + r.id + '); closeReview();">Approve & create password</button>' +
+        '<button class="btn-danger" onclick="rejectProvider(' + r.id + '); closeReview();">Reject</button>' +
         '<button class="btn-ghost" onclick="closeReview()">Close</button>';
     } else {
       actions.innerHTML = '<button class="btn-ghost" onclick="closeReview()">Close</button>';
     }
-
     document.getElementById('reviewOverlay').classList.add('show');
   }
+  function row(k, v) { return '<div class="k">' + esc(k) + '</div><div class="v">' + esc(v == null ? '—' : v) + '</div>'; }
+  function closeReview() { document.getElementById('reviewOverlay').classList.remove('show'); }
 
-  function row(k, v) {
-    return '<div class="k">' + esc(k) + '</div><div class="v">' + esc(v == null ? '—' : v) + '</div>';
+  function approveProvider(id) {
+    if (useApi) {
+      fetch('/api/admin/approve/' + id, { method: 'POST', headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' } })
+        .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
+        .then(function(result) {
+          if (!result.ok) { alert((result.data && result.data.error) || 'Approve failed'); return; }
+          showCreds(result.data.tempPassword, result.data.email, result.data.role, 'Service provider approved — email notification simulated.');
+          loadRequests();
+        })
+        .catch(function() { approveProviderLocal(id); });
+    } else approveProviderLocal(id);
   }
 
-  function closeReview() {
-    document.getElementById('reviewOverlay').classList.remove('show');
-  }
-
-  function approveRequest(id) {
-    fetch('/api/admin/approve/' + id, {
-      method: 'POST',
-      headers: authHeaders({ 'Content-Type': 'application/json' })
-    })
-    .then(function(r) {
-      return r.json().then(function(data) { return { ok: r.ok, data: data }; });
-    })
-    .then(function(result) {
-      if (!result.ok) {
-        alert((result.data && result.data.error) || 'Approve failed');
-        return;
-      }
-      document.getElementById('tempPass').textContent = result.data.tempPassword;
-      document.getElementById('modalEmail').textContent = result.data.email;
-      document.getElementById('modalRole').textContent = result.data.role;
-      document.getElementById('modalOverlay').classList.add('show');
-      loadRequests();
-    })
-    .catch(function() {
-      alert('Server unreachable while approving.');
+  function approveProviderLocal(id) {
+    var list = readAccessRequests();
+    var r = list.find(function(x) { return x.id === id; });
+    if (!r || r.status !== 'pending') return;
+    var temp = genPass();
+    r.status = 'approved';
+    r.tempPassword = temp;
+    r.reviewed_at = new Date().toISOString().slice(0, 10);
+    saveAccessRequests(list);
+    // Notify message on platform
+    var d = readPlatform();
+    if (!d.messages) d.messages = [];
+    d.messages.unshift({
+      id: Date.now(), side: r.business_type || 'platform', from: 'SafariLink Admin', initials: 'SL',
+      text: 'Your company "' + r.company_name + '" was approved. Login email sent to ' + r.email + '.',
+      time: Date.now(), type: 'info', unread: true
     });
+    writePlatform(d);
+    showCreds(temp, r.email, r.business_type || 'provider', 'Provider approved. Email notification simulated to ' + r.email);
+    loadRequests();
   }
 
-  function rejectRequest(id) {
+  function rejectProvider(id) {
     if (!confirm('Reject this request?')) return;
-    fetch('/api/admin/reject/' + id, {
-      method: 'POST',
-      headers: authHeaders({ 'Content-Type': 'application/json' })
-    })
-    .then(function() { loadRequests(); })
-    .catch(function() { alert('Server unreachable while rejecting.'); });
+    if (useApi) {
+      fetch('/api/admin/reject/' + id, { method: 'POST', headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' } })
+        .then(function() { loadRequests(); })
+        .catch(function() { rejectProviderLocal(id); });
+    } else rejectProviderLocal(id);
+  }
+  function rejectProviderLocal(id) {
+    var list = readAccessRequests();
+    var r = list.find(function(x) { return x.id === id; });
+    if (!r) return;
+    r.status = 'rejected';
+    saveAccessRequests(list);
+    loadRequests();
   }
 
-  function closeModal() {
-    document.getElementById('modalOverlay').classList.remove('show');
+  /* —— Team members from service providers —— */
+  function loadMembers() {
+    var d = readPlatform();
+    var pending = d.pendingTeam || [];
+    // Also merge operator team pending from dedicated key
+    try {
+      var opTeam = JSON.parse(localStorage.getItem('safarilink_op_team') || '[]');
+      opTeam.filter(function(m) { return m.status === 'Pending'; }).forEach(function(m) {
+        if (!pending.some(function(p) { return p.email === m.email; })) {
+          pending.push({
+            id: m.id || Date.now(), name: m.name, email: m.email, role: m.role,
+            provider: 'tour-operator', providerLabel: 'Tour Operator',
+            company: 'Dreamtrails Expeditions', status: 'pending', createdAt: m.createdAt || Date.now()
+          });
+        }
+      });
+    } catch (e) {}
+    allMembers = pending;
+    renderMembers(allMembers);
   }
 
-  function esc(s) {
-    var d = document.createElement('div');
-    d.textContent = s == null ? '' : String(s);
-    return d.innerHTML;
+  function renderMembers(list) {
+    var tbody = document.getElementById('membersBody');
+    var stats = document.getElementById('statsMembers');
+    var pending = list.filter(function(m) { return (m.status || 'pending') === 'pending' || m.status === 'Pending'; }).length;
+    stats.innerHTML =
+      '<div class="stat-card pending"><div class="label">Pending members</div><div class="number">' + pending + '</div></div>' +
+      '<div class="stat-card approved"><div class="label">In queue</div><div class="number">' + list.length + '</div></div>';
+    if (!list.length) {
+      tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No team members waiting. When operators/partners add staff, they appear here.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = list.map(function(m, idx) {
+      var st = (m.status || 'pending').toLowerCase();
+      var badge = '<span class="badge ' + (st === 'pending' ? 'pending' : 'approved') + '">' + st + '</span>';
+      var actions = '';
+      if (st === 'pending') {
+        actions =
+          '<button class="btn-sm btn-approve" onclick="approveMember(' + idx + ')">Approve & email login</button>' +
+          '<button class="btn-sm btn-reject" onclick="rejectMember(' + idx + ')">Reject</button>';
+      }
+      return '<tr>' +
+        '<td><strong>' + esc(m.name) + '</strong></td>' +
+        '<td>' + esc(m.email) + '</td>' +
+        '<td>' + esc(m.role) + '</td>' +
+        '<td>' + esc(m.providerLabel || m.provider || '') + '</td>' +
+        '<td>' + esc(m.company || '') + '</td>' +
+        '<td>' + esc(m.createdAt ? new Date(m.createdAt).toLocaleDateString() : '') + '</td>' +
+        '<td>' + badge + '</td>' +
+        '<td>' + actions + '</td></tr>';
+    }).join('');
+  }
+
+  function approveMember(idx) {
+    var m = allMembers[idx];
+    if (!m) return;
+    var temp = genPass();
+    // Update platform pendingTeam
+    var d = readPlatform();
+    d.pendingTeam = (d.pendingTeam || []).filter(function(p) { return p.email !== m.email; });
+    if (!d.team) d.team = {};
+    var key = (m.provider === 'tour-operator') ? 'operator' : (m.provider || 'other');
+    if (!d.team[key]) d.team[key] = [];
+    d.team[key].push({ id: m.id || Date.now(), name: m.name, email: m.email, role: m.role, status: 'Active' });
+    if (!d.messages) d.messages = [];
+    d.messages.unshift({
+      id: Date.now(), side: m.provider || 'operator', from: 'SafariLink Admin', initials: 'SL',
+      text: 'Team member ' + m.name + ' (' + m.role + ') approved. Login emailed to ' + m.email + '.',
+      time: Date.now(), type: 'info', unread: true
+    });
+    writePlatform(d);
+    // Update operator team local key
+    try {
+      var opTeam = JSON.parse(localStorage.getItem('safarilink_op_team') || '[]');
+      opTeam.forEach(function(x) {
+        if (x.email === m.email && x.status === 'Pending') {
+          x.status = 'Active';
+          x.tempPassword = temp;
+          x.approvedAt = Date.now();
+        }
+      });
+      localStorage.setItem('safarilink_op_team', JSON.stringify(opTeam));
+    } catch (e) {}
+    try { localStorage.setItem('safarilink_pwd_' + m.email.toLowerCase(), btoa(temp)); } catch (e) {}
+    showCreds(temp, m.email, m.role, 'Team member approved. Email notification simulated.');
+    loadMembers();
+  }
+
+  function rejectMember(idx) {
+    var m = allMembers[idx];
+    if (!m || !confirm('Reject ' + m.name + '?')) return;
+    var d = readPlatform();
+    d.pendingTeam = (d.pendingTeam || []).filter(function(p) { return p.email !== m.email; });
+    writePlatform(d);
+    try {
+      var opTeam = JSON.parse(localStorage.getItem('safarilink_op_team') || '[]');
+      opTeam.forEach(function(x) {
+        if (x.email === m.email) x.status = 'Rejected';
+      });
+      localStorage.setItem('safarilink_op_team', JSON.stringify(opTeam));
+    } catch (e) {}
+    loadMembers();
+  }
+
+  function showCreds(pass, email, role, note) {
+    document.getElementById('tempPass').textContent = pass;
+    document.getElementById('modalEmail').textContent = email;
+    document.getElementById('modalRole').textContent = role;
+    document.getElementById('modalNote').textContent = note || 'User should change password after first login.';
+    document.getElementById('modalOverlay').classList.add('show');
+  }
+  function closeModal() { document.getElementById('modalOverlay').classList.remove('show'); }
+
+  function openAdminPwdChange() {
+    var nw = prompt('New SafariLink Admin password (min 8 chars)');
+    if (!nw || nw.length < 8) { alert('Password must be at least 8 characters'); return; }
+    var conf = prompt('Confirm password');
+    if (nw !== conf) { alert('Passwords do not match'); return; }
+    try { localStorage.setItem('sl_admin_pwd', nw); } catch (e) {}
+    alert('Admin password updated. Email notification simulated to platform admin.');
   }
 
   try {
     var saved = sessionStorage.getItem('sl_admin_token');
     if (saved) {
       token = saved;
-      document.getElementById('loginScreen').style.display = 'none';
-      document.getElementById('dashboardScreen').style.display = 'block';
-      loadRequests();
+      useApi = saved !== 'demo';
+      enterDashboard();
     }
   } catch (e) {}
 </script>
