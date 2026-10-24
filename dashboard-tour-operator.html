@@ -103,6 +103,9 @@
     background: rgba(63,185,131,0.15); color: var(--accent-green); font-weight: 600;
   }
   .nav-item svg, .nav-item i { width: 20px; height: 20px; flex-shrink: 0; }
+  #msgNavBadge { display: none; }
+  #msgNavBadge.show { display: inline-flex !important; }
+  .sidebar.collapsed #msgNavBadge { position: absolute; top: 4px; right: 8px; margin: 0; }
 
   .main-content {
     margin-left: 240px; flex: 1; padding: 28px 32px; min-height: 100vh;
@@ -508,6 +511,7 @@
                 </div>
                 <div class="nav-item" onclick="switchPage('messages')">
                     <i data-lucide="message-square"></i> <span>Messages</span>
+                    <span id="msgNavBadge" style="display:none;margin-left:auto;background:#dc2626;color:#fff;font-size:.65rem;font-weight:700;min-width:18px;height:18px;border-radius:99px;padding:0 5px;align-items:center;justify-content:center;"></span>
                 </div>
             </div>
             <div class="nav-section">
@@ -880,7 +884,7 @@
                     <div class="page-title">Accommodation Directory</div>
                     <div class="page-subtitle">Browse, manage &amp; source safari accommodations</div>
                 </div>
-                <button class="create-btn" onclick="showToast('Add Property — form coming soon')">+ Add Property</button>
+                <button class="create-btn" onclick="openModal('addPropModal')">+ Add Property</button>
             </div>
 
             <!-- Filter Toolbar -->
@@ -924,7 +928,7 @@
                     <div class="page-title">Fleet Management</div>
                     <div class="page-subtitle">Browse, lease, and manage safari vehicles</div>
                 </div>
-                <button class="create-btn" onclick="showToast('Add Vehicle — form coming soon')">+ Add Vehicle</button>
+                <button class="create-btn" onclick="openModal('addFleetModal')">+ Add Vehicle</button>
             </div>
 
             <!-- Filter Toolbar -->
@@ -969,7 +973,7 @@
                     <div class="page-title">Professional Guides</div>
                     <div class="page-subtitle">Browse and source experienced safari guides</div>
                 </div>
-                <button class="create-btn" onclick="showToast('Add Guide — form coming soon')">+ Add Guide</button>
+                <button class="create-btn" onclick="openModal('addGuideModal')">+ Add Guide</button>
             </div>
 
             <!-- Filter Toolbar -->
@@ -1011,18 +1015,31 @@
             <div class="page-header">
                 <div>
                     <div class="page-title">Quotes</div>
-                    <div class="page-subtitle">Generated quotes — mark booked to create a trip</div>
+                    <div class="page-subtitle">Your itinerary quotes and proformas from partners</div>
                 </div>
                 <button class="create-btn" onclick="switchPage('itinerary')"><i data-lucide="plus"></i> Build quote</button>
             </div>
-            <div class="card">
-                <div class="card-header"><div class="card-title">All quotes</div></div>
+            <div class="card" style="margin-bottom:20px;">
+                <div class="card-header"><div class="card-title">My operator quotes (clients)</div></div>
                 <div class="card-body" style="overflow-x:auto;">
                     <table>
                         <thead>
                             <tr><th>Quote ID</th><th>Client</th><th>Trip</th><th>Amount</th><th>Status</th><th>Booking</th><th></th></tr>
                         </thead>
                         <tbody id="quotesTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><div class="card-title">Partner quotes / proformas</div>
+                    <span style="font-size:.78rem;color:var(--warm-gray);">From accommodation, fleet &amp; guides</span>
+                </div>
+                <div class="card-body" style="overflow-x:auto;">
+                    <table>
+                        <thead>
+                            <tr><th>Ref</th><th>From</th><th>Type</th><th>Detail</th><th>Amount</th><th>Status</th><th></th></tr>
+                        </thead>
+                        <tbody id="partnerQuotesBody"></tbody>
                     </table>
                 </div>
             </div>
@@ -1034,7 +1051,7 @@
         <div id="tasks-page" class="page">
             <div class="page-header">
                 <div class="page-title">Tasks</div>
-                <button class="create-btn"><i data-lucide="plus"></i> New Task</button>
+                <button class="create-btn" onclick="openAddTask()"><i data-lucide="plus"></i> New Task</button>
             </div>
             <div class="card">
                 <div class="card-body">
@@ -1287,18 +1304,55 @@ function slGet(){ return slEnsure(); }
 function slUpdate(fn){ var d = slGet(); fn(d); slSave(d); return d; }
 function slOnChange(cb){ window.addEventListener('storage', function(e){ if (e.key === SL_KEY || e.key === SL_KEY+'_tick') cb(); }); setInterval(cb, 8000); }
 
+function updateMsgBadge(){
+  var msgs = [];
+  try { msgs = (slGet().messages || []); } catch(e){}
+  var n = msgs.filter(function(m){ return m.unread; }).length;
+  var b = document.getElementById('msgNavBadge');
+  if (!b) return;
+  if (n > 0) {
+    b.textContent = String(n);
+    b.classList.add('show');
+    b.style.display = 'inline-flex';
+  } else {
+    b.textContent = '';
+    b.classList.remove('show');
+    b.style.display = 'none';
+  }
+}
 function renderOpMessages(){
   var el = document.getElementById('opMsgList');
   if (!el) return;
-  var msgs = (slGet().messages || []).slice().reverse();
-  if (!msgs.length) { el.innerHTML = '<p style="color:var(--warm-gray);">No messages yet. Bookings and partner replies will appear here.</p>'; return; }
+  var msgs = [];
+  try { msgs = (slGet().messages || []).slice().sort(function(a,b){ return (b.time||0)-(a.time||0); }); } catch(e){}
+  // Keep a few seed examples if empty
+  if (!msgs.length) {
+    msgs = [
+      { id:1, from:'SafariLink', initials:'SL', text:'Welcome to partner messaging.', time:Date.now()-86400000, unread:false },
+      { id:2, from:'Serengeti Hill Camp', initials:'SH', text:'Your reservation request was received.', time:Date.now()-3600000, unread:false }
+    ];
+  }
   el.innerHTML = msgs.map(function(m){
-    return '<div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border-light);">' +
-      '<div style="width:36px;height:36px;border-radius:50%;background:var(--forest-green);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex-shrink:0;">' + (m.initials||'SL') + '</div>' +
-      '<div><strong>' + (m.from||'') + '</strong> <span style="font-size:.75rem;color:var(--warm-gray);">· ' + (m.side||'') + '</span>' +
-      '<div style="margin-top:2px;">' + (m.text||'') + '</div></div></div>';
+    var unread = m.unread ? 'background:#f0faf5;border-left:3px solid var(--accent-green);' : '';
+    return '<div style="padding:12px;border-bottom:1px solid var(--border);cursor:pointer;'+unread+'" onclick="markMsgRead('+m.id+')">' +
+      '<div style="display:flex;gap:12px;">' +
+      '<div style="width:36px;height:36px;border-radius:50%;background:var(--forest-green);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex-shrink:0;">'+esc(m.initials||'SL')+'</div>' +
+      '<div style="flex:1;min-width:0;"><div style="display:flex;justify-content:space-between;gap:8px;"><strong>'+esc(m.from||'')+'</strong>' +
+      '<span style="font-size:.75rem;color:var(--warm-gray);">'+(m.time?new Date(m.time).toLocaleString():'')+'</span></div>' +
+      '<div style="font-size:.85rem;margin-top:4px;">'+esc(m.text||'')+'</div>' +
+      (m.unread?'<span class="badge badge-info" style="margin-top:6px;">Unread</span>':'') +
+      '</div></div></div>';
   }).join('');
+  updateMsgBadge();
 }
+function markMsgRead(id){
+  slUpdate(function(d){
+    (d.messages||[]).forEach(function(m){ if(m.id===id) m.unread=false; });
+  });
+  renderOpMessages();
+  updateMsgBadge();
+}
+
 
 /* Live operator home dashboard from shared platform */
 function moneyOp(n){ return '$' + Number(n||0).toLocaleString(); }
@@ -1446,6 +1500,7 @@ function opAddMember(){
   } catch(err){}
   try { document.getElementById('opMemF').style.display = 'none'; } catch(err){}
   renderOpTeam();
+    updateMsgBadge();
   showToast('Member submitted — SafariLink Admin must approve before they can log in');
 }
 
@@ -1613,7 +1668,7 @@ window.switchPage = function(pageName) {
         if (kc && cn) kc.textContent = cn;
       } catch (e) {}
     }
-    if (pageName === 'quotes') { renderQuotesPage(); }
+    if (pageName === 'quotes') { renderQuotesPage(); if (window.renderPartnerQuotes) renderPartnerQuotes(); }
     if (pageName === 'trips') { renderTripsPage(); }
     if (pageName === 'tasks') { renderTasksPage(); }
     // Close mobile sidebar
@@ -1990,6 +2045,7 @@ window.initImagePlaceholders = function() {
         downloadClientQuotePdf(quote);
         showToast('Quote '+qid+' saved · client PDF downloaded');
         if (window.renderQuotesPage) renderQuotesPage();
+        if (window.renderPartnerQuotes) renderPartnerQuotes();
         if (window.renderTasksPage) renderTasksPage();
     };
 
@@ -2333,51 +2389,99 @@ window.initImagePlaceholders = function() {
 
 
 /* ── Booking forms (operator → partners) ── */
+window._accomRoomOptions = [];
+window.addAccomRoomLine = function() {
+  var wrap = document.getElementById('bookAccomRoomLines');
+  if (!wrap) return;
+  var idx = wrap.children.length;
+  var opts = (window._accomRoomOptions || []).map(function(r) {
+    return '<option value="'+String(r.name).replace(/"/g,'&quot;')+'" data-sto="'+(r.sto||0)+'">'+r.name+' — STO $'+(r.sto||0)+'/night</option>';
+  }).join('') || '<option value="Standard" data-sto="0">Standard</option>';
+  var div = document.createElement('div');
+  div.className = 'accom-room-line';
+  div.style.cssText = 'border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:10px;background:var(--bg);';
+  div.innerHTML =
+    '<div class="form-group"><label>Room type *</label><select class="ar-type">'+opts+'</select></div>' +
+    '<div class="form-row">' +
+    '<div class="form-group"><label>Number of rooms *</label><input type="number" class="ar-qty" min="1" value="1"></div>' +
+    '<div class="form-group"><label>Line notes</label><input class="ar-notes" placeholder="e.g. adjoining rooms"></div>' +
+    '</div>' +
+    (idx > 0 ? '<button type="button" class="btn btn-secondary btn-sm" onclick="this.parentNode.remove()">Remove</button>' : '');
+  wrap.appendChild(div);
+  if (window.lucide) lucide.createIcons();
+};
 window.openAccomBookForm = function(id) {
     var a = getLiveAccommodations().find(function(x){ return x.id === id; });
     if (!a) { showToast('Property not found'); return; }
     document.getElementById('bookAccomId').value = id;
     document.getElementById('bookAccomName').value = a.name;
-    var rooms = a.rooms || [];
-    var sel = document.getElementById('bookAccomRoom');
-    sel.innerHTML = rooms.length
-      ? rooms.map(function(r){ return '<option value="'+String(r.name).replace(/"/g,'&quot;')+'" data-sto="'+(r.sto||0)+'">'+r.name+' — STO $'+(r.sto||0)+'/night</option>'; }).join('')
-      : '<option value="Standard" data-sto="'+(a.pricePerNight||0)+'">Standard</option>';
+    window._accomRoomOptions = a.rooms || [];
     var t0 = new Date(); t0.setDate(t0.getDate()+3);
     var t1 = new Date(); t1.setDate(t1.getDate()+6);
     document.getElementById('bookAccomIn').value = t0.toISOString().slice(0,10);
     document.getElementById('bookAccomOut').value = t1.toISOString().slice(0,10);
+    document.getElementById('bookAccomRoomLines').innerHTML = '';
+    addAccomRoomLine();
     openModal('bookAccomModal');
 };
 window.submitAccomBooking = function() {
     var id = Number(document.getElementById('bookAccomId').value);
     var a = getLiveAccommodations().find(function(x){ return x.id === id; });
     if (!a) return;
-    var room = document.getElementById('bookAccomRoom').value;
-    var qty = Number(document.getElementById('bookAccomQty').value)||1;
-    var guests = Number(document.getElementById('bookAccomGuests').value)||2;
     var cin = document.getElementById('bookAccomIn').value;
     var cout = document.getElementById('bookAccomOut').value;
+    var guests = Number(document.getElementById('bookAccomGuests').value)||2;
     var notes = document.getElementById('bookAccomNotes').value;
-    if (!cin || !cout) { showToast('Select dates'); return; }
+    if (!cin || !cout) { showToast('Select check-in and check-out'); return; }
     var nights = Math.max(1, Math.round((new Date(cout)-new Date(cin))/86400000));
-    var sto = 0;
-    try { sto = Number(document.getElementById('bookAccomRoom').selectedOptions[0].getAttribute('data-sto'))||a.pricePerNight||0; } catch(e){}
+    var lines = [];
+    var totalAmt = 0;
+    document.querySelectorAll('#bookAccomRoomLines .accom-room-line').forEach(function(row) {
+      var sel = row.querySelector('.ar-type');
+      var qty = Number(row.querySelector('.ar-qty').value)||1;
+      var ln = (row.querySelector('.ar-notes')||{}).value || '';
+      var sto = 0;
+      try { sto = Number(sel.selectedOptions[0].getAttribute('data-sto'))||0; } catch(e){}
+      var roomName = sel.value;
+      var lineAmt = sto * nights * qty;
+      totalAmt += lineAmt;
+      lines.push({ roomType: roomName, qty: qty, notes: ln, sto: sto, nights: nights, amount: lineAmt });
+    });
+    if (!lines.length) { showToast('Add at least one room type'); return; }
+    var roomSummary = lines.map(function(l){ return l.roomType+' ×'+l.qty; }).join('; ');
     slUpdate(function(d){
       if (!d.reservations) d.reservations = [];
       d.reservations.unshift({
-        id:'R-'+Date.now().toString().slice(-4), operator:'Dreamtrails Expeditions', propertyId:a.id,
-        room: room+(qty>1?' ×'+qty:''), checkIn:cin, checkOut:cout, guests:guests,
-        amount: sto*nights*qty, payment:'Pending', status:'reserved',
-        createdAt:Date.now(), repliedAt:null, notes: notes||'From operator sourcing'
+        id:'R-'+Date.now().toString().slice(-4),
+        operator:'Dreamtrails Expeditions',
+        propertyId:a.id,
+        propertyName:a.name,
+        room: roomSummary,
+        roomLines: lines,
+        checkIn:cin, checkOut:cout, guests:guests, nights:nights,
+        amount: totalAmt, payment:'Pending', status:'reserved',
+        createdAt:Date.now(), repliedAt:null,
+        notes: notes||'From operator sourcing',
+        needsProforma: true
       });
       if (!d.messages) d.messages = [];
-      d.messages.unshift({ id:Date.now(), side:'accommodation', from:'Dreamtrails Expeditions', initials:'DT',
-        text:'Reservation: '+a.name+' · '+room+' · '+cin+' to '+cout, time:Date.now(), type:'info', unread:true });
+      d.messages.unshift({
+        id:Date.now(), side:'accommodation', from:'Dreamtrails Expeditions', initials:'DT',
+        text:'Reservation for '+a.name+': '+roomSummary+' · '+cin+' to '+cout+' · '+guests+' guests',
+        time:Date.now(), type:'info', unread:true
+      });
     });
+    try {
+      var s = opActivityGet();
+      s.tasks = s.tasks || [];
+      s.tasks.unshift({ id:Date.now(), task:'Await confirmation & proforma: '+a.name, related:a.name, due:cin, assignee:'Admin', status:'Open' });
+      opActivitySave(s);
+    } catch(e){}
     closeModal('bookAccomModal');
-    showToast('Reservation sent to '+a.name);
+    showToast('Reservation sent to '+a.name+' with '+lines.length+' room type(s)');
+    updateMsgBadge();
 };
+
 window.syncFleetDays = function() {
     var a = document.getElementById('bookFleetStart').value, b = document.getElementById('bookFleetEnd').value;
     if (a && b) document.getElementById('bookFleetDays').value = Math.max(1, Math.round((new Date(b)-new Date(a))/86400000));
@@ -2538,7 +2642,7 @@ window.downloadClientQuotePdf = function(quote) {
     '<p class="muted">Quote <strong>'+quote.id+'</strong> for <strong>'+quote.client+'</strong></p>' +
     '<div class="box">' +
     '<div style="font-size:1.1rem;font-weight:600;margin-bottom:8px">'+quote.trip+'</div>' +
-    (quote.days ? '<p class="muted">'+quote.days+' day(s)</p>' : '') +
+    (quote.days ? '<p class="muted">'+quote.days+' day(s)</p>' : '') +(quote.daysDetail && quote.daysDetail.length ? '<div class="box" style="text-align:left"><strong>Itinerary overview</strong><ul style="margin:8px 0 0 18px;padding:0">'+quote.daysDetail.map(function(d){return '<li>'+ (d.label||'') + (d.location?': '+d.location:'') + (d.accommodation?' · '+d.accommodation:'') +'</li>';}).join('')+'</ul></div>' : '') +
     '<p style="margin-top:16px">Total investment</p>' +
     '<div class="total">$'+Number(quote.amount||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})+'</div>' +
     '<p class="muted" style="margin-top:8px">All-inclusive package price as quoted. Valid for 14 days.</p>' +
@@ -2677,6 +2781,112 @@ window.requestPasswordReset = function(email) {
   alert('Password reset email (simulated)\\n\\nTo: '+email+'\\n\\nReset link:\\n'+link+'\\n\\nValid for this browser session.');
 };
 
+
+window.submitAddProp = function(){
+  var n = (document.getElementById('addPropName')||{}).value; n=(n||'').trim();
+  if(!n){ showToast('Name required'); return; }
+  try {
+    var s = opActivityGet();
+    s.tasks = s.tasks||[];
+    s.tasks.unshift({ id:Date.now(), task:'Source property: '+n, related:'Accommodation', due:new Date().toISOString().slice(0,10), assignee:'Admin', status:'Open' });
+    opActivitySave(s);
+  } catch(e){}
+  closeModal('addPropModal');
+  showToast('Property request saved as task');
+  if(window.renderTasksPage) renderTasksPage();
+};
+window.submitAddFleet = function(){
+  var n = (document.getElementById('addFleetName')||{}).value; n=(n||'').trim();
+  if(!n){ showToast('Name required'); return; }
+  try {
+    var s = opActivityGet();
+    s.tasks = s.tasks||[];
+    s.tasks.unshift({ id:Date.now(), task:'Source vehicle: '+n, related:'Fleet', due:new Date().toISOString().slice(0,10), assignee:'Admin', status:'Open' });
+    opActivitySave(s);
+  } catch(e){}
+  closeModal('addFleetModal');
+  showToast('Vehicle request saved as task');
+  if(window.renderTasksPage) renderTasksPage();
+};
+window.submitAddGuide = function(){
+  var n = (document.getElementById('addGuideName')||{}).value; n=(n||'').trim();
+  if(!n){ showToast('Name required'); return; }
+  try {
+    var s = opActivityGet();
+    s.tasks = s.tasks||[];
+    s.tasks.unshift({ id:Date.now(), task:'Source guide: '+n, related:'Guide', due:new Date().toISOString().slice(0,10), assignee:'Admin', status:'Open' });
+    opActivitySave(s);
+  } catch(e){}
+  closeModal('addGuideModal');
+  showToast('Guide request saved as task');
+  if(window.renderTasksPage) renderTasksPage();
+};
+window.openAddTask = function(){
+  var d = document.getElementById('addTaskDue');
+  if(d) d.value = new Date().toISOString().slice(0,10);
+  openModal('addTaskModal');
+};
+window.submitAddTask = function(){
+  var text = (document.getElementById('addTaskText')||{}).value; text=(text||'').trim();
+  if(!text){ showToast('Task required'); return; }
+  var s = opActivityGet();
+  s.tasks = s.tasks||[];
+  s.tasks.unshift({
+    id: Date.now(),
+    task: text,
+    related: (document.getElementById('addTaskRelated')||{}).value||'General',
+    due: (document.getElementById('addTaskDue')||{}).value||'',
+    assignee: (document.getElementById('addTaskAssignee')||{}).value||'Admin',
+    status: 'Open'
+  });
+  opActivitySave(s);
+  closeModal('addTaskModal');
+  showToast('Task created');
+  renderTasksPage();
+};
+
+window.renderPartnerQuotes = function(){
+  var body = document.getElementById('partnerQuotesBody');
+  if(!body) return;
+  var list = [];
+  try {
+    var d = slGet();
+    (d.partnerQuotes||[]).forEach(function(q){ list.push(q); });
+    // seed demo partner proformas if empty
+  } catch(e){}
+  if(!list.length){
+    list = [
+      { id:'PF-AC-101', from:'Serengeti Hill Camp', type:'Accommodation', detail:'Proforma for R-1042 · Luxury Tent ×2', amount:1200, status:'Sent' },
+      { id:'PF-FL-44', from:'Northern Fleet Ltd', type:'Fleet', detail:'Charter T 234 ABC · 5 days', amount:900, status:'Sent' }
+    ];
+  }
+  body.innerHTML = list.map(function(q){
+    return '<tr><td><strong>'+esc(q.id)+'</strong></td><td>'+esc(q.from)+'</td><td>'+esc(q.type)+'</td><td>'+esc(q.detail)+'</td>' +
+      '<td>$'+Number(q.amount||0).toLocaleString()+'</td><td><span class="badge badge-info">'+esc(q.status||'Sent')+'</span></td>' +
+      '<td><button class="btn btn-secondary btn-sm" onclick="printPartnerQuote(\''+String(q.id).replace(/'/g,"\\'")+'\')">PDF</button></td></tr>';
+  }).join('');
+};
+window.printPartnerQuote = function(id){
+  var list = [];
+  try { list = (slGet().partnerQuotes||[]); } catch(e){}
+  var q = list.find(function(x){ return x.id===id; }) || { id:id, from:'Partner', type:'Proforma', detail:'', amount:0, status:'Sent',
+    bank:'CRDB Bank · Acc 01J1098765432 · Dreamtrails / Partner', email:'accounts@partner.tz', phone:'+255 700 000 000' };
+  if(!q.bank){
+    q.bank = 'Bank details on file with partner';
+    q.email = q.email||'';
+    q.phone = q.phone||'';
+  }
+  var html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+q.id+'</title>'+
+    '<style>body{font-family:system-ui;max-width:640px;margin:40px auto;color:#2c2c2c}h1{color:#1a5a3a}.box{border:1px solid #d4cfc6;border-radius:10px;padding:16px;margin:16px 0}</style></head><body>'+
+    '<h1>Proforma / Quote</h1><p>'+esc(q.from)+' · '+esc(q.type)+'</p>'+
+    '<div class="box"><strong>'+esc(q.id)+'</strong><br>'+esc(q.detail)+'<br><br>Amount: <strong>$'+Number(q.amount||0).toLocaleString()+'</strong></div>'+
+    '<div class="box"><strong>Invoice details</strong><br>Email: '+esc(q.email||'—')+'<br>Phone: '+esc(q.phone||'—')+'<br>Bank: '+esc(q.bank||'—')+'</div>'+
+    '<script>window.onload=function(){setTimeout(function(){window.print()},300)}<\/script></body></html>';
+  var w = window.open('','_blank');
+  if(w){ w.document.write(html); w.document.close(); }
+};
+
+
 /* ============================================
    INITIALIZE
    ============================================ */
@@ -2713,26 +2923,98 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <!-- Reserve / Lease / Guide request forms -->
 <div class="modal-overlay" id="bookAccomModal">
-  <div class="modal" style="max-width:520px;">
+  <div class="modal" style="max-width:580px;">
     <div class="modal-header"><div class="modal-title">Reserve accommodation</div>
       <button type="button" class="modal-close" onclick="closeModal('bookAccomModal')">&times;</button></div>
     <div class="modal-body">
       <input type="hidden" id="bookAccomId">
       <div class="form-group"><label>Property</label><input id="bookAccomName" readonly></div>
-      <div class="form-group"><label>Room type *</label><select id="bookAccomRoom"></select></div>
-      <div class="form-row">
-        <div class="form-group"><label>Rooms *</label><input type="number" id="bookAccomQty" min="1" value="1"></div>
-        <div class="form-group"><label>Guests</label><input type="number" id="bookAccomGuests" min="1" value="2"></div>
-      </div>
       <div class="form-row">
         <div class="form-group"><label>Check-in *</label><input type="date" id="bookAccomIn"></div>
         <div class="form-group"><label>Check-out *</label><input type="date" id="bookAccomOut"></div>
       </div>
-      <div class="form-group"><label>Notes</label><textarea id="bookAccomNotes" rows="2"></textarea></div>
-      <button type="button" class="btn btn-primary" style="width:100%;justify-content:center;" onclick="submitAccomBooking()">Send reservation</button>
+      <div class="form-group"><label>Total guests</label><input type="number" id="bookAccomGuests" min="1" value="2"></div>
+      <div style="font-weight:600;font-size:.85rem;margin:12px 0 8px;">Room types</div>
+      <div id="bookAccomRoomLines"></div>
+      <button type="button" class="btn btn-secondary btn-sm" style="margin-bottom:12px;" onclick="addAccomRoomLine()"><i data-lucide="plus" style="width:14px;height:14px;"></i> Add another room type</button>
+      <div class="form-group"><label>Notes for property</label><textarea id="bookAccomNotes" rows="2" placeholder="Special requests, meal plan, etc."></textarea></div>
+      <button type="button" class="btn btn-primary" style="width:100%;justify-content:center;" onclick="submitAccomBooking()">Send reservation to property</button>
     </div>
   </div>
 </div>
+
+<!-- Add Property / Vehicle / Guide / Task modals -->
+<div class="modal-overlay" id="addPropModal">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-header"><div class="modal-title">Request / note property</div>
+      <button type="button" class="modal-close" onclick="closeModal('addPropModal')">&times;</button></div>
+    <div class="modal-body">
+      <p style="font-size:.82rem;color:var(--warm-gray);margin-bottom:12px;">Properties are managed by accommodation partners. Use this to request a listing or note a property for sourcing.</p>
+      <div class="form-group"><label>Property name *</label><input id="addPropName"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Type</label><select id="addPropType"><option>Lodge</option><option>Camp</option><option>Hotel</option><option>Tented camp</option></select></div>
+        <div class="form-group"><label>Region</label><input id="addPropRegion" placeholder="Serengeti"></div>
+      </div>
+      <div class="form-group"><label>Notes</label><textarea id="addPropNotes" rows="2"></textarea></div>
+      <button type="button" class="btn btn-primary" style="width:100%;justify-content:center;" onclick="submitAddProp()">Save request</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="addFleetModal">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-header"><div class="modal-title">Request / note vehicle</div>
+      <button type="button" class="modal-close" onclick="closeModal('addFleetModal')">&times;</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Vehicle / plate *</label><input id="addFleetName"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Type</label><select id="addFleetType"><option>4x4 Safari</option><option>Land Cruiser</option><option>Minibus</option></select></div>
+        <div class="form-group"><label>Seats</label><input type="number" id="addFleetSeats" value="7" min="2"></div>
+      </div>
+      <div class="form-group"><label>Notes</label><textarea id="addFleetNotes" rows="2"></textarea></div>
+      <button type="button" class="btn btn-primary" style="width:100%;justify-content:center;" onclick="submitAddFleet()">Save request</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="addGuideModal">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-header"><div class="modal-title">Request / note guide</div>
+      <button type="button" class="modal-close" onclick="closeModal('addGuideModal')">&times;</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Guide name *</label><input id="addGuideName"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Specialization</label><input id="addGuideSpec" placeholder="Big cats, birding…"></div>
+        <div class="form-group"><label>Languages</label><input id="addGuideLang" placeholder="English, Swahili"></div>
+      </div>
+      <div class="form-group"><label>Notes</label><textarea id="addGuideNotes" rows="2"></textarea></div>
+      <button type="button" class="btn btn-primary" style="width:100%;justify-content:center;" onclick="submitAddGuide()">Save request</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="addTaskModal">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-header"><div class="modal-title">New task</div>
+      <button type="button" class="modal-close" onclick="closeModal('addTaskModal')">&times;</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Task *</label><input id="addTaskText" placeholder="Confirm lodge dates…"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Related to</label>
+          <select id="addTaskRelated">
+            <option value="General">General</option>
+            <option value="Accommodation">Accommodation</option>
+            <option value="Fleet">Fleet</option>
+            <option value="Guide">Guide</option>
+            <option value="Quote">Quote</option>
+            <option value="Trip">Trip</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Due date</label><input type="date" id="addTaskDue"></div>
+      </div>
+      <div class="form-group"><label>Assignee</label><select id="addTaskAssignee"><option>Admin</option><option>Manager</option><option>Sales</option></select></div>
+      <button type="button" class="btn btn-primary" style="width:100%;justify-content:center;" onclick="submitAddTask()">Create task</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="bookFleetModal">
   <div class="modal" style="max-width:520px;">
     <div class="modal-header"><div class="modal-title">Lease vehicle</div>
