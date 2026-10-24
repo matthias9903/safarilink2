@@ -41,7 +41,7 @@
 
   /* ── SIDEBAR (navigation + collapse) ── */
   .sidebar {
-    width: 250px; background: var(--charcoal); color: #ccc;
+    width: 240px; background: var(--charcoal); color: #ccc;
     display: flex; flex-direction: column; flex-shrink: 0;
     transition: width .3s ease; position: relative; overflow-x: visible;
   }
@@ -84,16 +84,38 @@
     color: rgba(255,255,255,.35); padding: 12px 8px 6px;
   }
   .sidebar-link {
-    display: flex; align-items: center; gap: 8px; padding: 9px 12px;
-    border-radius: 6px; color: #bbb; font-size: .85rem; cursor: pointer; margin-bottom: 2px;
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+    border-radius: 6px; color: #bbb; font-size: .9rem; cursor: pointer; margin-bottom: 2px; position: relative;
   }
   .sidebar-link:hover { background: rgba(255,255,255,.08); color: #fff; }
   .sidebar-link.active { background: rgba(63,185,131,.15); color: var(--accent-green); }
-  .sidebar-link i { width: 17px; height: 17px; }
+  .sidebar-link i, .sidebar-link svg { width: 20px; height: 20px; flex-shrink: 0; }
   .sidebar-badge {
     margin-left: auto; background: #f59e0b; color: #000;
     font-size: .68rem; padding: 2px 7px; border-radius: 10px; font-weight: 700;
   }
+  #bMsg.msg-unread {
+    background: #dc2626; color: #fff; display: inline-flex; align-items: center; justify-content: center;
+    min-width: 18px; height: 18px; padding: 0 5px;
+  }
+  #bMsg:empty, #bMsg[data-count="0"] { display: none; }
+  .pager {
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    margin-top: 12px; font-size: .85rem; color: var(--warm-gray);
+  }
+  .pager button {
+    padding: 8px 14px; border-radius: 6px; border: 1px solid var(--border-light);
+    background: #fff; cursor: pointer; font-weight: 600;
+  }
+  .pager button:disabled { opacity: .4; cursor: not-allowed; }
+  .alert-list { display: flex; flex-direction: column; gap: 8px; }
+  .alert-item {
+    background: #fff; border: 1px solid var(--border-light); border-left: 3px solid var(--accent-green);
+    border-radius: 8px; padding: 12px 14px; font-size: .85rem;
+  }
+  .alert-item.warn { border-left-color: #f59e0b; }
+  .alert-item.info { border-left-color: #0891b2; }
+
   .sidebar-footer { padding: 14px; border-top: 1px solid rgba(255,255,255,.08); font-size: .8rem; }
 
   /* ── MAIN LAYOUT ── */
@@ -271,7 +293,7 @@ var page=location.pathname.split('/').pop();if(map[page]&&map[page].indexOf(u.ro
 <div class="sidebar-section">Operations</div>
 <a class="sidebar-link" data-p="rates" onclick="go('rates')"><i data-lucide="tag"></i><span> Rates & Pricing</span></a>
 <a class="sidebar-link" data-p="gallery" onclick="go('gallery')"><i data-lucide="image"></i><span> Photo Gallery</span></a>
-<a class="sidebar-link" data-p="messages" onclick="go('messages')"><i data-lucide="message-square"></i><span> Messages</span><span class="sidebar-badge" id="bMsg">0</span></a>
+<a class="sidebar-link" data-p="messages" onclick="go('messages')"><i data-lucide="message-square"></i><span> Messages</span><span class="sidebar-badge msg-unread" id="bMsg" data-count="0"></span></a>
 <div class="sidebar-section">Reports</div>
 <a class="sidebar-link" data-p="revenue" onclick="go('revenue')"><i data-lucide="bar-chart-3"></i><span> Revenue Analytics</span></a>
 <a class="sidebar-link" data-p="occupancy" onclick="go('occupancy')"><i data-lucide="pie-chart"></i><span> Occupancy</span></a>
@@ -308,7 +330,20 @@ var page=location.pathname.split('/').pop();if(map[page]&&map[page].indexOf(u.ro
 <div class="stat"><div class="lbl">Revenue this month</div><div class="val" id="stRev">—</div></div>
 <div class="stat"><div class="lbl">Avg nightly rate</div><div class="val" id="stAvg">—</div></div>
 </div>
-<div class="card" style="overflow-x:auto"><table><thead><tr><th>Operator</th><th>Room</th><th>Check-in</th><th>Status</th><th>Amount</th></tr></thead><tbody id="dashRes"></tbody></table></div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px">
+  <div class="card" style="padding:16px">
+    <h3 style="font-size:1rem;margin-bottom:10px">Operation alerts <span class="meta">(live · max 3)</span></h3>
+    <div class="alert-list" id="dashAlerts"></div>
+  </div>
+  <div class="card" style="padding:16px">
+    <h3 style="font-size:1rem;margin-bottom:10px">Recent partner activity <span class="meta">(live · max 10)</span></h3>
+    <div id="dashActivity"></div>
+  </div>
+</div>
+
+<div class="card" style="overflow-x:auto"><table><thead><tr><th>Operator</th><th>Room</th><th>Check-in</th><th>Status</th><th>Amount</th></tr></thead><tbody id="dashRes"></tbody></table>
+<div class="pager" id="pagerDashRes"></div></div>
 </div>
 
 <!-- ========== PAGE: RESERVATIONS ==========
@@ -322,7 +357,7 @@ var page=location.pathname.split('/').pop();if(map[page]&&map[page].indexOf(u.ro
 <button class="btn" onclick="simOpBooking()"><i data-lucide="zap"></i> Simulate operator booking</button>
 </div>
 <div class="stats"><div class="stat"><div class="lbl">Reserved</div><div class="val" id="cR">0</div></div><div class="stat"><div class="lbl">Booked</div><div class="val" id="cB">0</div></div><div class="stat"><div class="lbl">Paid</div><div class="val" id="cP">0</div></div><div class="stat"><div class="lbl">Cancelled</div><div class="val" id="cC">0</div></div></div>
-<div class="card" style="overflow-x:auto"><table><thead><tr><th>ID</th><th>Operator</th><th>Room</th><th>In</th><th>Out</th><th>Pay</th><th>Status</th><th></th></tr></thead><tbody id="resTable"></tbody></table></div>
+<div class="card" style="overflow-x:auto"><table><thead><tr><th>ID</th><th>Operator</th><th>Room</th><th>In</th><th>Out</th><th>Pay</th><th>Status</th><th></th></tr></thead><tbody id="resTable"></tbody></table><div class="pager" id="pagerRes"></div></div>
 </div>
 
 <!-- ========== PAGE: MY PROPERTIES ==========
@@ -343,14 +378,14 @@ var page=location.pathname.split('/').pop();if(map[page]&&map[page].indexOf(u.ro
 </div>
 <button class="btn btn-primary" style="margin-top:10px" onclick="addProp()"><i data-lucide="save"></i> Save</button>
 </div>
-<div class="prop-grid" id="propGrid"></div>
+<div class="prop-grid" id="propGrid"></div><div class="pager" id="pagerProps"></div>
 </div>
 
 <!-- ========== PAGE: ROOM TYPES ==========
      Inventory & rates per property for operators to book
      ============================================================ -->
 <div class="page" id="page-rooms">
-
+<div class="filters"><button class="btn btn-primary" onclick="document.getElementById('roomForm').style.display='block'"><i data-lucide="plus"></i> Add room type</button></div>
 <div class="card" style="padding:16px;margin-bottom:14px;max-width:800px">
 <div class="form-grid">
 <div class="form-group"><label>Name *</label><input id="rName"></div>
@@ -365,15 +400,26 @@ var page=location.pathname.split('/').pop();if(map[page]&&map[page].indexOf(u.ro
 <button class="btn btn-primary" style="margin-top:10px" onclick="addRoom()"><i data-lucide="save"></i> Save room type</button>
 </div>
 <div class="prop-grid" id="roomGrid"></div>
+<div class="pager" id="pagerRooms"></div>
 </div>
 
 <!-- ========== PAGE: AVAILABILITY CALENDAR ==========
      Month / year calendar, block days, busy from reservations
      ============================================================ -->
 <div class="page" id="page-availability">
-
-<div class="filters"><button class="btn" onclick="calShift(-1)"><i data-lucide="chevron-left"></i> Prev</button><strong id="calLabel"></strong><button class="btn" onclick="calShift(1)">Next <i data-lucide="chevron-right"></i></button><button class="btn" onclick="calShift(12)"><i data-lucide="calendar"></i> +Year</button></div>
-<div class="card" style="padding:14px"><div class="cal" id="calGrid"></div><p class="meta" style="margin-top:8px">Green free · Red busy/blocked · Click to toggle block</p></div>
+<p class="meta" style="margin-bottom:10px">Select a property or room type, then block or free dates on the calendar (operators only see available inventory).</p>
+<div class="filters">
+<select id="avProp" onchange="onAvPropChange()"><option value="">— Select property —</option></select>
+<select id="avRoom" onchange="renderCal()"><option value="">All rooms at property</option></select>
+<button class="btn" onclick="calShift(-1)"><i data-lucide="chevron-left"></i> Prev</button>
+<strong id="calLabel"></strong>
+<button class="btn" onclick="calShift(1)">Next <i data-lucide="chevron-right"></i></button>
+<button class="btn" onclick="calShift(12)"><i data-lucide="calendar"></i> +Year</button>
+</div>
+<div class="card" style="padding:14px">
+<div class="cal" id="calGrid"></div>
+<p class="meta" style="margin-top:8px">Green = available · Red = blocked / booked · Click a day to toggle block for the selected property/room</p>
+</div>
 </div>
 
 <!-- ========== PAGE: RATES & PRICING ==========
@@ -386,29 +432,41 @@ var page=location.pathname.split('/').pop();if(map[page]&&map[page].indexOf(u.ro
      Property and room images for operator-facing cards
      ============================================================ -->
 <div class="page" id="page-gallery">
-<div class="gallery" id="galleryGrid"></div></div>
+<div class="gallery" id="galleryGrid"></div><div class="pager" id="pagerGallery"></div></div>
 
 <!-- ========== PAGE: MESSAGES ==========
      Operator messages + 30-min unreplied reservation reminders
      ============================================================ -->
 <div class="page" id="page-messages">
-<div class="card" style="padding:8px 16px" id="msgList"></div></div>
+<div class="card" style="padding:8px 16px" id="msgList"></div><div class="pager" id="pagerMessages"></div></div>
 
 <!-- ========== PAGE: REVENUE ANALYTICS ==========
      Paid revenue + manual external booking / occupancy entry
      ============================================================ -->
 <div class="page" id="page-revenue">
-
-<div class="stats"><div class="stat"><div class="lbl">Paid</div><div class="val" id="revPaid">—</div></div><div class="stat"><div class="lbl">Manual extra</div><div class="val" id="revMan">—</div></div><div class="stat"><div class="lbl">Total</div><div class="val" id="revTot">—</div></div><div class="stat"><div class="lbl">Avg booking</div><div class="val" id="revAvg">—</div></div></div>
-<div class="card" style="padding:16px;margin-bottom:12px"><h3 style="margin-bottom:8px">Add offline tracking</h3>
-<div class="form-grid"><div class="form-group"><label>Extra revenue $</label><input type="number" id="mRev" value="0"></div>
-<div class="form-group"><label>Extra occ nights</label><input type="number" id="mOcc" value="0"></div></div>
-<button class="btn btn-primary" style="margin-top:8px" onclick="saveManual()"><i data-lucide="save"></i> Save</button></div>
+<div class="stats">
+<div class="stat"><div class="lbl">SafariLink revenue</div><div class="val" id="revPaid">—</div></div>
+<div class="stat"><div class="lbl">Offline / external</div><div class="val" id="revMan">—</div></div>
+<div class="stat"><div class="lbl">Total revenue</div><div class="val" id="revTot">—</div></div>
+<div class="stat"><div class="lbl">Avg booking (SL)</div><div class="val" id="revAvg">—</div></div>
 </div>
-
-<!-- ========== PAGE: OCCUPANCY ==========
-     Occupancy % from inventory + open reservations
-     ============================================================ -->
+<div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+<button class="btn btn-primary" onclick="document.getElementById('offlineRevBox').style.display='block'"><i data-lucide="plus"></i> Offline tracking</button>
+<button class="btn" onclick="renderRevenue()"><i data-lucide="refresh-cw"></i> SafariLink revenue</button>
+</div>
+<div id="offlineRevBox" class="card" style="display:none;padding:14px;margin-bottom:14px;max-width:480px">
+<div class="form-grid">
+<div class="form-group"><label>Extra revenue (not from SafariLink)</label><input type="number" id="mRev" value="0"></div>
+<div class="form-group"><label>Extra occupied nights</label><input type="number" id="mOcc" value="0"></div>
+</div>
+<button class="btn btn-primary" style="margin-top:8px" onclick="saveManual()"><i data-lucide="save"></i> Save offline</button>
+<button class="btn" style="margin-top:8px" onclick="document.getElementById('offlineRevBox').style.display='none'">Close</button>
+</div>
+<div class="card" style="padding:16px">
+<h3 style="margin-bottom:10px">Performance ranking</h3>
+<div id="revRank"></div>
+</div>
+</div>
 <div class="page" id="page-occupancy">
 
 <div class="stats"><div class="stat"><div class="lbl">Tonight</div><div class="val" id="occN">—</div></div><div class="stat"><div class="lbl">Units</div><div class="val" id="occU">—</div></div><div class="stat"><div class="lbl">Occupied</div><div class="val" id="occO">—</div></div><div class="stat"><div class="lbl">Open demand</div><div class="val" id="occD">—</div></div></div>
@@ -426,17 +484,51 @@ var page=location.pathname.split('/').pop();if(map[page]&&map[page].indexOf(u.ro
      ============================================================ -->
 <div class="page" id="page-account">
 
-<div class="card" style="padding:16px;max-width:640px;margin-bottom:12px"><h3>Team roles: Admin · Manager · Sales</h3>
+<div class="stats" style="grid-template-columns:1fr 1fr;margin-bottom:14px">
+<div class="stat"><div class="lbl">Company</div><div class="val" style="font-size:1.1rem">Serengeti Hill Camp</div></div>
+<div class="stat"><div class="lbl">Role model</div><div class="val" style="font-size:1rem">Like Tour Operator</div></div>
+</div>
+
+<div class="card" style="padding:16px;margin-bottom:14px">
+<h3 style="margin-bottom:10px">Payment &amp; invoice details</h3>
+<p class="meta" style="margin-bottom:12px">Saved once — automatically included when you send a proforma to operators.</p>
+<div class="form-grid">
+<div class="form-group"><label>Bank name *</label><input id="payBankName" placeholder="CRDB Bank Plc"></div>
+<div class="form-group"><label>Branch name</label><input id="payBranch" placeholder="Clock Tower"></div>
+<div class="form-group full"><label>Bank address</label><input id="payBankAddress" placeholder="Arusha, Tanzania"></div>
+<div class="form-group"><label>SWIFT / BIC</label><input id="paySwift" placeholder="CORUTZTZ"></div>
+<div class="form-group"><label>Account name *</label><input id="payAccName" placeholder="Serengeti Hill Camp Ltd"></div>
+<div class="form-group"><label>Account number *</label><input id="payAccNo" placeholder="01J1098765432"></div>
+<div class="form-group"><label>Invoice email</label><input id="payEmail" type="email" placeholder="accounts@serengetihill.tz"></div>
+<div class="form-group"><label>Invoice phone</label><input id="payPhone" placeholder="+255 700 000 000"></div>
+</div>
+<button class="btn btn-primary" style="margin-top:12px" onclick="savePaymentProfile()"><i data-lucide="save"></i> Save payment details</button>
+</div>
+
+<div class="card" style="padding:16px;max-width:720px">
+<h3 style="margin-bottom:10px">Team (Admin · Manager · Sales)</h3>
+<p class="meta" style="margin-bottom:10px">Same structure as the tour operator dashboard. First registered account is Admin.</p>
 <div class="filters"><button class="btn btn-primary" onclick="document.getElementById('memF').style.display='block'"><i data-lucide="user-plus"></i> Add member</button></div>
-<div id="memF" style="display:none" class="form-grid">
+<div id="memF" style="display:none;margin-bottom:12px" class="form-grid">
 <div class="form-group"><label>Name</label><input id="mName"></div>
-<div class="form-group"><label>Email</label><input id="mEmail"></div>
+<div class="form-group"><label>Email</label><input id="mEmail" type="email"></div>
 <div class="form-group"><label>Role</label><select id="mRole"><option>Admin</option><option>Manager</option><option>Sales</option></select></div>
+<div class="form-group"><label>&nbsp;</label><button class="btn btn-primary" onclick="addMember()"><i data-lucide="save"></i> Save member</button></div>
 </div>
-<button class="btn btn-primary" style="margin-top:8px;display:none" id="memSave" onclick="addMember()"><i data-lucide="save"></i> Save member</button>
-<div id="teamList"></div></div>
+<div id="teamList"></div>
 </div>
-</div></div>
+</div>
+
+<div class="page" id="page-quotes">
+<div class="filters"><span class="meta">Proformas sent to operators — includes room types, nights, guest operator, and your bank details</span></div>
+<div class="card" style="overflow-x:auto;padding:0">
+<table>
+<thead><tr><th>Ref</th><th>To (operator)</th><th>Reservation</th><th>Detail</th><th>Amount</th><th>Status</th><th></th></tr></thead>
+<tbody id="accomQuotesBody"></tbody>
+</table>
+</div>
+</div>
+
 <div class="modal-bg" id="modal"><div class="modal" id="modalBody"></div></div>
 <script>
 
@@ -538,7 +630,8 @@ var TITLES={
   revenue:['Revenue Analytics','Paid bookings plus manual external revenue tracking'],
   occupancy:['Occupancy','Unit utilisation from inventory and reservations'],
   guests:['Guest Insights','Operator stays, guest counts and spend'],
-  account:['Account & Team','Admin, Manager and Sales roles for this property']
+  quotes:['Quotes / Proformas','Sent to operators with room breakdown and bank details'],
+  account:['Account & Team','Payment details for invoices + Admin/Manager/Sales team']
 };
 var calMonth=new Date();calMonth.setDate(1);
 /* ---------- Page navigation ---------- */
@@ -548,9 +641,118 @@ function propName(id){var p=slGet().properties.find(function(x){return x.id===id
 /* ---------- Live metrics for dashboard ---------- */
 function stats(){var d=slGet(),units=0;d.roomTypes.forEach(function(r){units+=r.units||0});var today=new Date().toISOString().slice(0,10);var occ=d.reservations.filter(function(r){return (r.status==='paid'||r.status==='booked')&&r.checkIn<=today&&r.checkOut>today}).length;var open=d.reservations.filter(function(r){return r.status==='reserved'||r.status==='booked'}).length;var paid=d.reservations.filter(function(r){return r.status==='paid'});var rev=paid.reduce(function(s,r){return s+r.amount},0)+(d.manualStats.extraRevenue||0);var avg=d.roomTypes.length?Math.round(d.roomTypes.reduce(function(s,r){return s+r.sto},0)/d.roomTypes.length):0;return{units:units,occ:Math.min(units,occ),pct:units?Math.round(Math.min(units,occ)/units*100):0,open:open,rev:rev,avg:avg,paid:paid}}
 /* ---------- Render: Dashboard page ---------- */
-function renderDash(){var s=stats();document.getElementById('stOcc').textContent=s.pct+'%';document.getElementById('stOpen').textContent=s.open;document.getElementById('stRev').textContent=money(s.rev);document.getElementById('stAvg').textContent=money(s.avg);document.getElementById('dashRes').innerHTML=slGet().reservations.slice(0,5).map(function(r){return '<tr><td>'+esc(r.operator)+'</td><td>'+esc(r.room)+'</td><td>'+r.checkIn+'</td><td>'+badge(r.status)+'</td><td>'+money(r.amount)+'</td></tr>'}).join('')}
-/* ---------- Render: Reservations table ---------- */
-function renderRes(){var d=slGet(),f=document.getElementById('resFilter').value,q=(document.getElementById('resQ').value||'').toLowerCase(),c={reserved:0,booked:0,paid:0,cancelled:0};d.reservations.forEach(function(r){if(c[r.status]!=null)c[r.status]++});document.getElementById('cR').textContent=c.reserved;document.getElementById('cB').textContent=c.booked;document.getElementById('cP').textContent=c.paid;document.getElementById('cC').textContent=c.cancelled;document.getElementById('bRes').textContent=c.reserved+c.booked;document.getElementById('resTable').innerHTML=d.reservations.filter(function(r){return(f==='all'||r.status===f)&&(!q||(r.operator+r.room+r.id+(r.propertyName||'')).toLowerCase().indexOf(q)>=0)}).map(function(r){return '<tr><td>'+r.id+'</td><td>'+esc(r.operator)+'</td><td>'+esc(r.room)+'</td><td>'+r.checkIn+'</td><td>'+r.checkOut+'</td><td>'+esc(r.payment)+'</td><td>'+badge(r.status)+'</td><td style="white-space:nowrap"><button class="btn" onclick="openResDetail(\''+r.id+'\')">Details</button> <button class="btn" onclick="replyRes(\''+r.id+'\')">Reply</button></td></tr>'}).join('')}
+
+/* ── Pagination ── */
+window._pageState = window._pageState || {};
+function paginate(key, items, size) {
+  size = size || 10;
+  var page = window._pageState[key] || 1;
+  var pages = Math.max(1, Math.ceil(items.length / size));
+  if (page > pages) page = pages;
+  if (page < 1) page = 1;
+  window._pageState[key] = page;
+  var start = (page - 1) * size;
+  return { slice: items.slice(start, start + size), page: page, pages: pages, total: items.length };
+}
+function renderPager(elId, key, total, onChange) {
+  var el = document.getElementById(elId);
+  if (!el) return;
+  var page = window._pageState[key] || 1;
+  var pages = Math.max(1, Math.ceil(total / 10));
+  if (total <= 10) { el.innerHTML = ''; return; }
+  el.innerHTML = '<button type="button" '+(page<=1?'disabled':'')+' onclick="window._pageState[\''+key+'\']='+(page-1)+';('+onChange+')()">Previous</button>' +
+    '<span>Page '+page+' of '+pages+' · '+total+'</span>' +
+    '<button type="button" '+(page>=pages?'disabled':'')+' onclick="window._pageState[\''+key+'\']='+(page+1)+';('+onChange+')()">Next</button>';
+}
+
+function pushAlert(text, kind) {
+  slUpdate(function(d) {
+    if (!d.accomAlerts) d.accomAlerts = [];
+    d.accomAlerts.unshift({ text: text, kind: kind || 'info', time: Date.now() });
+    d.accomAlerts = d.accomAlerts.slice(0, 3);
+  });
+}
+function pushActivity(text) {
+  slUpdate(function(d) {
+    if (!d.accomActivity) d.accomActivity = [];
+    d.accomActivity.unshift({ text: text, time: Date.now() });
+    d.accomActivity = d.accomActivity.slice(0, 10);
+  });
+}
+function ensureWelcomeMsg() {
+  slUpdate(function(d) {
+    if (!d.messages) d.messages = [];
+    if (!d._accomMsgClean) {
+      d.messages = d.messages.filter(function(m) {
+        return m.side !== 'accommodation' || m.keep || m.type === 'welcome' || m.fromActivity || m.type === 'reminder';
+      });
+      d._accomMsgClean = true;
+    }
+    var has = d.messages.some(function(m){ return m.type === 'welcome' && m.side === 'accommodation'; });
+    if (!has) {
+      d.messages.unshift({
+        id: 'welcome-accom', type: 'welcome', keep: true, side: 'accommodation',
+        from: 'SafariLink', initials: 'SL', unread: false, time: Date.now(),
+        text: 'Welcome. Reservations, reminders and operator messages will appear here when there is activity.'
+      });
+    }
+  });
+}
+
+
+function renderDash(){var s=stats();document.getElementById('stOcc').textContent=s.pct+'%';document.getElementById('stOpen').textContent=s.open;document.getElementById('stRev').textContent=money(s.rev);document.getElementById('stAvg').textContent=money(s.avg);
+  var d=slGet();
+  var alerts=(d.accomAlerts||[]).slice(0,3);
+  if(!alerts.length){
+    alerts=[
+      {text:'Waiting for live operator activity…',kind:'info',time:Date.now()},
+    ];
+  }
+  var al=document.getElementById('dashAlerts');
+  if(al) al.innerHTML=alerts.map(function(a){return '<div class="alert-item '+(a.kind||'info')+'">'+esc(a.text)+'<div class="meta">'+(a.time?new Date(a.time).toLocaleString():'')+'</div></div>';}).join('');
+  var acts=(d.accomActivity||[]).slice(0,10);
+  var actEl=document.getElementById('dashActivity');
+  if(actEl) actEl.innerHTML=acts.length?acts.map(function(a){return '<div style="padding:8px 0;border-bottom:1px solid var(--border-light);font-size:.84rem">'+esc(a.text)+'<div class="meta">'+(a.time?new Date(a.time).toLocaleString():'')+'</div></div>';}).join(''):'<div class="meta">No partner activity yet — linked live to operators.</div>';
+  var rows=d.reservations.slice();
+  var pg=paginate('dashRes',rows,10);
+  document.getElementById('dashRes').innerHTML=pg.slice.map(function(r){return '<tr><td>'+esc(r.operator)+'</td><td>'+esc(r.room)+'</td><td>'+r.checkIn+'</td><td>'+badge(r.status)+'</td><td>'+money(r.amount)+'</td></tr>'}).join('');
+  renderPager('pagerDashRes','dashRes',pg.total,'renderDash');
+}
+
+function sendProforma(id){
+  var r=slGet().reservations.find(function(x){return x.id===id});if(!r)return;
+  var inv=getPaymentProfile();
+  var roomDetail=(r.roomLines||[]).map(function(l){return l.roomType+' ×'+l.qty+(l.nights?' · '+l.nights+'n':'')}).join('; ')||r.room;
+  var nights=r.nights||Math.max(1,Math.round((new Date(r.checkOut)-new Date(r.checkIn))/86400000));
+  var pfId='PF-AC-'+String(Date.now()).slice(-4);
+  slUpdate(function(d){
+    if(!d.partnerQuotes)d.partnerQuotes=[];
+    d.partnerQuotes.unshift({
+      id:pfId, from: propName(r.propertyId)||'Serengeti Hill Camp', type:'Accommodation',
+      toOperator: r.operator, reservationId: r.id,
+      detail: roomDetail+' · '+nights+' night(s) · '+r.checkIn+' to '+r.checkOut+' · '+ (r.guests||'')+' guests',
+      amount: r.amount, status:'Sent',
+      bankName:inv.bankName, bankAddress:inv.bankAddress, swift:inv.swift,
+      accountName:inv.accountName, accountNumber:inv.accountNumber, branchName:inv.branchName,
+      email:inv.email, phone:inv.phone
+    });
+    if(!d.messages)d.messages=[];
+    d.messages.unshift({id:Date.now(),fromActivity:true,unread:true,side:'operator',from:propName(r.propertyId)||'Accommodation',initials:'AC',
+      text:'Proforma '+pfId+' for '+r.operator+': '+roomDetail+' ($'+r.amount+')',time:Date.now(),type:'info'});
+    d.reservations.forEach(function(x){ if(x.id===id){ x.proformaSent=true; x.repliedAt=Date.now(); if(x.status==='reserved')x.status='booked'; }});
+  });
+  document.getElementById('modal').classList.remove('show');
+  pushAlert('Proforma '+pfId+' sent','info');pushActivity('Proforma '+pfId+' → '+r.operator);alert('Proforma '+pfId+' sent to '+r.operator+' with bank details');
+  refresh();
+}
+
+
+function renderRes(){var d=slGet(),f=document.getElementById('resFilter').value,q=(document.getElementById('resQ').value||'').toLowerCase(),c={reserved:0,booked:0,paid:0,cancelled:0};d.reservations.forEach(function(r){if(c[r.status]!=null)c[r.status]++});document.getElementById('cR').textContent=c.reserved;document.getElementById('cB').textContent=c.booked;document.getElementById('cP').textContent=c.paid;document.getElementById('cC').textContent=c.cancelled;document.getElementById('bRes').textContent=c.reserved+c.booked;
+  var list=d.reservations.filter(function(r){return(f==='all'||r.status===f)&&(!q||(r.operator+r.room+r.id+(r.propertyName||'')).toLowerCase().indexOf(q)>=0)});
+  var pg=paginate('res',list,10);
+  document.getElementById('resTable').innerHTML=pg.slice.map(function(r){return '<tr><td>'+r.id+'</td><td>'+esc(r.operator)+'</td><td>'+esc(r.room)+'</td><td>'+r.checkIn+'</td><td>'+r.checkOut+'</td><td>'+esc(r.payment)+'</td><td>'+badge(r.status)+'</td><td><button class="btn" onclick="openResDetail(\''+r.id+'\')">Details</button></td></tr>'}).join('');
+  renderPager('pagerRes','res',pg.total,'renderRes');
+}
 function openResDetail(id){
   var r=slGet().reservations.find(function(x){return x.id===id});if(!r)return;
   var lines=(r.roomLines||[]).map(function(l){
@@ -560,82 +762,293 @@ function openResDetail(id){
     '<h3>Reservation '+esc(r.id)+'</h3>'+
     '<p class="meta">'+esc(r.operator)+' · '+esc(r.propertyName||propName(r.propertyId))+'</p>'+
     '<p><strong>Dates:</strong> '+r.checkIn+' → '+r.checkOut+(r.nights?' ('+r.nights+' nights)':'')+'</p>'+
-    '<p><strong>Guests:</strong> '+(r.guests||'—')+' · <strong>Status:</strong> '+badge(r.status)+' · <strong>Amount:</strong> '+money(r.amount)+'</p>'+
+    '<p><strong>Guests:</strong> '+(r.guests||'—')+' · <strong>Status:</strong> '+badge(r.status)+' · <strong>Payment:</strong> '+esc(r.payment||'—')+' · <strong>Amount:</strong> '+money(r.amount)+'</p>'+
     '<p><strong>Notes:</strong> '+esc(r.notes||'—')+'</p>'+
     '<h4 style="margin-top:12px">Room breakdown</h4>'+
     '<div style="overflow-x:auto"><table><thead><tr><th>Room type</th><th>Qty</th><th>Nights</th><th>STO</th><th>Line total</th><th>Notes</th></tr></thead><tbody>'+lines+'</tbody></table></div>'+
     '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px">'+
-    '<button class="btn btn-primary" onclick="sendProforma(\''+r.id+'\')"><i data-lucide="file-text"></i> Send proforma to operator</button>'+
-    '<button class="btn" onclick="replyRes(\''+r.id+'\');document.getElementById(\'modal\').classList.remove(\'show\')">Confirm / Reply</button>'+
+    '<button class="btn btn-primary" onclick="sendProforma(\''+r.id+'\')"><i data-lucide="file-text"></i> Send proforma</button>'+
+    '<button class="btn" onclick="setResStatus(\''+r.id+'\',\'booked\')">Confirm</button>'+
+    '<button class="btn" onclick="setResStatus(\''+r.id+'\',\'paid\')">Mark paid</button>'+
     '<button class="btn" onclick="document.getElementById(\'modal\').classList.remove(\'show\')">Close</button></div>';
   document.getElementById('modal').classList.add('show');lucide.createIcons();
 }
+function setResStatus(id, status){
+  slUpdate(function(d){
+    d.reservations.forEach(function(r){
+      if(r.id===id){
+        r.status=status; r.repliedAt=Date.now();
+        if(status==='paid') r.payment='Paid';
+        if(status==='booked' && (!r.payment||r.payment==='Pending')) r.payment='Deposit';
+      }
+    });
+  });
+  pushActivity('Reservation '+id+' → '+status);
+  pushAlert('Reservation '+id+' marked '+status, status==='paid'?'info':'warn');
+  document.getElementById('modal').classList.remove('show');
+  refresh();
+}
 function sendProforma(id){
   var r=slGet().reservations.find(function(x){return x.id===id});if(!r)return;
-  var inv={
-    bankName: localStorage.getItem('sl_accom_bank_name')||'CRDB Bank Plc',
-    bankAddress: localStorage.getItem('sl_accom_bank_address')||'Arusha Branch, Tanzania',
-    swift: localStorage.getItem('sl_accom_swift')||'CORUTZTZ',
-    accountName: localStorage.getItem('sl_accom_acc_name')||'Serengeti Hill Camp Ltd',
-    accountNumber: localStorage.getItem('sl_accom_acc_no')||'01J1098765432',
-    branchName: localStorage.getItem('sl_accom_branch')||'Clock Tower'
-  };
+  var inv=typeof getPaymentProfile==='function'?getPaymentProfile():{bankName:'CRDB Bank Plc',bankAddress:'Arusha',swift:'CORUTZTZ',accountName:'Serengeti Hill Camp Ltd',accountNumber:'01J1098765432',branchName:'Clock Tower',email:'',phone:''};
+  var roomDetail=(r.roomLines||[]).map(function(l){return l.roomType+' ×'+l.qty+(l.nights?' · '+l.nights+'n':'')}).join('; ')||r.room;
+  var nights=r.nights||Math.max(1,Math.round((new Date(r.checkOut)-new Date(r.checkIn))/86400000));
   var pfId='PF-AC-'+String(Date.now()).slice(-4);
   slUpdate(function(d){
     if(!d.partnerQuotes)d.partnerQuotes=[];
     d.partnerQuotes.unshift({
-      id:pfId, from: propName(r.propertyId)||'Accommodation partner', type:'Accommodation',
-      detail: 'Proforma '+r.id+' · '+(r.room||'')+' · '+r.checkIn+' to '+r.checkOut,
-      amount: r.amount, status:'Sent', reservationId:r.id,
+      id:pfId, from: propName(r.propertyId)||'Serengeti Hill Camp', type:'Accommodation',
+      toOperator: r.operator, reservationId: r.id,
+      detail: roomDetail+' · '+nights+' night(s) · '+r.checkIn+' to '+r.checkOut+' · '+(r.guests||'')+' guests',
+      amount: r.amount, status:'Sent',
       bankName:inv.bankName, bankAddress:inv.bankAddress, swift:inv.swift,
-      accountName:inv.accountName, accountNumber:inv.accountNumber, branchName:inv.branchName
+      accountName:inv.accountName, accountNumber:inv.accountNumber, branchName:inv.branchName,
+      email:inv.email, phone:inv.phone
     });
     if(!d.messages)d.messages=[];
     d.messages.unshift({id:Date.now(),fromActivity:true,unread:true,side:'operator',from:propName(r.propertyId)||'Accommodation',initials:'AC',
-      text:'Proforma '+pfId+' sent for reservation '+r.id+' ($'+r.amount+')',time:Date.now(),type:'info'});
+      text:'Proforma '+pfId+' for '+r.operator+': '+roomDetail+' ($'+r.amount+')',time:Date.now(),type:'info'});
     d.reservations.forEach(function(x){ if(x.id===id){ x.proformaSent=true; x.repliedAt=Date.now(); if(x.status==='reserved')x.status='booked'; }});
   });
+  pushAlert('Proforma '+pfId+' sent','info');
+  pushActivity('Proforma '+pfId+' → '+r.operator);
   document.getElementById('modal').classList.remove('show');
-  alert('Proforma '+pfId+' sent to operator with bank details');
+  alert('Proforma '+pfId+' sent to '+r.operator+' with bank details');
   refresh();
 }
 function replyRes(id){slUpdate(function(d){d.reservations.forEach(function(r){if(r.id===id){r.repliedAt=Date.now();if(r.status==='reserved')r.status='booked'}})});refresh()}
 /* ---------- Simulate operator booking (real-time test) ---------- */
-function simOpBooking(){slUpdate(function(d){var id='R-'+Math.floor(1000+Math.random()*9000);d.reservations.unshift({id:id,operator:'Dreamtrails Expeditions',propertyId:1,room:'Luxury Tent',checkIn:'2026-11-05',checkOut:'2026-11-08',guests:2,amount:660,payment:'Pending',status:'reserved',createdAt:Date.now(),repliedAt:null,notes:'Live'});d.messages.unshift({id:Date.now(),side:'accommodation',from:'Dreamtrails Expeditions',initials:'DT',text:'New reservation '+id+' — please confirm.',time:Date.now(),type:'info',related:id,unread:true})});alert('Operator booking received');go('reservations')}
+function simOpBooking(){slUpdate(function(d){var id='R-'+Math.floor(1000+Math.random()*9000);d.reservations.unshift({id:id,operator:'Dreamtrails Expeditions',propertyId:1,room:'Luxury Tent',checkIn:'2026-11-05',checkOut:'2026-11-08',guests:2,amount:660,payment:'Pending',status:'reserved',createdAt:Date.now(),repliedAt:null,notes:'Live'});d.messages.unshift({id:Date.now(),side:'accommodation',from:'Dreamtrails Expeditions',initials:'DT',text:'New reservation '+id+' — please confirm.',time:Date.now(),type:'info',related:id,unread:true})});pushAlert('New operator reservation','warn');pushActivity('New reservation from operator');alert('Operator booking received');go('reservations')}
 /* ---------- 30-min unreplied reservation reminders ---------- */
 function checkReminders(){slUpdate(function(d){var now=Date.now();d.reservations.forEach(function(r){if((r.status==='reserved'||r.status==='booked')&&!r.repliedAt&&(now-r.createdAt)>30*60*1000){var exists=d.messages.some(function(m){return m.type==='reminder'&&m.related===r.id&&(now-m.time)<30*60*1000});if(!exists)d.messages.unshift({id:now+Math.random(),side:'accommodation',from:'SafariLink Reminder',initials:'SL',text:'Reminder: '+r.id+' from '+r.operator+' unreplied 30+ min. Email queued to property.',time:now,type:'reminder',related:r.id,unread:true})}})})}
-async function addProp(){var n=document.getElementById('pName').value.trim(),l=document.getElementById('pLoc').value.trim();if(!n||!l){alert('Required');return}var files=document.getElementById('pImg').files,imgs=[];for(var i=0;i<files.length;i++)imgs.push(await fileToDataUrl(files[i]));slUpdate(function(d){d.properties.push({id:Date.now(),name:n,location:l,type:document.getElementById('pType').value,status:document.getElementById('pStatus').value,desc:document.getElementById('pDesc').value,amenities:(document.getElementById('pAm').value||'').split(',').map(function(s){return s.trim()}).filter(Boolean),images:imgs,preview:imgs[0]||'',contact:'',region:l,unitsTotal:0,unitsOccupied:0})});document.getElementById('propForm').style.display='none';renderProps()}
+async function addProp(){var n=document.getElementById('pName').value.trim(),l=document.getElementById('pLoc').value.trim();if(!n||!l){alert('Required');return}var files=document.getElementById('pImg').files,imgs=[];for(var i=0;i<files.length;i++)imgs.push(await fileToDataUrl(files[i]));slUpdate(function(d){d.properties.push({id:Date.now(),name:n,location:l,type:document.getElementById('pType').value,status:document.getElementById('pStatus').value,desc:document.getElementById('pDesc').value,amenities:(document.getElementById('pAm').value||'').split(',').map(function(s){return s.trim()}).filter(Boolean),images:imgs,preview:imgs[0]||'',contact:'',region:l,unitsTotal:0,unitsOccupied:0})});document.getElementById('propForm').style.display='none';pushActivity("Property added");pushAlert("New property listed","info");renderProps()}
 /* ---------- Render: Property cards + modal ---------- */
-function renderProps(){document.getElementById('propGrid').innerHTML=slGet().properties.map(function(p){var img=p.preview?'<img src="'+p.preview+'">':'<i data-lucide="building-2" class="ph-icon"></i><span style="font-size:.75rem">No photo</span>';return '<div class="prop-card" onclick="openProp('+p.id+')"><div class="img">'+img+'</div><div class="body"><h4>'+esc(p.name)+'</h4><div class="meta">'+esc(p.type)+' · '+esc(p.location)+'</div><div style="margin-top:6px">'+badge(p.status)+'</div><div class="meta" style="margin-top:6px">'+esc((p.amenities||[]).slice(0,3).join(' · '))+'</div><div style="color:var(--forest-green);font-size:.8rem;font-weight:600;margin-top:6px">View details →</div></div></div>'}).join('');lucide.createIcons()}
+function renderProps(){
+  var list=slGet().properties||[];
+  var pg=paginate('props',list,10);
+  document.getElementById('propGrid').innerHTML=pg.slice.map(function(p){var img=p.preview?'<img src="'+p.preview+'">':'<i data-lucide="building-2" class="ph-icon"></i><span style="font-size:.75rem">No photo</span>';return '<div class="prop-card" onclick="openProp('+p.id+')"><div class="img">'+img+'</div><div class="body"><h4>'+esc(p.name)+'</h4><div class="meta">'+esc(p.type)+' · '+esc(p.location)+'</div><div style="margin-top:6px">'+badge(p.status)+'</div><div class="meta" style="margin-top:6px">'+esc((p.amenities||[]).slice(0,3).join(' · '))+'</div><div style="color:var(--forest-green);font-size:.8rem;font-weight:600;margin-top:6px">View details →</div></div></div>'}).join('');
+  renderPager('pagerProps','props',pg.total,'renderProps');
+  lucide.createIcons();
+}
 function openProp(id){var p=slGet().properties.find(function(x){return x.id===id});if(!p)return;var rooms=slGet().roomTypes.filter(function(r){return r.propertyId===id});var imgs=(p.images||[]).map(function(s,i){return '<div class="g"><img src="'+s+'"><div class="cap">'+(i?'Photo '+(i+1):'Preview')+'</div></div>'}).join('');document.getElementById('modalBody').innerHTML='<h3>'+esc(p.name)+'</h3><p class="meta">'+esc(p.type)+' · '+esc(p.location)+'</p><p style="margin:10px 0">'+esc(p.desc||'')+'</p><p><strong>Amenities:</strong> '+esc((p.amenities||[]).join(', '))+'</p><div class="gallery" style="margin:12px 0">'+imgs+'</div><h4>Rooms</h4>'+rooms.map(function(r){return '<div class="meta">'+esc(r.name)+' · STO '+money(r.sto)+'</div>'}).join('')+'<br><button class="btn" onclick="document.getElementById(\'modal\').classList.remove(\'show\')"><i data-lucide="x"></i> Close</button>';document.getElementById('modal').classList.add('show');lucide.createIcons()}
-async function addRoom(){var n=document.getElementById('rName').value.trim(),sto=Number(document.getElementById('rSto').value),pid=Number(document.getElementById('rProp').value);if(!n||!sto||!pid){alert('Required');return}var files=document.getElementById('rImg').files,imgs=[];for(var i=0;i<files.length;i++)imgs.push(await fileToDataUrl(files[i]));slUpdate(function(d){d.roomTypes.push({id:Date.now(),propertyId:pid,name:n,guests:Number(document.getElementById('rGuests').value)||2,units:Number(document.getElementById('rUnits').value)||1,sto:sto,pub:Number(document.getElementById('rPub').value)||sto,location:'',amenities:(document.getElementById('rAm').value||'').split(',').map(function(s){return s.trim()}).filter(Boolean),images:imgs,notes:''})});renderRooms()}
+async function addRoom(){var n=document.getElementById('rName').value.trim(),sto=Number(document.getElementById('rSto').value),pid=Number(document.getElementById('rProp').value);if(!n||!sto||!pid){alert('Required');return}var files=document.getElementById('rImg').files,imgs=[];for(var i=0;i<files.length;i++)imgs.push(await fileToDataUrl(files[i]));slUpdate(function(d){d.roomTypes.push({id:Date.now(),propertyId:pid,name:n,guests:Number(document.getElementById('rGuests').value)||2,units:Number(document.getElementById('rUnits').value)||1,sto:sto,pub:Number(document.getElementById('rPub').value)||sto,location:'',amenities:(document.getElementById('rAm').value||'').split(',').map(function(s){return s.trim()}).filter(Boolean),images:imgs,notes:''})});document.getElementById("roomForm").style.display="none";pushActivity("Room type added");renderRooms()}
 /* ---------- Render: Room type cards ---------- */
-function renderRooms(){document.getElementById('rProp').innerHTML=slGet().properties.map(function(p){return '<option value="'+p.id+'">'+esc(p.name)+'</option>'}).join('');document.getElementById('roomGrid').innerHTML=slGet().roomTypes.map(function(r){var img=(r.images&&r.images[0])?'<img src="'+r.images[0]+'">':'<i data-lucide="bed-double" class="ph-icon"></i><span style="font-size:.75rem">No photo</span>';return '<div class="prop-card"><div class="img">'+img+'</div><div class="body"><h4>'+esc(r.name)+'</h4><div class="meta">'+esc(propName(r.propertyId))+' · STO '+money(r.sto)+' · '+r.units+' units</div><div class="meta">'+esc((r.amenities||[]).join(' · '))+'</div></div></div>'}).join('');lucide.createIcons()}
-/* ---------- Render: Rates table ---------- */
+function renderRooms(){
+  var rProp=document.getElementById('rProp');
+  if(rProp) rProp.innerHTML=slGet().properties.map(function(p){return '<option value="'+p.id+'">'+esc(p.name)+'</option>'}).join('');
+  var list=slGet().roomTypes||[];
+  var pg=paginate('rooms',list,10);
+  document.getElementById('roomGrid').innerHTML=pg.slice.map(function(r){var img=(r.images&&r.images[0])?'<img src="'+r.images[0]+'">':'<i data-lucide="bed-double" class="ph-icon"></i><span style="font-size:.75rem">No photo</span>';return '<div class="prop-card"><div class="img">'+img+'</div><div class="body"><h4>'+esc(r.name)+'</h4><div class="meta">'+esc(propName(r.propertyId))+' · STO '+money(r.sto)+' · '+r.units+' units</div><div class="meta">'+esc((r.amenities||[]).join(' · '))+'</div></div></div>'}).join('');
+  renderPager('pagerRooms','rooms',pg.total,'renderRooms');
+  lucide.createIcons();
+}
 function renderRates(){document.getElementById('rateTable').innerHTML=slGet().roomTypes.map(function(r){return '<tr><td>'+esc(r.name)+'</td><td><input type="number" id="sto'+r.id+'" value="'+r.sto+'" style="width:90px"></td><td><input type="number" id="pub'+r.id+'" value="'+r.pub+'" style="width:90px"></td><td><button class="btn btn-primary" onclick="saveRate('+r.id+')">Save</button></td></tr>'}).join('')}
 function saveRate(id){slUpdate(function(d){d.roomTypes.forEach(function(r){if(r.id===id){r.sto=Number(document.getElementById('sto'+id).value)||r.sto;r.pub=Number(document.getElementById('pub'+id).value)||r.pub}})});alert('Saved')}
 /* ---------- Render: Photo gallery ---------- */
-function renderGallery(){var items=[];slGet().properties.forEach(function(p){(p.images||[]).forEach(function(s,i){items.push({s:s,n:p.name+(i?'':' (preview)')})})});slGet().roomTypes.forEach(function(r){(r.images||[]).forEach(function(s){items.push({s:s,n:r.name})})});document.getElementById('galleryGrid').innerHTML=items.map(function(g){return '<div class="g"><img src="'+g.s+'"><div class="cap">'+esc(g.n)+'</div></div>'}).join('')||'<div class="meta">Upload on properties/rooms</div>'}
-/* ---------- Render: Messages + reminders ---------- */
-function renderMessages(){checkReminders();var msgs=slGet().messages.filter(function(m){return m.side==='accommodation'});document.getElementById('bMsg').textContent=msgs.filter(function(m){return m.unread}).length||msgs.length;document.getElementById('msgList').innerHTML=msgs.map(function(m){return '<div class="msg-row '+(m.type==='reminder'?'reminder':'')+'"><div class="msg-av">'+esc(m.initials)+'</div><div><strong>'+esc(m.from)+'</strong> <span class="meta">'+new Date(m.time).toLocaleString()+'</span><div>'+esc(m.text)+'</div></div></div>'}).join('')}
-/* ---------- Render: Revenue + manual tracking ---------- */
-function renderRevenue(){var s=stats(),man=slGet().manualStats||{};document.getElementById('revPaid').textContent=money(s.paid.reduce(function(a,r){return a+r.amount},0));document.getElementById('revMan').textContent=money(man.extraRevenue||0);document.getElementById('revTot').textContent=money(s.rev);document.getElementById('revAvg').textContent=s.paid.length?money(Math.round(s.paid.reduce(function(a,r){return a+r.amount},0)/s.paid.length)):'—'}
+function renderGallery(){
+  var items=[];
+  slGet().properties.forEach(function(p){(p.images||[]).forEach(function(s,i){items.push({s:s,n:p.name+(i?'':' (preview)')})})});
+  slGet().roomTypes.forEach(function(r){(r.images||[]).forEach(function(s){items.push({s:s,n:r.name})})});
+  var pg=paginate('gallery',items,10);
+  document.getElementById('galleryGrid').innerHTML=pg.slice.map(function(g){return '<div class="g"><img src="'+g.s+'"><div class="cap">'+esc(g.n)+'</div></div>'}).join('')||'<div class="meta">Upload on properties/rooms</div>';
+  renderPager('pagerGallery','gallery',pg.total,'renderGallery');
+}
+function renderMessages(){
+  ensureWelcomeMsg();
+  checkReminders();
+  var msgs=slGet().messages.filter(function(m){return m.side==='accommodation'||m.type==='welcome'&&m.side==='accommodation';});
+  // if filter too strict include welcome-accom
+  msgs=slGet().messages.filter(function(m){return m.side==='accommodation';});
+  var unread=msgs.filter(function(m){return m.unread;}).length;
+  var b=document.getElementById('bMsg');
+  if(b){
+    if(unread>0){b.textContent=String(unread);b.setAttribute('data-count',unread);b.classList.add('msg-unread');}
+    else{b.textContent='';b.setAttribute('data-count','0');b.classList.remove('msg-unread');}
+  }
+  var pg=paginate('messages',msgs,10);
+  document.getElementById('msgList').innerHTML=pg.slice.map(function(m){
+    return '<div class="msg-row '+(m.type==='reminder'?'reminder':'')+'" style="'+(m.unread?'background:#f0faf5;':'')+'cursor:pointer" onclick="markAccomMsgRead(\''+String(m.id).replace(/'/g,"\\'")+'\')"><div class="msg-av">'+esc(m.initials||'SL')+'</div><div><strong>'+esc(m.from)+'</strong> <span class="meta">'+new Date(m.time).toLocaleString()+'</span><div>'+esc(m.text)+'</div>'+(m.unread?'<span class="badge badge-pending">Unread</span>':'')+'</div></div>';
+  }).join('')||'<div class="meta" style="padding:12px">No messages yet.</div>';
+  renderPager('pagerMessages','messages',pg.total,'renderMessages');
+}
+function markAccomMsgRead(id){
+  slUpdate(function(d){(d.messages||[]).forEach(function(m){if(String(m.id)===String(id))m.unread=false;});});
+  renderMessages();
+}
+function renderRevenue(){
+  var s=stats(),man=slGet().manualStats||{};
+  var slRev=s.paid.reduce(function(a,r){return a+r.amount},0);
+  var off=man.extraRevenue||0;
+  var tot=slRev+off;
+  if(document.getElementById('revPaid'))document.getElementById('revPaid').textContent=money(slRev);
+  if(document.getElementById('revMan'))document.getElementById('revMan').textContent=money(off);
+  if(document.getElementById('revTot'))document.getElementById('revTot').textContent=money(tot);
+  if(document.getElementById('revAvg'))document.getElementById('revAvg').textContent=s.paid.length?money(Math.round(slRev/s.paid.length)):'—';
+  var rank=document.getElementById('revRank');
+  if(rank){
+    var leader=slRev>=off?'SafariLink bookings':'Offline / external';
+    var pctSl=tot?Math.round(slRev/tot*100):0;
+    var pctOff=tot?Math.round(off/tot*100):0;
+    rank.innerHTML='<p style="margin-bottom:10px"><strong>Top performer:</strong> '+leader+'</p>'+
+      '<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:.84rem"><span>SafariLink</span><strong>'+money(slRev)+' ('+pctSl+'%)</strong></div><div style="height:8px;background:var(--khaki);border-radius:4px"><div style="width:'+pctSl+'%;height:100%;background:var(--accent-green);border-radius:4px"></div></div></div>'+
+      '<div><div style="display:flex;justify-content:space-between;font-size:.84rem"><span>Offline tracking</span><strong>'+money(off)+' ('+pctOff+'%)</strong></div><div style="height:8px;background:var(--khaki);border-radius:4px"><div style="width:'+pctOff+'%;height:100%;background:#f59e0b;border-radius:4px"></div></div></div>'+
+      '<p class="meta" style="margin-top:12px">Total: '+money(tot)+'</p>';
+  }
+}
 function saveManual(){slUpdate(function(d){d.manualStats={extraRevenue:Number(document.getElementById('mRev').value)||0,extraOccNights:Number(document.getElementById('mOcc').value)||0,extraBookings:0}});refresh()}
 /* ---------- Render: Occupancy ---------- */
-function renderOcc(){var s=stats();document.getElementById('occN').textContent=s.pct+'%';document.getElementById('occU').textContent=s.units;document.getElementById('occO').textContent=s.occ;document.getElementById('occD').textContent=s.open;document.getElementById('occByRoom').innerHTML=slGet().roomTypes.map(function(r){var pct=45+(r.id%40);return '<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:.84rem"><span>'+esc(r.name)+'</span><strong>'+pct+'%</strong></div><div style="height:8px;background:var(--khaki);border-radius:4px"><div style="width:'+pct+'%;height:100%;background:var(--accent-green);border-radius:4px"></div></div></div>'}).join('')}
-/* ---------- Render: Guest insights ---------- */
+function renderOcc(){
+  var s=stats();
+  var props=slGet().properties||[];
+  var today=new Date().toISOString().slice(0,10);
+  if(document.getElementById('occN'))document.getElementById('occN').textContent=s.pct+'%';
+  if(document.getElementById('occU'))document.getElementById('occU').textContent=props.length;
+  if(document.getElementById('occO'))document.getElementById('occO').textContent=s.occ;
+  if(document.getElementById('occD'))document.getElementById('occD').textContent=s.open;
+  var el=document.getElementById('occByRoom');
+  if(!el)return;
+  el.innerHTML=props.map(function(p){
+    var rooms=slGet().roomTypes.filter(function(r){return r.propertyId===p.id;});
+    var units=rooms.reduce(function(a,r){return a+(r.units||0);},0)||1;
+    var occ=slGet().reservations.filter(function(r){
+      return (r.propertyId===p.id||r.propertyName===p.name)&&(r.status==='paid'||r.status==='booked')&&r.checkIn<=today&&r.checkOut>today;
+    }).length;
+    var pct=Math.min(100,Math.round(occ/units*100));
+    return '<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:.84rem"><span><strong>'+esc(p.name)+'</strong> · '+esc(p.location||'')+'</span><strong>'+pct+'% · '+occ+'/'+units+' units</strong></div><div style="height:8px;background:var(--khaki);border-radius:4px"><div style="width:'+pct+'%;height:100%;background:var(--accent-green);border-radius:4px"></div></div></div>';
+  }).join('')||'<div class="meta">No properties yet</div>';
+}
 function renderGuests(){var map={};slGet().reservations.forEach(function(r){if(!map[r.operator])map[r.operator]={stays:0,guests:0,rev:0};map[r.operator].stays++;map[r.operator].guests+=r.guests;if(r.status==='paid')map[r.operator].rev+=r.amount});document.getElementById('guestTable').innerHTML=Object.keys(map).map(function(k){var g=map[k];return '<tr><td>'+esc(k)+'</td><td>'+g.stays+'</td><td>'+g.guests+'</td><td>'+money(g.rev)+'</td></tr>'}).join('')}
 /* ---------- Render: Team members ---------- */
 function renderTeam(){document.getElementById('teamList').innerHTML=(slGet().team.accommodation||[]).map(function(m){return '<div class="team-row"><div><strong>'+esc(m.name)+'</strong><div class="meta">'+esc(m.email)+' · '+esc(m.role)+'</div></div></div>'}).join('')}
 function addMember(){var n=document.getElementById('mName').value.trim(),e=document.getElementById('mEmail').value.trim();if(!n||!e)return;slUpdate(function(d){d.team.accommodation.push({id:Date.now(),name:n,email:e,role:document.getElementById('mRole').value})});document.getElementById('memF').style.display='none';renderTeam()}
 function calShift(n){calMonth.setMonth(calMonth.getMonth()+n);renderCal()}
 /* ---------- Render: Availability calendar ---------- */
-function renderCal(){var y=calMonth.getFullYear(),m=calMonth.getMonth();document.getElementById('calLabel').textContent=calMonth.toLocaleString('default',{month:'long',year:'numeric'});var first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate(),blocks=slGet().calendarBlocks.accommodation||{},busy={};slGet().reservations.forEach(function(r){if(r.status==='cancelled')return;for(var t=new Date(r.checkIn);t<new Date(r.checkOut);t.setDate(t.getDate()+1)){if(t.getMonth()===m&&t.getFullYear()===y)busy[t.getDate()]=1}});var h=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(function(d){return '<div class="hd">'+d+'</div>'}).join('');for(var i=0;i<first;i++)h+='<div class="day muted"></div>';for(var d=1;d<=days;d++){var key=y+'-'+(m+1)+'-'+d,cls=blocks[key]||busy[d]?'busy':'free';h+='<div class="day '+cls+'" onclick="toggleBlock(\''+key+'\')">'+d+'</div>'}document.getElementById('calGrid').innerHTML=h}
-function toggleBlock(key){slUpdate(function(d){if(!d.calendarBlocks.accommodation)d.calendarBlocks.accommodation={};if(d.calendarBlocks.accommodation[key])delete d.calendarBlocks.accommodation[key];else d.calendarBlocks.accommodation[key]=1});renderCal()}
-/* ---------- Refresh all visible data ---------- */
-function refresh(){renderDash();renderRes();renderProps();renderRooms();renderRates();renderGallery();renderMessages();renderRevenue();renderOcc();renderGuests();renderTeam();renderCal()}
+function onAvPropChange(){
+  var pid=Number(document.getElementById('avProp').value)||0;
+  var sel=document.getElementById('avRoom');
+  if(!sel)return;
+  sel.innerHTML='<option value="">All rooms at property</option>'+(slGet().roomTypes||[]).filter(function(r){return !pid||r.propertyId===pid;}).map(function(r){return '<option value="'+r.id+'">'+esc(r.name)+'</option>';}).join('');
+  renderCal();
+}
+function fillAvSelects(){
+  var ps=document.getElementById('avProp');
+  if(!ps)return;
+  var cur=ps.value;
+  ps.innerHTML='<option value="">— Select property —</option>'+(slGet().properties||[]).map(function(p){return '<option value="'+p.id+'">'+esc(p.name)+'</option>';}).join('');
+  if(cur)ps.value=cur;
+  onAvPropChange();
+}
+function renderCal(){
+  var y=calMonth.getFullYear(),m=calMonth.getMonth();
+  document.getElementById('calLabel').textContent=calMonth.toLocaleString('default',{month:'long',year:'numeric'});
+  var first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate();
+  var pid=Number((document.getElementById('avProp')||{}).value)||0;
+  var rid=Number((document.getElementById('avRoom')||{}).value)||0;
+  var blockKey=pid?(rid?('r'+rid):('p'+pid)):'accommodation';
+  var blocks=(slGet().calendarBlocks||{})[blockKey]||(slGet().calendarBlocks||{}).accommodation||{};
+  var busy={};
+  (slGet().reservations||[]).forEach(function(r){
+    if(r.status==='cancelled')return;
+    if(pid && r.propertyId && r.propertyId!==pid)return;
+    for(var t0=new Date(r.checkIn);t0<new Date(r.checkOut);t0.setDate(t0.getDate()+1)){
+      if(t0.getMonth()===m&&t0.getFullYear()===y)busy[t0.getDate()]=1;
+    }
+  });
+  var h=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(function(d){return '<div class="hd">'+d+'</div>';}).join('');
+  for(var i=0;i<first;i++)h+='<div class="day muted"></div>';
+  for(var d=1;d<=days;d++){
+    var key=y+'-'+(m+1)+'-'+d;
+    var cls=blocks[key]||busy[d]?'busy':'free';
+    h+='<div class="day '+cls+'" onclick="toggleBlock(\''+key+'\')">'+d+'</div>';
+  }
+  document.getElementById('calGrid').innerHTML=h;
+}
+function toggleBlock(key){
+  var pid=Number((document.getElementById('avProp')||{}).value)||0;
+  var rid=Number((document.getElementById('avRoom')||{}).value)||0;
+  if(!pid){alert('Select a property first');return;}
+  var blockKey=rid?('r'+rid):('p'+pid);
+  slUpdate(function(d){
+    if(!d.calendarBlocks)d.calendarBlocks={};
+    if(!d.calendarBlocks[blockKey])d.calendarBlocks[blockKey]={};
+    if(d.calendarBlocks[blockKey][key])delete d.calendarBlocks[blockKey][key];
+    else d.calendarBlocks[blockKey][key]=1;
+  });
+  pushActivity('Availability updated for '+blockKey+' · '+key);
+  renderCal();
+}
+
+function loadPaymentProfile(){
+  try{
+    var raw=localStorage.getItem('sl_accom_payment');
+    var p=raw?JSON.parse(raw):{};
+    var map={payBankName:'bankName',payBranch:'branchName',payBankAddress:'bankAddress',paySwift:'swift',payAccName:'accountName',payAccNo:'accountNumber',payEmail:'email',payPhone:'phone'};
+    Object.keys(map).forEach(function(id){var el=document.getElementById(id);if(el)el.value=p[map[id]]||el.placeholder||'';});
+  }catch(e){}
+}
+function savePaymentProfile(){
+  var p={
+    bankName:(document.getElementById('payBankName')||{}).value||'',
+    branchName:(document.getElementById('payBranch')||{}).value||'',
+    bankAddress:(document.getElementById('payBankAddress')||{}).value||'',
+    swift:(document.getElementById('paySwift')||{}).value||'',
+    accountName:(document.getElementById('payAccName')||{}).value||'',
+    accountNumber:(document.getElementById('payAccNo')||{}).value||'',
+    email:(document.getElementById('payEmail')||{}).value||'',
+    phone:(document.getElementById('payPhone')||{}).value||''
+  };
+  if(!p.bankName||!p.accountName||!p.accountNumber){alert('Bank name, account name and number are required');return;}
+  localStorage.setItem('sl_accom_payment',JSON.stringify(p));
+  // legacy keys used by sendProforma
+  localStorage.setItem('sl_accom_bank_name',p.bankName);
+  localStorage.setItem('sl_accom_bank_address',p.bankAddress);
+  localStorage.setItem('sl_accom_swift',p.swift);
+  localStorage.setItem('sl_accom_acc_name',p.accountName);
+  localStorage.setItem('sl_accom_acc_no',p.accountNumber);
+  localStorage.setItem('sl_accom_branch',p.branchName);
+  alert('Payment details saved — will appear on proformas');
+}
+function getPaymentProfile(){
+  try{var r=localStorage.getItem('sl_accom_payment');if(r)return JSON.parse(r);}catch(e){}
+  return {
+    bankName:localStorage.getItem('sl_accom_bank_name')||'CRDB Bank Plc',
+    bankAddress:localStorage.getItem('sl_accom_bank_address')||'Arusha Branch, Tanzania',
+    swift:localStorage.getItem('sl_accom_swift')||'CORUTZTZ',
+    accountName:localStorage.getItem('sl_accom_acc_name')||'Serengeti Hill Camp Ltd',
+    accountNumber:localStorage.getItem('sl_accom_acc_no')||'01J1098765432',
+    branchName:localStorage.getItem('sl_accom_branch')||'Clock Tower',
+    email:'accounts@serengetihill.tz',phone:'+255 700 000 000'
+  };
+}
+function renderAccomQuotes(){
+  var body=document.getElementById('accomQuotesBody');if(!body)return;
+  var list=[];
+  try{list=(slGet().partnerQuotes||[]).filter(function(q){return q.type==='Accommodation';});}catch(e){}
+  body.innerHTML=list.map(function(q){
+    return '<tr><td><strong>'+esc(q.id)+'</strong></td><td>'+esc(q.toOperator||'Dreamtrails Expeditions')+'</td><td>'+esc(q.reservationId||'—')+'</td><td>'+esc(q.detail)+'</td><td>'+money(q.amount)+'</td><td>'+badge(q.status||'Sent')+'</td><td><button class="btn" onclick="printAccomQuote(\''+q.id+'\')">PDF</button></td></tr>';
+  }).join('')||'<tr><td colspan="7" class="meta">No proformas yet — open a reservation → Details → Send proforma</td></tr>';
+}
+function printAccomQuote(id){
+  var q=(slGet().partnerQuotes||[]).find(function(x){return x.id===id});if(!q)return;
+  var inv=getPaymentProfile();
+  var html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+q.id+'</title><style>body{font-family:system-ui;max-width:640px;margin:40px auto;color:#2c2c2c;line-height:1.5}h1{color:#1a5a3a}.box{border:1px solid #d4cfc6;border-radius:10px;padding:16px;margin:16px 0}.k{color:#a39e95;font-size:.78rem;margin-top:8px}</style></head><body>'+
+    '<h1>Proforma Invoice</h1><p>'+esc(q.from)+' → Operator</p>'+
+    '<div class="box"><strong>'+esc(q.id)+'</strong><br>'+esc(q.detail)+'<br><br>Amount due: <strong>'+money(q.amount)+'</strong></div>'+
+    '<div class="box"><strong>Bank details</strong>'+
+    '<div class="k">Bank name</div>'+esc(q.bankName||inv.bankName)+
+    '<div class="k">Bank address</div>'+esc(q.bankAddress||inv.bankAddress)+
+    '<div class="k">SWIFT</div>'+esc(q.swift||inv.swift)+
+    '<div class="k">Account name</div>'+esc(q.accountName||inv.accountName)+
+    '<div class="k">Account number</div>'+esc(q.accountNumber||inv.accountNumber)+
+    '<div class="k">Branch</div>'+esc(q.branchName||inv.branchName)+
+    '<div class="k">Email / Phone</div>'+esc(inv.email||'')+' · '+esc(inv.phone||'')+
+    '</div><script>onload=function(){setTimeout(function(){print()},300)}<\/script></body></html>';
+  var w=window.open('','_blank');if(w){w.document.write(html);w.document.close();}
+}
+
+function refresh(){renderDash();renderRes();renderProps();renderRooms();renderRates();renderGallery();renderMessages();renderRevenue();renderOcc();renderGuests();renderTeam();fillAvSelects();renderCal();if(window.renderAccomQuotes)renderAccomQuotes();if(document.getElementById("page-account")&&document.getElementById("page-account").classList.contains("active"))loadPaymentProfile()}
 document.getElementById('memF')&&document.querySelector('[onclick*=memF]')&&null;
-slEnsure();checkReminders();refresh();slOnChange(refresh);
+slEnsure();checkReminders();loadPaymentProfile();refresh();slOnChange(refresh);
 
 lucide.createIcons();
 </script></body></html>
