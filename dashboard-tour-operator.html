@@ -315,6 +315,22 @@
   .btn-sm { padding: 6px 14px; font-size: 0.78rem; }
   .btn-danger { background: #fff; color: var(--status-danger); border: 1px solid var(--status-danger); }
   .btn-danger:hover { background: #fdecec; }
+  .quote-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .quote-tab {
+    padding: 10px 18px; border-radius: 8px; border: 1px solid var(--border-light);
+    background: #fff; cursor: pointer; font-weight: 600; font-size: 0.85rem;
+  }
+  .quote-tab.active { background: var(--forest-green); color: #fff; border-color: var(--forest-green); }
+  .pager {
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    margin-top: 14px; font-size: 0.85rem; color: var(--warm-gray);
+  }
+  .pager button {
+    padding: 8px 14px; border-radius: 6px; border: 1px solid var(--border-light);
+    background: #fff; cursor: pointer; font-weight: 600;
+  }
+  .pager button:disabled { opacity: 0.4; cursor: not-allowed; }
+
 
   /* ── MODAL ── */
   .modal-overlay {
@@ -1015,32 +1031,44 @@
             <div class="page-header">
                 <div>
                     <div class="page-title">Quotes</div>
-                    <div class="page-subtitle">Your itinerary quotes and proformas from partners</div>
+                    <div class="page-subtitle">Select My quotes or Partner proformas</div>
                 </div>
                 <button class="create-btn" onclick="switchPage('itinerary')"><i data-lucide="plus"></i> Build quote</button>
             </div>
-            <div class="card" style="margin-bottom:20px;">
-                <div class="card-header"><div class="card-title">My operator quotes (clients)</div></div>
-                <div class="card-body" style="overflow-x:auto;">
-                    <table>
-                        <thead>
-                            <tr><th>Quote ID</th><th>Client</th><th>Trip</th><th>Amount</th><th>Status</th><th>Booking</th><th></th></tr>
-                        </thead>
-                        <tbody id="quotesTableBody"></tbody>
-                    </table>
+            <div class="quote-tabs">
+                <button type="button" class="quote-tab active" id="tabMyQuotes" onclick="showQuoteTab('my')">My operator quotes</button>
+                <button type="button" class="quote-tab" id="tabPartnerQuotes" onclick="showQuoteTab('partner')">Partner quotes / proformas</button>
+            </div>
+            <div id="quotePanelMy">
+                <div class="card">
+                    <div class="card-header"><div class="card-title">Client itinerary quotes</div>
+                        <span style="font-size:.78rem;color:var(--warm-gray);">Final price only on client PDF</span>
+                    </div>
+                    <div class="card-body" style="overflow-x:auto;">
+                        <table>
+                            <thead>
+                                <tr><th>Quote ID</th><th>Client</th><th>Trip</th><th>Amount</th><th>Status</th><th>Booking</th><th></th></tr>
+                            </thead>
+                            <tbody id="quotesTableBody"></tbody>
+                        </table>
+                        <div class="pager" id="pagerMyQuotes"></div>
+                    </div>
                 </div>
             </div>
-            <div class="card">
-                <div class="card-header"><div class="card-title">Partner quotes / proformas</div>
-                    <span style="font-size:.78rem;color:var(--warm-gray);">From accommodation, fleet &amp; guides</span>
-                </div>
-                <div class="card-body" style="overflow-x:auto;">
-                    <table>
-                        <thead>
-                            <tr><th>Ref</th><th>From</th><th>Type</th><th>Detail</th><th>Amount</th><th>Status</th><th></th></tr>
-                        </thead>
-                        <tbody id="partnerQuotesBody"></tbody>
-                    </table>
+            <div id="quotePanelPartner" style="display:none;">
+                <div class="card">
+                    <div class="card-header"><div class="card-title">From accommodation, fleet &amp; guides</div>
+                        <span style="font-size:.78rem;color:var(--warm-gray);">Bank &amp; invoice details included</span>
+                    </div>
+                    <div class="card-body" style="overflow-x:auto;">
+                        <table>
+                            <thead>
+                                <tr><th>Ref</th><th>From</th><th>Type</th><th>Detail</th><th>Amount</th><th>Status</th><th></th></tr>
+                            </thead>
+                            <tbody id="partnerQuotesBody"></tbody>
+                        </table>
+                        <div class="pager" id="pagerPartnerQuotes"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1128,8 +1156,9 @@
             </div>
             <div class="card">
                 <div class="card-body" id="opMsgList">
-                    <p style="color:var(--warm-gray);">Loading messages from shared platform…</p>
+                    <p style="color:var(--warm-gray);">Loading messages…</p>
                 </div>
+                <div class="pager" id="pagerMessages" style="padding:0 20px 16px;"></div>
             </div>
         </div>
 
@@ -1321,20 +1350,19 @@ function updateMsgBadge(){
   }
 }
 function renderOpMessages(){
+  ensureWelcomeMessage();
   var el = document.getElementById('opMsgList');
   if (!el) return;
   var msgs = [];
-  try { msgs = (slGet().messages || []).slice().sort(function(a,b){ return (b.time||0)-(a.time||0); }); } catch(e){}
-  // Keep a few seed examples if empty
-  if (!msgs.length) {
-    msgs = [
-      { id:1, from:'SafariLink', initials:'SL', text:'Welcome to partner messaging.', time:Date.now()-86400000, unread:false },
-      { id:2, from:'Serengeti Hill Camp', initials:'SH', text:'Your reservation request was received.', time:Date.now()-3600000, unread:false }
-    ];
-  }
-  el.innerHTML = msgs.map(function(m){
+  try {
+    msgs = (slGet().messages || []).filter(function(m){
+      return !m.side || m.side === 'operator' || m.side === 'accommodation' || m.side === 'fleet' || m.side === 'guide' || m.type==='welcome' || m.type==='reminder';
+    }).slice().sort(function(a,b){ return (b.time||0)-(a.time||0); });
+  } catch(e){}
+  var pg = paginate('messages', msgs, 10);
+  el.innerHTML = pg.slice.map(function(m){
     var unread = m.unread ? 'background:#f0faf5;border-left:3px solid var(--accent-green);' : '';
-    return '<div style="padding:12px;border-bottom:1px solid var(--border);cursor:pointer;'+unread+'" onclick="markMsgRead('+m.id+')">' +
+    return '<div style="padding:12px;border-bottom:1px solid var(--border);cursor:pointer;'+unread+'" onclick="markMsgRead(\''+String(m.id).replace(/'/g,"\'")+'\')">' +
       '<div style="display:flex;gap:12px;">' +
       '<div style="width:36px;height:36px;border-radius:50%;background:var(--forest-green);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex-shrink:0;">'+esc(m.initials||'SL')+'</div>' +
       '<div style="flex:1;min-width:0;"><div style="display:flex;justify-content:space-between;gap:8px;"><strong>'+esc(m.from||'')+'</strong>' +
@@ -1342,16 +1370,17 @@ function renderOpMessages(){
       '<div style="font-size:.85rem;margin-top:4px;">'+esc(m.text||'')+'</div>' +
       (m.unread?'<span class="badge badge-info" style="margin-top:6px;">Unread</span>':'') +
       '</div></div></div>';
-  }).join('');
-  updateMsgBadge();
+  }).join('') || '<p style="color:var(--warm-gray);padding:12px;">No messages yet.</p>';
+  renderPager('pagerMessages', 'messages', pg.total, 'renderOpMessages');
+  ensureWelcomeMessage(); updateMsgBadge();
 }
 function markMsgRead(id){
   slUpdate(function(d){
-    (d.messages||[]).forEach(function(m){ if(m.id===id) m.unread=false; });
+    (d.messages||[]).forEach(function(m){ if(String(m.id)===String(id)) m.unread=false; });
   });
   renderOpMessages();
-  updateMsgBadge();
 }
+
 
 
 /* Live operator home dashboard from shared platform */
@@ -2669,7 +2698,8 @@ window.renderQuotesPage = function() {
   var body = document.getElementById('quotesTableBody');
   if (!body) return;
   var quotes = opActivityGet().quotes || [];
-  body.innerHTML = quotes.map(function(q){
+  var pg = paginate('myQuotes', quotes, 10);
+  body.innerHTML = pg.slice.map(function(q){
     var st = q.booked ? 'badge-success' : (q.status==='Sent' ? 'badge-info' : 'badge-pending');
     var bookCell = q.booked
       ? '<span class="badge badge-success">Booked</span>'
@@ -2684,6 +2714,7 @@ window.renderQuotesPage = function() {
       '<td><button class="btn btn-secondary btn-sm" onclick="redownloadClientQuote(\''+q.id+'\')">Client PDF</button></td>' +
       '</tr>';
   }).join('') || '<tr><td colspan="7" style="color:var(--warm-gray);">No quotes yet — generate one from Itineraries.</td></tr>';
+  renderPager('pagerMyQuotes', 'myQuotes', pg.total, 'renderQuotesPage');
 };
 window.redownloadClientQuote = function(id) {
   var q = (opActivityGet().quotes||[]).find(function(x){ return x.id === id; });
@@ -2750,10 +2781,12 @@ window.renderTasksPage = function() {
   var body = document.getElementById('tasksTableBody');
   if (!body) return;
   var tasks = opActivityGet().tasks || [];
-  body.innerHTML = tasks.map(function(tk){
+  var pg = paginate('tasks', tasks, 10);
+  body.innerHTML = pg.slice.map(function(tk){
     var st = tk.status==='Done'?'badge-success':(tk.status==='In progress'?'badge-info':'badge-pending');
     return '<tr><td>'+esc(tk.task)+'</td><td>'+esc(tk.related)+'</td><td>'+esc(tk.due)+'</td><td>'+esc(tk.assignee)+'</td><td><span class="badge '+st+'">'+esc(tk.status)+'</span></td></tr>';
   }).join('') || '<tr><td colspan="5" style="color:var(--warm-gray);">No tasks — they appear as you generate quotes and book trips.</td></tr>';
+  renderPager('pagerTasks', 'tasks', pg.total, 'renderTasksPage');
 };
 
 
@@ -2784,43 +2817,87 @@ window.requestPasswordReset = function(email) {
 
 window.submitAddProp = function(){
   var n = (document.getElementById('addPropName')||{}).value; n=(n||'').trim();
-  if(!n){ showToast('Name required'); return; }
-  try {
-    var s = opActivityGet();
-    s.tasks = s.tasks||[];
-    s.tasks.unshift({ id:Date.now(), task:'Source property: '+n, related:'Accommodation', due:new Date().toISOString().slice(0,10), assignee:'Admin', status:'Open' });
-    opActivitySave(s);
-  } catch(e){}
+  var loc = (document.getElementById('addPropRegion')||{}).value; loc=(loc||'').trim();
+  if(!n||!loc){ showToast('Name and location required'); return; }
+  var room = (document.getElementById('addPropRoom')||{}).value || 'Standard';
+  var sto = Number((document.getElementById('addPropSto')||{}).value)||150;
+  var pid = Date.now();
+  slUpdate(function(d){
+    if(!d.properties) d.properties = [];
+    d.properties.push({
+      id: pid, name: n, location: loc, type: (document.getElementById('addPropType')||{}).value||'Lodge',
+      status: (document.getElementById('addPropStatus')||{}).value||'available',
+      desc: (document.getElementById('addPropDesc')||{}).value||'',
+      amenities: ((document.getElementById('addPropAm')||{}).value||'').split(',').map(function(s){return s.trim()}).filter(Boolean),
+      images: [], preview: '', contact: '', region: loc, unitsTotal: 1, unitsOccupied: 0,
+      operatorPrivate: true, addedBy: 'Dreamtrails Expeditions'
+    });
+    if(!d.roomTypes) d.roomTypes = [];
+    d.roomTypes.push({ id: pid+1, propertyId: pid, name: room, guests: 2, units: 1, sto: sto, pub: sto, amenities: [], images: [] });
+    if(!d.messages) d.messages = [];
+    d.messages.unshift({ id: Date.now(), fromActivity: true, unread: true, side: 'operator', from: 'SafariLink', initials: 'SL',
+      text: 'Preferred property added: '+n+' ('+loc+')', time: Date.now(), type: 'info' });
+  });
   closeModal('addPropModal');
-  showToast('Property request saved as task');
-  if(window.renderTasksPage) renderTasksPage();
+  showToast('Property added to sourcing');
+  if(window.accomRenderCards) accomRenderCards(getLiveAccommodations());
+  updateMsgBadge();
 };
+
 window.submitAddFleet = function(){
-  var n = (document.getElementById('addFleetName')||{}).value; n=(n||'').trim();
-  if(!n){ showToast('Name required'); return; }
-  try {
-    var s = opActivityGet();
-    s.tasks = s.tasks||[];
-    s.tasks.unshift({ id:Date.now(), task:'Source vehicle: '+n, related:'Fleet', due:new Date().toISOString().slice(0,10), assignee:'Admin', status:'Open' });
-    opActivitySave(s);
-  } catch(e){}
+  var plate = (document.getElementById('addFleetName')||{}).value; plate=(plate||'').trim();
+  if(!plate){ showToast('Plate required'); return; }
+  var rate = Number((document.getElementById('addFleetRate')||{}).value)||180;
+  slUpdate(function(d){
+    if(!d.vehicles) d.vehicles = [];
+    d.vehicles.push({
+      id: Date.now(), plate: plate, name: plate,
+      category: (document.getElementById('addFleetType')||{}).value||'Safari car',
+      type: (document.getElementById('addFleetType')||{}).value||'4x4 Safari',
+      model: (document.getElementById('addFleetModel')||{}).value||'',
+      year: Number((document.getElementById('addFleetYear')||{}).value)||2022,
+      seats: Number((document.getElementById('addFleetSeats')||{}).value)||7,
+      base: (document.getElementById('addFleetBase')||{}).value||'Arusha',
+      dayRate: rate, ratePerDay: rate, safariDayRate: rate, transferRate: Math.round(rate*0.5),
+      status: 'Available', availableFrom: new Date().toISOString().slice(0,10),
+      features: ((document.getElementById('addFleetFeat')||{}).value||'').split(',').map(function(s){return s.trim()}).filter(Boolean),
+      images: [], preview: '', operatorPrivate: true, notes: (document.getElementById('addFleetNotes')||{}).value||''
+    });
+    if(!d.messages) d.messages = [];
+    d.messages.unshift({ id: Date.now(), fromActivity: true, unread: true, side: 'operator', from: 'SafariLink', initials: 'SL',
+      text: 'Preferred vehicle added: '+plate, time: Date.now(), type: 'info' });
+  });
   closeModal('addFleetModal');
-  showToast('Vehicle request saved as task');
-  if(window.renderTasksPage) renderTasksPage();
+  showToast('Vehicle added to sourcing');
+  if(window.fleetRenderCards) fleetRenderCards(getLiveFleet());
+  updateMsgBadge();
 };
+
 window.submitAddGuide = function(){
   var n = (document.getElementById('addGuideName')||{}).value; n=(n||'').trim();
   if(!n){ showToast('Name required'); return; }
-  try {
-    var s = opActivityGet();
-    s.tasks = s.tasks||[];
-    s.tasks.unshift({ id:Date.now(), task:'Source guide: '+n, related:'Guide', due:new Date().toISOString().slice(0,10), assignee:'Admin', status:'Open' });
-    opActivitySave(s);
-  } catch(e){}
+  var rate = Number((document.getElementById('addGuideRate')||{}).value)||80;
+  slUpdate(function(d){
+    if(!d.guides) d.guides = [];
+    d.guides.push({
+      id: Date.now(), name: n, years: Number((document.getElementById('addGuideYears')||{}).value)||5,
+      special: (document.getElementById('addGuideSpec')||{}).value||'',
+      dailyRate: rate, rate: rate, base: 'Arusha',
+      languages: ((document.getElementById('addGuideLang')||{}).value||'English').split(',').map(function(s){return s.trim()}).filter(Boolean),
+      regions: ((document.getElementById('addGuideRegions')||{}).value||'').split(',').map(function(s){return s.trim()}).filter(Boolean),
+      bio: (document.getElementById('addGuideNotes')||{}).value||'', skills: [], rating: 5, reviewsCount: 0,
+      status: 'Available', operatorPrivate: true
+    });
+    if(!d.messages) d.messages = [];
+    d.messages.unshift({ id: Date.now(), fromActivity: true, unread: true, side: 'operator', from: 'SafariLink', initials: 'SL',
+      text: 'Preferred guide added: '+n, time: Date.now(), type: 'info' });
+  });
   closeModal('addGuideModal');
-  showToast('Guide request saved as task');
-  if(window.renderTasksPage) renderTasksPage();
+  showToast('Guide added to sourcing');
+  if(window.guideRenderCards) guideRenderCards(getLiveGuides());
+  updateMsgBadge();
 };
+
 window.openAddTask = function(){
   var d = document.getElementById('addTaskDue');
   if(d) d.value = new Date().toISOString().slice(0,10);
@@ -2849,42 +2926,116 @@ window.renderPartnerQuotes = function(){
   var body = document.getElementById('partnerQuotesBody');
   if(!body) return;
   var list = [];
-  try {
-    var d = slGet();
-    (d.partnerQuotes||[]).forEach(function(q){ list.push(q); });
-    // seed demo partner proformas if empty
-  } catch(e){}
+  try { list = (slGet().partnerQuotes||[]).slice(); } catch(e){}
   if(!list.length){
     list = [
-      { id:'PF-AC-101', from:'Serengeti Hill Camp', type:'Accommodation', detail:'Proforma for R-1042 · Luxury Tent ×2', amount:1200, status:'Sent' },
-      { id:'PF-FL-44', from:'Northern Fleet Ltd', type:'Fleet', detail:'Charter T 234 ABC · 5 days', amount:900, status:'Sent' }
+      { id:'PF-AC-101', from:'Serengeti Hill Camp', type:'Accommodation', detail:'Proforma multi-room stay', amount:1200, status:'Sent',
+        bankName:'CRDB Bank Plc', bankAddress:'Clock Tower Branch, Arusha', swift:'CORUTZTZ', accountName:'Serengeti Hill Camp Ltd', accountNumber:'01J1098765432', branchName:'Clock Tower' },
+      { id:'PF-FL-44', from:'Northern Fleet Ltd', type:'Fleet', detail:'Charter 5 days', amount:900, status:'Sent',
+        bankName:'NMB Bank', bankAddress:'Arusha Branch', swift:'NMIBTZTZ', accountName:'Northern Fleet Ltd', accountNumber:'21210012345', branchName:'Arusha' }
     ];
   }
-  body.innerHTML = list.map(function(q){
+  var pg = paginate('partnerQuotes', list, 10);
+  body.innerHTML = pg.slice.map(function(q){
     return '<tr><td><strong>'+esc(q.id)+'</strong></td><td>'+esc(q.from)+'</td><td>'+esc(q.type)+'</td><td>'+esc(q.detail)+'</td>' +
       '<td>$'+Number(q.amount||0).toLocaleString()+'</td><td><span class="badge badge-info">'+esc(q.status||'Sent')+'</span></td>' +
-      '<td><button class="btn btn-secondary btn-sm" onclick="printPartnerQuote(\''+String(q.id).replace(/'/g,"\\'")+'\')">PDF</button></td></tr>';
+      '<td><button class="btn btn-secondary btn-sm" onclick="printPartnerQuote(\''+String(q.id).replace(/'/g,"\'")+'\')">PDF</button></td></tr>';
   }).join('');
+  renderPager('pagerPartnerQuotes', 'partnerQuotes', pg.total, 'renderPartnerQuotes');
 };
 window.printPartnerQuote = function(id){
   var list = [];
   try { list = (slGet().partnerQuotes||[]); } catch(e){}
-  var q = list.find(function(x){ return x.id===id; }) || { id:id, from:'Partner', type:'Proforma', detail:'', amount:0, status:'Sent',
-    bank:'CRDB Bank · Acc 01J1098765432 · Dreamtrails / Partner', email:'accounts@partner.tz', phone:'+255 700 000 000' };
-  if(!q.bank){
-    q.bank = 'Bank details on file with partner';
-    q.email = q.email||'';
-    q.phone = q.phone||'';
-  }
+  var q = list.find(function(x){ return x.id===id; }) || {
+    id:id, from:'Partner', type:'Proforma', detail:'', amount:0, status:'Sent',
+    bankName:'CRDB Bank Plc', bankAddress:'Arusha', swift:'CORUTZTZ', accountName:'Partner Ltd', accountNumber:'—', branchName:'Main'
+  };
   var html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+q.id+'</title>'+
-    '<style>body{font-family:system-ui;max-width:640px;margin:40px auto;color:#2c2c2c}h1{color:#1a5a3a}.box{border:1px solid #d4cfc6;border-radius:10px;padding:16px;margin:16px 0}</style></head><body>'+
+    '<style>body{font-family:system-ui;max-width:640px;margin:40px auto;color:#2c2c2c;line-height:1.5}h1{color:#1a5a3a}.box{border:1px solid #d4cfc6;border-radius:10px;padding:16px;margin:16px 0}.k{color:#a39e95;font-size:.8rem}</style></head><body>'+
     '<h1>Proforma / Quote</h1><p>'+esc(q.from)+' · '+esc(q.type)+'</p>'+
     '<div class="box"><strong>'+esc(q.id)+'</strong><br>'+esc(q.detail)+'<br><br>Amount: <strong>$'+Number(q.amount||0).toLocaleString()+'</strong></div>'+
-    '<div class="box"><strong>Invoice details</strong><br>Email: '+esc(q.email||'—')+'<br>Phone: '+esc(q.phone||'—')+'<br>Bank: '+esc(q.bank||'—')+'</div>'+
+    '<div class="box"><strong>Bank &amp; invoice details</strong><br>'+
+    '<div class="k">Bank name</div>'+esc(q.bankName||'—')+'<br>'+
+    '<div class="k">Bank address</div>'+esc(q.bankAddress||'—')+'<br>'+
+    '<div class="k">SWIFT code</div>'+esc(q.swift||'—')+'<br>'+
+    '<div class="k">Account name</div>'+esc(q.accountName||'—')+'<br>'+
+    '<div class="k">Account number</div>'+esc(q.accountNumber||'—')+'<br>'+
+    '<div class="k">Branch name</div>'+esc(q.branchName||'—')+'</div>'+
     '<script>window.onload=function(){setTimeout(function(){window.print()},300)}<\/script></body></html>';
   var w = window.open('','_blank');
   if(w){ w.document.write(html); w.document.close(); }
 };
+
+
+
+
+/* ── Pagination helper (10 per page) ── */
+window._pageState = window._pageState || {};
+function paginate(key, items, pageSize) {
+  pageSize = pageSize || 10;
+  var page = window._pageState[key] || 1;
+  var total = items.length;
+  var pages = Math.max(1, Math.ceil(total / pageSize));
+  if (page > pages) page = pages;
+  if (page < 1) page = 1;
+  window._pageState[key] = page;
+  var start = (page - 1) * pageSize;
+  return { slice: items.slice(start, start + pageSize), page: page, pages: pages, total: total };
+}
+function renderPager(elId, key, total, onChange) {
+  var el = document.getElementById(elId);
+  if (!el) return;
+  var page = window._pageState[key] || 1;
+  var pages = Math.max(1, Math.ceil(total / 10));
+  if (total <= 10) { el.innerHTML = ''; return; }
+  el.innerHTML =
+    '<button type="button" '+(page<=1?'disabled':'')+' onclick="window._pageState[\''+key+'\']='+(page-1)+';('+onChange+')()">Previous</button>' +
+    '<span>Page '+page+' of '+pages+' · '+total+' items</span>' +
+    '<button type="button" '+(page>=pages?'disabled':'')+' onclick="window._pageState[\''+key+'\']='+(page+1)+';('+onChange+')()">Next</button>';
+}
+
+window.showQuoteTab = function(which) {
+  var my = document.getElementById('quotePanelMy');
+  var pr = document.getElementById('quotePanelPartner');
+  var t1 = document.getElementById('tabMyQuotes');
+  var t2 = document.getElementById('tabPartnerQuotes');
+  if (which === 'partner') {
+    if (my) my.style.display = 'none';
+    if (pr) pr.style.display = 'block';
+    if (t1) t1.classList.remove('active');
+    if (t2) t2.classList.add('active');
+    if (window.renderPartnerQuotes) renderPartnerQuotes();
+  } else {
+    if (my) my.style.display = 'block';
+    if (pr) pr.style.display = 'none';
+    if (t1) t1.classList.add('active');
+    if (t2) t2.classList.remove('active');
+    if (window.renderQuotesPage) renderQuotesPage();
+  }
+};
+
+/* Clean messages: welcome only until activity */
+function ensureWelcomeMessage() {
+  slUpdate(function(d) {
+    if (!d.messages) d.messages = [];
+    // strip legacy seed chatter once
+    if (!d._msgsCleaned) {
+      d.messages = d.messages.filter(function(m) {
+        return m.keep || m.type === 'welcome' || m.fromActivity;
+      });
+      d._msgsCleaned = true;
+    }
+    var hasWelcome = d.messages.some(function(m){ return m.type === 'welcome'; });
+    if (!hasWelcome) {
+      d.messages.unshift({
+        id: 'welcome', type: 'welcome', keep: true, unread: false,
+        from: 'SafariLink', initials: 'SL', side: 'operator',
+        text: 'Welcome to SafariLink. Messages from partners and system reminders will appear here when there is new activity.',
+        time: Date.now()
+      });
+    }
+  });
+}
 
 
 /* ============================================
@@ -2945,48 +3096,73 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <!-- Add Property / Vehicle / Guide / Task modals -->
 <div class="modal-overlay" id="addPropModal">
-  <div class="modal" style="max-width:520px;">
-    <div class="modal-header"><div class="modal-title">Request / note property</div>
+  <div class="modal" style="max-width:640px;">
+    <div class="modal-header"><div class="modal-title">Add preferred property</div>
       <button type="button" class="modal-close" onclick="closeModal('addPropModal')">&times;</button></div>
     <div class="modal-body">
-      <p style="font-size:.82rem;color:var(--warm-gray);margin-bottom:12px;">Properties are managed by accommodation partners. Use this to request a listing or note a property for sourcing.</p>
-      <div class="form-group"><label>Property name *</label><input id="addPropName"></div>
+      <p style="font-size:.82rem;color:var(--warm-gray);margin-bottom:12px;">Add a property not yet on SafariLink (your preferred lodge/camp). It appears in your sourcing list as private inventory.</p>
       <div class="form-row">
-        <div class="form-group"><label>Type</label><select id="addPropType"><option>Lodge</option><option>Camp</option><option>Hotel</option><option>Tented camp</option></select></div>
-        <div class="form-group"><label>Region</label><input id="addPropRegion" placeholder="Serengeti"></div>
+        <div class="form-group"><label>Name *</label><input id="addPropName"></div>
+        <div class="form-group"><label>Location *</label><input id="addPropRegion" placeholder="Serengeti / Arusha"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Type</label><select id="addPropType"><option>Lodge</option><option>Camp</option><option>Hotel</option><option>Tented camp</option><option>Homestay</option></select></div>
+        <div class="form-group"><label>Status</label><select id="addPropStatus"><option>available</option><option>limited</option></select></div>
+      </div>
+      <div class="form-group"><label>Description</label><textarea id="addPropDesc" rows="2"></textarea></div>
+      <div class="form-group"><label>Amenities (comma-separated)</label><input id="addPropAm" placeholder="WiFi, Pool, Game drives"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Room type example</label><input id="addPropRoom" placeholder="Standard Double"></div>
+        <div class="form-group"><label>STO / night (USD)</label><input type="number" id="addPropSto" value="150"></div>
       </div>
       <div class="form-group"><label>Notes</label><textarea id="addPropNotes" rows="2"></textarea></div>
-      <button type="button" class="btn btn-primary" style="width:100%;justify-content:center;" onclick="submitAddProp()">Save request</button>
+      <button type="button" class="btn btn-primary" style="width:100%;justify-content:center;" onclick="submitAddProp()">Save to my sourcing</button>
     </div>
   </div>
 </div>
 <div class="modal-overlay" id="addFleetModal">
-  <div class="modal" style="max-width:520px;">
-    <div class="modal-header"><div class="modal-title">Request / note vehicle</div>
+  <div class="modal" style="max-width:640px;">
+    <div class="modal-header"><div class="modal-title">Add preferred vehicle</div>
       <button type="button" class="modal-close" onclick="closeModal('addFleetModal')">&times;</button></div>
     <div class="modal-body">
-      <div class="form-group"><label>Vehicle / plate *</label><input id="addFleetName"></div>
+      <p style="font-size:.82rem;color:var(--warm-gray);margin-bottom:12px;">Register a vehicle not listed on SafariLink (your preferred fleet partner).</p>
       <div class="form-row">
-        <div class="form-group"><label>Type</label><select id="addFleetType"><option>4x4 Safari</option><option>Land Cruiser</option><option>Minibus</option></select></div>
-        <div class="form-group"><label>Seats</label><input type="number" id="addFleetSeats" value="7" min="2"></div>
+        <div class="form-group"><label>Plate *</label><input id="addFleetName" placeholder="T 123 ABC"></div>
+        <div class="form-group"><label>Category</label><select id="addFleetType"><option>Safari car (extended 4x4)</option><option>Van</option><option>Minibus</option><option>Land Cruiser</option></select></div>
       </div>
+      <div class="form-row">
+        <div class="form-group"><label>Model</label><input id="addFleetModel" placeholder="Toyota Land Cruiser Extended"></div>
+        <div class="form-group"><label>Year</label><input type="number" id="addFleetYear" value="2022"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Seats</label><input type="number" id="addFleetSeats" value="7" min="2"></div>
+        <div class="form-group"><label>Day rate (USD)</label><input type="number" id="addFleetRate" value="180"></div>
+      </div>
+      <div class="form-group"><label>Base / region</label><input id="addFleetBase" value="Arusha"></div>
+      <div class="form-group"><label>Features (comma-separated)</label><input id="addFleetFeat" placeholder="Pop-up roof, 4WD, Fridge"></div>
       <div class="form-group"><label>Notes</label><textarea id="addFleetNotes" rows="2"></textarea></div>
-      <button type="button" class="btn btn-primary" style="width:100%;justify-content:center;" onclick="submitAddFleet()">Save request</button>
+      <button type="button" class="btn btn-primary" style="width:100%;justify-content:center;" onclick="submitAddFleet()">Save to my fleet sourcing</button>
     </div>
   </div>
 </div>
 <div class="modal-overlay" id="addGuideModal">
-  <div class="modal" style="max-width:520px;">
-    <div class="modal-header"><div class="modal-title">Request / note guide</div>
+  <div class="modal" style="max-width:640px;">
+    <div class="modal-header"><div class="modal-title">Add preferred guide</div>
       <button type="button" class="modal-close" onclick="closeModal('addGuideModal')">&times;</button></div>
     <div class="modal-body">
-      <div class="form-group"><label>Guide name *</label><input id="addGuideName"></div>
+      <p style="font-size:.82rem;color:var(--warm-gray);margin-bottom:12px;">Add a guide not yet on SafariLink for your private sourcing list.</p>
+      <div class="form-row">
+        <div class="form-group"><label>Name *</label><input id="addGuideName"></div>
+        <div class="form-group"><label>Years experience</label><input type="number" id="addGuideYears" value="5"></div>
+      </div>
       <div class="form-row">
         <div class="form-group"><label>Specialization</label><input id="addGuideSpec" placeholder="Big cats, birding…"></div>
-        <div class="form-group"><label>Languages</label><input id="addGuideLang" placeholder="English, Swahili"></div>
+        <div class="form-group"><label>Day rate (USD)</label><input type="number" id="addGuideRate" value="80"></div>
       </div>
-      <div class="form-group"><label>Notes</label><textarea id="addGuideNotes" rows="2"></textarea></div>
-      <button type="button" class="btn btn-primary" style="width:100%;justify-content:center;" onclick="submitAddGuide()">Save request</button>
+      <div class="form-group"><label>Languages</label><input id="addGuideLang" placeholder="English, Swahili, Japanese"></div>
+      <div class="form-group"><label>Parks / regions</label><input id="addGuideRegions" placeholder="Serengeti NP, Ngorongoro"></div>
+      <div class="form-group"><label>Bio / notes</label><textarea id="addGuideNotes" rows="2"></textarea></div>
+      <button type="button" class="btn btn-primary" style="width:100%;justify-content:center;" onclick="submitAddGuide()">Save to my guide sourcing</button>
     </div>
   </div>
 </div>
