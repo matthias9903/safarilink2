@@ -166,7 +166,10 @@
   /* ── TABLES ── */
   table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
   th { text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--warm-gray); padding: 10px 12px; border-bottom: 1px solid var(--border-light); }
-  td { padding: 12px; border-bottom: 1px solid var(--border-light); color: var(--charcoal); }
+  td { padding: 12px; border-bottom: 1px solid var(--border-light); color: var(--charcoal); word-break: break-word; max-width: 280px; }
+  td code { word-break: break-all; }
+  td.email-cell, .email-cell { max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  table { table-layout: auto; }
   tr:last-child td { border-bottom: none; }
 
   /* ── SIDEBAR TOGGLE (mobile) ── */
@@ -1071,7 +1074,7 @@
             </div>
             <div class="kpi-grid" style="margin-bottom:20px;">
                 <div class="kpi-card"><div class="kpi-label">Company</div><div class="kpi-value" style="font-size:1.15rem;">Dreamtrails Expeditions</div></div>
-                <div class="kpi-card"><div class="kpi-label">Login email</div><div class="kpi-value" style="font-size:.50rem;">dreamtrailsexpedictions@gmail.com</div></div>
+                <div class="kpi-card"><div class="kpi-label">Login email</div><div class="kpi-value" style="font-size:.95rem;">dreamtrailsexpedictions@gmail.com</div></div>
                 <div class="kpi-card"><div class="kpi-label">Plan</div><div class="kpi-value" style="font-size:1.15rem;">Operator Pro</div></div>
                 <div class="kpi-card"><div class="kpi-label">Team seats</div><div class="kpi-value" id="opTeamCount">3</div></div>
             </div>
@@ -1120,7 +1123,7 @@
                             <div class="form-group"><label>About</label><textarea id="coAbout" rows="2">Safari operator connecting guests with trusted partners across Tanzania.</textarea></div>
                         </div>
                     </div>
-                    <p style="font-size:.82rem;color:var(--warm-gray);margin-top:10px;">First account is Admin (main). Admin can add Sales and Manager accounts below.</p>
+                    <p style="font-size:.82rem;color:var(--warm-gray);margin-top:10px;">First account is Admin (main). New members need <strong>SafariLink platform Admin</strong> approval. <button type="button" class="btn btn-secondary btn-sm" onclick="openChangePassword(document.getElementById('coEmail').value||'dreamtrailsexpedictions@gmail.com')">Change password</button> <button type="button" class="btn btn-secondary btn-sm" onclick="requestPasswordReset(document.getElementById('coEmail').value)">Reset via email</button></p>
                 </div>
             </div>
         </div>
@@ -1326,19 +1329,17 @@ function renderOpTeam(){
     var roleLabel = m.isMain || m.role === 'Admin' ? 'Admin · Main' : m.role;
     var actions = '';
     if (m.status === 'Pending') {
-      actions = '<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">' +
-        '<button type="button" class="btn btn-primary btn-sm" onclick="approveTeamMember('+i+')"><i data-lucide="check" style="width:12px;height:12px;"></i> Approve &amp; send login</button>' +
-        '<button type="button" class="btn btn-secondary btn-sm" onclick="rejectTeamMember('+i+')">Reject</button></div>';
+      actions = '<div style="font-size:.75rem;color:#92400e;margin-top:6px;max-width:220px;overflow-wrap:anywhere;">Awaiting <strong>SafariLink Admin</strong> approval — login will be emailed after approval.</div>';
     } else if (m.status === 'Active' && !m.isMain && m.role !== 'Admin') {
-      actions = '<div style="font-size:.72rem;color:var(--warm-gray);margin-top:4px;">Login emailed · can access dashboard</div>';
+      actions = '<div style="font-size:.72rem;color:var(--warm-gray);margin-top:4px;max-width:220px;overflow-wrap:anywhere;">Approved by SafariLink · login emailed</div>';
     }
-    return '<tr><td><strong>'+esc(m.name)+'</strong></td><td>'+esc(m.email)+'</td><td>'+esc(roleLabel)+'</td><td>'+badgeOp(m.status)+actions+'</td></tr>';
+    return '<tr><td><strong>'+esc(m.name)+'</strong></td><td class="email-cell" title="'+esc(m.email)+'">'+esc(m.email)+'</td><td>'+esc(roleLabel)+'</td><td>'+badgeOp(m.status)+actions+'</td></tr>';
   }).join('');
   if (window.lucide) lucide.createIcons();
   var banner = document.getElementById('opPendingBanner');
   if (banner) {
     banner.style.display = pending ? 'block' : 'none';
-    banner.innerHTML = pending ? '<strong>'+pending+' member(s) awaiting Admin approval.</strong> Approve to email login details and grant access.' : '';
+    banner.innerHTML = pending ? '<strong>'+pending+' member(s) awaiting SafariLink Admin approval.</strong> Platform admin must approve before login details are sent.' : '';
   }
 }
 
@@ -1365,12 +1366,16 @@ function opAddMember(){
   try {
     slUpdate(function(d){
       if (!d.pendingTeam) d.pendingTeam = [];
-      d.pendingTeam.push({ name:n, email:e, role:r, provider:'tour-operator', company:'Dreamtrails Expeditions', createdAt:Date.now() });
+      d.pendingTeam.push({
+        id: Date.now(), name:n, email:e, role:r,
+        provider:'tour-operator', providerLabel:'Tour Operator',
+        company:'Dreamtrails Expeditions', status:'pending', createdAt:Date.now()
+      });
     });
   } catch(err){}
   try { document.getElementById('opMemF').style.display = 'none'; } catch(err){}
   renderOpTeam();
-  showToast('Member submitted — Admin must approve before they can log in');
+  showToast('Member submitted — SafariLink Admin must approve before they can log in');
 }
 
 function approveTeamMember(i){
@@ -1434,14 +1439,14 @@ function showLoginDetailsModal(member, tempPass){
   var div = document.createElement('div');
   div.className = 'modal-overlay active';
   div.id = 'loginDetailsModal';
-  div.innerHTML = '<div class="modal" style="max-width:480px;"><div class="modal-header"><div class="modal-title">Login details emailed</div>' +
+  div.innerHTML = '<div class="modal" style="max-width:480px;max-height:90vh;overflow:auto;"><div class="modal-header"><div class="modal-title">Login details emailed</div>' +
     '<button type="button" class="modal-close" onclick="document.getElementById(\'loginDetailsModal\').remove()">&times;</button></div>' +
     '<div class="modal-body">' +
     '<p style="margin-bottom:12px;">Admin approved <strong>'+esc(member.name)+'</strong> as <strong>'+esc(member.role)+'</strong>.</p>' +
     '<p style="font-size:.85rem;color:var(--warm-gray);margin-bottom:12px;">The following was sent to <strong>'+esc(member.email)+'</strong>:</p>' +
-    '<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;font-size:.85rem;">' +
+    '<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;font-size:.85rem;overflow-wrap:anywhere;word-break:break-word;">' +
     '<div><strong>Email:</strong> '+esc(member.email)+'</div>' +
-    '<div style="margin-top:6px;"><strong>Temporary password:</strong> <code style="background:#fff;padding:2px 8px;border-radius:4px;">'+esc(tempPass)+'</code></div>' +
+    '<div style="margin-top:6px;"><strong>Temporary password:</strong></div><div style="margin-top:4px;"><code style="display:inline-block;max-width:100%;background:#fff;padding:8px 12px;border-radius:6px;overflow-wrap:anywhere;word-break:break-all;font-size:1rem;">'+esc(tempPass)+'</code></div>' +
     '<div style="margin-top:6px;"><strong>Role:</strong> '+esc(member.role)+'</div>' +
     '<div style="margin-top:6px;"><strong>Dashboard:</strong> Tour Operator</div>' +
     '</div>' +
@@ -2553,6 +2558,31 @@ window.renderTasksPage = function() {
     var st = tk.status==='Done'?'badge-success':(tk.status==='In progress'?'badge-info':'badge-pending');
     return '<tr><td>'+esc(tk.task)+'</td><td>'+esc(tk.related)+'</td><td>'+esc(tk.due)+'</td><td>'+esc(tk.assignee)+'</td><td><span class="badge '+st+'">'+esc(tk.status)+'</span></td></tr>';
   }).join('') || '<tr><td colspan="5" style="color:var(--warm-gray);">No tasks — they appear as you generate quotes and book trips.</td></tr>';
+};
+
+
+/* Password change / reset (demo — email simulated) */
+window.openChangePassword = function(email) {
+  var nw = prompt('New password for '+email+' (min 8 characters)');
+  if (!nw || nw.length < 8) { showToast('Password must be at least 8 characters'); return; }
+  var conf = prompt('Confirm new password');
+  if (nw !== conf) { showToast('Passwords do not match'); return; }
+  try {
+    var key = 'safarilink_pwd_' + email.toLowerCase();
+    localStorage.setItem(key, btoa(nw));
+  } catch(e){}
+  showToast('Password updated for '+email);
+};
+window.requestPasswordReset = function(email) {
+  email = email || prompt('Email for password reset');
+  if (!email) return;
+  var token = 'rst_' + Math.random().toString(36).slice(2, 12);
+  try {
+    localStorage.setItem('safarilink_reset_' + token, JSON.stringify({ email: email, at: Date.now() }));
+  } catch(e){}
+  var link = (location.origin || '') + location.pathname.replace(/[^/]*$/, '') + 'reset-password.html?token=' + token;
+  showToast('Reset link sent to '+email+' (demo)');
+  alert('Password reset email (simulated)\\n\\nTo: '+email+'\\n\\nReset link:\\n'+link+'\\n\\nValid for this browser session.');
 };
 
 /* ============================================
