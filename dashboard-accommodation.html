@@ -550,7 +550,55 @@ function stats(){var d=slGet(),units=0;d.roomTypes.forEach(function(r){units+=r.
 /* ---------- Render: Dashboard page ---------- */
 function renderDash(){var s=stats();document.getElementById('stOcc').textContent=s.pct+'%';document.getElementById('stOpen').textContent=s.open;document.getElementById('stRev').textContent=money(s.rev);document.getElementById('stAvg').textContent=money(s.avg);document.getElementById('dashRes').innerHTML=slGet().reservations.slice(0,5).map(function(r){return '<tr><td>'+esc(r.operator)+'</td><td>'+esc(r.room)+'</td><td>'+r.checkIn+'</td><td>'+badge(r.status)+'</td><td>'+money(r.amount)+'</td></tr>'}).join('')}
 /* ---------- Render: Reservations table ---------- */
-function renderRes(){var d=slGet(),f=document.getElementById('resFilter').value,q=(document.getElementById('resQ').value||'').toLowerCase(),c={reserved:0,booked:0,paid:0,cancelled:0};d.reservations.forEach(function(r){if(c[r.status]!=null)c[r.status]++});document.getElementById('cR').textContent=c.reserved;document.getElementById('cB').textContent=c.booked;document.getElementById('cP').textContent=c.paid;document.getElementById('cC').textContent=c.cancelled;document.getElementById('bRes').textContent=c.reserved+c.booked;document.getElementById('resTable').innerHTML=d.reservations.filter(function(r){return(f==='all'||r.status===f)&&(!q||(r.operator+r.room+r.id).toLowerCase().indexOf(q)>=0)}).map(function(r){return '<tr><td>'+r.id+'</td><td>'+esc(r.operator)+'</td><td>'+esc(r.room)+'</td><td>'+r.checkIn+'</td><td>'+r.checkOut+'</td><td>'+esc(r.payment)+'</td><td>'+badge(r.status)+'</td><td><button class="btn" onclick="replyRes(\''+r.id+'\')">Reply</button></td></tr>'}).join('')}
+function renderRes(){var d=slGet(),f=document.getElementById('resFilter').value,q=(document.getElementById('resQ').value||'').toLowerCase(),c={reserved:0,booked:0,paid:0,cancelled:0};d.reservations.forEach(function(r){if(c[r.status]!=null)c[r.status]++});document.getElementById('cR').textContent=c.reserved;document.getElementById('cB').textContent=c.booked;document.getElementById('cP').textContent=c.paid;document.getElementById('cC').textContent=c.cancelled;document.getElementById('bRes').textContent=c.reserved+c.booked;document.getElementById('resTable').innerHTML=d.reservations.filter(function(r){return(f==='all'||r.status===f)&&(!q||(r.operator+r.room+r.id+(r.propertyName||'')).toLowerCase().indexOf(q)>=0)}).map(function(r){return '<tr><td>'+r.id+'</td><td>'+esc(r.operator)+'</td><td>'+esc(r.room)+'</td><td>'+r.checkIn+'</td><td>'+r.checkOut+'</td><td>'+esc(r.payment)+'</td><td>'+badge(r.status)+'</td><td style="white-space:nowrap"><button class="btn" onclick="openResDetail(\''+r.id+'\')">Details</button> <button class="btn" onclick="replyRes(\''+r.id+'\')">Reply</button></td></tr>'}).join('')}
+function openResDetail(id){
+  var r=slGet().reservations.find(function(x){return x.id===id});if(!r)return;
+  var lines=(r.roomLines||[]).map(function(l){
+    return '<tr><td>'+esc(l.roomType)+'</td><td>'+l.qty+'</td><td>'+(l.nights||'—')+'</td><td>$'+(l.sto||0)+'</td><td>$'+(l.amount||0)+'</td><td>'+esc(l.notes||'')+'</td></tr>';
+  }).join('')||'<tr><td colspan="6">'+esc(r.room)+' · '+money(r.amount)+'</td></tr>';
+  document.getElementById('modalBody').innerHTML=
+    '<h3>Reservation '+esc(r.id)+'</h3>'+
+    '<p class="meta">'+esc(r.operator)+' · '+esc(r.propertyName||propName(r.propertyId))+'</p>'+
+    '<p><strong>Dates:</strong> '+r.checkIn+' → '+r.checkOut+(r.nights?' ('+r.nights+' nights)':'')+'</p>'+
+    '<p><strong>Guests:</strong> '+(r.guests||'—')+' · <strong>Status:</strong> '+badge(r.status)+' · <strong>Amount:</strong> '+money(r.amount)+'</p>'+
+    '<p><strong>Notes:</strong> '+esc(r.notes||'—')+'</p>'+
+    '<h4 style="margin-top:12px">Room breakdown</h4>'+
+    '<div style="overflow-x:auto"><table><thead><tr><th>Room type</th><th>Qty</th><th>Nights</th><th>STO</th><th>Line total</th><th>Notes</th></tr></thead><tbody>'+lines+'</tbody></table></div>'+
+    '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px">'+
+    '<button class="btn btn-primary" onclick="sendProforma(\''+r.id+'\')"><i data-lucide="file-text"></i> Send proforma to operator</button>'+
+    '<button class="btn" onclick="replyRes(\''+r.id+'\');document.getElementById(\'modal\').classList.remove(\'show\')">Confirm / Reply</button>'+
+    '<button class="btn" onclick="document.getElementById(\'modal\').classList.remove(\'show\')">Close</button></div>';
+  document.getElementById('modal').classList.add('show');lucide.createIcons();
+}
+function sendProforma(id){
+  var r=slGet().reservations.find(function(x){return x.id===id});if(!r)return;
+  var inv={
+    bankName: localStorage.getItem('sl_accom_bank_name')||'CRDB Bank Plc',
+    bankAddress: localStorage.getItem('sl_accom_bank_address')||'Arusha Branch, Tanzania',
+    swift: localStorage.getItem('sl_accom_swift')||'CORUTZTZ',
+    accountName: localStorage.getItem('sl_accom_acc_name')||'Serengeti Hill Camp Ltd',
+    accountNumber: localStorage.getItem('sl_accom_acc_no')||'01J1098765432',
+    branchName: localStorage.getItem('sl_accom_branch')||'Clock Tower'
+  };
+  var pfId='PF-AC-'+String(Date.now()).slice(-4);
+  slUpdate(function(d){
+    if(!d.partnerQuotes)d.partnerQuotes=[];
+    d.partnerQuotes.unshift({
+      id:pfId, from: propName(r.propertyId)||'Accommodation partner', type:'Accommodation',
+      detail: 'Proforma '+r.id+' · '+(r.room||'')+' · '+r.checkIn+' to '+r.checkOut,
+      amount: r.amount, status:'Sent', reservationId:r.id,
+      bankName:inv.bankName, bankAddress:inv.bankAddress, swift:inv.swift,
+      accountName:inv.accountName, accountNumber:inv.accountNumber, branchName:inv.branchName
+    });
+    if(!d.messages)d.messages=[];
+    d.messages.unshift({id:Date.now(),fromActivity:true,unread:true,side:'operator',from:propName(r.propertyId)||'Accommodation',initials:'AC',
+      text:'Proforma '+pfId+' sent for reservation '+r.id+' ($'+r.amount+')',time:Date.now(),type:'info'});
+    d.reservations.forEach(function(x){ if(x.id===id){ x.proformaSent=true; x.repliedAt=Date.now(); if(x.status==='reserved')x.status='booked'; }});
+  });
+  document.getElementById('modal').classList.remove('show');
+  alert('Proforma '+pfId+' sent to operator with bank details');
+  refresh();
+}
 function replyRes(id){slUpdate(function(d){d.reservations.forEach(function(r){if(r.id===id){r.repliedAt=Date.now();if(r.status==='reserved')r.status='booked'}})});refresh()}
 /* ---------- Simulate operator booking (real-time test) ---------- */
 function simOpBooking(){slUpdate(function(d){var id='R-'+Math.floor(1000+Math.random()*9000);d.reservations.unshift({id:id,operator:'Dreamtrails Expeditions',propertyId:1,room:'Luxury Tent',checkIn:'2026-11-05',checkOut:'2026-11-08',guests:2,amount:660,payment:'Pending',status:'reserved',createdAt:Date.now(),repliedAt:null,notes:'Live'});d.messages.unshift({id:Date.now(),side:'accommodation',from:'Dreamtrails Expeditions',initials:'DT',text:'New reservation '+id+' — please confirm.',time:Date.now(),type:'info',related:id,unread:true})});alert('Operator booking received');go('reservations')}
