@@ -1291,49 +1291,167 @@ function renderOpDashboard(){
   if (window.lucide) lucide.createIcons();
 }
 
-var OP_TEAM = [{ name: 'Dreamtrails Admin', email: 'dreamtrailsexpedictions@gmail.com', role: 'Admin', status: 'Active' }];
+/* Team accounts — Admin (main) must approve Sales/Manager before they can log in */
+var OP_TEAM_KEY = 'safarilink_op_team';
+function loadOpTeam(){
+  try {
+    var raw = localStorage.getItem(OP_TEAM_KEY);
+    if (raw) {
+      var arr = JSON.parse(raw);
+      if (Array.isArray(arr) && arr.length) return arr;
+    }
+  } catch(e){}
+  return [{ id: 1, name: 'Dreamtrails Admin', email: 'dreamtrailsexpedictions@gmail.com', role: 'Admin', status: 'Active', isMain: true, approvedAt: Date.now() }];
+}
+function saveOpTeam(list){
+  try { localStorage.setItem(OP_TEAM_KEY, JSON.stringify(list)); } catch(e){}
+}
+var OP_TEAM = loadOpTeam();
+
+function genTempPassword(){
+  var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+  var s = 'SL-';
+  for (var i=0;i<8;i++) s += chars.charAt(Math.floor(Math.random()*chars.length));
+  return s;
+}
+
 function renderOpTeam(){
+  OP_TEAM = loadOpTeam();
   var body = document.getElementById('opTeamBody');
   var cnt = document.getElementById('opTeamCount');
-  if (cnt) cnt.textContent = OP_TEAM.length; 
+  var pending = OP_TEAM.filter(function(m){ return m.status === 'Pending'; }).length;
+  if (cnt) cnt.textContent = OP_TEAM.length + (pending ? ' · '+pending+' pending' : '');
   if (!body) return;
   body.innerHTML = OP_TEAM.map(function(m, i){
+    var roleLabel = m.isMain || m.role === 'Admin' ? 'Admin · Main' : m.role;
     var actions = '';
-    if (m.status === 'Pending' && m.role !== 'Admin') {
-      actions = ' <button class="btn btn-primary btn-sm" onclick="approveTeamMember('+i+')">Approve</button>';
+    if (m.status === 'Pending') {
+      actions = '<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">' +
+        '<button type="button" class="btn btn-primary btn-sm" onclick="approveTeamMember('+i+')"><i data-lucide="check" style="width:12px;height:12px;"></i> Approve &amp; send login</button>' +
+        '<button type="button" class="btn btn-secondary btn-sm" onclick="rejectTeamMember('+i+')">Reject</button></div>';
+    } else if (m.status === 'Active' && !m.isMain && m.role !== 'Admin') {
+      actions = '<div style="font-size:.72rem;color:var(--warm-gray);margin-top:4px;">Login emailed · can access dashboard</div>';
     }
-    var roleLabel = m.role === 'Admin' ? 'Admin · Main' : m.role;
-    return '<tr><td>'+esc(m.name)+'</td><td>'+esc(m.email)+'</td><td>'+esc(roleLabel)+'</td><td>'+badgeOp(m.status)+actions+'</td></tr>';
+    return '<tr><td><strong>'+esc(m.name)+'</strong></td><td>'+esc(m.email)+'</td><td>'+esc(roleLabel)+'</td><td>'+badgeOp(m.status)+actions+'</td></tr>';
   }).join('');
+  if (window.lucide) lucide.createIcons();
+  var banner = document.getElementById('opPendingBanner');
+  if (banner) {
+    banner.style.display = pending ? 'block' : 'none';
+    banner.innerHTML = pending ? '<strong>'+pending+' member(s) awaiting Admin approval.</strong> Approve to email login details and grant access.' : '';
+  }
 }
+
 function opAddMember(){
+  OP_TEAM = loadOpTeam();
   var n = (document.getElementById('opMemName')||{}).value; n = (n||'').trim();
   var e = (document.getElementById('opMemEmail')||{}).value; e = (e||'').trim();
   var r = (document.getElementById('opMemRole')||{}).value || 'Sales';
   if (!n || !e) { showToast('Name and email required'); return; }
-  var extras = OP_TEAM.filter(function(m){ return m.role !== 'Admin'; });
-  if (extras.length >= 2) { showToast('Admin can add at most Sales and Manager'); return; }
-  OP_TEAM.push({name:n, email:e, role:r, status:'Pending'});
+  if (OP_TEAM.some(function(m){ return (m.email||'').toLowerCase() === e.toLowerCase(); })) {
+    showToast('This email is already on the team'); return;
+  }
+  var extras = OP_TEAM.filter(function(m){ return m.role !== 'Admin' && !m.isMain; });
+  if (extras.length >= 2) { showToast('Admin can add at most 2 accounts (Sales and Manager)'); return; }
+  if (OP_TEAM.some(function(m){ return m.role === r && m.status !== 'Rejected'; })) {
+    showToast(r + ' role already assigned (or pending)'); return;
+  }
+  OP_TEAM.push({
+    id: Date.now(), name: n, email: e, role: r, status: 'Pending',
+    isMain: false, createdAt: Date.now(), serviceProvider: 'tour-operator'
+  });
+  saveOpTeam(OP_TEAM);
+  // Also queue on shared platform for audit
+  try {
+    slUpdate(function(d){
+      if (!d.pendingTeam) d.pendingTeam = [];
+      d.pendingTeam.push({ name:n, email:e, role:r, provider:'tour-operator', company:'Dreamtrails Expeditions', createdAt:Date.now() });
+    });
+  } catch(err){}
   try { document.getElementById('opMemF').style.display = 'none'; } catch(err){}
   renderOpTeam();
-  showToast('Member added — pending Admin approval');
+  showToast('Member submitted — Admin must approve before they can log in');
 }
+
 function approveTeamMember(i){
+  OP_TEAM = loadOpTeam();
   var m = OP_TEAM[i];
   if (!m || m.status !== 'Pending') return;
+  var tempPass = genTempPassword();
   m.status = 'Active';
-  // Simulated email with login details
-  showToast('Approved — login details sent to '+m.email+' (role: '+m.role+')');
-  // Log as task activity
+  m.approvedAt = Date.now();
+  m.tempPassword = tempPass;
+  saveOpTeam(OP_TEAM);
+  try {
+    slUpdate(function(d){
+      if (!d.pendingTeam) d.pendingTeam = [];
+      d.pendingTeam = d.pendingTeam.filter(function(p){ return p.email !== m.email; });
+      if (!d.team) d.team = {};
+      if (!d.team.operator) d.team.operator = [];
+      d.team.operator.push({ id: m.id, name: m.name, email: m.email, role: m.role, status: 'Active' });
+      if (!d.messages) d.messages = [];
+      d.messages.unshift({
+        id: Date.now(), side: 'operator', from: 'SafariLink Admin', initials: 'SL',
+        text: 'Login ready for '+m.name+' ('+m.role+'). Email sent to '+m.email+'.',
+        time: Date.now(), type: 'info', unread: true
+      });
+    });
+  } catch(err){}
   try {
     var s = opActivityGet();
     s.tasks = s.tasks || [];
-    s.tasks.unshift({ id: Date.now(), task: 'Team access granted: '+m.name+' ('+m.role+')', related: m.email, due: new Date().toISOString().slice(0,10), assignee: 'Admin', status: 'Done' });
+    s.tasks.unshift({ id: Date.now(), task: 'Access granted: '+m.name+' ('+m.role+') — login emailed', related: m.email, due: new Date().toISOString().slice(0,10), assignee: 'Admin', status: 'Done' });
     opActivitySave(s);
   } catch(e){}
+  showToast('Approved — login details sent to '+m.email);
+  // Show credentials modal for admin to copy / confirm email content
+  showLoginDetailsModal(m, tempPass);
   renderOpTeam();
   if (window.renderTasksPage) renderTasksPage();
+  if (window.renderOpMessages) renderOpMessages();
 }
+
+function rejectTeamMember(i){
+  OP_TEAM = loadOpTeam();
+  var m = OP_TEAM[i];
+  if (!m || m.status !== 'Pending') return;
+  if (!confirm('Reject '+m.name+'?')) return;
+  m.status = 'Rejected';
+  saveOpTeam(OP_TEAM);
+  try {
+    slUpdate(function(d){
+      if (!d.pendingTeam) return;
+      d.pendingTeam = d.pendingTeam.filter(function(p){ return p.email !== m.email; });
+    });
+  } catch(e){}
+  showToast('Member rejected');
+  renderOpTeam();
+}
+
+function showLoginDetailsModal(member, tempPass){
+  var existing = document.getElementById('loginDetailsModal');
+  if (existing) existing.remove();
+  var div = document.createElement('div');
+  div.className = 'modal-overlay active';
+  div.id = 'loginDetailsModal';
+  div.innerHTML = '<div class="modal" style="max-width:480px;"><div class="modal-header"><div class="modal-title">Login details emailed</div>' +
+    '<button type="button" class="modal-close" onclick="document.getElementById(\'loginDetailsModal\').remove()">&times;</button></div>' +
+    '<div class="modal-body">' +
+    '<p style="margin-bottom:12px;">Admin approved <strong>'+esc(member.name)+'</strong> as <strong>'+esc(member.role)+'</strong>.</p>' +
+    '<p style="font-size:.85rem;color:var(--warm-gray);margin-bottom:12px;">The following was sent to <strong>'+esc(member.email)+'</strong>:</p>' +
+    '<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;font-size:.85rem;">' +
+    '<div><strong>Email:</strong> '+esc(member.email)+'</div>' +
+    '<div style="margin-top:6px;"><strong>Temporary password:</strong> <code style="background:#fff;padding:2px 8px;border-radius:4px;">'+esc(tempPass)+'</code></div>' +
+    '<div style="margin-top:6px;"><strong>Role:</strong> '+esc(member.role)+'</div>' +
+    '<div style="margin-top:6px;"><strong>Dashboard:</strong> Tour Operator</div>' +
+    '</div>' +
+    '<p style="font-size:.78rem;color:var(--warm-gray);margin-top:12px;">They must change the password on first login. (Email is simulated in this demo.)</p>' +
+    '<button type="button" class="btn btn-primary" style="margin-top:14px;width:100%;justify-content:center;" onclick="document.getElementById(\'loginDetailsModal\').remove()">Done</button>' +
+    '</div></div>';
+  document.body.appendChild(div);
+  if (window.lucide) lucide.createIcons();
+}
+
 
 /* Live sourcing — ONLY partner data from shared store (no static cards) */
 function getLiveAccommodations(){
