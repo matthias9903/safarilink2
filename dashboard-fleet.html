@@ -34,7 +34,7 @@
 
   /* ── SIDEBAR (navigation + collapse) ── */
   .sidebar {
-    width: 240px; background: var(--charcoal); color: #ccc;
+    width: 250px; background: var(--charcoal); color: #ccc;
     display: flex; flex-direction: column; flex-shrink: 0;
     transition: width .3s ease; position: relative; overflow-x: visible;
   }
@@ -77,38 +77,16 @@
     color: rgba(255,255,255,.35); padding: 12px 8px 6px;
   }
   .sidebar-link {
-    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
-    border-radius: 6px; color: #bbb; font-size: .9rem; cursor: pointer; margin-bottom: 2px; position: relative;
+    display: flex; align-items: center; gap: 8px; padding: 9px 12px;
+    border-radius: 6px; color: #bbb; font-size: .85rem; cursor: pointer;
   }
   .sidebar-link:hover { background: rgba(255,255,255,.08); color: #fff; }
   .sidebar-link.active { background: rgba(63,185,131,.15); color: var(--accent-green); }
-  .sidebar-link i, .sidebar-link svg { width: 20px; height: 20px; flex-shrink: 0; }
+  .sidebar-link i { width: 17px; height: 17px; }
   .sidebar-badge {
     margin-left: auto; background: #f59e0b; color: #000;
     font-size: .68rem; padding: 2px 7px; border-radius: 10px; font-weight: 700;
   }
-  #bMsg.msg-unread {
-    background: #dc2626; color: #fff; display: inline-flex; align-items: center; justify-content: center;
-    min-width: 18px; height: 18px; padding: 0 5px;
-  }
-  #bMsg:empty, #bMsg[data-count="0"] { display: none; }
-  .pager {
-    display: flex; align-items: center; justify-content: center; gap: 12px;
-    margin-top: 12px; font-size: .85rem; color: var(--warm-gray);
-  }
-  .pager button {
-    padding: 8px 14px; border-radius: 6px; border: 1px solid var(--border-light);
-    background: #fff; cursor: pointer; font-weight: 600;
-  }
-  .pager button:disabled { opacity: .4; cursor: not-allowed; }
-  .alert-list { display: flex; flex-direction: column; gap: 8px; }
-  .alert-item {
-    background: #fff; border: 1px solid var(--border-light); border-left: 3px solid var(--accent-green);
-    border-radius: 8px; padding: 12px 14px; font-size: .85rem;
-  }
-  .alert-item.warn { border-left-color: #f59e0b; }
-  .alert-item.info { border-left-color: #0891b2; }
-
   .sidebar-footer { padding: 14px; border-top: 1px solid rgba(255,255,255,.08); font-size: .8rem; }
 
   /* ── MAIN LAYOUT ── */
@@ -249,7 +227,7 @@
 <a class="sidebar-link" data-p="rates" onclick="go('rates')"><i data-lucide="tag"></i>Rates & Packages</a>
 <a class="sidebar-link" data-p="agreements" onclick="go('agreements')"><i data-lucide="file-text"></i>Hire Agreements</a>
 <a class="sidebar-link" data-p="insurance" onclick="go('insurance')"><i data-lucide="shield"></i>Insurance & Compliance</a>
-<a class="sidebar-link" data-p="messages" onclick="go('messages')"><i data-lucide="message-square"></i><span> Messages</span><span class="sidebar-badge msg-unread" id="bMsg" data-count="0"></span></a>
+<a class="sidebar-link" data-p="messages" onclick="go('messages')"><i data-lucide="message-square"></i>Messages</a>
 <div class="sidebar-section">Reports</div>
 <a class="sidebar-link" data-p="revenue" onclick="go('revenue')"><i data-lucide="bar-chart-3"></i>Revenue & Utilisation</a>
 <div class="sidebar-section">Settings</div>
@@ -260,12 +238,8 @@
 <div style="display:flex;gap:8px"><button class="btn" onclick="logout()"><i data-lucide="log-out"></i> Log out</button><button class="btn btn-primary" onclick="go('add')"><i data-lucide="plus"></i> Add vehicle</button></div></header>
 <div class="content">
 <div class="page active" id="page-dashboard"><div class="stats"><div class="stat"><div class="lbl">On hire</div><div class="val" id="stHire">0</div></div><div class="stat"><div class="lbl">Available today</div><div class="val" id="stAvail">0</div></div><div class="stat"><div class="lbl">Revenue</div><div class="val" id="stRev">$0</div></div><div class="stat"><div class="lbl">Utilisation</div><div class="val" id="stUtil">0%</div></div></div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px">
-  <div class="card" style="padding:16px"><h3 style="font-size:1rem;margin-bottom:10px">Operation alerts <span class="meta">(live · max 3)</span></h3><div class="alert-list" id="dashAlerts"></div></div>
-  <div class="card" style="padding:16px"><h3 style="font-size:1rem;margin-bottom:10px">Recent partner activity <span class="meta">(live · max 10)</span></h3><div id="dashActivity"></div></div>
-</div>
-<div class="card" style="overflow-x:auto"><table><thead><tr><th>Operator</th><th>Vehicle</th><th>Dates</th><th>Route</th><th>Status</th><th>Value</th></tr></thead><tbody id="dashBook"></tbody></table><div class="pager" id="pagerDash"></div></div></div>
-<div class="page" id="page-fleet"><div class="filters"><select id="fFilter" onchange="renderFleet()"><option value="all">All</option><option>Available</option><option>On hire</option><option>Maintenance</option></select><select id="fCat" onchange="renderFleet()"><option value="all">All types</option><option>Safari car (extended 4x4)</option><option>Van</option><option>Minibus</option></select></div><div class="prop-grid" id="fleetGrid"></div><div class="pager" id="pagerFleet"></div></div>
+<div class="card" style="overflow-x:auto"><table><thead><tr><th>Operator</th><th>Vehicle</th><th>Dates</th><th>Route</th><th>Status</th><th>Value</th></tr></thead><tbody id="dashBook"></tbody></table></div></div>
+<div class="page" id="page-fleet"><div class="filters"><select id="fFilter" onchange="renderFleet()"><option value="all">All</option><option>Available</option><option>On hire</option><option>Maintenance</option></select><select id="fCat" onchange="renderFleet()"><option value="all">All types</option><option>Safari car (extended 4x4)</option><option>Van</option><option>Minibus</option></select></div><div class="prop-grid" id="fleetGrid"></div></div>
 <div class="page" id="page-add"><div class="card" style="padding:16px;max-width:820px"><div class="form-grid">
 <div class="form-group"><label>Plate *</label><input id="vPlate"></div>
 <div class="form-group"><label>Category *</label><select id="vCat"><option>Safari car (extended 4x4)</option><option>Van</option><option>Minibus</option></select></div>
@@ -279,25 +253,17 @@
 <div class="form-group full"><label>Photos (first=preview)</label><input type="file" id="vImg" accept="image/*" multiple></div>
 </div><button class="btn btn-primary" style="margin-top:10px" onclick="addVehicle()"><i data-lucide="save"></i> Save vehicle</button></div></div>
 <div class="page" id="page-bookings"><div class="filters"><select id="bFilter" onchange="renderBookings()"><option value="all">All</option><option>Reserved</option><option>Confirmed</option><option>On trip</option><option>Completed</option><option>Cancelled</option></select><button class="btn" onclick="simCharter()"><i data-lucide="zap"></i> Simulate operator charter</button></div>
-<div class="card" style="overflow-x:auto"><table><thead><tr><th>Ref</th><th>Operator</th><th>Plate</th><th>Start</th><th>End</th><th>Route</th><th>Driver</th><th>Value</th><th>Status</th><th></th></tr></thead><tbody id="bookTable"></tbody></table><div class="pager" id="pagerBookings"></div></div></div>
+<div class="card" style="overflow-x:auto"><table><thead><tr><th>Ref</th><th>Operator</th><th>Plate</th><th>Start</th><th>End</th><th>Route</th><th>Driver</th><th>Value</th><th>Status</th><th></th></tr></thead><tbody id="bookTable"></tbody></table></div></div>
 <div class="page" id="page-drivers"><div class="filters"><button class="btn btn-primary" onclick="document.getElementById('drvF').style.display='block'"><i data-lucide="user-plus"></i> Add driver</button></div>
 <div id="drvF" class="card" style="display:none;padding:14px;margin-bottom:12px"><div class="form-grid"><div class="form-group"><label>Name</label><input id="dName"></div><div class="form-group"><label>Phone</label><input id="dPhone"></div><div class="form-group"><label>Licence</label><input id="dLic"></div><div class="form-group"><label>Languages</label><input id="dLang"></div><div class="form-group"><label>Base</label><input id="dBase" value="Arusha"></div><div class="form-group"><label>Notes</label><input id="dNotes"></div></div><button class="btn btn-primary" style="margin-top:8px" onclick="addDriver()"><i data-lucide="save"></i> Save</button></div>
-<div class="prop-grid" id="drvGrid"></div><div class="pager" id="pagerDrivers"></div></div>
-<div class="page" id="page-availability">
-<p class="meta" style="margin-bottom:10px">Select a vehicle, then block or free dates (operators see availability live).</p>
-<div class="filters">
-<select id="avVehicle" onchange="renderCal()"><option value="">— Select vehicle —</option></select>
-<button class="btn" onclick="calShift(-1)"><i data-lucide="chevron-left"></i> Prev</button>
-<strong id="calLabel"></strong>
-<button class="btn" onclick="calShift(1)">Next <i data-lucide="chevron-right"></i></button>
-<button class="btn" onclick="calShift(12)"><i data-lucide="calendar"></i> +Year</button>
-</div>
+<div class="prop-grid" id="drvGrid"></div></div>
+<div class="page" id="page-availability"><div class="filters"><button class="btn" onclick="calShift(-1)">Prev</button><strong id="calLabel"></strong><button class="btn" onclick="calShift(1)">Next</button><button class="btn" onclick="calShift(12)">+Year</button></div>
 <div class="card" style="padding:14px"><div class="cal" id="calGrid"></div></div></div>
 <div class="page" id="page-rates"><div class="card" style="overflow-x:auto"><table><thead><tr><th>Vehicle</th><th>Day</th><th>Safari</th><th>Transfer</th><th></th></tr></thead><tbody id="rateTable"></tbody></table></div></div>
 <div class="page" id="page-agreements"><p class="meta" style="margin-bottom:10px">Operators can accept hire terms online.</p><div class="card" style="overflow-x:auto"><table><thead><tr><th>Ref</th><th>Operator</th><th>Plate</th><th>Period</th><th>Terms</th><th>Status</th><th></th></tr></thead><tbody id="agrTable"></tbody></table></div></div>
 <div class="page" id="page-insurance"><div class="prop-grid"><div class="prop-card"><div class="body"><h4>Comprehensive cover</h4><div class="meta">Track renewals so units stay bookable</div></div></div><div class="prop-card"><div class="body"><h4>Park registration</h4><div class="meta">TANAPA / NCAA for safari cars</div></div></div><div class="prop-card"><div class="body"><h4>Driver licences</h4><div class="meta">Class C / E on file</div></div></div><div class="prop-card"><div class="body"><h4>Pre-hire inspection</h4><div class="meta">Reduce damage disputes</div></div></div></div>
 <div class="card" style="margin-top:12px;overflow-x:auto"><table><thead><tr><th>Plate</th><th>Insurance expiry</th><th>Park reg</th><th>Status</th></tr></thead><tbody id="insTable"></tbody></table></div></div>
-<div class="page" id="page-messages"><div class="card" style="padding:8px 16px" id="msgList"></div><div class="pager" id="pagerMessages"></div></div>
+<div class="page" id="page-messages"><div class="card" style="padding:8px 16px" id="msgList"></div></div>
 <div class="page" id="page-revenue"><div class="stats"><div class="stat"><div class="lbl">Charter revenue</div><div class="val" id="revC">—</div></div><div class="stat"><div class="lbl">Utilisation</div><div class="val" id="revU">—</div></div><div class="stat"><div class="lbl">Avg day rate</div><div class="val" id="revA">—</div></div><div class="stat"><div class="lbl">Active trips</div><div class="val" id="revT">—</div></div></div></div>
 <div class="page" id="page-quotes">
 <div class="card" style="overflow-x:auto"><table>
@@ -373,22 +339,12 @@ var TITLES={   dashboard:['Dashboard','Vehicles on hire, available today and uti
    account:['Account & Team','Payment details + Admin/Manager/Sales like operator'] };
 var calMonth=new Date();calMonth.setDate(1);
 function go(id){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});document.getElementById('page-'+id).classList.add('active');document.querySelectorAll('.sidebar-link').forEach(function(a){a.classList.toggle('active',a.getAttribute('data-p')===id)});var t=TITLES[id]||['',''];document.getElementById('title').textContent=t[0];document.getElementById('sub').textContent=t[1];refresh();lucide.createIcons()}
-
-window._pageState=window._pageState||{};
-function paginate(key,items,size){size=size||10;var page=window._pageState[key]||1;var pages=Math.max(1,Math.ceil(items.length/size));if(page>pages)page=pages;if(page<1)page=1;window._pageState[key]=page;var start=(page-1)*size;return{slice:items.slice(start,start+size),page:page,pages:pages,total:items.length};}
-function renderPager(elId,key,total,onChange){var el=document.getElementById(elId);if(!el)return;var page=window._pageState[key]||1;var pages=Math.max(1,Math.ceil(total/10));if(total<=10){el.innerHTML='';return;}el.innerHTML='<button type="button" '+(page<=1?'disabled':'')+' onclick="window._pageState[\''+key+'\']='+(page-1)+';('+onChange+')()">Previous</button><span>Page '+page+' of '+pages+' · '+total+'</span><button type="button" '+(page>=pages?'disabled':'')+' onclick="window._pageState[\''+key+'\']='+(page+1)+';('+onChange+')()">Next</button>';}
-function pushAlert(text,kind){slUpdate(function(d){if(!d.fleetAlerts)d.fleetAlerts=[];d.fleetAlerts.unshift({text:text,kind:kind||'info',time:Date.now()});d.fleetAlerts=d.fleetAlerts.slice(0,3);});}
-function pushActivity(text){slUpdate(function(d){if(!d.fleetActivity)d.fleetActivity=[];d.fleetActivity.unshift({text:text,time:Date.now()});d.fleetActivity=d.fleetActivity.slice(0,10);});}
-function ensureWelcomeMsg(){slUpdate(function(d){if(!d.messages)d.messages=[];if(!d._fleetMsgClean){d.messages=d.messages.filter(function(m){return m.side!=='fleet'||m.keep||m.type==='welcome'||m.fromActivity||m.type==='reminder';});d._fleetMsgClean=true;}var has=d.messages.some(function(m){return m.type==='welcome'&&m.side==='fleet';});if(!has){d.messages.unshift({id:'welcome-fleet',type:'welcome',keep:true,side:'fleet',from:'SafariLink',initials:'SL',unread:false,time:Date.now(),text:'Welcome. New requests, reminders and operator messages appear here when there is activity.'});}});}
-
-function renderDash(){var d=slGet(),h=d.vehicles.filter(function(v){return v.status==='On hire'}).length,a=d.vehicles.filter(function(v){return v.status==='Available'}).length,rev=d.charters.filter(function(c){return c.status==='Completed'||c.status==='On trip'}).reduce(function(s,c){return s+c.value},0);document.getElementById('stHire').textContent=h;document.getElementById('stAvail').textContent=a;document.getElementById('stRev').textContent=money(rev);document.getElementById('stUtil').textContent=(d.vehicles.length?Math.round(h/d.vehicles.length*100):0)+'%';
-var alerts=(d.fleetAlerts||[]).slice(0,3);var al=document.getElementById('dashAlerts');if(al)al.innerHTML=(alerts.length?alerts:[{text:'Waiting for live operator activity…',kind:'info',time:Date.now()}]).map(function(a){return '<div class="alert-item '+(a.kind||'info')+'">'+esc(a.text)+'<div class="meta">'+(a.time?new Date(a.time).toLocaleString():'')+'</div></div>';}).join('');
-var acts=(d.fleetActivity||[]).slice(0,10);var actEl=document.getElementById('dashActivity');if(actEl)actEl.innerHTML=acts.length?acts.map(function(a){return '<div style="padding:8px 0;border-bottom:1px solid var(--border-light);font-size:.84rem">'+esc(a.text)+'<div class="meta">'+(a.time?new Date(a.time).toLocaleString():'')+'</div></div>';}).join(''):'<div class="meta">No partner activity yet.</div>';document.getElementById('dashBook').innerHTML=d.charters.slice(0,5).map(function(c){return '<tr><td>'+esc(c.operator)+'</td><td>'+esc(c.plate)+'</td><td>'+c.start+' → '+c.end+'</td><td>'+esc(c.route)+'</td><td>'+badge(c.status)+'</td><td>'+money(c.value)+'</td></tr>'}).join('')}
+function renderDash(){var d=slGet(),h=d.vehicles.filter(function(v){return v.status==='On hire'}).length,a=d.vehicles.filter(function(v){return v.status==='Available'}).length,rev=d.charters.filter(function(c){return c.status==='Completed'||c.status==='On trip'}).reduce(function(s,c){return s+c.value},0);document.getElementById('stHire').textContent=h;document.getElementById('stAvail').textContent=a;document.getElementById('stRev').textContent=money(rev);document.getElementById('stUtil').textContent=(d.vehicles.length?Math.round(h/d.vehicles.length*100):0)+'%';document.getElementById('dashBook').innerHTML=d.charters.slice(0,5).map(function(c){return '<tr><td>'+esc(c.operator)+'</td><td>'+esc(c.plate)+'</td><td>'+c.start+' → '+c.end+'</td><td>'+esc(c.route)+'</td><td>'+badge(c.status)+'</td><td>'+money(c.value)+'</td></tr>'}).join('')}
 function renderFleet(){var st=document.getElementById('fFilter').value,cat=document.getElementById('fCat').value;document.getElementById('fleetGrid').innerHTML=slGet().vehicles.filter(function(v){return(st==='all'||v.status===st)&&(cat==='all'||v.category===cat)}).map(function(v){var img=v.preview?'<img src="'+v.preview+'">':'<i data-lucide="car" class="ph-icon"></i><span style="font-size:.75rem">No photo</span>';return '<div class="prop-card" onclick="openVeh('+v.id+')"><div class="img">'+img+'</div><div class="body"><h4>'+esc(v.plate)+'</h4><div class="meta">'+esc(v.category)+' · '+esc(v.model)+'</div><div style="margin-top:6px">'+badge(v.status)+'</div><div class="meta">Free from '+esc(v.availableFrom)+' · '+money(v.dayRate)+'/day</div></div></div>'}).join('');lucide.createIcons()}
 function openVeh(id){var v=slGet().vehicles.find(function(x){return x.id===id});if(!v)return;document.getElementById('modalBody').innerHTML='<h3>'+esc(v.plate)+'</h3><p class="meta">'+esc(v.model)+'</p><p>'+badge(v.status)+' · Available '+esc(v.availableFrom)+'</p><p>'+esc((v.features||[]).join(', '))+'</p><button class="btn" onclick="document.getElementById(\'modal\').classList.remove(\'show\')"><i data-lucide="x"></i> Close</button>';document.getElementById('modal').classList.add('show');lucide.createIcons()}
 async function addVehicle(){var plate=document.getElementById('vPlate').value.trim(),day=Number(document.getElementById('vDay').value),safari=Number(document.getElementById('vSafari').value);if(!plate||!day||!safari){alert('Plate & rates required');return}var feats=[];document.querySelectorAll('#vFeat input:checked').forEach(function(c){feats.push(c.value)});if(feats.length<3){alert('Select features');return}var files=document.getElementById('vImg').files,imgs=[];for(var i=0;i<files.length;i++)imgs.push(await fileToDataUrl(files[i]));slUpdate(function(d){d.vehicles.push({id:Date.now(),plate:plate,category:document.getElementById('vCat').value,model:document.getElementById('vModel').value,year:Number(document.getElementById('vYear').value)||2022,seats:Number(document.getElementById('vSeats').value)||7,base:document.getElementById('vBase').value||'Arusha',dayRate:day,safariDayRate:safari,transferRate:Math.round(day*0.5),status:'Available',availableFrom:new Date().toISOString().slice(0,10),features:feats,images:imgs,preview:imgs[0]||'',insuranceExpiry:'2027-12-01',parkReg:document.getElementById('vCat').value.indexOf('Safari')>=0})});go('fleet')}
-function renderBookings(){var f=document.getElementById('bFilter').value;document.getElementById('bBook').textContent=slGet().charters.filter(function(c){return c.status==='Reserved'||c.status==='Confirmed'}).length;var list=slGet().charters.filter(function(c){return f==='all'||c.status===f});var pg=paginate('bookings',list,10);document.getElementById('bookTable').innerHTML=pg.slice.map(function(c){return '<tr><td>'+c.ref+'</td><td>'+esc(c.operator)+'</td><td>'+esc(c.plate)+'</td><td>'+c.start+'</td><td>'+c.end+'</td><td>'+esc(c.route)+'</td><td>'+esc(c.driver)+'</td><td>'+money(c.value)+'</td><td>'+badge(c.status)+'</td><td><button class="btn" onclick="sendFleetProforma(\''+c.ref+'\')">Proforma</button></td></tr>'}).join('');renderPager('pagerBookings','bookings',pg.total,'renderBookings');}
-function simCharter(){slUpdate(function(d){var v=d.vehicles.find(function(x){return x.status==='Available'})||d.vehicles[0];var ref='CH-'+Math.floor(900+Math.random()*99);d.charters.unshift({ref:ref,operator:'Dreamtrails Expeditions',vehicleId:v.id,plate:v.plate,start:'2026-11-02',end:'2026-11-08',route:'Arusha-Serengeti',driver:'TBA',value:v.dayRate*6,status:'Reserved',createdAt:Date.now()});d.messages.unshift({id:Date.now(),side:'fleet',from:'Dreamtrails Expeditions',initials:'DT',text:'New charter '+ref,time:Date.now(),type:'info'})});pushAlert('New operator charter','warn');pushActivity('New charter from operator');alert('Operator charter received');go('bookings')}
+function renderBookings(){var f=document.getElementById('bFilter').value;document.getElementById('bBook').textContent=slGet().charters.filter(function(c){return c.status==='Reserved'||c.status==='Confirmed'}).length;document.getElementById('bookTable').innerHTML=slGet().charters.filter(function(c){return f==='all'||c.status===f}).map(function(c){return '<tr><td>'+c.ref+'</td><td>'+esc(c.operator)+'</td><td>'+esc(c.plate)+'</td><td>'+c.start+'</td><td>'+c.end+'</td><td>'+esc(c.route)+'</td><td>'+esc(c.driver)+'</td><td>'+money(c.value)+'</td><td>'+badge(c.status)+'</td><td><button class="btn" onclick="sendFleetProforma(\''+c.ref+'\')">Proforma</button></td></tr>'}).join('')}
+function simCharter(){slUpdate(function(d){var v=d.vehicles.find(function(x){return x.status==='Available'})||d.vehicles[0];var ref='CH-'+Math.floor(900+Math.random()*99);d.charters.unshift({ref:ref,operator:'Dreamtrails Expeditions',vehicleId:v.id,plate:v.plate,start:'2026-11-02',end:'2026-11-08',route:'Arusha-Serengeti',driver:'TBA',value:v.dayRate*6,status:'Reserved',createdAt:Date.now()});d.messages.unshift({id:Date.now(),side:'fleet',from:'Dreamtrails Expeditions',initials:'DT',text:'New charter '+ref,time:Date.now(),type:'info'})});alert('Operator charter received');go('bookings')}
 function renderDrivers(){document.getElementById('drvGrid').innerHTML=slGet().drivers.map(function(d){return '<div class="prop-card"><div class="body"><h4>'+esc(d.name)+'</h4><div class="meta">'+esc(d.phone)+' · Lic '+esc(d.lic)+'</div><div class="meta">'+esc(d.lang)+'</div><div style="margin-top:6px">'+badge(d.status)+' · ★'+d.rating+' · '+d.trips+' trips</div></div></div>'}).join('')}
 function addDriver(){var n=document.getElementById('dName').value.trim();if(!n)return;slUpdate(function(d){d.drivers.push({id:Date.now(),name:n,phone:document.getElementById('dPhone').value,lic:document.getElementById('dLic').value,lang:document.getElementById('dLang').value,status:'Available',rating:5,trips:0,base:document.getElementById('dBase').value,notes:document.getElementById('dNotes').value})});document.getElementById('drvF').style.display='none';renderDrivers()}
 function renderRates(){document.getElementById('rateTable').innerHTML=slGet().vehicles.map(function(v){return '<tr><td>'+esc(v.plate)+'</td><td><input type="number" id="rd'+v.id+'" value="'+v.dayRate+'" style="width:80px"></td><td><input type="number" id="rs'+v.id+'" value="'+v.safariDayRate+'" style="width:80px"></td><td><input type="number" id="rt'+v.id+'" value="'+v.transferRate+'" style="width:80px"></td><td><button class="btn btn-primary" onclick="saveVRate('+v.id+')">Save</button></td></tr>'}).join('')}
@@ -396,66 +352,12 @@ function saveVRate(id){slUpdate(function(d){d.vehicles.forEach(function(v){if(v.
 function renderAgr(){document.getElementById('agrTable').innerHTML=slGet().agreements.map(function(a){return '<tr><td>'+a.id+'</td><td>'+esc(a.operator)+'</td><td>'+esc(a.plate)+'</td><td>'+esc(a.period)+'</td><td>'+esc(a.terms)+'</td><td>'+badge(a.status)+'</td><td>'+(a.operatorAgreed?'Accepted':'<button class="btn btn-primary" onclick="acceptAgr(\''+a.id+'\')">Operator accept</button>')+'</td></tr>'}).join('')}
 function acceptAgr(id){slUpdate(function(d){d.agreements.forEach(function(a){if(a.id===id){a.operatorAgreed=true;a.status='Signed';a.signedAt=new Date().toISOString().slice(0,10)}})});renderAgr()}
 function renderIns(){document.getElementById('insTable').innerHTML=slGet().vehicles.map(function(v){return '<tr><td>'+esc(v.plate)+'</td><td>'+esc(v.insuranceExpiry)+'</td><td>'+(v.parkReg?'Yes':'No')+'</td><td>'+badge(v.status)+'</td></tr>'}).join('')}
-function renderMessages(){
-  ensureWelcomeMsg();
-  var msgs=slGet().messages.filter(function(m){return m.side==='fleet';});
-  var unread=msgs.filter(function(m){return m.unread;}).length;
-  var b=document.getElementById('bMsg');
-  if(b){if(unread>0){b.textContent=String(unread);b.setAttribute('data-count',unread);b.classList.add('msg-unread');}else{b.textContent='';b.setAttribute('data-count','0');b.classList.remove('msg-unread');}}
-  var pg=paginate('messages',msgs,10);
-  var el=document.getElementById('msgList');
-  if(el)el.innerHTML=pg.slice.map(function(m){return '<div class="msg-row" style="'+(m.unread?'background:#f0faf5;':'')+'cursor:pointer" onclick="markPartnerMsgRead(\''+String(m.id).replace(/'/g,"\\'")+'\')"><div class="msg-av">'+esc(m.initials||'SL')+'</div><div><strong>'+esc(m.from)+'</strong> <span class="meta">'+(m.time?new Date(m.time).toLocaleString():'')+'</span><div>'+esc(m.text)+'</div>'+(m.unread?'<span class="badge badge-pending">Unread</span>':'')+'</div></div>';}).join('')||'<div class="meta" style="padding:12px">No messages yet.</div>';
-  renderPager('pagerMessages','messages',pg.total,'renderMessages');
-}
-function markPartnerMsgRead(id){slUpdate(function(d){(d.messages||[]).forEach(function(m){if(String(m.id)===String(id))m.unread=false;});});renderMessages();}
-
+function renderMessages(){document.getElementById('msgList').innerHTML=slGet().messages.filter(function(m){return m.side==='fleet'}).map(function(m){return '<div class="msg-row"><div class="msg-av">'+esc(m.initials)+'</div><div><strong>'+esc(m.from)+'</strong><div>'+esc(m.text)+'</div></div></div>'}).join('')}
 function renderRevenue(){var d=slGet(),c=d.charters.filter(function(x){return x.status==='Completed'||x.status==='On trip'}),h=d.vehicles.filter(function(v){return v.status==='On hire'}).length;document.getElementById('revC').textContent=money(c.reduce(function(s,x){return s+x.value},0));document.getElementById('revU').textContent=(d.vehicles.length?Math.round(h/d.vehicles.length*100):0)+'%';document.getElementById('revA').textContent=money(d.vehicles.length?Math.round(d.vehicles.reduce(function(s,v){return s+v.dayRate},0)/d.vehicles.length):0);document.getElementById('revT').textContent=c.length}
 function renderTeam(){document.getElementById('teamList').innerHTML=(slGet().team.fleet||[]).map(function(m){return '<div class="team-row"><div><strong>'+esc(m.name)+'</strong><div class="meta">'+esc(m.email)+' · '+esc(m.role)+'</div></div></div>'}).join('')}
 function addMember(){var n=document.getElementById('mName').value.trim(),e=document.getElementById('mEmail').value.trim();if(!n||!e)return;slUpdate(function(d){d.team.fleet.push({id:Date.now(),name:n,email:e,role:document.getElementById('mRole').value})});renderTeam()}
 function calShift(n){calMonth.setMonth(calMonth.getMonth()+n);renderCal()}
-function fillAvSelects(){
-  var sel=document.getElementById('avVehicle');if(!sel)return;
-  var cur=sel.value;
-  sel.innerHTML='<option value="">— Select vehicle —</option>'+(slGet().vehicles||[]).map(function(v){return '<option value="'+v.id+'">'+esc(v.plate)+' · '+esc(v.model||v.category||'')+'</option>';}).join('');
-  if(cur)sel.value=cur;
-}
-function renderCal(){
-  var y=calMonth.getFullYear(),m=calMonth.getMonth();
-  document.getElementById('calLabel').textContent=calMonth.toLocaleString('default',{month:'long',year:'numeric'});
-  var first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate();
-  var vid=Number((document.getElementById('avVehicle')||{}).value)||0;
-  var blockKey=vid?('v'+vid):'fleet';
-  var blocks=(slGet().calendarBlocks||{})[blockKey]||{};
-  var busy={};
-  (slGet().charters||[]).forEach(function(c){
-    if(c.status==='Cancelled')return;
-    if(vid && c.vehicleId && c.vehicleId!==vid)return;
-    for(var t0=new Date(c.start);t0<=new Date(c.end);t0.setDate(t0.getDate()+1)){
-      if(t0.getMonth()===m&&t0.getFullYear()===y)busy[t0.getDate()]=1;
-    }
-  });
-  var h=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(function(d){return '<div class="hd">'+d+'</div>';}).join('');
-  for(var i=0;i<first;i++)h+='<div class="day muted"></div>';
-  for(var d=1;d<=days;d++){
-    var key=y+'-'+(m+1)+'-'+d;
-    var cls=blocks[key]||busy[d]?'busy':'free';
-    h+='<div class="day '+cls+'" onclick="toggleFleetBlock(\''+key+'\')">'+d+'</div>';
-  }
-  document.getElementById('calGrid').innerHTML=h;
-}
-function toggleFleetBlock(key){
-  var vid=Number((document.getElementById('avVehicle')||{}).value)||0;
-  if(!vid){alert('Select a vehicle first');return;}
-  var blockKey='v'+vid;
-  slUpdate(function(d){
-    if(!d.calendarBlocks)d.calendarBlocks={};
-    if(!d.calendarBlocks[blockKey])d.calendarBlocks[blockKey]={};
-    if(d.calendarBlocks[blockKey][key])delete d.calendarBlocks[blockKey][key];
-    else d.calendarBlocks[blockKey][key]=1;
-  });
-  pushActivity('Availability updated · vehicle '+vid+' · '+key);
-  renderCal();
-}
+function renderCal(){var y=calMonth.getFullYear(),m=calMonth.getMonth();document.getElementById('calLabel').textContent=calMonth.toLocaleString('default',{month:'long',year:'numeric'});var first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate(),busy={};slGet().charters.forEach(function(c){if(c.status==='Cancelled')return;for(var t=new Date(c.start);t<=new Date(c.end);t.setDate(t.getDate()+1)){if(t.getMonth()===m&&t.getFullYear()===y)busy[t.getDate()]=1}});var h=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(function(d){return '<div class="hd">'+d+'</div>'}).join('');for(var i=0;i<first;i++)h+='<div class="day muted"></div>';for(var d=1;d<=days;d++)h+='<div class="day '+(busy[d]?'busy':'free')+'">'+d+'</div>';document.getElementById('calGrid').innerHTML=h}
 
 function loadPaymentProfile(){
   try{var p=JSON.parse(localStorage.getItem('sl_fleet_payment')||'{}');
@@ -492,9 +394,9 @@ function sendFleetProforma(ref){
     if(!d.messages)d.messages=[];
     d.messages.unshift({id:Date.now(),fromActivity:true,unread:true,side:'operator',from:'Safari Fleet',initials:'FL',text:'Proforma '+pfId+' for '+c.operator+' · '+c.plate,time:Date.now(),type:'info'});
   });
-  pushAlert('Proforma '+pfId+' sent','info');pushActivity('Proforma '+pfId+' → '+c.operator);alert('Proforma '+pfId+' sent to '+c.operator);refresh();
+  alert('Proforma '+pfId+' sent to '+c.operator);refresh();
 }
 
-function refresh(){renderDash();renderFleet();renderBookings();renderDrivers();renderRates();renderAgr();renderIns();renderMessages();renderRevenue();renderTeam();fillAvSelects();renderCal();if(window.renderFleetQuotes)renderFleetQuotes();if(document.getElementById("page-account")&&document.getElementById("page-account").classList.contains("active"))loadPaymentProfile()}
-slEnsure();ensureWelcomeMsg();loadPaymentProfile();refresh();slOnChange(refresh);lucide.createIcons();
+function refresh(){renderDash();renderFleet();renderBookings();renderDrivers();renderRates();renderAgr();renderIns();renderMessages();renderRevenue();renderTeam();renderCal();renderFleetQuotes();if(document.getElementById("page-account")&&document.getElementById("page-account").classList.contains("active"))loadPaymentProfile()}
+slEnsure();loadPaymentProfile();refresh();slOnChange(refresh);lucide.createIcons();
 </script></body></html>
