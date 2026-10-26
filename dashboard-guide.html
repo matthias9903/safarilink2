@@ -653,7 +653,7 @@ function renderCal(){
   var busy={};
   (slGet().guideJobs||[]).forEach(function(j){
     if(j.status==='Cancelled')return;
-    for(var t0=new Date(j.start);t0<=new Date(j.end);t0.setDate(t0.getDate()+1)){
+    for(var t0=new Date(j.start);t0<=new Date(j.end);t0.setDate(t0.getDate()+1)){ 
       if(t0.getMonth()===m&&t0.getFullYear()===y)busy[t0.getDate()]=1;
     }
   });
