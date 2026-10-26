@@ -463,8 +463,7 @@ function renderGuideQuotes(){
 }
 function printGuideQuote(id){
   var q=(slGet().partnerQuotes||[]).find(function(x){return x.id===id});if(!q)return;var inv=getPaymentProfile();
-  var html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+q.id+'</title><style>body{font-family:system-ui;max-width:640px;margin:40px auto}.box{border:1px solid #d4cfc6;border-radius:10px;padding:16px;margin:12px 0}.k{color:#888;font-size:.78rem;margin-top:6px}</style></head><body><h1 style="color:#1a5a3a">Guide Proforma</h1><div class="box"><strong>'+esc(q.id)+'</strong><br>'+esc(q.detail)+'<br>Amount: <strong>'+money(q.amount)+'</strong></div><div class="box"><strong>Bank details</strong><div class="k">Bank</div>'+esc(q.bankName||inv.bankName)+'<div class="k">Address</div>'+esc(q.bankAddress||inv.bankAddress)+'<div class="k">SWIFT</div>'+esc(q.swift||inv.swift)+'<div class="k">Account name</div>'+esc(q.accountName||inv.accountName)+'<div class="k">Account number</div>'+esc(q.accountNumber||inv.accountNumber)+'<div class="k">Branch</div>'+esc(q.branchName||inv.branchName)+'</div><script>onload=function(){setTimeout(print,300)}<\/script><div class="modal-bg" id="modal" onclick="if(event.target===this)this.classList.remove('show')"><div class="modal"><div id="modalBody"></div></div></div>
-</body></html>';
+  var html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+q.id+'</title><style>body{font-family:system-ui;max-width:640px;margin:40px auto}.box{border:1px solid #d4cfc6;border-radius:10px;padding:16px;margin:12px 0}.k{color:#888;font-size:.78rem;margin-top:6px}</style></head><body><h1 style="color:#1a5a3a">Guide Proforma</h1><div class="box"><strong>'+esc(q.id)+'</strong><br>'+esc(q.detail)+'<br>Amount: <strong>'+money(q.amount)+'</strong></div><div class="box"><strong>Bank details</strong><div class="k">Bank</div>'+esc(q.bankName||inv.bankName)+'<div class="k">Address</div>'+esc(q.bankAddress||inv.bankAddress)+'<div class="k">SWIFT</div>'+esc(q.swift||inv.swift)+'<div class="k">Account name</div>'+esc(q.accountName||inv.accountName)+'<div class="k">Account number</div>'+esc(q.accountNumber||inv.accountNumber)+'<div class="k">Branch</div>'+esc(q.branchName||inv.branchName)+'</div><script>onload=function(){setTimeout(print,300)}<\/script></body></html>';
   var w=window.open('','_blank');if(w){w.document.write(html);w.document.close();}
 }
 function sendGuideProforma(ref){
@@ -482,15 +481,7 @@ function sendGuideProforma(ref){
   });
   alert('Proforma '+pfId+' sent');refresh();
 }
-function {document.getElementById('teamList').innerHTML=(slGet().team.guide||[]).map(function(m){return '<div class="team-row"><div><strong>'+esc(m.name)+'</strong><div class="meta">'+esc(m.email)+' · '+esc(m.role)+'</div></div></div>'}).join('')||'<div class="meta">No team members yet</div>'}
-function addGuideMember(){var n=document.getElementById('mName').value.trim(),e=document.getElementById('mEmail').value.trim();if(!n||!e)return;slUpdate(function(d){d.team.guide=d.team.guide||[];d.team.guide.push({id:Date.now(),name:n,email:e,role:document.getElementById('mRole').value})});document.getElementById('memF').style.display='none';}
 
-
-function saveGuideAccount(){
-  var p={name:(document.getElementById('coName')||{}).value||'',phone:(document.getElementById('coPhone')||{}).value||'',email:(document.getElementById('coEmail')||{}).value||''};
-  localStorage.setItem('sl_guide_account',JSON.stringify(p));
-  alert('Account saved');
-}
 function openChangePassword(){
   var email=prompt('Account email:','guide@example.com');if(!email)return;
   var np=prompt('New password (min 6 characters):');
@@ -676,6 +667,25 @@ function toggleGuideDay(key){
   renderCal();
 }
 function fileToDataUrl(f){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(r.result)};r.onerror=rej;r.readAsDataURL(f);});}
+
+
+function loadPaymentProfile(){
+  try{var p=JSON.parse(localStorage.getItem('sl_guide_payment')||'{}');
+    var map={payBankName:'bankName',payBranch:'branchName',payBankAddress:'bankAddress',paySwift:'swift',payAccName:'accountName',payAccNo:'accountNumber',payEmail:'email',payPhone:'phone'};
+    Object.keys(map).forEach(function(id){var el=document.getElementById(id);if(el&&p[map[id]])el.value=p[map[id]];});
+  }catch(e){}
+  try{var a=JSON.parse(localStorage.getItem('sl_guide_account')||'{}');
+    if(a.email&&document.getElementById('coEmail'))document.getElementById('coEmail').value=a.email;
+    if(a.name&&document.getElementById('coName'))document.getElementById('coName').value=a.name;
+    if(a.phone&&document.getElementById('coPhone'))document.getElementById('coPhone').value=a.phone;
+  }catch(e){}
+}
+function savePaymentProfile(){
+  var p={bankName:(document.getElementById('payBankName')||{}).value||'',branchName:(document.getElementById('payBranch')||{}).value||'',bankAddress:(document.getElementById('payBankAddress')||{}).value||'',swift:(document.getElementById('paySwift')||{}).value||'',accountName:(document.getElementById('payAccName')||{}).value||'',accountNumber:(document.getElementById('payAccNo')||{}).value||'',email:(document.getElementById('payEmail')||{}).value||'',phone:(document.getElementById('payPhone')||{}).value||''};
+  if(!p.bankName||!p.accountName||!p.accountNumber){alert('Bank name, account name and number required');return;}
+  localStorage.setItem('sl_guide_payment',JSON.stringify(p));alert('Payment details saved');
+}
+function getPaymentProfile(){try{var r=localStorage.getItem('sl_guide_payment');if(r)return JSON.parse(r);}catch(e){}return{bankName:'CRDB Bank',bankAddress:'Arusha',swift:'CORUTZTZ',accountName:'Daniel Mwamba',accountNumber:'01501234567',branchName:'Arusha',email:'',phone:''};}
 
 function refresh(){ensureWelcomeMsg();renderDash();renderSchedule();renderRequests();renderServices();fillProfile();fillPricing();fillRegions();fillLang();renderCerts();renderReviews();renderMessages();renderEarnings();renderCal();renderGuideQuotes();if(document.getElementById("page-account")&&document.getElementById("page-account").classList.contains("active"))loadPaymentProfile()}
 slEnsure();ensureWelcomeMsg();loadPaymentProfile();refresh();slOnChange(refresh);lucide.createIcons();
