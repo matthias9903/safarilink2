@@ -34,7 +34,7 @@
 
   /* ── SIDEBAR (navigation + collapse) ── */
   .sidebar {
-    width: 240px; background: var(--charcoal); color: #ccc;
+    width: 250px; background: var(--charcoal); color: #ccc;
     display: flex; flex-direction: column; flex-shrink: 0;
     transition: width .3s ease; position: relative; overflow-x: visible;
   }
@@ -43,7 +43,19 @@
   .sidebar.collapsed .sidebar-section,
   .sidebar.collapsed .sidebar-link span:not(.sidebar-badge),
   .sidebar.collapsed .sidebar-footer > div:first-child,
-  .sidebar.collapsed .sidebar-badge { display: none; }
+  .sidebar.collapsed #bMsg.msg-unread {
+    background: #dc2626; color: #fff; display: inline-flex; align-items: center; justify-content: center;
+    min-width: 18px; height: 18px; padding: 0 5px;
+  }
+  #bMsg:empty, #bMsg[data-count="0"] { display: none; }
+  .pager { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 12px; font-size: .85rem; color: var(--warm-gray); }
+  .pager button { padding: 8px 14px; border-radius: 6px; border: 1px solid var(--border-light); background: #fff; cursor: pointer; font-weight: 600; }
+  .pager button:disabled { opacity: .4; cursor: not-allowed; }
+  .alert-list { display: flex; flex-direction: column; gap: 8px; }
+  .alert-item { background: #fff; border: 1px solid var(--border-light); border-left: 3px solid var(--accent-green); border-radius: 8px; padding: 12px 14px; font-size: .85rem; }
+  .alert-item.warn { border-left-color: #f59e0b; }
+  .alert-item.info { border-left-color: #0891b2; }
+  .sidebar-badge { display: none; }
   .sidebar.collapsed .sidebar-link { justify-content: center; padding: 12px 0; }
   .sidebar-brand {
     padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,.08);
@@ -77,38 +89,28 @@
     color: rgba(255,255,255,.35); padding: 12px 8px 6px;
   }
   .sidebar-link {
-    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
-    border-radius: 6px; color: #bbb; font-size: .9rem; cursor: pointer; margin-bottom: 2px; position: relative;
+    display: flex; align-items: center; gap: 8px; padding: 9px 12px;
+    border-radius: 6px; color: #bbb; font-size: .85rem; cursor: pointer;
   }
   .sidebar-link:hover { background: rgba(255,255,255,.08); color: #fff; }
   .sidebar-link.active { background: rgba(63,185,131,.15); color: var(--accent-green); }
-  .sidebar-link i, .sidebar-link svg { width: 20px; height: 20px; flex-shrink: 0; }
-  .sidebar-badge {
-    margin-left: auto; background: #f59e0b; color: #000;
-    font-size: .68rem; padding: 2px 7px; border-radius: 10px; font-weight: 700;
-  }
+  .sidebar-link i { width: 17px; height: 17px; }
   #bMsg.msg-unread {
     background: #dc2626; color: #fff; display: inline-flex; align-items: center; justify-content: center;
     min-width: 18px; height: 18px; padding: 0 5px;
   }
   #bMsg:empty, #bMsg[data-count="0"] { display: none; }
-  .pager {
-    display: flex; align-items: center; justify-content: center; gap: 12px;
-    margin-top: 12px; font-size: .85rem; color: var(--warm-gray);
-  }
-  .pager button {
-    padding: 8px 14px; border-radius: 6px; border: 1px solid var(--border-light);
-    background: #fff; cursor: pointer; font-weight: 600;
-  }
+  .pager { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 12px; font-size: .85rem; color: var(--warm-gray); }
+  .pager button { padding: 8px 14px; border-radius: 6px; border: 1px solid var(--border-light); background: #fff; cursor: pointer; font-weight: 600; }
   .pager button:disabled { opacity: .4; cursor: not-allowed; }
   .alert-list { display: flex; flex-direction: column; gap: 8px; }
-  .alert-item {
-    background: #fff; border: 1px solid var(--border-light); border-left: 3px solid var(--accent-green);
-    border-radius: 8px; padding: 12px 14px; font-size: .85rem;
-  }
+  .alert-item { background: #fff; border: 1px solid var(--border-light); border-left: 3px solid var(--accent-green); border-radius: 8px; padding: 12px 14px; font-size: .85rem; }
   .alert-item.warn { border-left-color: #f59e0b; }
   .alert-item.info { border-left-color: #0891b2; }
-
+  .sidebar-badge {
+    margin-left: auto; background: #f59e0b; color: #000;
+    font-size: .68rem; padding: 2px 7px; border-radius: 10px; font-weight: 700;
+  }
   .sidebar-footer { padding: 14px; border-top: 1px solid rgba(255,255,255,.08); font-size: .8rem; }
 
   /* ── MAIN LAYOUT ── */
@@ -260,21 +262,29 @@
 <div class="main"><header class="topbar"><div><h2 id="title">Dashboard</h2><p id="sub">Live</p></div>
 <div style="display:flex;gap:8px"><button class="btn" onclick="logout()"><i data-lucide="log-out"></i> Log out</button><button class="btn btn-primary" onclick="go('profile')"><i data-lucide="user-circle"></i> Edit profile</button></div></header>
 <div class="content">
-<div class="page active" id="page-dashboard"><div class="stats"><div class="stat"><div class="lbl">Upcoming</div><div class="val" id="gUp">0</div></div><div class="stat"><div class="lbl">Requests</div><div class="val" id="gReq">0</div></div><div class="stat"><div class="lbl">Earnings</div><div class="val" id="gEarn">$0</div></div><div class="stat"><div class="lbl">Rating</div><div class="val" id="gRate">—</div></div></div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px">
-  <div class="card" style="padding:16px"><h3 style="font-size:1rem;margin-bottom:10px">Operation alerts <span class="meta">(live · max 3)</span></h3><div class="alert-list" id="dashAlerts"></div></div>
-  <div class="card" style="padding:16px"><h3 style="font-size:1rem;margin-bottom:10px">Recent partner activity <span class="meta">(live · max 10)</span></h3><div id="dashActivity"></div></div>
+<div class="page active" id="page-dashboard">
+<div class="stats">
+<div class="stat"><div class="lbl">Upcoming</div><div class="val" id="gUp">0</div></div>
+<div class="stat"><div class="lbl">Open requests</div><div class="val" id="gReq">0</div></div>
+<div class="stat"><div class="lbl">Earnings</div><div class="val" id="gEarn">$0</div></div>
+<div class="stat"><div class="lbl">Rating</div><div class="val" id="gRate">—</div></div>
 </div>
-<div class="card" style="overflow-x:auto"><table><thead><tr><th>Operator</th><th>Service</th><th>Park</th><th>Dates</th><th>Status</th></tr></thead><tbody id="dashJobs"></tbody></table><div class="pager" id="pagerDash"></div></div></div>
-<div class="page" id="page-schedule"><div class="card" style="overflow-x:auto"><table><thead><tr><th>Ref</th><th>Operator</th><th>Service</th><th>Park</th><th>Start</th><th>End</th><th>Fee</th><th>Status</th><th></th></tr></thead><tbody id="schTable"></tbody></table><div class="pager" id="pagerSchedule"></div></div></div>
-<div class="page" id="page-requests"><div id="reqList"></div><div class="pager" id="pagerRequests"></div></div>
+<div class="card" style="padding:16px;margin-bottom:16px"><h3 style="font-size:1rem;margin-bottom:10px">Operation alerts</h3><div class="alert-list" id="dashAlerts"></div></div>
+<div class="card" style="overflow-x:auto">
+  <div style="padding:14px 16px 0"><h3 style="font-size:1rem;margin-bottom:8px">Recent operator activity</h3></div>
+  <table><thead><tr><th>Operator</th><th>Service</th><th>Park</th><th>Dates</th><th>Status</th><th>Fee</th></tr></thead><tbody id="dashJobs"></tbody></table>
+  <div class="pager" id="pagerDash"></div>
+</div></div>
+<div class="page" id="page-schedule"><div class="card" style="overflow-x:auto"><table><thead><tr><th>Ref</th><th>Operator</th><th>Service</th><th>Park</th><th>Start</th><th>End</th><th>Fee</th><th>Status</th><th></th></tr></thead><tbody id="schTable"></tbody></table><div class="pager" id="pagerSch"></div></div></div>
+<div class="page" id="page-requests"><div id="reqList"></div></div>
 <div class="page" id="page-services"><div class="filters"><button class="btn btn-primary" onclick="document.getElementById('svcF').style.display='block'"><i data-lucide="plus"></i> Add service</button></div>
 <div id="svcF" class="card" style="display:none;padding:14px;margin-bottom:12px"><div class="form-grid"><div class="form-group"><label>Name</label><input id="sName"></div><div class="form-group"><label>Category</label><select id="sCat"><option>Game drives</option><option>Walking safari</option><option>Birding</option><option>Photographic</option><option>Cultural</option><option>Mountain / trekking</option></select></div><div class="form-group"><label>Rate</label><input type="number" id="sRate" value="80"></div><div class="form-group full"><label>Description</label><textarea id="sDesc"></textarea></div></div><button class="btn btn-primary" style="margin-top:8px" onclick="addService()"><i data-lucide="save"></i> Save</button></div>
-<div class="prop-grid" id="svcGrid"></div><div class="pager" id="pagerServices"></div></div>
-<div class="page" id="page-availability"><div class="filters"><button class="btn" onclick="calShift(-1)"><i data-lucide="chevron-left"></i> Prev</button><strong id="calLabel"></strong><button class="btn" onclick="calShift(1)">Next <i data-lucide="chevron-right"></i></button><button class="btn" onclick="calShift(12)"><i data-lucide="calendar"></i> +Year</button></div>
+<div class="prop-grid" id="svcGrid"></div></div>
+<div class="page" id="page-availability">
+<p class="meta" style="margin-bottom:10px">Click a day to block or free it. Operators see availability live.</p>
+<div class="filters"><button class="btn" onclick="calShift(-1)"><i data-lucide="chevron-left"></i> Prev</button><strong id="calLabel"></strong><button class="btn" onclick="calShift(1)">Next <i data-lucide="chevron-right"></i></button><button class="btn" onclick="calShift(12)"><i data-lucide="calendar"></i> +Year</button></div>
 <div class="card" style="padding:14px"><div class="cal" id="calGrid"></div>
-<div class="form-grid" style="margin-top:12px"><div class="form-group"><label>Block from</label><input type="date" id="blFrom"></div><div class="form-group"><label>to</label><input type="date" id="blTo"></div></div>
-<button class="btn btn-primary" style="margin-top:8px" onclick="addBlock()"><i data-lucide="lock"></i> Block dates</button></div></div>
+<p class="meta" style="margin-top:8px">Green = available · Red = blocked / on job · Click a day to toggle</p></div></div>
 <div class="page" id="page-profile"><div class="card" style="padding:16px;max-width:700px"><div class="form-grid">
 <div class="form-group"><label>Name</label><input id="prName"></div><div class="form-group"><label>Years</label><input type="number" id="prYears"></div>
 <div class="form-group"><label>Phone</label><input id="prPhone"></div><div class="form-group"><label>Base</label><input id="prBase"></div>
@@ -305,42 +315,55 @@
 <div class="page" id="page-certs"><div class="prop-grid" id="certGrid"></div></div>
 <div class="page" id="page-reviews"><div class="card" style="padding:16px" id="revList"></div></div>
 <div class="page" id="page-messages"><div class="card" style="padding:8px 16px" id="msgList"></div><div class="pager" id="pagerMessages"></div></div>
-<div class="page" id="page-earnings"><div class="stats"><div class="stat"><div class="lbl">Confirmed</div><div class="val" id="eConf">—</div></div><div class="stat"><div class="lbl">Completed</div><div class="val" id="eDone">—</div></div><div class="stat"><div class="lbl">Pending</div><div class="val" id="ePend">—</div></div><div class="stat"><div class="lbl">Jobs</div><div class="val" id="eJobs">—</div></div></div>
-<div class="card" style="overflow-x:auto"><table><thead><tr><th>Ref</th><th>Operator</th><th>Fee</th><th>Status</th></tr></thead><tbody id="earnTable"></tbody></table></div></div>
-</div></div>
-
-<div class="page" id="page-quotes">
-<div class="card" style="overflow-x:auto"><table>
-<thead><tr><th>Ref</th><th>To (operator)</th><th>Job</th><th>Detail</th><th>Amount</th><th>Status</th><th></th></tr></thead>
-<tbody id="guideQuotesBody"></tbody></table></div>
+<div class="page" id="page-earnings">
+<div class="stats">
+<div class="stat"><div class="lbl">SafariLink completed</div><div class="val" id="eDone">—</div></div>
+<div class="stat"><div class="lbl">Offline / external</div><div class="val" id="eOff">—</div></div>
+<div class="stat"><div class="lbl">Total</div><div class="val" id="eTot">—</div></div>
+<div class="stat"><div class="lbl">Jobs</div><div class="val" id="eJobs">—</div></div>
+</div>
+<div style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap">
+<button class="btn" onclick="document.getElementById('offlineEarnBox').style.display='block'"><i data-lucide="plus"></i> Offline tracking</button>
+<button class="btn" onclick="renderEarnings()"><i data-lucide="refresh-cw"></i> SafariLink earnings</button>
+</div>
+<div id="offlineEarnBox" class="card" style="display:none;padding:14px;margin-bottom:14px;max-width:480px">
+<div class="form-grid">
+<div class="form-group"><label>Extra revenue (USD)</label><input type="number" id="mRev" value="0"></div>
+<div class="form-group"><label>Extra jobs count</label><input type="number" id="mJobs" value="0"></div>
+</div>
+<button class="btn btn-primary" style="margin-top:8px" onclick="saveManualEarn()">Save offline</button>
+<button class="btn" style="margin-top:8px" onclick="document.getElementById('offlineEarnBox').style.display='none'">Cancel</button>
+</div>
+<div class="card" style="padding:16px;margin-bottom:14px" id="earnRank"></div>
+<div class="card" style="overflow-x:auto"><table><thead><tr><th>Ref</th><th>Operator</th><th>Fee</th><th>Status</th></tr></thead><tbody id="earnTable"></tbody></table></div>
 </div>
 <div class="page" id="page-account">
 <div class="card" style="padding:16px;margin-bottom:14px">
+<h3 style="margin-bottom:8px">Account (solo guide)</h3>
+<p class="meta" style="margin-bottom:10px">Guides are individual accounts — no team members.</p>
+<div class="form-grid">
+<div class="form-group full"><label>Login email</label><input id="coEmail" type="email" style="word-break:break-all" placeholder="guide@email.com"></div>
+</div>
+<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+<button class="btn" onclick="openChangePassword()">Change password</button>
+<button class="btn" onclick="requestPasswordReset()">Reset via email</button>
+<button class="btn btn-primary" onclick="saveGuideEmail()">Save email</button>
+</div>
+</div>
+<div class="card" style="padding:16px;margin-bottom:14px">
 <h3 style="margin-bottom:8px">Payment &amp; invoice details</h3>
-<p class="meta" style="margin-bottom:10px">Included automatically on proformas to operators.</p>
+<p class="meta" style="margin-bottom:10px">Included automatically on every proforma to operators.</p>
 <div class="form-grid">
 <div class="form-group"><label>Bank name *</label><input id="payBankName" placeholder="CRDB Bank"></div>
-<div class="form-group"><label>Branch name</label><input id="payBranch"></div>
+<div class="form-group"><label>Branch name</label><input id="payBranch" placeholder="Arusha"></div>
 <div class="form-group full"><label>Bank address</label><input id="payBankAddress"></div>
-<div class="form-group"><label>SWIFT</label><input id="paySwift"></div>
-<div class="form-group"><label>Account name *</label><input id="payAccName" placeholder="Daniel Mwamba"></div>
+<div class="form-group"><label>SWIFT</label><input id="paySwift" placeholder="CORUTZTZ"></div>
+<div class="form-group"><label>Account name *</label><input id="payAccName"></div>
 <div class="form-group"><label>Account number *</label><input id="payAccNo"></div>
 <div class="form-group"><label>Invoice email</label><input id="payEmail" type="email"></div>
 <div class="form-group"><label>Invoice phone</label><input id="payPhone"></div>
 </div>
 <button class="btn btn-primary" style="margin-top:10px" onclick="savePaymentProfile()"><i data-lucide="save"></i> Save payment details</button>
-</div>
-<div class="card" style="padding:16px">
-<h3 style="margin-bottom:8px">Team (Admin · Manager · Sales)</h3>
-<p class="meta" style="margin-bottom:8px">Same structure as the tour operator account page.</p>
-<div class="filters"><button class="btn btn-primary" onclick="document.getElementById('memF').style.display='block'"><i data-lucide="user-plus"></i> Add member</button></div>
-<div id="memF" style="display:none;margin-bottom:10px" class="form-grid">
-<div class="form-group"><label>Name</label><input id="mName"></div>
-<div class="form-group"><label>Email</label><input id="mEmail" type="email"></div>
-<div class="form-group"><label>Role</label><select id="mRole"><option>Admin</option><option>Manager</option><option>Sales</option></select></div>
-<div class="form-group"><label>&nbsp;</label><button class="btn btn-primary" onclick="addGuideMember()">Save</button></div>
-</div>
-<div id="teamList"></div>
 </div>
 </div>
 <script>
@@ -380,60 +403,38 @@ var TITLES={   dashboard:['Dashboard','Upcoming jobs, open requests, earnings an
    account:['Account & Team','Payment details + team roles like operator'],
    earnings:['Earnings','Confirmed and completed guide fees'] };
 var calMonth=new Date();calMonth.setDate(1);
-function guide(){return slGet().guides[0]}
-function go(id){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});document.getElementById('page-'+id).classList.add('active');document.querySelectorAll('.sidebar-link').forEach(function(a){a.classList.toggle('active',a.getAttribute('data-p')===id)});var t=TITLES[id]||['',''];document.getElementById('title').textContent=t[0];document.getElementById('sub').textContent=t[1];refresh();lucide.createIcons()}
 
 window._pageState=window._pageState||{};
-function paginate(key,items,size){size=size||10;var page=window._pageState[key]||1;var pages=Math.max(1,Math.ceil(items.length/size));if(page>pages)page=pages;if(page<1)page=1;window._pageState[key]=page;var start=(page-1)*size;return{slice:items.slice(start,start+size),page:page,pages:pages,total:items.length};}
-function renderPager(elId,key,total,onChange){var el=document.getElementById(elId);if(!el)return;var page=window._pageState[key]||1;var pages=Math.max(1,Math.ceil(total/10));if(total<=10){el.innerHTML='';return;}el.innerHTML='<button type="button" '+(page<=1?'disabled':'')+' onclick="window._pageState[\''+key+'\']='+(page-1)+';('+onChange+')()">Previous</button><span>Page '+page+' of '+pages+' · '+total+'</span><button type="button" '+(page>=pages?'disabled':'')+' onclick="window._pageState[\''+key+'\']='+(page+1)+';('+onChange+')()">Next</button>';}
-function pushAlert(text,kind){slUpdate(function(d){if(!d.guideAlerts)d.guideAlerts=[];d.guideAlerts.unshift({text:text,kind:kind||'info',time:Date.now()});d.guideAlerts=d.guideAlerts.slice(0,3);});}
+function paginate(key,items,size){size=size||10;var page=window._pageState[key]||1;var pages=Math.max(1,Math.ceil((items||[]).length/size));if(page>pages)page=pages;if(page<1)page=1;window._pageState[key]=page;var start=(page-1)*size;return{slice:(items||[]).slice(start,start+size),page:page,pages:pages,total:(items||[]).length};}
+function renderPager(elId,key,total,onChange){var el=document.getElementById(elId);if(!el)return;var page=window._pageState[key]||1;var pages=Math.max(1,Math.ceil(total/10));if(total<=10){el.innerHTML="";return;}el.innerHTML='<button type="button" '+(page<=1?"disabled":"")+' onclick="window._pageState[\''+key+'\']='+(page-1)+';('+onChange+')()">Previous</button><span>Page '+page+" of "+pages+" · "+total+' items</span><button type="button" '+(page>=pages?"disabled":"")+' onclick="window._pageState[\''+key+'\']='+(page+1)+';('+onChange+')()">Next</button>';}
+function pushAlert(text,kind){slUpdate(function(d){if(!d.guideAlerts)d.guideAlerts=[];d.guideAlerts.unshift({text:text,kind:kind||"info",time:Date.now()});d.guideAlerts=d.guideAlerts.slice(0,3);});}
 function pushActivity(text){slUpdate(function(d){if(!d.guideActivity)d.guideActivity=[];d.guideActivity.unshift({text:text,time:Date.now()});d.guideActivity=d.guideActivity.slice(0,10);});}
-function ensureWelcomeMsg(){slUpdate(function(d){if(!d.messages)d.messages=[];if(!d._guideMsgClean){d.messages=d.messages.filter(function(m){return m.side!=='guide'||m.keep||m.type==='welcome'||m.fromActivity||m.type==='reminder';});d._guideMsgClean=true;}var has=d.messages.some(function(m){return m.type==='welcome'&&m.side==='guide';});if(!has){d.messages.unshift({id:'welcome-guide',type:'welcome',keep:true,side:'guide',from:'SafariLink',initials:'SL',unread:false,time:Date.now(),text:'Welcome. New requests, reminders and operator messages appear here when there is activity.'});}});}
+function ensureWelcomeMsg(){slUpdate(function(d){if(!d.messages)d.messages=[];if(!d._guideMsgClean){d.messages=d.messages.filter(function(m){return m.side!=="guide"||m.keep||m.type==="welcome"||m.fromActivity;});d._guideMsgClean=true;}var has=d.messages.some(function(m){return m.type==="welcome"&&m.side==="guide";});if(!has){d.messages.unshift({id:"welcome-guide",type:"welcome",keep:true,side:"guide",from:"SafariLink",initials:"SL",unread:false,time:Date.now(),text:"Welcome. Job requests, reminders and operator messages appear here when there is activity."});}});}
 
-function renderDash(){var d=slGet(),g=guide(),up=d.guideJobs.filter(function(j){return j.status==='Confirmed'||j.status==='In progress'}).length;document.getElementById('gUp').textContent=up;document.getElementById('gReq').textContent=d.guideRequests.length;document.getElementById('gEarn').textContent=money(d.guideJobs.reduce(function(s,j){return s+j.fee},0));document.getElementById('gRate').textContent=(g.rating||'—')+' ★';
-var alerts=(d.guideAlerts||[]).slice(0,3);var al=document.getElementById('dashAlerts');if(al)al.innerHTML=(alerts.length?alerts:[{text:'Waiting for live operator activity…',kind:'info',time:Date.now()}]).map(function(a){return '<div class="alert-item '+(a.kind||'info')+'">'+esc(a.text)+'<div class="meta">'+(a.time?new Date(a.time).toLocaleString():'')+'</div></div>';}).join('');
-var acts=(d.guideActivity||[]).slice(0,10);var actEl=document.getElementById('dashActivity');if(actEl)actEl.innerHTML=acts.length?acts.map(function(a){return '<div style="padding:8px 0;border-bottom:1px solid var(--border-light);font-size:.84rem">'+esc(a.text)+'<div class="meta">'+(a.time?new Date(a.time).toLocaleString():'')+'</div></div>';}).join(''):'<div class="meta">No partner activity yet.</div>';document.getElementById('dashJobs').innerHTML=d.guideJobs.slice(0,5).map(function(j){return '<tr><td>'+esc(j.operator)+'</td><td>'+esc(j.service)+'</td><td>'+esc(j.park)+'</td><td>'+j.start+' → '+j.end+'</td><td>'+badge(j.status)+'</td></tr>'}).join('')}
-function renderSchedule(){var list=slGet().guideJobs;document.getElementById('bSch').textContent=list.filter(function(j){return j.status==='Confirmed'||j.status==='In progress'}).length;var pg=paginate('schedule',list,10);document.getElementById('schTable').innerHTML=pg.slice.map(function(j){return '<tr><td>'+j.ref+'</td><td>'+esc(j.operator)+'</td><td>'+esc(j.service)+'</td><td>'+esc(j.park)+'</td><td>'+j.start+'</td><td>'+j.end+'</td><td>'+money(j.fee)+'</td><td>'+badge(j.status)+'</td><td><button class="btn" onclick="sendGuideProforma(\''+j.ref+'\')">Proforma</button></td></tr>'}).join('');renderPager('pagerSchedule','schedule',pg.total,'renderSchedule');}
-function renderRequests(){var list=slGet().guideRequests;document.getElementById('bReq').textContent=list.length;document.getElementById('reqList').innerHTML=list.map(function(r){return '<div class="card" style="padding:14px;margin-bottom:10px"><h4>'+esc(r.operator)+'</h4><div class="meta">'+esc(r.service)+' · '+esc(r.park)+' · '+esc(r.dates)+'</div><p style="margin:8px 0;font-size:.85rem">'+esc(r.note)+'</p><div class="meta">'+money(r.fee)+'</div><div style="margin-top:8px;display:flex;gap:8px"><button class="btn btn-primary" onclick="acceptReq('+r.id+')">Accept</button><button class="btn" onclick="declineReq('+r.id+')">Decline</button></div></div>'}).join('')||'<div class="meta">No requests</div>'}
-function acceptReq(id){slUpdate(function(d){var r=d.guideRequests.find(function(x){return x.id===id});if(!r)return;d.guideJobs.unshift({ref:'GJ-'+Math.floor(100+Math.random()*900),operator:r.operator,service:r.service,park:r.park,start:'2026-11-01',end:'2026-11-06',fee:r.fee,status:'Confirmed'});d.guideRequests=d.guideRequests.filter(function(x){return x.id!==id})});refresh()}
-function declineReq(id){slUpdate(function(d){d.guideRequests=d.guideRequests.filter(function(x){return x.id!==id})});refresh()}
-function renderServices(){document.getElementById('svcGrid').innerHTML=(guide().services||[]).map(function(s){return '<div class="prop-card"><div class="body"><h4>'+esc(s.name)+'</h4><div class="meta">'+esc(s.cat)+' · '+money(s.rate)+'/day</div><p class="meta">'+esc(s.desc)+'</p></div></div>'}).join('')}
-function addService(){var n=document.getElementById('sName').value.trim();if(!n)return;slUpdate(function(d){d.guides[0].services.push({id:Date.now(),name:n,cat:document.getElementById('sCat').value,rate:Number(document.getElementById('sRate').value)||80,desc:document.getElementById('sDesc').value})});document.getElementById('svcF').style.display='none';renderServices()}
-function fillProfile(){var g=guide();document.getElementById('prName').value=g.name||'';document.getElementById('prYears').value=g.years||0;document.getElementById('prPhone').value=g.phone||'';document.getElementById('prBase').value=g.base||'';document.getElementById('prRate').value=g.rate||80;document.getElementById('prBio').value=g.bio||'';renderPreview()}
-function renderPreview(){var g=guide();var img=g.image?'<img src="'+g.image+'" style="width:72px;height:72px;border-radius:50%;object-fit:cover">':'<div style="width:72px;height:72px;border-radius:50%;background:var(--khaki);display:flex;align-items:center;justify-content:center"><i data-lucide="user" style="width:28px;height:28px;opacity:.45"></i></div>';document.getElementById('prPreview').innerHTML='<div class="card" style="padding:14px"><div style="display:flex;gap:12px;align-items:center">'+img+'<div><h4>'+esc(g.name)+'</h4><div class="meta">'+g.years+' yrs · '+esc(g.base)+' · '+money(g.rate)+'/day · ★'+g.rating+'</div><div class="meta">'+esc((g.languages||[]).join(', '))+'</div><div class="meta">'+esc((g.regions||[]).join(' · '))+'</div></div></div><p style="margin-top:8px;font-size:.85rem">'+esc(g.bio||'')+'</p></div>';lucide.createIcons()}
-async function saveProfile(){var file=document.getElementById('prImg').files[0];var img=guide().image;if(file)img=await fileToDataUrl(file);slUpdate(function(d){var g=d.guides[0];g.name=document.getElementById('prName').value;g.years=Number(document.getElementById('prYears').value)||g.years;g.phone=document.getElementById('prPhone').value;g.base=document.getElementById('prBase').value;g.rate=Number(document.getElementById('prRate').value)||g.rate;g.bio=document.getElementById('prBio').value;g.image=img});alert('Profile synced for operators');renderPreview()}
-function fillPricing(){var g=guide();document.getElementById('pDay').value=g.rate;document.getElementById('pHalf').value=g.halfDay;document.getElementById('pNight').value=g.overnight;document.getElementById('pMtn').value=g.mountain}
-function savePricing(){slUpdate(function(d){var g=d.guides[0];g.rate=Number(document.getElementById('pDay').value)||g.rate;g.halfDay=Number(document.getElementById('pHalf').value)||g.halfDay;g.overnight=Number(document.getElementById('pNight').value)||g.overnight;g.mountain=Number(document.getElementById('pMtn').value)||g.mountain});alert('Saved')}
-function fillRegions(){var set={};(guide().regions||[]).forEach(function(r){set[r]=1});document.querySelectorAll('#regionChips input').forEach(function(c){c.checked=!!set[c.value]})}
-function saveRegions(){var sel=[];document.querySelectorAll('#regionChips input:checked').forEach(function(c){sel.push(c.value)});slUpdate(function(d){d.guides[0].regions=sel});alert('Saved')}
-function fillLang(){var set={},sk={};(guide().languages||[]).forEach(function(r){set[r]=1});(guide().skills||[]).forEach(function(r){sk[r]=1});document.querySelectorAll('#langChips input').forEach(function(c){c.checked=!!set[c.value]});document.querySelectorAll('#skillChips input').forEach(function(c){c.checked=!!sk[c.value]})}
-function saveLang(){var L=[],S=[];document.querySelectorAll('#langChips input:checked').forEach(function(c){L.push(c.value)});document.querySelectorAll('#skillChips input:checked').forEach(function(c){S.push(c.value)});slUpdate(function(d){d.guides[0].languages=L;d.guides[0].skills=S});alert('Saved')}
-function renderCerts(){document.getElementById('certGrid').innerHTML=(guide().certs||[]).map(function(c){return '<div class="prop-card"><div class="body"><h4>'+esc(c.name)+'</h4><div class="meta">'+esc(c.issuer)+' · to '+esc(c.validTo)+'</div></div></div>'}).join('')}
-function renderReviews(){document.getElementById('revList').innerHTML=(guide().reviews||[]).map(function(r){return '<div style="padding:10px 0;border-bottom:1px solid var(--border-light)"><strong>'+esc(r.operator)+'</strong> · '+r.score+' ★ · '+esc(r.park)+'<div class="meta">'+esc(r.text)+'</div></div>'}).join('')}
-function renderMessages(){
-  ensureWelcomeMsg();
-  var msgs=slGet().messages.filter(function(m){return m.side==='guide';});
-  var unread=msgs.filter(function(m){return m.unread;}).length;
-  var b=document.getElementById('bMsg');
-  if(b){if(unread>0){b.textContent=String(unread);b.setAttribute('data-count',unread);b.classList.add('msg-unread');}else{b.textContent='';b.setAttribute('data-count','0');b.classList.remove('msg-unread');}}
-  var pg=paginate('messages',msgs,10);
-  var el=document.getElementById('msgList');
-  if(el)el.innerHTML=pg.slice.map(function(m){return '<div class="msg-row" style="'+(m.unread?'background:#f0faf5;':'')+'cursor:pointer" onclick="markPartnerMsgRead(\''+String(m.id).replace(/'/g,"\\'")+'\')"><div class="msg-av">'+esc(m.initials||'SL')+'</div><div><strong>'+esc(m.from)+'</strong> <span class="meta">'+(m.time?new Date(m.time).toLocaleString():'')+'</span><div>'+esc(m.text)+'</div>'+(m.unread?'<span class="badge badge-pending">Unread</span>':'')+'</div></div>';}).join('')||'<div class="meta" style="padding:12px">No messages yet.</div>';
-  renderPager('pagerMessages','messages',pg.total,'renderMessages');
+function guide(){return slGet().guides[0]}
+function go(id){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});document.getElementById('page-'+id).classList.add('active');document.querySelectorAll('.sidebar-link').forEach(function(a){a.classList.toggle('active',a.getAttribute('data-p')===id)});var t=TITLES[id]||['',''];document.getElementById('title').textContent=t[0];document.getElementById('sub').textContent=t[1];refresh();lucide.createIcons()}
+function renderDash(){
+  var d=slGet(),g=guide();
+  var up=(d.guideJobs||[]).filter(function(j){return j.status==="Confirmed"||j.status==="In progress";}).length;
+  var conf=(d.guideJobs||[]).filter(function(j){return j.status==="Completed";}).reduce(function(s,j){return s+(j.fee||0);},0);
+  if(document.getElementById("gUp"))document.getElementById("gUp").textContent=up;
+  if(document.getElementById("gReq"))document.getElementById("gReq").textContent=(d.guideRequests||[]).length;
+  if(document.getElementById("gEarn"))document.getElementById("gEarn").textContent=money(conf);
+  if(document.getElementById("gRate"))document.getElementById("gRate").textContent=(g&&g.rating?g.rating:"—")+" ★";
+  var alerts=(d.guideAlerts||[]).slice(0,3);
+  var al=document.getElementById("dashAlerts");
+  if(al) al.innerHTML=(alerts.length?alerts:[{text:"Waiting for live operator requests…",kind:"info",time:Date.now()}]).map(function(a){
+    return '<div class="alert-item '+(a.kind||"info")+'">'+esc(a.text)+'<div class="meta">'+(a.time?new Date(a.time).toLocaleString():"")+"</div></div>";
+  }).join("");
+  var rows=(d.guideJobs||[]).slice().sort(function(a,b){return (b.createdAt||0)-(a.createdAt||0);});
+  var pg=paginate("dash",rows,10);
+  var body=document.getElementById("dashJobs");
+  if(body) body.innerHTML=pg.slice.map(function(j){
+    return "<tr><td>"+esc(j.operator)+"</td><td>"+esc(j.service)+"</td><td>"+esc(j.park)+"</td><td>"+j.start+" → "+j.end+"</td><td>"+badge(j.status)+"</td><td>"+money(j.fee)+"</td></tr>";
+  }).join("")||'<tr><td colspan="6" class="meta">No operator activity yet</td></tr>';
+  renderPager("pagerDash","dash",pg.total,"renderDash");
 }
-function markPartnerMsgRead(id){slUpdate(function(d){(d.messages||[]).forEach(function(m){if(String(m.id)===String(id))m.unread=false;});});renderMessages();}
 
-function renderEarnings(){var jobs=slGet().guideJobs;var conf=jobs.filter(function(j){return j.status==='Confirmed'}).reduce(function(s,j){return s+j.fee},0);var done=jobs.filter(function(j){return j.status==='Completed'}).reduce(function(s,j){return s+j.fee},0);document.getElementById('eConf').textContent=money(conf);document.getElementById('eDone').textContent=money(done);document.getElementById('ePend').textContent=money(conf);document.getElementById('eJobs').textContent=jobs.length;document.getElementById('earnTable').innerHTML=jobs.map(function(j){return '<tr><td>'+j.ref+'</td><td>'+esc(j.operator)+'</td><td>'+money(j.fee)+'</td><td>'+badge(j.status)+'</td></tr>'}).join('')}
-function calShift(n){calMonth.setMonth(calMonth.getMonth()+n);renderCal()}
-function renderCal(){var y=calMonth.getFullYear(),m=calMonth.getMonth();document.getElementById('calLabel').textContent=calMonth.toLocaleString('default',{month:'long',year:'numeric'});var first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate(),busy={};slGet().guideJobs.forEach(function(j){for(var t=new Date(j.start);t<=new Date(j.end);t.setDate(t.getDate()+1)){if(t.getMonth()===m&&t.getFullYear()===y)busy[t.getDate()]=1}});(guide().blocks||[]).forEach(function(b){for(var t=new Date(b.from);t<=new Date(b.to);t.setDate(t.getDate()+1)){if(t.getMonth()===m&&t.getFullYear()===y)busy[t.getDate()]=1}});var h=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(function(d){return '<div class="hd">'+d+'</div>'}).join('');for(var i=0;i<first;i++)h+='<div class="day muted"></div>';for(var d=1;d<=days;d++)h+='<div class="day '+(busy[d]?'busy':'free')+'">'+d+'</div>';document.getElementById('calGrid').innerHTML=h}
-function addBlock(){var f=document.getElementById('blFrom').value,t=document.getElementById('blTo').value;if(!f||!t){alert('Select dates');return}slUpdate(function(d){d.guides[0].blocks=d.guides[0].blocks||[];d.guides[0].blocks.push({from:f,to:t})});pushActivity("Dates blocked "+f+" to "+t);renderCal()}
-
-function loadPaymentProfile(){
-  try{var p=JSON.parse(localStorage.getItem('sl_guide_payment')||'{}');
-    var map={payBankName:'bankName',payBranch:'branchName',payBankAddress:'bankAddress',paySwift:'swift',payAccName:'accountName',payAccNo:'accountNumber',payEmail:'email',payPhone:'phone'};
-    Object.keys(map).forEach(function(id){var el=document.getElementById(id);if(el&&p[map[id]])el.value=p[map[id]];});
-  }catch(e){}
-}
 function savePaymentProfile(){
   var p={bankName:(document.getElementById('payBankName')||{}).value||'',branchName:(document.getElementById('payBranch')||{}).value||'',bankAddress:(document.getElementById('payBankAddress')||{}).value||'',swift:(document.getElementById('paySwift')||{}).value||'',accountName:(document.getElementById('payAccName')||{}).value||'',accountNumber:(document.getElementById('payAccNo')||{}).value||'',email:(document.getElementById('payEmail')||{}).value||'',phone:(document.getElementById('payPhone')||{}).value||''};
   if(!p.bankName||!p.accountName||!p.accountNumber){alert('Bank name, account name and number required');return;}
@@ -447,7 +448,8 @@ function renderGuideQuotes(){
 }
 function printGuideQuote(id){
   var q=(slGet().partnerQuotes||[]).find(function(x){return x.id===id});if(!q)return;var inv=getPaymentProfile();
-  var html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+q.id+'</title><style>body{font-family:system-ui;max-width:640px;margin:40px auto}.box{border:1px solid #d4cfc6;border-radius:10px;padding:16px;margin:12px 0}.k{color:#888;font-size:.78rem;margin-top:6px}</style></head><body><h1 style="color:#1a5a3a">Guide Proforma</h1><div class="box"><strong>'+esc(q.id)+'</strong><br>'+esc(q.detail)+'<br>Amount: <strong>'+money(q.amount)+'</strong></div><div class="box"><strong>Bank details</strong><div class="k">Bank</div>'+esc(q.bankName||inv.bankName)+'<div class="k">Address</div>'+esc(q.bankAddress||inv.bankAddress)+'<div class="k">SWIFT</div>'+esc(q.swift||inv.swift)+'<div class="k">Account name</div>'+esc(q.accountName||inv.accountName)+'<div class="k">Account number</div>'+esc(q.accountNumber||inv.accountNumber)+'<div class="k">Branch</div>'+esc(q.branchName||inv.branchName)+'</div><script>onload=function(){setTimeout(print,300)}<\/script></body></html>';
+  var html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+q.id+'</title><style>body{font-family:system-ui;max-width:640px;margin:40px auto}.box{border:1px solid #d4cfc6;border-radius:10px;padding:16px;margin:12px 0}.k{color:#888;font-size:.78rem;margin-top:6px}</style></head><body><h1 style="color:#1a5a3a">Guide Proforma</h1><div class="box"><strong>'+esc(q.id)+'</strong><br>'+esc(q.detail)+'<br>Amount: <strong>'+money(q.amount)+'</strong></div><div class="box"><strong>Bank details</strong><div class="k">Bank</div>'+esc(q.bankName||inv.bankName)+'<div class="k">Address</div>'+esc(q.bankAddress||inv.bankAddress)+'<div class="k">SWIFT</div>'+esc(q.swift||inv.swift)+'<div class="k">Account name</div>'+esc(q.accountName||inv.accountName)+'<div class="k">Account number</div>'+esc(q.accountNumber||inv.accountNumber)+'<div class="k">Branch</div>'+esc(q.branchName||inv.branchName)+'</div><script>onload=function(){setTimeout(print,300)}<\/script><div class="modal-bg" id="modal" onclick="if(event.target===this)this.classList.remove('show')"><div class="modal"><div id="modalBody"></div></div></div>
+</body></html>';
   var w=window.open('','_blank');if(w){w.document.write(html);w.document.close();}
 }
 function sendGuideProforma(ref){
@@ -463,11 +465,172 @@ function sendGuideProforma(ref){
     if(!d.messages)d.messages=[];
     d.messages.unshift({id:Date.now(),fromActivity:true,unread:true,side:'operator',from:guide().name||'Guide',initials:'GD',text:'Proforma '+pfId+' for '+j.operator+' · '+j.service,time:Date.now(),type:'info'});
   });
-  pushAlert('Proforma '+pfId+' sent','info');pushActivity('Proforma '+pfId+' sent');alert('Proforma '+pfId+' sent');refresh();
+  alert('Proforma '+pfId+' sent');refresh();
 }
 function renderTeam(){document.getElementById('teamList').innerHTML=(slGet().team.guide||[]).map(function(m){return '<div class="team-row"><div><strong>'+esc(m.name)+'</strong><div class="meta">'+esc(m.email)+' · '+esc(m.role)+'</div></div></div>'}).join('')||'<div class="meta">No team members yet</div>'}
 function addGuideMember(){var n=document.getElementById('mName').value.trim(),e=document.getElementById('mEmail').value.trim();if(!n||!e)return;slUpdate(function(d){d.team.guide=d.team.guide||[];d.team.guide.push({id:Date.now(),name:n,email:e,role:document.getElementById('mRole').value})});document.getElementById('memF').style.display='none';renderTeam()}
 
-function refresh(){renderDash();renderSchedule();renderRequests();renderServices();fillProfile();fillPricing();fillRegions();fillLang();renderCerts();renderReviews();renderMessages();renderEarnings();renderCal();renderGuideQuotes();renderTeam();if(document.getElementById("page-account")&&document.getElementById("page-account").classList.contains("active"))loadPaymentProfile()}
-slEnsure();ensureWelcomeMsg();loadPaymentProfile();refresh();slOnChange(refresh);lucide.createIcons();
-</script></body></html>
+function openChangePassword(){
+  var email=prompt("Account email:",(document.getElementById("coEmail")||{}).value||"guide@email.com");
+  if(!email)return;
+  var np=prompt("New password (min 6 characters):");
+  if(!np||np.length<6){alert("Password too short");return;}
+  localStorage.setItem("sl_guide_pwd_"+email.toLowerCase(), np);
+  alert("Password updated for "+email);
+}
+function requestPasswordReset(){
+  var email=prompt("Email for reset link:",(document.getElementById("coEmail")||{}).value||"guide@email.com");
+  if(!email)return;
+  alert("Password reset link simulated sent to "+email);
+}
+function saveGuideEmail(){
+  var e=(document.getElementById("coEmail")||{}).value||"";
+  localStorage.setItem("sl_guide_email", e);
+  alert("Login email saved");
+}
+
+function renderSchedule(){
+  var list=slGet().guideJobs||[];
+  if(document.getElementById("bSch"))document.getElementById("bSch").textContent=list.filter(function(j){return j.status==="Confirmed"||j.status==="In progress";}).length;
+  var pg=paginate("sch",list,10);
+  var body=document.getElementById("schTable");
+  if(body) body.innerHTML=pg.slice.map(function(j){
+    var ref=String(j.ref).replace(/'/g,"");
+    return "<tr><td>"+esc(j.ref)+"</td><td>"+esc(j.operator)+"</td><td>"+esc(j.service)+"</td><td>"+esc(j.park)+"</td><td>"+j.start+"</td><td>"+j.end+"</td><td>"+money(j.fee)+"</td><td>"+badge(j.status)+'</td><td><button class="btn" onclick="openJobDetail(\''+ref+'\')">Details</button></td></tr>';
+  }).join("")||'<tr><td colspan="9" class="meta">No jobs yet</td></tr>';
+  renderPager("pagerSch","sch",pg.total,"renderSchedule");
+}
+function openJobDetail(ref){
+  var j=(slGet().guideJobs||[]).find(function(x){return x.ref===ref});
+  if(!j){alert("Job not found");return;}
+  var days=Math.max(1,Math.round((new Date(j.end)-new Date(j.start))/86400000)+1);
+  var body=document.getElementById("modalBody");if(!body)return;
+  body.innerHTML="<h3>Job "+esc(j.ref)+"</h3><p class='meta'>"+esc(j.operator)+" · "+esc(j.service)+"</p>"+
+    "<p><strong>Park:</strong> "+esc(j.park)+"<br><strong>Dates:</strong> "+j.start+" → "+j.end+" ("+days+" days)<br><strong>Fee:</strong> "+money(j.fee)+" · "+badge(j.status)+"</p>"+
+    '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px">'+
+    '<button class="btn btn-primary" onclick="sendGuideProforma(\''+ref+'\')">Send proforma</button>'+
+    '<button class="btn" onclick="setJobStatus(\''+ref+'\',\'Confirmed\')">Confirm</button>'+
+    '<button class="btn" onclick="setJobStatus(\''+ref+'\',\'Completed\')">Mark paid / completed</button>'+
+    '<button class="btn" onclick="document.getElementById(\'modal\').classList.remove(\'show\')">Close</button></div>';
+  document.getElementById("modal").classList.add("show");
+  if(window.lucide) lucide.createIcons();
+}
+function setJobStatus(ref, status){
+  slUpdate(function(d){(d.guideJobs||[]).forEach(function(j){if(j.ref===ref){j.status=status;j.repliedAt=Date.now();}});});
+  pushActivity("Job "+ref+" → "+status);
+  pushAlert("Job "+ref+" marked "+status, status==="Completed"?"info":"warn");
+  document.getElementById("modal").classList.remove("show");
+  refresh();
+}
+function renderRequests(){
+  var list=slGet().guideRequests||[];
+  if(document.getElementById("bReq"))document.getElementById("bReq").textContent=list.length;
+  var el=document.getElementById("reqList");
+  if(!el)return;
+  el.innerHTML=list.map(function(r){
+    return '<div class="card" style="padding:14px;margin-bottom:10px"><h4>'+esc(r.operator)+'</h4><div class="meta">'+esc(r.service)+' · '+esc(r.park)+' · '+esc(r.dates||"")+'</div><p style="margin:8px 0;font-size:.85rem">'+esc(r.note||"")+'</p><div class="meta">'+money(r.fee)+'</div><div style="margin-top:8px;display:flex;gap:8px"><button class="btn btn-primary" onclick="acceptReq('+r.id+')">Accept</button><button class="btn" onclick="declineReq('+r.id+')">Decline</button></div></div>';
+  }).join("")||'<div class="meta">No open requests</div>';
+}
+function acceptReq(id){
+  slUpdate(function(d){
+    var r=(d.guideRequests||[]).find(function(x){return x.id===id});if(!r)return;
+    if(!d.guideJobs)d.guideJobs=[];
+    d.guideJobs.unshift({ref:"GJ-"+Math.floor(100+Math.random()*900),operator:r.operator,service:r.service,park:r.park,start:r.start||"2026-11-01",end:r.end||"2026-11-06",fee:r.fee,status:"Confirmed",createdAt:Date.now()});
+    d.guideRequests=(d.guideRequests||[]).filter(function(x){return x.id!==id});
+    if(!d.messages)d.messages=[];
+    d.messages.unshift({id:Date.now(),side:"guide",from:r.operator,initials:"OP",text:"Request accepted: "+r.service,time:Date.now(),fromActivity:true,unread:true});
+  });
+  pushAlert("Request accepted","info");pushActivity("Accepted operator request");refresh();
+}
+function declineReq(id){slUpdate(function(d){d.guideRequests=(d.guideRequests||[]).filter(function(x){return x.id!==id});});pushActivity("Request declined");refresh();}
+function renderServices(){var g=guide();document.getElementById("svcGrid").innerHTML=((g&&g.services)||[]).map(function(s){return '<div class="prop-card"><div class="body"><h4>'+esc(s.name)+'</h4><div class="meta">'+esc(s.cat)+' · '+money(s.rate)+'/day</div><p class="meta">'+esc(s.desc||"")+'</p></div></div>';}).join("")||'<div class="meta">No services yet</div>';}
+function addService(){var n=document.getElementById("sName").value.trim();if(!n)return;slUpdate(function(d){d.guides[0].services=d.guides[0].services||[];d.guides[0].services.push({id:Date.now(),name:n,cat:document.getElementById("sCat").value,rate:Number(document.getElementById("sRate").value)||80,desc:document.getElementById("sDesc").value});});document.getElementById("svcF").style.display="none";renderServices();}
+function fillProfile(){var g=guide();if(!g)return;var el=function(id,v){var e=document.getElementById(id);if(e)e.value=v||"";};el("prName",g.name);el("prYears",g.years);el("prPhone",g.phone);el("prBase",g.base);el("prRate",g.rate);el("prBio",g.bio);renderPreview();}
+function renderPreview(){var g=guide();if(!g||!document.getElementById("prPreview"))return;var img=g.image?'<img src="'+g.image+'" style="width:72px;height:72px;border-radius:50%;object-fit:cover">':'<div style="width:72px;height:72px;border-radius:50%;background:var(--khaki);display:flex;align-items:center;justify-content:center"><i data-lucide="user" style="width:28px;height:28px;opacity:.45"></i></div>';document.getElementById("prPreview").innerHTML='<div class="card" style="padding:14px"><div style="display:flex;gap:12px;align-items:center">'+img+'<div><h4>'+esc(g.name)+'</h4><div class="meta">'+(g.years||0)+' yrs · '+esc(g.base||"")+' · '+money(g.rate)+'/day · ★'+(g.rating||5)+'</div><div class="meta">'+esc((g.languages||[]).join(", "))+'</div><div class="meta">'+esc((g.regions||[]).join(" · "))+'</div></div></div><p style="margin-top:8px;font-size:.85rem">'+esc(g.bio||"")+'</p></div>';if(window.lucide)lucide.createIcons();}
+async function saveProfile(){var file=(document.getElementById("prImg")||{}).files;file=file&&file[0];var img=guide().image;if(file)img=await fileToDataUrl(file);slUpdate(function(d){var g=d.guides[0];g.name=document.getElementById("prName").value;g.years=Number(document.getElementById("prYears").value)||g.years;g.phone=document.getElementById("prPhone").value;g.base=document.getElementById("prBase").value;g.rate=Number(document.getElementById("prRate").value)||g.rate;g.bio=document.getElementById("prBio").value;g.image=img;});alert("Profile synced for operators");renderPreview();}
+function fillPricing(){var g=guide();if(!g)return;var el=function(id,v){var e=document.getElementById(id);if(e)e.value=v||"";};el("pDay",g.rate);el("pHalf",g.halfDay);el("pNight",g.overnight);el("pMtn",g.mountain);}
+function savePricing(){slUpdate(function(d){var g=d.guides[0];g.rate=Number(document.getElementById("pDay").value)||g.rate;g.halfDay=Number(document.getElementById("pHalf").value)||g.halfDay;g.overnight=Number(document.getElementById("pNight").value)||g.overnight;g.mountain=Number(document.getElementById("pMtn").value)||g.mountain;});alert("Saved");}
+function fillRegions(){var set={};((guide()||{}).regions||[]).forEach(function(r){set[r]=1;});document.querySelectorAll("#regionChips input").forEach(function(c){c.checked=!!set[c.value];});}
+function saveRegions(){var sel=[];document.querySelectorAll("#regionChips input:checked").forEach(function(c){sel.push(c.value);});slUpdate(function(d){d.guides[0].regions=sel;});alert("Saved");}
+function fillLang(){var set={},sk={};((guide()||{}).languages||[]).forEach(function(r){set[r]=1;});((guide()||{}).skills||[]).forEach(function(r){sk[r]=1;});document.querySelectorAll("#langChips input").forEach(function(c){c.checked=!!set[c.value];});document.querySelectorAll("#skillChips input").forEach(function(c){c.checked=!!sk[c.value];});}
+function saveLang(){var L=[],S=[];document.querySelectorAll("#langChips input:checked").forEach(function(c){L.push(c.value);});document.querySelectorAll("#skillChips input:checked").forEach(function(c){S.push(c.value);});slUpdate(function(d){d.guides[0].languages=L;d.guides[0].skills=S;});alert("Saved");}
+function renderCerts(){var el=document.getElementById("certGrid");if(!el)return;el.innerHTML=((guide()||{}).certs||[]).map(function(c){return '<div class="prop-card"><div class="body"><h4>'+esc(c.name)+'</h4><div class="meta">'+esc(c.issuer)+' · to '+esc(c.validTo)+'</div></div></div>';}).join("")||'<div class="meta">No certificates yet</div>';}
+function renderReviews(){var el=document.getElementById("revList");if(!el)return;el.innerHTML=((guide()||{}).reviews||[]).map(function(r){return '<div style="padding:10px 0;border-bottom:1px solid var(--border-light)"><strong>'+esc(r.operator)+'</strong> · '+r.score+' ★ · '+esc(r.park||"")+'<div class="meta">'+esc(r.text||"")+'</div></div>';}).join("")||'<div class="meta">No reviews yet</div>';}
+function renderMessages(){
+  ensureWelcomeMsg();
+  var msgs=(slGet().messages||[]).filter(function(m){return m.side==="guide";});
+  var unread=msgs.filter(function(m){return m.unread;}).length;
+  var b=document.getElementById("bMsg");
+  if(b){if(unread>0){b.textContent=String(unread);b.setAttribute("data-count",unread);b.classList.add("msg-unread");}else{b.textContent="";b.setAttribute("data-count","0");b.classList.remove("msg-unread");}}
+  var pg=paginate("messages",msgs,10);
+  var el=document.getElementById("msgList");
+  if(el) el.innerHTML=pg.slice.map(function(m){
+    return '<div class="msg-row" style="'+(m.unread?"background:#f0faf5;":"")+'cursor:pointer" onclick="markGuideMsgRead(\''+String(m.id).replace(/'/g,"")+"')\"><div class=\"msg-av\">"+esc(m.initials||"SL")+"</div><div><strong>"+esc(m.from)+"</strong> <span class=\"meta\">"+(m.time?new Date(m.time).toLocaleString():"")+"</span><div>"+esc(m.text)+"</div>"+(m.unread?' <span class="badge badge-pending">Unread</span>':"")+"</div></div>";
+  }).join("")||'<div class="meta" style="padding:12px">No messages yet.</div>';
+  renderPager("pagerMessages","messages",pg.total,"renderMessages");
+}
+function markGuideMsgRead(id){slUpdate(function(d){(d.messages||[]).forEach(function(m){if(String(m.id)===String(id))m.unread=false;});});renderMessages();}
+function renderEarnings(){
+  var jobs=slGet().guideJobs||[];
+  var done=jobs.filter(function(j){return j.status==="Completed";}).reduce(function(s,j){return s+(j.fee||0);},0);
+  var man=slGet().manualGuideStats||{};
+  var off=man.extraRevenue||0;
+  var tot=done+off;
+  if(document.getElementById("eDone"))document.getElementById("eDone").textContent=money(done);
+  if(document.getElementById("eOff"))document.getElementById("eOff").textContent=money(off);
+  if(document.getElementById("eTot"))document.getElementById("eTot").textContent=money(tot);
+  if(document.getElementById("eJobs"))document.getElementById("eJobs").textContent=jobs.length+(man.extraJobs||0);
+  var rank=document.getElementById("earnRank");
+  if(rank){
+    var leader=done>=off?"SafariLink jobs":"Offline / external";
+    var pctSl=tot?Math.round(done/tot*100):0;
+    var pctOff=tot?Math.round(off/tot*100):0;
+    rank.innerHTML="<p style='margin-bottom:10px'><strong>Top performer:</strong> "+leader+"</p>"+
+      '<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:.84rem"><span>SafariLink</span><strong>'+money(done)+" ("+pctSl+'%)</strong></div><div style="height:8px;background:var(--khaki);border-radius:4px"><div style="width:'+pctSl+'%;height:100%;background:var(--accent-green);border-radius:4px"></div></div></div>'+
+      '<div><div style="display:flex;justify-content:space-between;font-size:.84rem"><span>Offline tracking</span><strong>'+money(off)+" ("+pctOff+'%)</strong></div><div style="height:8px;background:var(--khaki);border-radius:4px"><div style="width:'+pctOff+'%;height:100%;background:#f59e0b;border-radius:4px"></div></div></div>';
+  }
+  var body=document.getElementById("earnTable");
+  if(body) body.innerHTML=jobs.map(function(j){return "<tr><td>"+esc(j.ref)+"</td><td>"+esc(j.operator)+"</td><td>"+money(j.fee)+"</td><td>"+badge(j.status)+"</td></tr>";}).join("")||'<tr><td colspan="4" class="meta">No jobs yet</td></tr>';
+}
+function saveManualEarn(){
+  slUpdate(function(d){d.manualGuideStats={extraRevenue:Number(document.getElementById("mRev").value)||0,extraJobs:Number(document.getElementById("mJobs").value)||0};});
+  var box=document.getElementById("offlineEarnBox");if(box)box.style.display="none";
+  renderEarnings();
+}
+function calShift(n){calMonth.setMonth(calMonth.getMonth()+n);renderCal();}
+function renderCal(){
+  var y=calMonth.getFullYear(),m=calMonth.getMonth();
+  document.getElementById("calLabel").textContent=calMonth.toLocaleString("default",{month:"long",year:"numeric"});
+  var first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate();
+  var blocks=(slGet().calendarBlocks||{})["guide"]||{};
+  var busy={};
+  (slGet().guideJobs||[]).forEach(function(j){
+    if(j.status==="Cancelled")return;
+    for(var t0=new Date(j.start);t0<=new Date(j.end);t0.setDate(t0.getDate()+1)){
+      if(t0.getMonth()===m&&t0.getFullYear()===y)busy[t0.getDate()]=1;
+    }
+  });
+  var h=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(function(d){return '<div class="hd">'+d+"</div>";}).join("");
+  for(var i=0;i<first;i++)h+='<div class="day muted"></div>';
+  for(var d=1;d<=days;d++){
+    var key=y+"-"+(m+1)+"-"+d;
+    var cls=blocks[key]||busy[d]?"busy":"free";
+    h+='<div class="day '+cls+'" onclick="toggleGuideBlock(\''+key+"')\">"+d+"</div>";
+  }
+  document.getElementById("calGrid").innerHTML=h;
+}
+function toggleGuideBlock(key){
+  slUpdate(function(d){
+    if(!d.calendarBlocks)d.calendarBlocks={};
+    if(!d.calendarBlocks.guide)d.calendarBlocks.guide={};
+    if(d.calendarBlocks.guide[key])delete d.calendarBlocks.guide[key];
+    else d.calendarBlocks.guide[key]=1;
+  });
+  pushActivity("Availability updated · "+key);
+  renderCal();
+}
+
+function refresh(){try{renderDash()}catch(e){}try{renderSchedule()}catch(e){}try{renderRequests()}catch(e){}try{renderServices()}catch(e){}try{fillProfile()}catch(e){}try{fillPricing()}catch(e){}try{fillRegions()}catch(e){}try{fillLang()}catch(e){}try{renderCerts()}catch(e){}try{renderReviews()}catch(e){}try{renderMessages()}catch(e){}try{renderEarnings()}catch(e){}try{renderCal()}catch(e){}try{renderGuideQuotes()}catch(e){}if(document.getElementById("page-account")&&document.getElementById("page-account").classList.contains("active")){loadPaymentProfile();try{var e=localStorage.getItem("sl_guide_email");if(e&&document.getElementById("coEmail"))document.getElementById("coEmail").value=e;}catch(x){}}}
+slEnsure();if(typeof ensureWelcomeMsg==="function")ensureWelcomeMsg();loadPaymentProfile();refresh();slOnChange(refresh);lucide.createIcons();
+</script><div class="modal-bg" id="modal" onclick="if(event.target===this)this.classList.remove('show')"><div class="modal"><div id="modalBody"></div></div></div>
+</body></html>
