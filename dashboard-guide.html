@@ -77,12 +77,34 @@
     color: rgba(255,255,255,.35); padding: 12px 8px 6px;
   }
   .sidebar-link {
-    display: flex; align-items: center; gap: 8px; padding: 9px 12px;
-    border-radius: 6px; color: #bbb; font-size: .85rem; cursor: pointer;
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+    border-radius: 6px; color: #bbb; font-size: .9rem; cursor: pointer; margin-bottom: 2px; position: relative;
   }
   .sidebar-link:hover { background: rgba(255,255,255,.08); color: #fff; }
   .sidebar-link.active { background: rgba(63,185,131,.15); color: var(--accent-green); }
-  .sidebar-link i { width: 17px; height: 17px; }
+  .sidebar-link i, .sidebar-link svg { width: 20px; height: 20px; flex-shrink: 0; }
+  #bMsg.msg-unread {
+    background: #dc2626; color: #fff; display: inline-flex; align-items: center; justify-content: center;
+    min-width: 18px; height: 18px; padding: 0 5px;
+  }
+  #bMsg:empty, #bMsg[data-count="0"] { display: none; }
+  .pager {
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    margin-top: 12px; font-size: .85rem; color: var(--warm-gray);
+  }
+  .pager button {
+    padding: 8px 14px; border-radius: 6px; border: 1px solid var(--border-light);
+    background: #fff; cursor: pointer; font-weight: 600;
+  }
+  .pager button:disabled { opacity: .4; cursor: not-allowed; }
+  .alert-list { display: flex; flex-direction: column; gap: 8px; }
+  .alert-item {
+    background: #fff; border: 1px solid var(--border-light); border-left: 3px solid var(--accent-green);
+    border-radius: 8px; padding: 12px 14px; font-size: .85rem;
+  }
+  .alert-item.warn { border-left-color: #f59e0b; }
+  .alert-item.info { border-left-color: #0891b2; }
+  .cal .day { cursor: pointer; }
   .sidebar-badge {
     margin-left: auto; background: #f59e0b; color: #000;
     font-size: .68rem; padding: 2px 7px; border-radius: 10px; font-weight: 700;
@@ -216,11 +238,11 @@
 <aside class="sidebar" id="sidebar"><div class="sidebar-brand"><div class="logo-icon">SL</div><div class="logo-text">Safari<span>Link</span></div><button type="button" class="sidebar-collapse-btn" onclick="toggleCollapse()" title="Collapse / expand menu"><i data-lucide="chevrons-left" id="collapseIcon"></i></button></div>
 <nav class="sidebar-nav">
 <div class="sidebar-section">Main</div>
-<a class="sidebar-link active" data-p="dashboard" onclick="go('dashboard')"><i data-lucide="layout-dashboard"></i>Dashboard</a>
-<a class="sidebar-link" data-p="schedule" onclick="go('schedule')"><i data-lucide="calendar-days"></i>My Schedule<span class="sidebar-badge" id="bSch">0</span></a>
-<a class="sidebar-link" data-p="requests" onclick="go('requests')"><i data-lucide="inbox"></i>Job Requests<span class="sidebar-badge" id="bReq">0</span></a>
-<a class="sidebar-link" data-p="services" onclick="go('services')"><i data-lucide="briefcase"></i>My Services</a>
-<a class="sidebar-link" data-p="availability" onclick="go('availability')"><i data-lucide="calendar-range"></i>Availability</a>
+<a class="sidebar-link active" data-p="dashboard" onclick="go('dashboard')"><i data-lucide="layout-dashboard"></i><span> Dashboard</span></a>
+<a class="sidebar-link" data-p="schedule" onclick="go('schedule')"><i data-lucide="calendar-days"></i><span> My Schedule</span><span class="sidebar-badge" id="bSch">0</span></a>
+<a class="sidebar-link" data-p="requests" onclick="go('requests')"><i data-lucide="inbox"></i><span> Job Requests</span><span class="sidebar-badge" id="bReq">0</span></a>
+<a class="sidebar-link" data-p="services" onclick="go('services')"><i data-lucide="briefcase"></i><span> My Services</span></a>
+<a class="sidebar-link" data-p="availability" onclick="go('availability')"><i data-lucide="calendar-range"></i><span> Availability</span></a>
 <div class="sidebar-section">Profile</div>
 <a class="sidebar-link" data-p="profile" onclick="go('profile')"><i data-lucide="user-circle"></i>Guide Profile</a>
 <a class="sidebar-link" data-p="pricing" onclick="go('pricing')"><i data-lucide="tag"></i>Day Rates</a>
@@ -231,7 +253,7 @@
 <div class="sidebar-section">Ops</div>
 <a class="sidebar-link" data-p="messages" onclick="go('messages')"><i data-lucide="message-square"></i><span> Messages</span><span class="sidebar-badge msg-unread" id="bMsg" data-count="0"></span></a>
 <a class="sidebar-link" data-p="quotes" onclick="go('quotes')"><i data-lucide="file-text"></i>Quotes / Proformas</a>
-<a class="sidebar-link" data-p="account" onclick="go('account')"><i data-lucide="settings"></i><span> Account</span></a>
+<a class="sidebar-link" data-p="account" onclick="go('account')"><i data-lucide="settings"></i>Account & Team</a>
 <a class="sidebar-link" data-p="earnings" onclick="go('earnings')"><i data-lucide="bar-chart-3"></i>Earnings</a>
 </nav>
 <div class="sidebar-footer"><div style="color:#fff;font-weight:600">Daniel Mwamba</div><div style="opacity:.5;font-size:.7rem"><span class="live-dot"></span>Guide · Live</div></div></aside>
@@ -245,19 +267,38 @@
 <div class="stat"><div class="lbl">Earnings</div><div class="val" id="gEarn">$0</div></div>
 <div class="stat"><div class="lbl">Rating</div><div class="val" id="gRate">—</div></div>
 </div>
-<div class="card" style="padding:16px;margin-bottom:16px"><h3 style="font-size:1rem;margin-bottom:10px">Operation alerts</h3><div class="alert-list" id="dashAlerts"></div></div>
+<div class="card" style="padding:16px;margin-bottom:16px">
+  <h3 style="font-size:1rem;margin-bottom:10px">Operation alerts</h3>
+  <div class="alert-list" id="dashAlerts"></div>
+</div>
 <div class="card" style="overflow-x:auto">
-<div style="padding:14px 16px 0"><h3 style="font-size:1rem;margin-bottom:8px">Recent operator activity</h3></div>
-<table><thead><tr><th>Operator</th><th>Service</th><th>Park</th><th>Dates</th><th>Status</th><th>Fee</th></tr></thead><tbody id="dashJobs"></tbody></table>
-</div></div>
-<div class="page" id="page-schedule"><div class="card" style="overflow-x:auto"><table><thead><tr><th>Ref</th><th>Operator</th><th>Service</th><th>Park</th><th>Start</th><th>End</th><th>Fee</th><th>Status</th><th></th></tr></thead><tbody id="schTable"></tbody></table></div></div>
-<div class="page" id="page-requests"><div id="reqList"></div></div>
+  <div style="padding:14px 16px 0"><h3 style="font-size:1rem;margin-bottom:8px">Recent operator activity</h3></div>
+  <table><thead><tr><th>Operator</th><th>Service</th><th>Park</th><th>Dates</th><th>Status</th><th>Fee</th></tr></thead>
+  <tbody id="dashJobs"></tbody></table>
+  <div class="pager" id="pagerDash"></div>
+</div>
+</div>
+<div class="page" id="page-schedule">
+<div class="card" style="overflow-x:auto"><table>
+<thead><tr><th>Ref</th><th>Operator</th><th>Service</th><th>Park</th><th>Start</th><th>End</th><th>Fee</th><th>Status</th><th></th></tr></thead>
+<tbody id="schTable"></tbody></table>
+<div class="pager" id="pagerSchedule"></div></div>
+</div>
+<div class="page" id="page-requests"><div id="reqList"></div><div class="pager" id="pagerRequests"></div></div>
 <div class="page" id="page-services"><div class="filters"><button class="btn btn-primary" onclick="document.getElementById('svcF').style.display='block'"><i data-lucide="plus"></i> Add service</button></div>
 <div id="svcF" class="card" style="display:none;padding:14px;margin-bottom:12px"><div class="form-grid"><div class="form-group"><label>Name</label><input id="sName"></div><div class="form-group"><label>Category</label><select id="sCat"><option>Game drives</option><option>Walking safari</option><option>Birding</option><option>Photographic</option><option>Cultural</option><option>Mountain / trekking</option></select></div><div class="form-group"><label>Rate</label><input type="number" id="sRate" value="80"></div><div class="form-group full"><label>Description</label><textarea id="sDesc"></textarea></div></div><button class="btn btn-primary" style="margin-top:8px" onclick="addService()"><i data-lucide="save"></i> Save</button></div>
 <div class="prop-grid" id="svcGrid"></div></div>
-<div class="page" id="page-availability"><div class="filters"><button class="btn" onclick="calShift(-1)"><i data-lucide="chevron-left"></i> Prev</button><strong id="calLabel"></strong><button class="btn" onclick="calShift(1)">Next <i data-lucide="chevron-right"></i></button><button class="btn" onclick="calShift(12)"><i data-lucide="calendar"></i> +Year</button></div>
+<div class="page" id="page-availability">
+<p class="meta" style="margin-bottom:10px">Click any day to block or free it. Operators see your availability live.</p>
+<div class="filters">
+<button class="btn" onclick="calShift(-1)"><i data-lucide="chevron-left"></i> Prev</button>
+<strong id="calLabel"></strong>
+<button class="btn" onclick="calShift(1)">Next <i data-lucide="chevron-right"></i></button>
+<button class="btn" onclick="calShift(12)"><i data-lucide="calendar"></i> +Year</button>
+</div>
 <div class="card" style="padding:14px"><div class="cal" id="calGrid"></div>
-<p class="meta" style="margin-top:8px">Click a day to block or free it. Red = blocked / on job · Green = available.</p></div></div>
+<p class="meta" style="margin-top:8px">Green = available · Red = blocked / booked · Click a day to toggle</p></div>
+</div>
 <div class="page" id="page-profile"><div class="card" style="padding:16px;max-width:700px"><div class="form-grid">
 <div class="form-group"><label>Name</label><input id="prName"></div><div class="form-group"><label>Years</label><input type="number" id="prYears"></div>
 <div class="form-group"><label>Phone</label><input id="prPhone"></div><div class="form-group"><label>Base</label><input id="prBase"></div>
@@ -288,21 +329,21 @@
 <div class="page" id="page-certs"><div class="prop-grid" id="certGrid"></div></div>
 <div class="page" id="page-reviews"><div class="card" style="padding:16px" id="revList"></div></div>
 <div class="page" id="page-messages"><div class="card" style="padding:8px 16px" id="msgList"></div><div class="pager" id="pagerMessages"></div></div>
-<div class="page" id="page-earnings">
-<div class="stats">
+<div class="page" id="page-earnings"><div class="stats">
 <div class="stat"><div class="lbl">SafariLink completed</div><div class="val" id="eDone">—</div></div>
-<div class="stat"><div class="lbl">Confirmed</div><div class="val" id="eConf">—</div></div>
 <div class="stat"><div class="lbl">Offline / external</div><div class="val" id="eOff">—</div></div>
 <div class="stat"><div class="lbl">Total</div><div class="val" id="eTot">—</div></div>
+<div class="stat"><div class="lbl">Jobs</div><div class="val" id="eJobs">—</div></div>
 </div>
-<button class="btn btn-primary" style="margin-bottom:12px" onclick="document.getElementById('offlineEarnBox').style.display='block'"><i data-lucide="plus"></i> Offline tracking</button>
-<div id="offlineEarnBox" class="card" style="display:none;padding:14px;margin-bottom:14px;max-width:400px">
-<div class="form-group"><label>Offline earnings (USD)</label><input type="number" id="mEarn" value="0"></div>
-<button class="btn btn-primary" style="margin-top:8px" onclick="saveOfflineEarn()">Save</button>
+<div style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap">
+<button class="btn" onclick="document.getElementById('offlineEarnBox').style.display='block'"><i data-lucide="pencil"></i> Offline tracking</button>
 </div>
-<div id="earnRank" class="card" style="padding:16px;margin-bottom:14px"></div>
-
-<div class="card" style="overflow-x:auto"><table><thead><tr><th>Ref</th><th>Operator</th><th>Fee</th><th>Status</th></tr></thead><tbody id="earnTable"></tbody></table></div></div>
+<div id="offlineEarnBox" class="card" style="display:none;padding:14px;margin-bottom:14px;max-width:420px">
+<div class="form-group"><label>Extra revenue not from SafariLink (USD)</label><input type="number" id="gOffRev" value="0"></div>
+<button class="btn btn-primary" style="margin-top:8px" onclick="saveGuideOffline()">Save offline total</button>
+</div>
+<div class="card" style="overflow-x:auto"><table><thead><tr><th>Ref</th><th>Operator</th><th>Fee</th><th>Status</th></tr></thead><tbody id="earnTable"></tbody></table>
+<div class="pager" id="pagerEarnings"></div></div></div>
 </div></div>
 
 <div class="page" id="page-quotes">
@@ -312,26 +353,26 @@
 </div>
 <div class="page" id="page-account">
 <div class="card" style="padding:16px;margin-bottom:14px">
-<h3 style="margin-bottom:8px">Login &amp; security</h3>
-<p class="meta" style="margin-bottom:10px">Guide accounts are individual (no team). Change password or request a reset by email.</p>
+<h3 style="margin-bottom:8px">Account</h3>
+<p class="meta" style="margin-bottom:10px">Single guide account — no team seats.</p>
 <div class="form-grid">
 <div class="form-group full"><label>Login email</label><input id="coEmail" type="email" style="word-break:break-all" placeholder="guide@example.com"></div>
+<div class="form-group"><label>Display name</label><input id="coName" value="Daniel Mwamba"></div>
+<div class="form-group"><label>Phone</label><input id="coPhone" placeholder="+255 …"></div>
 </div>
-<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
-<button class="btn btn-primary" onclick="saveGuideEmail()"><i data-lucide="save"></i> Save email</button>
-<button class="btn" onclick="openChangePassword()">Change password</button>
-<button class="btn" onclick="requestPasswordReset()">Reset via email</button>
-</div>
+<button class="btn btn-primary" style="margin-top:10px" onclick="saveGuideAccount()"><i data-lucide="save"></i> Save account</button>
+<button type="button" class="btn" style="margin-top:10px" onclick="openChangePassword()">Change password</button>
+<button type="button" class="btn" style="margin-top:10px" onclick="requestPasswordReset()">Reset via email</button>
 </div>
 <div class="card" style="padding:16px;margin-bottom:14px">
 <h3 style="margin-bottom:8px">Payment &amp; invoice details</h3>
 <p class="meta" style="margin-bottom:10px">Included automatically on every proforma to operators.</p>
 <div class="form-grid">
 <div class="form-group"><label>Bank name *</label><input id="payBankName" placeholder="CRDB Bank"></div>
-<div class="form-group"><label>Branch name</label><input id="payBranch"></div>
+<div class="form-group"><label>Branch name</label><input id="payBranch" placeholder="Arusha"></div>
 <div class="form-group full"><label>Bank address</label><input id="payBankAddress"></div>
-<div class="form-group"><label>SWIFT</label><input id="paySwift"></div>
-<div class="form-group"><label>Account name *</label><input id="payAccName" placeholder="Daniel Mwamba"></div>
+<div class="form-group"><label>SWIFT</label><input id="paySwift" placeholder="CORUTZTZ"></div>
+<div class="form-group"><label>Account name *</label><input id="payAccName"></div>
 <div class="form-group"><label>Account number *</label><input id="payAccNo"></div>
 <div class="form-group"><label>Invoice email</label><input id="payEmail" type="email"></div>
 <div class="form-group"><label>Invoice phone</label><input id="payPhone"></div>
@@ -372,44 +413,43 @@ function badge(s){return '<span class="badge badge-'+String(s).toLowerCase().rep
 function money(n){return '$'+Number(n||0).toLocaleString()}
 function fileToDataUrl(f){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(r.result)};r.onerror=rej;r.readAsDataURL(f)})}
 
+
+window._pageState=window._pageState||{};
+function paginate(key,items,size){size=size||10;var page=window._pageState[key]||1;var pages=Math.max(1,Math.ceil(items.length/size));if(page>pages)page=pages;if(page<1)page=1;window._pageState[key]=page;var start=(page-1)*size;return{slice:items.slice(start,start+size),page:page,pages:pages,total:items.length};}
+function renderPager(elId,key,total,onChange){var el=document.getElementById(elId);if(!el)return;var page=window._pageState[key]||1;var pages=Math.max(1,Math.ceil(total/10));if(total<=10){el.innerHTML='';return;}el.innerHTML='<button type="button" '+(page<=1?'disabled':'')+' onclick="window._pageState[\''+key+'\']='+(page-1)+';('+onChange+')()">Previous</button><span>Page '+page+' of '+pages+' · '+total+' items</span><button type="button" '+(page>=pages?'disabled':'')+' onclick="window._pageState[\''+key+'\']='+(page+1)+';('+onChange+')()">Next</button>';}
+function pushAlert(text,kind){slUpdate(function(d){if(!d.guideAlerts)d.guideAlerts=[];d.guideAlerts.unshift({text:text,kind:kind||'info',time:Date.now()});d.guideAlerts=d.guideAlerts.slice(0,3);});}
+function ensureWelcomeMsg(){slUpdate(function(d){if(!d.messages)d.messages=[];if(!d._guideMsgClean){d.messages=d.messages.filter(function(m){return m.side!=='guide'||m.keep||m.type==='welcome'||m.fromActivity||m.type==='reminder';});d._guideMsgClean=true;}var has=d.messages.some(function(m){return m.type==='welcome'&&m.side==='guide';});if(!has){d.messages.unshift({id:'welcome-guide',type:'welcome',keep:true,side:'guide',from:'SafariLink',initials:'SL',unread:false,time:Date.now(),text:'Welcome. Operator requests, reminders and system messages appear here when there is activity.'});}});}
+
 function toggleCollapse(){var sb=document.getElementById('sidebar');var icon=document.getElementById('collapseIcon');sb.classList.toggle('collapsed');if(icon){icon.setAttribute('data-lucide',sb.classList.contains('collapsed')?'chevrons-right':'chevrons-left');lucide.createIcons()}}
 function logout(){sessionStorage.removeItem('safariLinkUser');try{localStorage.removeItem('safarilink_user')}catch(e){}location.href='index.html'}
 var TITLES={   dashboard:['Dashboard','Upcoming jobs, open requests, earnings and rating'],   schedule:['My Schedule','Confirmed and in-progress guide assignments'],   requests:['Job Requests','Accept or decline new operator requests'],   services:['My Services','Game drives, walking, birding and other offerings'],   availability:['Availability Calendar','Block dates you are not available'],   profile:['Guide Profile','Name, photo, years, bio — synced to operator cards'],   pricing:['Day Rates','Full day, half day, overnight and mountain fees'],   regions:['Parks & Regions','Areas you guide — shown on operator cards'],   languages:['Languages & Skills','Including Japanese, Chinese and Korean'],   certs:['Licences & Certificates','Tour guide licence and first aid'],   reviews:['Reviews','Operator feedback and ratings'],   messages:['Messages','Messages from operators'],   quotes:['Quotes / Proformas','Job proformas with service, days and bank details'],
-   account:['Account','Login email, password and payment details'],
+   account:['Account & Team','Payment details + team roles like operator'],
    earnings:['Earnings','Confirmed and completed guide fees'] };
 var calMonth=new Date();calMonth.setDate(1);
 function guide(){return slGet().guides[0]}
 function go(id){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});document.getElementById('page-'+id).classList.add('active');document.querySelectorAll('.sidebar-link').forEach(function(a){a.classList.toggle('active',a.getAttribute('data-p')===id)});var t=TITLES[id]||['',''];document.getElementById('title').textContent=t[0];document.getElementById('sub').textContent=t[1];refresh();lucide.createIcons()}
-function renderDash(){var d=slGet(),g=guide(),up=(d.guideJobs||[]).filter(function(j){return j.status==='Confirmed'||j.status==='In progress'}).length;document.getElementById('gUp').textContent=up;document.getElementById('gReq').textContent=(d.guideRequests||[]).length;document.getElementById('gEarn').textContent=money((d.guideJobs||[]).filter(function(j){return j.status==='Completed'}).reduce(function(s,j){return s+(j.fee||0)},0));document.getElementById('gRate').textContent=(g&&g.rating?g.rating:'—')+' ★';var al=document.getElementById('dashAlerts');if(al){var alerts=(d.guideAlerts||[]).slice(0,3);al.innerHTML=(alerts.length?alerts:[{text:'Waiting for operator requests…',kind:'info',time:Date.now()}]).map(function(a){return '<div class="alert-item '+(a.kind||'info')+'">'+esc(a.text)+'<div class="meta">'+(a.time?new Date(a.time).toLocaleString():'')+'</div></div>'}).join('')}document.getElementById('dashJobs').innerHTML=(d.guideJobs||[]).slice(0,10).map(function(j){return '<tr><td>'+esc(j.operator)+'</td><td>'+esc(j.service)+'</td><td>'+esc(j.park)+'</td><td>'+j.start+' → '+j.end+'</td><td>'+badge(j.status)+'</td><td>'+money(j.fee)+'</td></tr>'}).join('')||'<tr><td colspan="6" class="meta">No activity yet</td></tr>'}
-function renderSchedule(){var list=slGet().guideJobs||[];if(document.getElementById('bSch'))document.getElementById('bSch').textContent=list.filter(function(j){return j.status==='Confirmed'||j.status==='In progress'}).length;document.getElementById('schTable').innerHTML=list.map(function(j){return '<tr><td>'+esc(j.ref)+'</td><td>'+esc(j.operator)+'</td><td>'+esc(j.service)+'</td><td>'+esc(j.park)+'</td><td>'+j.start+'</td><td>'+j.end+'</td><td>'+money(j.fee)+'</td><td>'+badge(j.status)+'</td><td><button class="btn" onclick="openJobDetail(\''+String(j.ref).replace(/'/g,"\'")+'\')">Details</button></td></tr>'}).join('')||'<tr><td colspan="9" class="meta">No jobs</td></tr>'}).length;document.getElementById('schTable').innerHTML=list.map(function(j){return '<tr><td>'+j.ref+'</td><td>'+esc(j.operator)+'</td><td>'+esc(j.service)+'</td><td>'+esc(j.park)+'</td><td>'+j.start+'</td><td>'+j.end+'</td><td>'+money(j.fee)+'</td><td>'+badge(j.status)+'</td><td><button class="btn" onclick="sendGuideProforma(\''+j.ref+'\')">Proforma</button></td></tr>'}).join('')}
-function renderRequests(){var list=slGet().guideRequests;document.getElementById('bReq').textContent=list.length;document.getElementById('reqList').innerHTML=list.map(function(r){return '<div class="card" style="padding:14px;margin-bottom:10px"><h4>'+esc(r.operator)+'</h4><div class="meta">'+esc(r.service)+' · '+esc(r.park)+' · '+esc(r.dates)+'</div><p style="margin:8px 0;font-size:.85rem">'+esc(r.note)+'</p><div class="meta">'+money(r.fee)+'</div><div style="margin-top:8px;display:flex;gap:8px"><button class="btn btn-primary" onclick="acceptReq('+r.id+')">Accept</button><button class="btn" onclick="declineReq('+r.id+')">Decline</button></div></div>'}).join('')||'<div class="meta">No requests</div>'}
-function acceptReq(id){slUpdate(function(d){var r=d.guideRequests.find(function(x){return x.id===id});if(!r)return;d.guideJobs.unshift({ref:'GJ-'+Math.floor(100+Math.random()*900),operator:r.operator,service:r.service,park:r.park,start:'2026-11-01',end:'2026-11-06',fee:r.fee,status:'Confirmed'});d.guideRequests=d.guideRequests.filter(function(x){return x.id!==id})});refresh()}
-function declineReq(id){slUpdate(function(d){d.guideRequests=d.guideRequests.filter(function(x){return x.id!==id})});refresh()}
-function renderServices(){document.getElementById('svcGrid').innerHTML=(guide().services||[]).map(function(s){return '<div class="prop-card"><div class="body"><h4>'+esc(s.name)+'</h4><div class="meta">'+esc(s.cat)+' · '+money(s.rate)+'/day</div><p class="meta">'+esc(s.desc)+'</p></div></div>'}).join('')}
-function addService(){var n=document.getElementById('sName').value.trim();if(!n)return;slUpdate(function(d){d.guides[0].services.push({id:Date.now(),name:n,cat:document.getElementById('sCat').value,rate:Number(document.getElementById('sRate').value)||80,desc:document.getElementById('sDesc').value})});document.getElementById('svcF').style.display='none';renderServices()}
-function fillProfile(){var g=guide();document.getElementById('prName').value=g.name||'';document.getElementById('prYears').value=g.years||0;document.getElementById('prPhone').value=g.phone||'';document.getElementById('prBase').value=g.base||'';document.getElementById('prRate').value=g.rate||80;document.getElementById('prBio').value=g.bio||'';renderPreview()}
-function renderPreview(){var g=guide();var img=g.image?'<img src="'+g.image+'" style="width:72px;height:72px;border-radius:50%;object-fit:cover">':'<div style="width:72px;height:72px;border-radius:50%;background:var(--khaki);display:flex;align-items:center;justify-content:center"><i data-lucide="user" style="width:28px;height:28px;opacity:.45"></i></div>';document.getElementById('prPreview').innerHTML='<div class="card" style="padding:14px"><div style="display:flex;gap:12px;align-items:center">'+img+'<div><h4>'+esc(g.name)+'</h4><div class="meta">'+g.years+' yrs · '+esc(g.base)+' · '+money(g.rate)+'/day · ★'+g.rating+'</div><div class="meta">'+esc((g.languages||[]).join(', '))+'</div><div class="meta">'+esc((g.regions||[]).join(' · '))+'</div></div></div><p style="margin-top:8px;font-size:.85rem">'+esc(g.bio||'')+'</p></div>';lucide.createIcons()}
-async function saveProfile(){var file=document.getElementById('prImg').files[0];var img=guide().image;if(file)img=await fileToDataUrl(file);slUpdate(function(d){var g=d.guides[0];g.name=document.getElementById('prName').value;g.years=Number(document.getElementById('prYears').value)||g.years;g.phone=document.getElementById('prPhone').value;g.base=document.getElementById('prBase').value;g.rate=Number(document.getElementById('prRate').value)||g.rate;g.bio=document.getElementById('prBio').value;g.image=img});alert('Profile synced for operators');renderPreview()}
-function fillPricing(){var g=guide();document.getElementById('pDay').value=g.rate;document.getElementById('pHalf').value=g.halfDay;document.getElementById('pNight').value=g.overnight;document.getElementById('pMtn').value=g.mountain}
-function savePricing(){slUpdate(function(d){var g=d.guides[0];g.rate=Number(document.getElementById('pDay').value)||g.rate;g.halfDay=Number(document.getElementById('pHalf').value)||g.halfDay;g.overnight=Number(document.getElementById('pNight').value)||g.overnight;g.mountain=Number(document.getElementById('pMtn').value)||g.mountain});alert('Saved')}
-function fillRegions(){var set={};(guide().regions||[]).forEach(function(r){set[r]=1});document.querySelectorAll('#regionChips input').forEach(function(c){c.checked=!!set[c.value]})}
-function saveRegions(){var sel=[];document.querySelectorAll('#regionChips input:checked').forEach(function(c){sel.push(c.value)});slUpdate(function(d){d.guides[0].regions=sel});alert('Saved')}
-function fillLang(){var set={},sk={};(guide().languages||[]).forEach(function(r){set[r]=1});(guide().skills||[]).forEach(function(r){sk[r]=1});document.querySelectorAll('#langChips input').forEach(function(c){c.checked=!!set[c.value]});document.querySelectorAll('#skillChips input').forEach(function(c){c.checked=!!sk[c.value]})}
-function saveLang(){var L=[],S=[];document.querySelectorAll('#langChips input:checked').forEach(function(c){L.push(c.value)});document.querySelectorAll('#skillChips input:checked').forEach(function(c){S.push(c.value)});slUpdate(function(d){d.guides[0].languages=L;d.guides[0].skills=S});alert('Saved')}
-function renderCerts(){document.getElementById('certGrid').innerHTML=(guide().certs||[]).map(function(c){return '<div class="prop-card"><div class="body"><h4>'+esc(c.name)+'</h4><div class="meta">'+esc(c.issuer)+' · to '+esc(c.validTo)+'</div></div></div>'}).join('')}
-function renderReviews(){document.getElementById('revList').innerHTML=(guide().reviews||[]).map(function(r){return '<div style="padding:10px 0;border-bottom:1px solid var(--border-light)"><strong>'+esc(r.operator)+'</strong> · '+r.score+' ★ · '+esc(r.park)+'<div class="meta">'+esc(r.text)+'</div></div>'}).join('')}
-function renderMessages(){ensureWelcomeMsg();var msgs=(slGet().messages||[]).filter(function(m){return m.side==='guide'});var unread=msgs.filter(function(m){return m.unread}).length;var b=document.getElementById('bMsg');if(b){if(unread>0){b.textContent=String(unread);b.setAttribute('data-count',unread);b.classList.add('msg-unread')}else{b.textContent='';b.setAttribute('data-count','0');b.classList.remove('msg-unread')}}var el=document.getElementById('msgList');if(el)el.innerHTML=msgs.map(function(m){return '<div class="msg-row" style="'+(m.unread?'background:#f0faf5;':'')+'cursor:pointer" onclick="markGuideMsgRead(\''+String(m.id).replace(/'/g,"\'")+'\')"><div class="msg-av">'+esc(m.initials||'SL')+'</div><div><strong>'+esc(m.from)+'</strong> <span class="meta">'+(m.time?new Date(m.time).toLocaleString():'')+'</span><div>'+esc(m.text)+'</div></div></div>'}).join('')||'<div class="meta" style="padding:12px">No messages yet</div>'}).map(function(m){return '<div class="msg-row"><div class="msg-av">'+esc(m.initials)+'</div><div><strong>'+esc(m.from)+'</strong><div>'+esc(m.text)+'</div></div></div>'}).join('')}
-function renderEarnings(){var jobs=slGet().guideJobs||[];var conf=jobs.filter(function(j){return j.status==='Confirmed'}).reduce(function(s,j){return s+(j.fee||0)},0);var done=jobs.filter(function(j){return j.status==='Completed'}).reduce(function(s,j){return s+(j.fee||0)},0);var off=0;try{off=Number((JSON.parse(localStorage.getItem('sl_guide_offline')||'{}')).extra||0)}catch(e){}var tot=done+off;if(document.getElementById('eConf'))document.getElementById('eConf').textContent=money(conf);if(document.getElementById('eDone'))document.getElementById('eDone').textContent=money(done);if(document.getElementById('eOff'))document.getElementById('eOff').textContent=money(off);if(document.getElementById('eTot'))document.getElementById('eTot').textContent=money(tot);if(document.getElementById('ePend'))document.getElementById('ePend').textContent=money(conf);if(document.getElementById('eJobs'))document.getElementById('eJobs').textContent=jobs.length;var rank=document.getElementById('earnRank');if(rank){var leader=done>=off?'SafariLink jobs':'Offline';var pctSl=tot?Math.round(done/tot*100):0;var pctOff=tot?Math.round(off/tot*100):0;rank.innerHTML='<p><strong>Top:</strong> '+leader+'</p><div class="meta">SafariLink '+money(done)+' ('+pctSl+'%) · Offline '+money(off)+' ('+pctOff+'%)</div>'}var et=document.getElementById('earnTable');if(et)et.innerHTML=jobs.map(function(j){return '<tr><td>'+esc(j.ref)+'</td><td>'+esc(j.operator)+'</td><td>'+money(j.fee)+'</td><td>'+badge(j.status)+'</td></tr>'}).join('')}).reduce(function(s,j){return s+j.fee},0);var done=jobs.filter(function(j){return j.status==='Completed'}).reduce(function(s,j){return s+j.fee},0);document.getElementById('eConf').textContent=money(conf);document.getElementById('eDone').textContent=money(done);document.getElementById('ePend').textContent=money(conf);document.getElementById('eJobs').textContent=jobs.length;document.getElementById('earnTable').innerHTML=jobs.map(function(j){return '<tr><td>'+j.ref+'</td><td>'+esc(j.operator)+'</td><td>'+money(j.fee)+'</td><td>'+badge(j.status)+'</td></tr>'}).join('')}
-function calShift(n){calMonth.setMonth(calMonth.getMonth()+n);renderCal()}
-function renderCal(){var y=calMonth.getFullYear(),m=calMonth.getMonth();document.getElementById('calLabel').textContent=calMonth.toLocaleString('default',{month:'long',year:'numeric'});var first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate();var blocks=(slGet().calendarBlocks||{}).guide||{};var busy={};(slGet().guideJobs||[]).forEach(function(j){if(j.status==='Cancelled')return;for(var t0=new Date(j.start);t0<=new Date(j.end);t0.setDate(t0.getDate()+1)){if(t0.getMonth()===m&&t0.getFullYear()===y)busy[t0.getDate()]=1}});var h=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(function(d){return '<div class="hd">'+d+'</div>'}).join('');for(var i=0;i<first;i++)h+='<div class="day muted"></div>';for(var d=1;d<=days;d++){var key=y+'-'+(m+1)+'-'+d;var cls=blocks[key]||busy[d]?'busy':'free';h+='<div class="day '+cls+'" onclick="toggleGuideBlock(\''+key+'\')">'+d+'</div>'}document.getElementById('calGrid').innerHTML=h});var first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate(),busy={};slGet().guideJobs.forEach(function(j){for(var t=new Date(j.start);t<=new Date(j.end);t.setDate(t.getDate()+1)){if(t.getMonth()===m&&t.getFullYear()===y)busy[t.getDate()]=1}});(guide().blocks||[]).forEach(function(b){for(var t=new Date(b.from);t<=new Date(b.to);t.setDate(t.getDate()+1)){if(t.getMonth()===m&&t.getFullYear()===y)busy[t.getDate()]=1}});var h=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(function(d){return '<div class="hd">'+d+'</div>'}).join('');for(var i=0;i<first;i++)h+='<div class="day muted"></div>';for(var d=1;d<=days;d++)h+='<div class="day '+(busy[d]?'busy':'free')+'">'+d+'</div>';document.getElementById('calGrid').innerHTML=h}
-function addBlock(){var f=document.getElementById('blFrom').value,t=document.getElementById('blTo').value;if(!f||!t){alert('Select dates');return}slUpdate(function(d){d.guides[0].blocks=d.guides[0].blocks||[];d.guides[0].blocks.push({from:f,to:t})});renderCal()}
-
-function loadPaymentProfile(){
-  try{var p=JSON.parse(localStorage.getItem('sl_guide_payment')||'{}');
-    var map={payBankName:'bankName',payBranch:'branchName',payBankAddress:'bankAddress',paySwift:'swift',payAccName:'accountName',payAccNo:'accountNumber',payEmail:'email',payPhone:'phone'};
-    Object.keys(map).forEach(function(id){var el=document.getElementById(id);if(el&&p[map[id]])el.value=p[map[id]];});
-  }catch(e){}
+function renderDash(){
+  var d=slGet(), g=guide();
+  var jobs=d.guideJobs||[], reqs=d.guideRequests||[];
+  var up=jobs.filter(function(j){return j.status==='Confirmed'||j.status==='In progress';}).length;
+  if(document.getElementById('gUp'))document.getElementById('gUp').textContent=up;
+  if(document.getElementById('gReq'))document.getElementById('gReq').textContent=reqs.length;
+  if(document.getElementById('gEarn'))document.getElementById('gEarn').textContent=money(jobs.filter(function(j){return j.status==='Completed';}).reduce(function(s,j){return s+(j.fee||0);},0)+(d.manualGuide||{}).extra||0);
+  if(document.getElementById('gRate'))document.getElementById('gRate').textContent=(g&&g.rating?g.rating:'—')+' ★';
+  var alerts=(d.guideAlerts||[]).slice(0,3);
+  var al=document.getElementById('dashAlerts');
+  if(al) al.innerHTML=(alerts.length?alerts:[{text:'Waiting for live operator activity…',kind:'info',time:Date.now()}]).map(function(a){
+    return '<div class="alert-item '+(a.kind||'info')+'">'+esc(a.text)+'<div class="meta">'+(a.time?new Date(a.time).toLocaleString():'')+'</div></div>';
+  }).join('');
+  var rows=jobs.slice().sort(function(a,b){return (b.createdAt||0)-(a.createdAt||0);});
+  var pg=paginate('dash',rows,10);
+  var body=document.getElementById('dashJobs');
+  if(body) body.innerHTML=pg.slice.map(function(j){
+    return '<tr><td>'+esc(j.operator)+'</td><td>'+esc(j.service)+'</td><td>'+esc(j.park)+'</td><td>'+j.start+' → '+j.end+'</td><td>'+badge(j.status)+'</td><td>'+money(j.fee)+'</td></tr>';
+  }).join('')||'<tr><td colspan="6" class="meta">No operator activity yet</td></tr>';
+  renderPager('pagerDash','dash',pg.total,'renderDash');
 }
+
 function savePaymentProfile(){
   var p={bankName:(document.getElementById('payBankName')||{}).value||'',branchName:(document.getElementById('payBranch')||{}).value||'',bankAddress:(document.getElementById('payBankAddress')||{}).value||'',swift:(document.getElementById('paySwift')||{}).value||'',accountName:(document.getElementById('payAccName')||{}).value||'',accountNumber:(document.getElementById('payAccNo')||{}).value||'',email:(document.getElementById('payEmail')||{}).value||'',phone:(document.getElementById('payPhone')||{}).value||''};
   if(!p.bankName||!p.accountName||!p.accountNumber){alert('Bank name, account name and number required');return;}
@@ -442,55 +482,202 @@ function sendGuideProforma(ref){
   });
   alert('Proforma '+pfId+' sent');refresh();
 }
-function renderTeam(){document.getElementById('teamList').innerHTML=(slGet().team.guide||[]).map(function(m){return '<div class="team-row"><div><strong>'+esc(m.name)+'</strong><div class="meta">'+esc(m.email)+' · '+esc(m.role)+'</div></div></div>'}).join('')||'<div class="meta">No team members yet</div>'}
-function addGuideMember(){var n=document.getElementById('mName').value.trim(),e=document.getElementById('mEmail').value.trim();if(!n||!e)return;slUpdate(function(d){d.team.guide=d.team.guide||[];d.team.guide.push({id:Date.now(),name:n,email:e,role:document.getElementById('mRole').value})});document.getElementById('memF').style.display='none';renderTeam()}
+function {document.getElementById('teamList').innerHTML=(slGet().team.guide||[]).map(function(m){return '<div class="team-row"><div><strong>'+esc(m.name)+'</strong><div class="meta">'+esc(m.email)+' · '+esc(m.role)+'</div></div></div>'}).join('')||'<div class="meta">No team members yet</div>'}
+function addGuideMember(){var n=document.getElementById('mName').value.trim(),e=document.getElementById('mEmail').value.trim();if(!n||!e)return;slUpdate(function(d){d.team.guide=d.team.guide||[];d.team.guide.push({id:Date.now(),name:n,email:e,role:document.getElementById('mRole').value})});document.getElementById('memF').style.display='none';}
 
 
-function pushGuideAlert(text,kind){slUpdate(function(d){if(!d.guideAlerts)d.guideAlerts=[];d.guideAlerts.unshift({text:text,kind:kind||'info',time:Date.now()});d.guideAlerts=d.guideAlerts.slice(0,3);});}
+function saveGuideAccount(){
+  var p={name:(document.getElementById('coName')||{}).value||'',phone:(document.getElementById('coPhone')||{}).value||'',email:(document.getElementById('coEmail')||{}).value||''};
+  localStorage.setItem('sl_guide_account',JSON.stringify(p));
+  alert('Account saved');
+}
+function openChangePassword(){
+  var email=prompt('Account email:','guide@example.com');if(!email)return;
+  var np=prompt('New password (min 6 characters):');
+  if(!np||np.length<6){alert('Password too short');return;}
+  localStorage.setItem('sl_guide_pwd_'+email.toLowerCase(),np);
+  alert('Password updated for '+email);
+}
+function requestPasswordReset(){
+  var email=prompt('Email for password reset link:','guide@example.com');if(!email)return;
+  alert('Password reset link simulated sent to '+email);
+}
+
+
+
+function calShift(n){if(typeof calMonth==='undefined'){window.calMonth=new Date();calMonth.setDate(1);}calMonth.setMonth(calMonth.getMonth()+n);renderCal();}
+function renderSchedule(){
+  var list=slGet().guideJobs||[];
+  if(document.getElementById('bSch'))document.getElementById('bSch').textContent=list.filter(function(j){return j.status==='Confirmed'||j.status==='In progress';}).length;
+  var pg=paginate('schedule',list,10);
+  var el=document.getElementById('schTable');
+  if(el) el.innerHTML=pg.slice.map(function(j){
+    return '<tr><td>'+esc(j.ref)+'</td><td>'+esc(j.operator)+'</td><td>'+esc(j.service)+'</td><td>'+esc(j.park)+'</td><td>'+j.start+'</td><td>'+j.end+'</td><td>'+money(j.fee)+'</td><td>'+badge(j.status)+'</td><td><button class="btn" onclick="openJobDetail(\''+String(j.ref).replace(/'/g,"\\'")+'\')">Details</button></td></tr>';
+  }).join('')||'<tr><td colspan="9" class="meta">No jobs yet</td></tr>';
+  renderPager('pagerSchedule','schedule',pg.total,'renderSchedule');
+}
 function openJobDetail(ref){
   var j=(slGet().guideJobs||[]).find(function(x){return x.ref===ref});
   if(!j){alert('Job not found');return;}
   var days=Math.max(1,Math.round((new Date(j.end)-new Date(j.start))/86400000)+1);
-  var body=document.getElementById('modalBody');
-  if(!body)return;
+  var body=document.getElementById('modalBody');if(!body)return;
   body.innerHTML='<h3>Job '+esc(j.ref)+'</h3><p class="meta">'+esc(j.operator)+' · '+esc(j.service)+'</p>'+
     '<p><strong>Park:</strong> '+esc(j.park)+'</p><p><strong>Dates:</strong> '+j.start+' → '+j.end+' ('+days+' days)</p>'+
-    '<p><strong>Status:</strong> '+badge(j.status)+' · <strong>Fee:</strong> '+money(j.fee)+'</p>'+
+    '<p><strong>Fee:</strong> '+money(j.fee)+' · <strong>Status:</strong> '+badge(j.status)+'</p>'+
     '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px">'+
     '<button class="btn btn-primary" onclick="sendGuideProforma(\''+j.ref+'\')">Send proforma</button>'+
     '<button class="btn" onclick="setJobStatus(\''+j.ref+'\',\'Confirmed\')">Confirm</button>'+
-    '<button class="btn" onclick="setJobStatus(\''+j.ref+'\',\'Completed\')">Mark paid / completed</button>'+
+    '<button class="btn" onclick="setJobStatus(\''+j.ref+'\',\'Completed\')">Mark paid</button>'+
     '<button class="btn" onclick="document.getElementById(\'modal\').classList.remove(\'show\')">Close</button></div>';
   document.getElementById('modal').classList.add('show');
   if(window.lucide)lucide.createIcons();
 }
 function setJobStatus(ref,status){
-  slUpdate(function(d){(d.guideJobs||[]).forEach(function(j){if(j.ref===ref)j.status=status;});});
-  pushGuideAlert('Job '+ref+' → '+status,'info');
+  slUpdate(function(d){(d.guideJobs||[]).forEach(function(j){if(j.ref===ref){j.status=status;j.repliedAt=Date.now();}});});
+  pushAlert('Job '+ref+' → '+status, status==='Completed'?'info':'warn');
   document.getElementById('modal').classList.remove('show');
   refresh();
 }
-function ensureWelcomeMsg(){
+function renderRequests(){
+  var list=slGet().guideRequests||[];
+  if(document.getElementById('bReq'))document.getElementById('bReq').textContent=list.length;
+  var pg=paginate('requests',list,10);
+  var el=document.getElementById('reqList');
+  if(!el)return;
+  el.innerHTML=pg.slice.map(function(r){
+    return '<div class="card" style="padding:14px;margin-bottom:10px"><h4>'+esc(r.operator)+'</h4>'+
+      '<div class="meta">'+esc(r.service)+' · '+esc(r.park||'')+' · '+esc(r.dates||((r.start||'')+' → '+(r.end||'')))+'</div>'+
+      '<p style="margin:8px 0;font-size:.85rem">'+esc(r.note||'')+'</p>'+
+      '<div class="meta">'+money(r.fee)+'</div>'+
+      '<div style="margin-top:8px;display:flex;gap:8px"><button class="btn btn-primary" onclick="acceptReq('+r.id+')">Accept</button><button class="btn" onclick="declineReq('+r.id+')">Decline</button></div></div>';
+  }).join('')||'<div class="meta" style="padding:12px">No open requests — new operator requests appear here live.</div>';
+  renderPager('pagerRequests','requests',pg.total,'renderRequests');
+}
+function acceptReq(id){
   slUpdate(function(d){
+    var r=(d.guideRequests||[]).find(function(x){return x.id===id});if(!r)return;
+    if(!d.guideJobs)d.guideJobs=[];
+    d.guideJobs.unshift({ref:'GJ-'+Math.floor(100+Math.random()*900),operator:r.operator,service:r.service,park:r.park||'',start:r.start||'2026-11-01',end:r.end||'2026-11-06',fee:r.fee||0,status:'Confirmed',createdAt:Date.now()});
+    d.guideRequests=(d.guideRequests||[]).filter(function(x){return x.id!==id});
     if(!d.messages)d.messages=[];
-    if(!d._guideMsgClean){d.messages=d.messages.filter(function(m){return m.side!=='guide'||m.keep||m.type==='welcome'||m.fromActivity;});d._guideMsgClean=true;}
-    if(!d.messages.some(function(m){return m.type==='welcome'&&m.side==='guide';})){
-      d.messages.unshift({id:'welcome-guide',type:'welcome',keep:true,side:'guide',from:'SafariLink',initials:'SL',unread:false,time:Date.now(),text:'Welcome. New job requests, reminders and operator messages appear here when there is activity.'});
-    }
+    d.messages.unshift({id:Date.now(),side:'guide',from:r.operator,initials:'OP',text:'You accepted job from '+r.operator+' · '+r.service,time:Date.now(),type:'info',fromActivity:true,unread:true});
   });
+  pushAlert('Job accepted','info');
+  refresh();
+}
+function declineReq(id){slUpdate(function(d){d.guideRequests=(d.guideRequests||[]).filter(function(x){return x.id!==id});});pushAlert('Request declined','warn');refresh();}
+function renderServices(){
+  var el=document.getElementById('svcGrid');if(!el)return;
+  el.innerHTML=((guide().services)||[]).map(function(s){
+    return '<div class="prop-card"><div class="body"><h4>'+esc(s.name)+'</h4><div class="meta">'+esc(s.cat)+' · '+money(s.rate)+'/day</div><p class="meta">'+esc(s.desc||'')+'</p></div></div>';
+  }).join('')||'<div class="meta">No services yet</div>';
+}
+function addService(){
+  var n=(document.getElementById('sName')||{}).value;n=(n||'').trim();if(!n)return;
+  slUpdate(function(d){if(!d.guides[0].services)d.guides[0].services=[];d.guides[0].services.push({id:Date.now(),name:n,cat:(document.getElementById('sCat')||{}).value,rate:Number((document.getElementById('sRate')||{}).value)||80,desc:(document.getElementById('sDesc')||{}).value||''});});
+  var f=document.getElementById('svcF');if(f)f.style.display='none';
+  renderServices();
+}
+function fillProfile(){
+  var g=guide();
+  var map={prName:g.name,prYears:g.years,prPhone:g.phone,prBase:g.base,prRate:g.rate,prBio:g.bio};
+  Object.keys(map).forEach(function(id){var el=document.getElementById(id);if(el&&map[id]!=null)el.value=map[id];});
+  renderPreview();
+}
+function renderPreview(){
+  var g=guide();var el=document.getElementById('prPreview');if(!el)return;
+  var img=g.image?'<img src="'+g.image+'" style="width:72px;height:72px;border-radius:50%;object-fit:cover">':'<div style="width:72px;height:72px;border-radius:50%;background:var(--khaki);display:flex;align-items:center;justify-content:center"><i data-lucide="user" style="width:28px;height:28px;opacity:.45"></i></div>';
+  el.innerHTML='<div class="card" style="padding:14px"><div style="display:flex;gap:12px;align-items:center">'+img+'<div><h4>'+esc(g.name||'')+'</h4><div class="meta">'+(g.years||0)+' yrs · '+esc(g.base||'')+' · '+money(g.rate)+'/day · ★'+(g.rating||'—')+'</div><div class="meta">'+esc((g.languages||[]).join(', '))+'</div><div class="meta">'+esc((g.regions||[]).join(' · '))+'</div></div></div><p style="margin-top:8px;font-size:.85rem">'+esc(g.bio||'')+'</p></div>';
+  if(window.lucide)lucide.createIcons();
+}
+async function saveProfile(){
+  var file=(document.getElementById('prImg')||{}).files;file=file&&file[0];
+  var img=guide().image;
+  if(file){try{img=await fileToDataUrl(file);}catch(e){}}
+  slUpdate(function(d){
+    if(!d.guides||!d.guides[0])return;
+    var g=d.guides[0];
+    g.name=(document.getElementById('prName')||{}).value||g.name;
+    g.years=Number((document.getElementById('prYears')||{}).value)||g.years;
+    g.phone=(document.getElementById('prPhone')||{}).value||g.phone;
+    g.base=(document.getElementById('prBase')||{}).value||g.base;
+    g.rate=Number((document.getElementById('prRate')||{}).value)||g.rate;
+    g.bio=(document.getElementById('prBio')||{}).value||g.bio;
+    g.image=img;
+  });
+  alert('Profile synced — operators see updates live');
+  renderPreview();
+}
+function fillPricing(){var g=guide();['pDay','pHalf','pNight','pMtn'].forEach(function(id,i){var el=document.getElementById(id);if(!el)return;el.value=[g.rate,g.halfDay,g.overnight,g.mountain][i]||'';});}
+function savePricing(){slUpdate(function(d){var g=d.guides[0];g.rate=Number(document.getElementById('pDay').value)||g.rate;g.halfDay=Number(document.getElementById('pHalf').value)||g.halfDay;g.overnight=Number(document.getElementById('pNight').value)||g.overnight;g.mountain=Number(document.getElementById('pMtn').value)||g.mountain;});alert('Saved');}
+function fillRegions(){var set={};(guide().regions||[]).forEach(function(r){set[r]=1});document.querySelectorAll('#regionChips input').forEach(function(c){c.checked=!!set[c.value]});}
+function saveRegions(){var sel=[];document.querySelectorAll('#regionChips input:checked').forEach(function(c){sel.push(c.value)});slUpdate(function(d){d.guides[0].regions=sel;});alert('Saved — operators updated');}
+function fillLang(){var set={},sk={};(guide().languages||[]).forEach(function(r){set[r]=1});(guide().skills||[]).forEach(function(r){sk[r]=1});document.querySelectorAll('#langChips input').forEach(function(c){c.checked=!!set[c.value]});document.querySelectorAll('#skillChips input').forEach(function(c){c.checked=!!sk[c.value]});}
+function saveLang(){var L=[],S=[];document.querySelectorAll('#langChips input:checked').forEach(function(c){L.push(c.value)});document.querySelectorAll('#skillChips input:checked').forEach(function(c){S.push(c.value)});slUpdate(function(d){d.guides[0].languages=L;d.guides[0].skills=S;});alert('Saved — operators updated');}
+function renderCerts(){var el=document.getElementById('certGrid');if(!el)return;el.innerHTML=((guide().certs)||[]).map(function(c){return '<div class="prop-card"><div class="body"><h4>'+esc(c.name)+'</h4><div class="meta">'+esc(c.issuer||'')+' · to '+esc(c.validTo||'')+'</div></div></div>';}).join('')||'<div class="meta">No licences yet</div>';}
+function renderReviews(){var el=document.getElementById('revList');if(!el)return;el.innerHTML=((guide().reviews)||[]).map(function(r){return '<div style="padding:10px 0;border-bottom:1px solid var(--border-light)"><strong>'+esc(r.operator)+'</strong> · '+r.score+' ★ · '+esc(r.park||'')+'<div class="meta">'+esc(r.text||'')+'</div></div>';}).join('')||'<div class="meta">No reviews yet</div>';}
+function renderMessages(){
+  ensureWelcomeMsg();
+  var msgs=(slGet().messages||[]).filter(function(m){return m.side==='guide';});
+  var unread=msgs.filter(function(m){return m.unread;}).length;
+  var b=document.getElementById('bMsg');
+  if(b){if(unread>0){b.textContent=String(unread);b.setAttribute('data-count',unread);b.classList.add('msg-unread');}else{b.textContent='';b.setAttribute('data-count','0');b.classList.remove('msg-unread');}}
+  var pg=paginate('messages',msgs,10);
+  var el=document.getElementById('msgList');
+  if(el)el.innerHTML=pg.slice.map(function(m){
+    return '<div class="msg-row" style="'+(m.unread?'background:#f0faf5;':'')+'cursor:pointer" onclick="markGuideMsgRead(\''+String(m.id).replace(/'/g,"\\'")+'\')"><div class="msg-av">'+esc(m.initials||'SL')+'</div><div><strong>'+esc(m.from)+'</strong> <span class="meta">'+(m.time?new Date(m.time).toLocaleString():'')+'</span><div>'+esc(m.text)+'</div>'+(m.unread?' <span class="badge badge-pending">Unread</span>':'')+'</div></div>';
+  }).join('')||'<div class="meta" style="padding:12px">No messages yet.</div>';
+  renderPager('pagerMessages','messages',pg.total,'renderMessages');
 }
 function markGuideMsgRead(id){slUpdate(function(d){(d.messages||[]).forEach(function(m){if(String(m.id)===String(id))m.unread=false;});});renderMessages();}
-function toggleGuideBlock(key){
-  slUpdate(function(d){if(!d.calendarBlocks)d.calendarBlocks={};if(!d.calendarBlocks.guide)d.calendarBlocks.guide={};if(d.calendarBlocks.guide[key])delete d.calendarBlocks.guide[key];else d.calendarBlocks.guide[key]=1;});
+function renderEarnings(){
+  var jobs=slGet().guideJobs||[];
+  var conf=jobs.filter(function(j){return j.status==='Confirmed';}).reduce(function(s,j){return s+(j.fee||0);},0);
+  var done=jobs.filter(function(j){return j.status==='Completed';}).reduce(function(s,j){return s+(j.fee||0);},0);
+  var off=(slGet().manualGuide||{}).extra||0;
+  if(document.getElementById('eConf'))document.getElementById('eConf').textContent=money(conf);
+  if(document.getElementById('eDone'))document.getElementById('eDone').textContent=money(done);
+  if(document.getElementById('ePend'))document.getElementById('ePend').textContent=money(conf);
+  if(document.getElementById('eJobs'))document.getElementById('eJobs').textContent=jobs.length;
+  if(document.getElementById('eOff'))document.getElementById('eOff').textContent=money(off);
+  if(document.getElementById('eTot'))document.getElementById('eTot').textContent=money(done+off);
+  var body=document.getElementById('earnTable');
+  if(body){var pg=paginate('earnings',jobs,10);body.innerHTML=pg.slice.map(function(j){return '<tr><td>'+esc(j.ref)+'</td><td>'+esc(j.operator)+'</td><td>'+money(j.fee)+'</td><td>'+badge(j.status)+'</td></tr>';}).join('')||'<tr><td colspan="4" class="meta">No jobs yet</td></tr>';renderPager('pagerEarnings','earnings',pg.total,'renderEarnings');}
+}
+function saveGuideOffline(){var n=Number((document.getElementById('gOffRev')||{}).value)||0;slUpdate(function(d){d.manualGuide={extra:n};});var box=document.getElementById('offlineEarnBox');if(box)box.style.display='none';renderEarnings();}
+function renderCal(){
+  var y=calMonth.getFullYear(),m=calMonth.getMonth();
+  var lab=document.getElementById('calLabel');if(lab)lab.textContent=calMonth.toLocaleString('default',{month:'long',year:'numeric'});
+  var first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate();
+  var blocks=((guide()||{}).dayBlocks)||{};
+  var busy={};
+  (slGet().guideJobs||[]).forEach(function(j){
+    if(j.status==='Cancelled')return;
+    for(var t0=new Date(j.start);t0<=new Date(j.end);t0.setDate(t0.getDate()+1)){
+      if(t0.getMonth()===m&&t0.getFullYear()===y)busy[t0.getDate()]=1;
+    }
+  });
+  var h=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(function(d){return '<div class="hd">'+d+'</div>';}).join('');
+  for(var i=0;i<first;i++)h+='<div class="day muted"></div>';
+  for(var d=1;d<=days;d++){
+    var key=y+'-'+(m+1)+'-'+d;
+    var cls=(blocks[key]||busy[d])?'busy':'free';
+    h+='<div class="day '+cls+'" onclick="toggleGuideDay(\''+key+'\')">'+d+'</div>';
+  }
+  var grid=document.getElementById('calGrid');if(grid)grid.innerHTML=h;
+}
+function toggleGuideDay(key){
+  slUpdate(function(d){
+    if(!d.guides||!d.guides[0])return;
+    if(!d.guides[0].dayBlocks)d.guides[0].dayBlocks={};
+    if(d.guides[0].dayBlocks[key])delete d.guides[0].dayBlocks[key];
+    else d.guides[0].dayBlocks[key]=1;
+  });
   renderCal();
 }
-function saveOfflineEarn(){localStorage.setItem('sl_guide_offline',JSON.stringify({extra:Number((document.getElementById('mEarn')||{}).value)||0}));document.getElementById('offlineEarnBox').style.display='none';renderEarnings();}
-function saveGuideEmail(){localStorage.setItem('sl_guide_email',(document.getElementById('coEmail')||{}).value||'');alert('Login email saved');}
-function openChangePassword(){var email=prompt('Account email:',localStorage.getItem('sl_guide_email')||'guide@example.com');if(!email)return;var np=prompt('New password (min 6):');if(!np||np.length<6){alert('Too short');return;}localStorage.setItem('sl_guide_pwd_'+email.toLowerCase(),np);alert('Password updated');}
-function requestPasswordReset(){var email=prompt('Email for reset:',localStorage.getItem('sl_guide_email')||'guide@example.com');if(!email)return;alert('Reset link simulated to '+email);}
+function fileToDataUrl(f){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(r.result)};r.onerror=rej;r.readAsDataURL(f);});}
 
-
-function refresh(){renderDash();renderSchedule();renderRequests();renderServices();fillProfile();fillPricing();fillRegions();fillLang();renderCerts();renderReviews();renderMessages();renderEarnings();renderCal();if(window.renderGuideQuotes)renderGuideQuotes();if(document.getElementById("page-account")&&document.getElementById("page-account").classList.contains("active")){loadPaymentProfile();var em=document.getElementById("coEmail");if(em&&!em.value)em.value=localStorage.getItem("sl_guide_email")||"";}}
+function refresh(){ensureWelcomeMsg();renderDash();renderSchedule();renderRequests();renderServices();fillProfile();fillPricing();fillRegions();fillLang();renderCerts();renderReviews();renderMessages();renderEarnings();renderCal();renderGuideQuotes();if(document.getElementById("page-account")&&document.getElementById("page-account").classList.contains("active"))loadPaymentProfile()}
 slEnsure();ensureWelcomeMsg();loadPaymentProfile();refresh();slOnChange(refresh);lucide.createIcons();
 </script><div class="modal-bg" id="modal" onclick="if(event.target===this)this.classList.remove('show')"><div class="modal"><div id="modalBody"></div></div></div>
 </body></html>
