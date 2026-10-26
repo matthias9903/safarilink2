@@ -259,11 +259,11 @@
 <div class="content">
 <div class="page active" id="page-dashboard"><div class="stats"><div class="stat"><div class="lbl">On hire</div><div class="val" id="stHire">0</div></div><div class="stat"><div class="lbl">Available today</div><div class="val" id="stAvail">0</div></div><div class="stat"><div class="lbl">Revenue</div><div class="val" id="stRev">$0</div></div><div class="stat"><div class="lbl">Utilisation</div><div class="val" id="stUtil">0%</div></div></div>
 <div class="card" style="padding:16px;margin-bottom:16px">
-  <h3 style="font-size:1rem;margin-bottom:10px">Operation alerts <span class="meta">(live · max 3)</span></h3>
+  <h3 style="font-size:1rem;margin-bottom:10px">Operation alerts</h3>
   <div class="alert-list" id="dashAlerts"></div>
 </div>
 <div class="card" style="overflow-x:auto">
-  <div style="padding:14px 16px 0"><h3 style="font-size:1rem;margin-bottom:8px">Recent operator activity <span class="meta">(live · max 10)</span></h3></div>
+  <div style="padding:14px 16px 0"><h3 style="font-size:1rem;margin-bottom:8px">Recent operator activity</h3></div>
   <table><thead><tr><th>Operator</th><th>Vehicle</th><th>Dates</th><th>Route</th><th>Status</th><th>Value</th></tr></thead>
   <tbody id="dashBook"></tbody></table>
   <div class="pager" id="pagerDash"></div>
@@ -274,8 +274,19 @@
 <div id="vehForm" class="card" style="display:none;padding:16px;margin-bottom:14px">
 <div class="form-grid">
 <div class="form-group"><label>Plate *</label><input id="vPlate"></div>
-<div class="form-group"><label>Category</label><select id="vCat"><option>Safari car (extended 4x4)</option><option>Van</option><option>Minibus</option><option>Land Cruiser</option></select></div>
-<div class="form-group"><label>Model</label><input id="vModel" placeholder="Toyota Land Cruiser"></div>
+<div class="form-group"><label>Category</label><select id="vCat"><option>Safari car (extended 4x4)</option><option>Van</option><option>Minibus</option><option>Crew van</option><option>Luxury van</option></select></div>
+<div class="form-group"><label>Model</label>
+<select id="vModel">
+<option value="Safari Land Cruiser Extended">Safari Land Cruiser Extended</option>
+<option value="Toyota Hiace">Toyota Hiace</option>
+<option value="Toyota Alphard">Toyota Alphard</option>
+<option value="Toyota Noah">Toyota Noah</option>
+<option value="Toyota Vellfire">Toyota Vellfire</option>
+<option value="Mercedes-Benz">Mercedes-Benz</option>
+<option value="Crew Van">Crew Van</option>
+<option value="Toyota Coaster">Toyota Coaster</option>
+<option value="Other">Other</option>
+</select></div>
 <div class="form-group"><label>Year</label><input type="number" id="vYear" value="2022"></div>
 <div class="form-group"><label>Seats</label><input type="number" id="vSeats" value="7"></div>
 <div class="form-group"><label>Day rate (USD)</label><input type="number" id="vRate" value="180"></div>
@@ -399,17 +410,22 @@
 <button type="button" class="btn" onclick="requestPasswordReset()">Reset via email</button></p>
 <div id="fleetPendingBanner" class="meta" style="margin-bottom:8px;color:#92400e"></div>
 <p class="meta" style="margin-bottom:8px">First account is Admin. Admin can add Manager and Sales.</p>
-<div class="filters"><button class="btn btn-primary" onclick="document.getElementById('memF').style.display='block'"><i data-lucide="user-plus"></i> Add member</button></div>
-<div id="memF" style="display:none;margin-bottom:10px" class="form-grid">
-<div class="form-group"><label>Name</label><input id="mName"></div>
-<div class="form-group"><label>Email</label><input id="mEmail" type="email"></div>
+<div class="filters"><button class="btn btn-primary" onclick="document.getElementById('memF').style.display=document.getElementById('memF').style.display==='none'?'block':'none'"><i data-lucide="user-plus"></i> Add member</button></div>
+<div id="memF" style="display:none;margin-bottom:12px;padding:12px;border:1px solid var(--border-light);border-radius:8px" class="form-grid">
+<div class="form-group"><label>Name *</label><input id="mName"></div>
+<div class="form-group"><label>Email *</label><input id="mEmail" type="email" style="word-break:break-all"></div>
 <div class="form-group"><label>Role</label><select id="mRole"><option>Manager</option><option>Sales</option></select></div>
-<div class="form-group"><label>&nbsp;</label><button class="btn btn-primary" onclick="addMember()">Save</button></div>
+<div class="form-group"><label>&nbsp;</label><button class="btn btn-primary" onclick="addMember()">Submit for approval</button></div>
 </div>
-<div id="teamList"></div>
+<div class="card" style="overflow-x:auto;padding:0;border:1px solid var(--border-light)">
+<table>
+<thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
+<tbody id="teamList"></tbody>
+</table>
 </div>
 </div>
-<div class="modal-bg" id="modal"><div class="modal" id="modalBody"></div></div>
+</div>
+<div class="modal-bg" id="modal" onclick="if(event.target===this)this.classList.remove('show')"><div class="modal"><div id="modalBody"></div></div></div>
 <script>
 
 var SL_KEY='safarilink_platform_v1';
@@ -464,11 +480,84 @@ function paginate(key,items,size){size=size||10;var page=window._pageState[key]|
 function renderPager(elId,key,total,onChange){var el=document.getElementById(elId);if(!el)return;var page=window._pageState[key]||1;var pages=Math.max(1,Math.ceil(total/10));if(total<=10){el.innerHTML='';return;}el.innerHTML='<button type="button" '+(page<=1?'disabled':'')+' onclick="window._pageState[\''+key+'\']='+(page-1)+';('+onChange+')()">Previous</button><span>Page '+page+' of '+pages+' · '+total+'</span><button type="button" '+(page>=pages?'disabled':'')+' onclick="window._pageState[\''+key+'\']='+(page+1)+';('+onChange+')()">Next</button>';}
 function pushAlert(text,kind){slUpdate(function(d){if(!d.fleetAlerts)d.fleetAlerts=[];d.fleetAlerts.unshift({text:text,kind:kind||'info',time:Date.now()});d.fleetAlerts=d.fleetAlerts.slice(0,3);});}
 function pushActivity(text){slUpdate(function(d){if(!d.fleetActivity)d.fleetActivity=[];d.fleetActivity.unshift({text:text,time:Date.now()});d.fleetActivity=d.fleetActivity.slice(0,10);});}
+
+function openCharterDetail(ref){
+  var c=(slGet().charters||[]).find(function(x){return x.ref===ref});
+  if(!c){alert('Charter not found');return;}
+  var days=Math.max(1,Math.round((new Date(c.end)-new Date(c.start))/86400000)+1);
+  var body=document.getElementById('modalBody');
+  if(!body)return;
+  body.innerHTML=
+    '<h3>Charter '+esc(c.ref)+'</h3>'+
+    '<p class="meta">'+esc(c.operator)+' · '+esc(c.plate)+'</p>'+
+    '<p><strong>Dates:</strong> '+c.start+' → '+c.end+' ('+days+' days)</p>'+
+    '<p><strong>Route:</strong> '+esc(c.route||'—')+' · <strong>Driver:</strong> '+esc(c.driver||'TBA')+'</p>'+
+    '<p><strong>Status:</strong> '+badge(c.status)+' · <strong>Value:</strong> '+money(c.value)+'</p>'+
+    '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px">'+
+    '<button class="btn btn-primary" onclick="sendFleetProforma(\''+c.ref+'\')"><i data-lucide="file-text"></i> Send proforma</button>'+
+    '<button class="btn" onclick="setCharterStatus(\''+c.ref+'\',\'Confirmed\')">Confirm</button>'+
+    '<button class="btn" onclick="setCharterStatus(\''+c.ref+'\',\'Completed\')">Mark paid / completed</button>'+
+    '<button class="btn" onclick="document.getElementById(\'modal\').classList.remove(\'show\')">Close</button></div>';
+  document.getElementById('modal').classList.add('show');
+  if(window.lucide) lucide.createIcons();
+}
+function fillAvSelects(){
+  var sel=document.getElementById('avVehicle');if(!sel)return;
+  var cur=sel.value;
+  sel.innerHTML='<option value="">— Select vehicle —</option>'+(slGet().vehicles||[]).map(function(v){
+    return '<option value="'+v.id+'">'+esc(v.plate)+' · '+esc(v.model||v.category||'')+'</option>';
+  }).join('');
+  if(cur)sel.value=cur;
+}
+function calShift(n){
+  if(typeof calMonth==='undefined'){window.calMonth=new Date();calMonth.setDate(1);}
+  calMonth.setMonth(calMonth.getMonth()+n);
+  renderCal();
+}
+function renderMessages(){
+  ensureWelcomeMsg();
+  var msgs=(slGet().messages||[]).filter(function(m){return m.side==='fleet';});
+  var unread=msgs.filter(function(m){return m.unread;}).length;
+  var b=document.getElementById('bMsg');
+  if(b){
+    if(unread>0){b.textContent=String(unread);b.setAttribute('data-count',unread);b.classList.add('msg-unread');}
+    else{b.textContent='';b.setAttribute('data-count','0');b.classList.remove('msg-unread');}
+  }
+  var pg=paginate('messages',msgs,10);
+  var el=document.getElementById('msgList');
+  if(!el)return;
+  el.innerHTML=pg.slice.map(function(m){
+    return '<div class="msg-row" style="'+(m.unread?'background:#f0faf5;':'')+'cursor:pointer" onclick="markPartnerMsgRead(\''+String(m.id).replace(/'/g,"\\'")+'\')"><div class="msg-av">'+esc(m.initials||'SL')+'</div><div><strong>'+esc(m.from)+'</strong> <span class="meta">'+(m.time?new Date(m.time).toLocaleString():'')+'</span><div>'+esc(m.text)+'</div>'+(m.unread?' <span class="badge badge-pending">Unread</span>':'')+'</div></div>';
+  }).join('')||'<div class="meta" style="padding:12px">No messages yet.</div>';
+  renderPager('pagerMessages','messages',pg.total,'renderMessages');
+}
+
 function ensureWelcomeMsg(){slUpdate(function(d){if(!d.messages)d.messages=[];if(!d._fleetMsgClean){d.messages=d.messages.filter(function(m){return m.side!=='fleet'||m.keep||m.type==='welcome'||m.fromActivity||m.type==='reminder';});d._fleetMsgClean=true;}var has=d.messages.some(function(m){return m.type==='welcome'&&m.side==='fleet';});if(!has){d.messages.unshift({id:'welcome-fleet',type:'welcome',keep:true,side:'fleet',from:'SafariLink',initials:'SL',unread:false,time:Date.now(),text:'Welcome. New requests, reminders and operator messages appear here when there is activity.'});}});}
 
-function renderDash(){var d=slGet(),h=d.vehicles.filter(function(v){return v.status==='On hire'}).length,a=d.vehicles.filter(function(v){return v.status==='Available'}).length,rev=d.charters.filter(function(c){return c.status==='Completed'||c.status==='On trip'}).reduce(function(s,c){return s+c.value},0);document.getElementById('stHire').textContent=h;document.getElementById('stAvail').textContent=a;document.getElementById('stRev').textContent=money(rev);document.getElementById('stUtil').textContent=(d.vehicles.length?Math.round(h/d.vehicles.length*100):0)+'%';
-var alerts=(d.fleetAlerts||[]).slice(0,3);var al=document.getElementById('dashAlerts');if(al)al.innerHTML=(alerts.length?alerts:[{text:'Waiting for live operator activity…',kind:'info',time:Date.now()}]).map(function(a){return '<div class="alert-item '+(a.kind||'info')+'">'+esc(a.text)+'<div class="meta">'+(a.time?new Date(a.time).toLocaleString():'')+'</div></div>';}).join('');
-document.getElementById('dashBook').innerHTML=d.charters.slice(0,5).map(function(c){return '<tr><td>'+esc(c.operator)+'</td><td>'+esc(c.plate)+'</td><td>'+c.start+' → '+c.end+'</td><td>'+esc(c.route)+'</td><td>'+badge(c.status)+'</td><td>'+money(c.value)+'</td></tr>'}).join('')}
+function renderDash(){
+  var d=slGet();
+  var h=(d.vehicles||[]).filter(function(v){return v.status==='On hire';}).length;
+  var a=(d.vehicles||[]).filter(function(v){return v.status==='Available';}).length;
+  var rev=(d.charters||[]).filter(function(c){return c.status==='Completed'||c.status==='On trip';}).reduce(function(s,c){return s+(c.value||0);},0);
+  if(document.getElementById('stHire'))document.getElementById('stHire').textContent=h;
+  if(document.getElementById('stAvail'))document.getElementById('stAvail').textContent=a;
+  if(document.getElementById('stRev'))document.getElementById('stRev').textContent=money(rev);
+  if(document.getElementById('stUtil'))document.getElementById('stUtil').textContent=((d.vehicles||[]).length?Math.round(h/(d.vehicles||[]).length*100):0)+'%';
+  var alerts=(d.fleetAlerts||[]).slice(0,3);
+  var al=document.getElementById('dashAlerts');
+  if(al) al.innerHTML=(alerts.length?alerts:[{text:'Waiting for live operator activity…',kind:'info',time:Date.now()}]).map(function(a){
+    return '<div class="alert-item '+(a.kind||'info')+'">'+esc(a.text)+'<div class="meta">'+(a.time?new Date(a.time).toLocaleString():'')+'</div></div>';
+  }).join('');
+  var rows=(d.charters||[]).slice().sort(function(a,b){return (b.createdAt||0)-(a.createdAt||0);});
+  var pg=paginate('dash',rows,10);
+  var db=document.getElementById('dashBook');
+  if(db) db.innerHTML=pg.slice.map(function(c){
+    return '<tr><td>'+esc(c.operator)+'</td><td>'+esc(c.plate)+'</td><td>'+c.start+' → '+c.end+'</td><td>'+esc(c.route||'—')+'</td><td>'+badge(c.status)+'</td><td>'+money(c.value)+'</td></tr>';
+  }).join('')||'<tr><td colspan="6" class="meta">No operator activity yet</td></tr>';
+  renderPager('pagerDash','dash',pg.total,'renderDash');
+}
+
+
 function renderFleet(){var st=document.getElementById('fFilter').value,cat=document.getElementById('fCat').value;document.getElementById('fleetGrid').innerHTML=slGet().vehicles.filter(function(v){return(st==='all'||v.status===st)&&(cat==='all'||v.category===cat)}).map(function(v){var img=v.preview?'<img src="'+v.preview+'">':'<i data-lucide="car" class="ph-icon"></i><span style="font-size:.75rem">No photo</span>';return '<div class="prop-card" onclick="openVeh('+v.id+')"><div class="img">'+img+'</div><div class="body"><h4>'+esc(v.plate)+'</h4><div class="meta">'+esc(v.category)+' · '+esc(v.model)+'</div><div style="margin-top:6px">'+badge(v.status)+'</div><div class="meta">Free from '+esc(v.availableFrom)+' · '+money(v.dayRate)+'/day</div></div></div>'}).join('');lucide.createIcons()}
 function openVeh(id){var v=slGet().vehicles.find(function(x){return x.id===id});if(!v)return;document.getElementById('modalBody').innerHTML='<h3>'+esc(v.plate)+'</h3><p class="meta">'+esc(v.model)+'</p><p>'+badge(v.status)+' · Available '+esc(v.availableFrom)+'</p><p>'+esc((v.features||[]).join(', '))+'</p><button class="btn" onclick="document.getElementById(\'modal\').classList.remove(\'show\')"><i data-lucide="x"></i> Close</button>';document.getElementById('modal').classList.add('show');lucide.createIcons()}
 async function addVehicle(){
@@ -816,3 +905,4 @@ function requestPasswordReset(){
 function refresh(){renderDash();renderFleet();renderBookings();renderDrivers();renderRates();renderIns();renderMessages();renderRevenue();renderTeam();fillAvSelects();renderCal();if(window.renderFleetQuotes)renderFleetQuotes();if(document.getElementById("page-account")&&document.getElementById("page-account").classList.contains("active")){loadPaymentProfile();}}
 slEnsure();ensureWelcomeMsg();loadPaymentProfile();refresh();slOnChange(refresh);lucide.createIcons();
 </script></body></html>
+
