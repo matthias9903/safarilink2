@@ -258,11 +258,16 @@
 <div style="display:flex;gap:8px"><button class="btn" onclick="logout()"><i data-lucide="log-out"></i> Log out</button><button class="btn btn-primary" onclick="go('add')"><i data-lucide="plus"></i> Add vehicle</button></div></header>
 <div class="content">
 <div class="page active" id="page-dashboard"><div class="stats"><div class="stat"><div class="lbl">On hire</div><div class="val" id="stHire">0</div></div><div class="stat"><div class="lbl">Available today</div><div class="val" id="stAvail">0</div></div><div class="stat"><div class="lbl">Revenue</div><div class="val" id="stRev">$0</div></div><div class="stat"><div class="lbl">Utilisation</div><div class="val" id="stUtil">0%</div></div></div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px">
-  <div class="card" style="padding:16px"><h3 style="font-size:1rem;margin-bottom:10px">Operation alerts <span class="meta">(live · max 3)</span></h3><div class="alert-list" id="dashAlerts"></div></div>
-  <div class="card" style="padding:16px"><h3 style="font-size:1rem;margin-bottom:10px">Recent partner activity <span class="meta">(live · max 10)</span></h3><div id="dashActivity"></div></div>
+<div class="card" style="padding:16px;margin-bottom:16px">
+  <h3 style="font-size:1rem;margin-bottom:10px">Operation alerts <span class="meta">(live · max 3)</span></h3>
+  <div class="alert-list" id="dashAlerts"></div>
 </div>
-<div class="card" style="overflow-x:auto"><table><thead><tr><th>Operator</th><th>Vehicle</th><th>Dates</th><th>Route</th><th>Status</th><th>Value</th></tr></thead><tbody id="dashBook"></tbody></table><div class="pager" id="pagerDash"></div></div></div>
+<div class="card" style="overflow-x:auto">
+  <div style="padding:14px 16px 0"><h3 style="font-size:1rem;margin-bottom:8px">Recent operator activity <span class="meta">(live · max 10)</span></h3></div>
+  <table><thead><tr><th>Operator</th><th>Vehicle</th><th>Dates</th><th>Route</th><th>Status</th><th>Value</th></tr></thead><tbody id="dashBook"></tbody></table>
+  <div class="pager" id="pagerDash"></div>
+</div>
+</div>
 <div class="page" id="page-fleet">
 <div class="filters"><button class="btn btn-primary" onclick="document.getElementById('vehForm').style.display='block'"><i data-lucide="plus"></i> Add vehicle</button></div>
 <div id="vehForm" class="card" style="display:none;padding:16px;margin-bottom:14px">
@@ -274,7 +279,7 @@
 <div class="form-group"><label>Seats</label><input type="number" id="vSeats" value="7"></div>
 <div class="form-group"><label>Day rate (USD)</label><input type="number" id="vRate" value="180"></div>
 <div class="form-group full"><label>Features (comma)</label><input id="vFeat" placeholder="Pop-up roof, 4WD, Fridge"></div>
-<div class="form-group full"><label>Photo</label><input type="file" id="vImg" accept="image/*"></div>
+<div class="form-group full"><label>Photos (max 5 · first is preview)</label><input type="file" id="vImg" accept="image/*" multiple></div>
 </div>
 <button class="btn btn-primary" style="margin-top:10px" onclick="addVehicle()"><i data-lucide="save"></i> Save vehicle</button>
 <button class="btn" style="margin-top:10px" onclick="document.getElementById('vehForm').style.display='none'">Cancel</button>
@@ -300,8 +305,6 @@
 <button class="btn btn-primary" style="margin-top:10px" onclick="addDriver()"><i data-lucide="save"></i> Save driver</button>
 <button class="btn" style="margin-top:10px" onclick="document.getElementById('drvForm').style.display='none'">Cancel</button>
 </div>
-<div class="filters"><button class="btn btn-primary" onclick="document.getElementById('drvF').style.display='block'"><i data-lucide="user-plus"></i> Add driver</button></div>
-<div id="drvF" class="card" style="display:none;padding:14px;margin-bottom:12px"><div class="form-grid"><div class="form-group"><label>Name</label><input id="dName"></div><div class="form-group"><label>Phone</label><input id="dPhone"></div><div class="form-group"><label>Licence</label><input id="dLic"></div><div class="form-group"><label>Languages</label><input id="dLang"></div><div class="form-group"><label>Base</label><input id="dBase" value="Arusha"></div><div class="form-group"><label>Notes</label><input id="dNotes"></div></div><button class="btn btn-primary" style="margin-top:8px" onclick="addDriver()"><i data-lucide="save"></i> Save</button></div>
 <div class="prop-grid" id="drvGrid"></div><div class="pager" id="pagerDrivers"></div></div>
 <div class="page" id="page-availability">
 <p class="meta" style="margin-bottom:10px">Select a vehicle, then block or free dates. Operators see availability live.</p>
@@ -316,8 +319,15 @@
 <p class="meta" style="margin-top:8px">Green = available · Red = blocked / on hire · Click a day to toggle block</p></div>
 </div>
 <div class="page" id="page-rates"><div class="card" style="overflow-x:auto"><table><thead><tr><th>Vehicle</th><th>Day</th><th>Safari</th><th>Transfer</th><th></th></tr></thead><tbody id="rateTable"></tbody></table></div></div>
-<div class="page" id="page-insurance"><div class="prop-grid"><div class="prop-card"><div class="body"><h4>Comprehensive cover</h4><div class="meta">Track renewals so units stay bookable</div></div></div><div class="prop-card"><div class="body"><h4>Park registration</h4><div class="meta">TANAPA / NCAA for safari cars</div></div></div><div class="prop-card"><div class="body"><h4>Driver licences</h4><div class="meta">Class C / E on file</div></div></div><div class="prop-card"><div class="body"><h4>Pre-hire inspection</h4><div class="meta">Reduce damage disputes</div></div></div></div>
-<div class="card" style="margin-top:12px;overflow-x:auto"><table><thead><tr><th>Plate</th><th>Insurance expiry</th><th>Park reg</th><th>Status</th></tr></thead><tbody id="insTable"></tbody></table></div></div>
+<div class="page" id="page-insurance">
+<p class="meta" style="margin-bottom:10px">Live insurance, TALA and inspection status per vehicle. Edit and save anytime.</p>
+<div class="card" style="overflow-x:auto;padding:0">
+<table>
+<thead><tr><th>Vehicle</th><th>Insurance expiry</th><th>Duration / note</th><th>TALA (optional)</th><th>Inspected</th><th></th></tr></thead>
+<tbody id="insTable"></tbody>
+</table>
+</div>
+</div>
 <div class="page" id="page-messages">
 <div class="card" style="padding:8px 16px" id="msgList"></div>
 <div class="pager" id="pagerMessages"></div>
@@ -379,16 +389,22 @@
 <button class="btn btn-primary" style="margin-top:10px" onclick="savePaymentProfile()"><i data-lucide="save"></i> Save payment details</button>
 </div>
 <div class="card" style="padding:16px">
-<h3 style="margin-bottom:8px">Team (Admin · Manager · Sales)</h3>
-<p class="meta" style="margin-bottom:8px">First account is Admin. Admin can add Manager and Sales.</p>
+<h3 style="margin-bottom:8px">Team accounts</h3>
+<p class="meta" style="margin-bottom:10px">First registered account is <strong>Admin</strong>. Admin can add Manager and Sales. New members need <strong>SafariLink platform Admin</strong> approval, then receive a temporary password by email. <button type="button" class="btn" onclick="openChangePassword()">Change password</button> <button type="button" class="btn" onclick="requestPasswordReset()">Reset via email</button></p>
+<div id="fleetPendingBanner" class="meta" style="margin-bottom:10px;color:#92400e"></div>
 <div class="filters"><button class="btn btn-primary" onclick="document.getElementById('memF').style.display='block'"><i data-lucide="user-plus"></i> Add member</button></div>
-<div id="memF" style="display:none;margin-bottom:10px" class="form-grid">
-<div class="form-group"><label>Name</label><input id="mName"></div>
-<div class="form-group"><label>Email</label><input id="mEmail" type="email"></div>
-<div class="form-group"><label>Role</label><select id="mRole"><option>Admin</option><option>Manager</option><option>Sales</option></select></div>
-<div class="form-group"><label>&nbsp;</label><button class="btn btn-primary" onclick="addMember()">Save</button></div>
+<div id="memF" style="display:none;margin-bottom:12px" class="form-grid">
+<div class="form-group"><label>Name *</label><input id="mName"></div>
+<div class="form-group"><label>Email *</label><input id="mEmail" type="email"></div>
+<div class="form-group"><label>Role</label><select id="mRole"><option>Manager</option><option>Sales</option></select></div>
+<div class="form-group"><label>&nbsp;</label><button class="btn btn-primary" onclick="addMember()">Submit for approval</button></div>
 </div>
-<div id="teamList"></div>
+<div class="card" style="overflow-x:auto;padding:0;border:none">
+<table>
+<thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th></th></tr></thead>
+<tbody id="teamList"></tbody>
+</table>
+</div>
 </div>
 </div>
 <div class="modal-bg" id="modal"><div class="modal" id="modalBody"></div></div>
@@ -448,28 +464,76 @@ function pushAlert(text,kind){slUpdate(function(d){if(!d.fleetAlerts)d.fleetAler
 function pushActivity(text){slUpdate(function(d){if(!d.fleetActivity)d.fleetActivity=[];d.fleetActivity.unshift({text:text,time:Date.now()});d.fleetActivity=d.fleetActivity.slice(0,10);});}
 function ensureWelcomeMsg(){slUpdate(function(d){if(!d.messages)d.messages=[];if(!d._fleetMsgClean){d.messages=d.messages.filter(function(m){return m.side!=='fleet'||m.keep||m.type==='welcome'||m.fromActivity||m.type==='reminder';});d._fleetMsgClean=true;}var has=d.messages.some(function(m){return m.type==='welcome'&&m.side==='fleet';});if(!has){d.messages.unshift({id:'welcome-fleet',type:'welcome',keep:true,side:'fleet',from:'SafariLink',initials:'SL',unread:false,time:Date.now(),text:'Welcome. New requests, reminders and operator messages appear here when there is activity.'});}});}
 
-function renderDash(){var d=slGet(),h=d.vehicles.filter(function(v){return v.status==='On hire'}).length,a=d.vehicles.filter(function(v){return v.status==='Available'}).length,rev=d.charters.filter(function(c){return c.status==='Completed'||c.status==='On trip'}).reduce(function(s,c){return s+c.value},0);document.getElementById('stHire').textContent=h;document.getElementById('stAvail').textContent=a;document.getElementById('stRev').textContent=money(rev);document.getElementById('stUtil').textContent=(d.vehicles.length?Math.round(h/d.vehicles.length*100):0)+'%';
-var alerts=(d.fleetAlerts||[]).slice(0,3);var al=document.getElementById('dashAlerts');if(al)al.innerHTML=(alerts.length?alerts:[{text:'Waiting for live operator activity…',kind:'info',time:Date.now()}]).map(function(a){return '<div class="alert-item '+(a.kind||'info')+'">'+esc(a.text)+'<div class="meta">'+(a.time?new Date(a.time).toLocaleString():'')+'</div></div>';}).join('');
-var acts=(d.fleetActivity||[]).slice(0,10);var actEl=document.getElementById('dashActivity');if(actEl)actEl.innerHTML=acts.length?acts.map(function(a){return '<div style="padding:8px 0;border-bottom:1px solid var(--border-light);font-size:.84rem">'+esc(a.text)+'<div class="meta">'+(a.time?new Date(a.time).toLocaleString():'')+'</div></div>';}).join(''):'<div class="meta">No partner activity yet.</div>';document.getElementById('dashBook').innerHTML=d.charters.slice(0,5).map(function(c){return '<tr><td>'+esc(c.operator)+'</td><td>'+esc(c.plate)+'</td><td>'+c.start+' → '+c.end+'</td><td>'+esc(c.route)+'</td><td>'+badge(c.status)+'</td><td>'+money(c.value)+'</td></tr>'}).join('')}
-function renderFleet(){var st=document.getElementById('fFilter').value,cat=document.getElementById('fCat').value;document.getElementById('fleetGrid').innerHTML=slGet().vehicles.filter(function(v){return(st==='all'||v.status===st)&&(cat==='all'||v.category===cat)}).map(function(v){var img=v.preview?'<img src="'+v.preview+'">':'<i data-lucide="car" class="ph-icon"></i><span style="font-size:.75rem">No photo</span>';return '<div class="prop-card" onclick="openVeh('+v.id+')"><div class="img">'+img+'</div><div class="body"><h4>'+esc(v.plate)+'</h4><div class="meta">'+esc(v.category)+' · '+esc(v.model)+'</div><div style="margin-top:6px">'+badge(v.status)+'</div><div class="meta">Free from '+esc(v.availableFrom)+' · '+money(v.dayRate)+'/day</div></div></div>'}).join('');lucide.createIcons()}
-function openVeh(id){var v=slGet().vehicles.find(function(x){return x.id===id});if(!v)return;document.getElementById('modalBody').innerHTML='<h3>'+esc(v.plate)+'</h3><p class="meta">'+esc(v.model)+'</p><p>'+badge(v.status)+' · Available '+esc(v.availableFrom)+'</p><p>'+esc((v.features||[]).join(', '))+'</p><button class="btn" onclick="document.getElementById(\'modal\').classList.remove(\'show\')"><i data-lucide="x"></i> Close</button>';document.getElementById('modal').classList.add('show');lucide.createIcons()}
-async function addVehicle(){var plate=document.getElementById('vPlate').value.trim(),day=Number(document.getElementById('vDay').value),safari=Number(document.getElementById('vSafari').value);if(!plate||!day||!safari){alert('Plate & rates required');return}var feats=[];document.querySelectorAll('#vFeat input:checked').forEach(function(c){feats.push(c.value)});if(feats.length<3){alert('Select features');return}var files=document.getElementById('vImg').files,imgs=[];for(var i=0;i<files.length;i++)imgs.push(await fileToDataUrl(files[i]));slUpdate(function(d){d.vehicles.push({id:Date.now(),plate:plate,category:document.getElementById('vCat').value,model:document.getElementById('vModel').value,year:Number(document.getElementById('vYear').value)||2022,seats:Number(document.getElementById('vSeats').value)||7,base:document.getElementById('vBase').value||'Arusha',dayRate:day,safariDayRate:safari,transferRate:Math.round(day*0.5),status:'Available',availableFrom:new Date().toISOString().slice(0,10),features:feats,images:imgs,preview:imgs[0]||'',insuranceExpiry:'2027-12-01',parkReg:document.getElementById('vCat').value.indexOf('Safari')>=0})});go('fleet')}
 
-function openCharterDetail(ref){
-  var c=(slGet().charters||[]).find(function(x){return x.ref===ref});if(!c)return;
-  var days=Math.max(1,Math.round((new Date(c.end)-new Date(c.start))/86400000)+1);
-  document.getElementById('modalBody').innerHTML=
-    '<h3>Charter '+esc(c.ref)+'</h3>'+
-    '<p class="meta">'+esc(c.operator)+' · '+esc(c.plate)+'</p>'+
-    '<p><strong>Dates:</strong> '+c.start+' → '+c.end+' ('+days+' days)</p>'+
-    '<p><strong>Route:</strong> '+esc(c.route||'—')+' · <strong>Driver:</strong> '+esc(c.driver||'TBA')+'</p>'+
-    '<p><strong>Status:</strong> '+badge(c.status)+' · <strong>Value:</strong> '+money(c.value)+'</p>'+
-    '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px">'+
-    '<button class="btn btn-primary" onclick="sendFleetProforma(\''+c.ref+'\')"><i data-lucide="file-text"></i> Send proforma</button>'+
-    '<button class="btn" onclick="setCharterStatus(\''+c.ref+'\',\'Confirmed\')">Confirm</button>'+
-    '<button class="btn" onclick="setCharterStatus(\''+c.ref+'\',\'Completed\')">Mark paid / completed</button>'+
-    '<button class="btn" onclick="document.getElementById(\'modal\').classList.remove(\'show\')">Close</button></div>';
-  document.getElementById('modal').classList.add('show');lucide.createIcons();
+function renderDash(){
+  var d=slGet();
+  var vehicles=d.vehicles||[];
+  var charters=d.charters||[];
+  var h=charters.filter(function(c){return c.status==='On trip'||c.status==='Confirmed';}).length;
+  var avail=vehicles.filter(function(v){return v.status==='Available';}).length;
+  var rev=charters.filter(function(c){return c.status==='Completed';}).reduce(function(a,c){return a+(c.value||0);},0);
+  if(document.getElementById('stHire'))document.getElementById('stHire').textContent=h;
+  if(document.getElementById('stAvail'))document.getElementById('stAvail').textContent=avail;
+  if(document.getElementById('stRev'))document.getElementById('stRev').textContent=money(rev);
+  if(document.getElementById('stUtil'))document.getElementById('stUtil').textContent=(vehicles.length?Math.round(h/vehicles.length*100):0)+'%';
+  var alerts=(d.fleetAlerts||[]).slice(0,3);
+  var al=document.getElementById('dashAlerts');
+  if(al) al.innerHTML=(alerts.length?alerts:[{text:'Waiting for live operator activity…',kind:'info',time:Date.now()}]).map(function(a){return '<div class="alert-item '+(a.kind||'info')+'">'+esc(a.text)+'<div class="meta">'+(a.time?new Date(a.time).toLocaleString():'')+'</div></div>';}).join('');
+  var rows=charters.slice(0,10);
+  var pg=paginate('dash',rows,10);
+  var body=document.getElementById('dashBook');
+  if(body) body.innerHTML=pg.slice.map(function(c){
+    return '<tr><td>'+esc(c.operator)+'</td><td>'+esc(c.plate)+'</td><td>'+c.start+' → '+c.end+'</td><td>'+esc(c.route||'—')+'</td><td>'+badge(c.status)+'</td><td>'+money(c.value)+'</td></tr>';
+  }).join('')||'<tr><td colspan="6" class="meta">No operator activity yet</td></tr>';
+  renderPager('pagerDash','dash',pg.total,'renderDash');
+}
+
+function renderFleet(){
+  var f=(document.getElementById('fFilter')||{}).value||'all';
+  var cat=(document.getElementById('fCat')||{}).value||'all';
+  var list=(slGet().vehicles||[]).filter(function(v){
+    return (f==='all'||v.status===f)&&(cat==='all'||v.category===cat);
+  });
+  var pg=paginate('fleet',list,10);
+  var el=document.getElementById('fleetGrid');if(!el)return;
+  el.innerHTML=pg.slice.map(function(v){
+    var src=v.image||(v.images&&v.images[0])||'';
+    var img=src?'<img src="'+src+'">':'<i data-lucide="car" class="ph-icon"></i><span style="font-size:.75rem">No photo</span>';
+    return '<div class="prop-card"><div class="img">'+img+'</div><div class="body"><h4>'+esc(v.plate)+'</h4><div class="meta">'+esc(v.model||v.category)+' · '+esc(v.category)+'</div><div class="meta">'+money(v.dayRate)+'/day · '+(v.seats||'')+' seats</div><div style="margin-top:6px">'+badge(v.status)+'</div></div></div>';
+  }).join('');
+  renderPager('pagerFleet','fleet',pg.total,'renderFleet');
+  lucide.createIcons();
+}
+
+function openVeh(id){var v=slGet().vehicles.find(function(x){return x.id===id});if(!v)return;document.getElementById('modalBody').innerHTML='<h3>'+esc(v.plate)+'</h3><p class="meta">'+esc(v.model)+'</p><p>'+badge(v.status)+' · Available '+esc(v.availableFrom)+'</p><p>'+esc((v.features||[]).join(', '))+'</p><button class="btn" onclick="document.getElementById(\'modal\').classList.remove(\'show\')"><i data-lucide="x"></i> Close</button>';document.getElementById('modal').classList.add('show');lucide.createIcons()}
+async function addVehicle(){
+  var plate=(document.getElementById('vPlate')||{}).value;plate=(plate||'').trim();
+  if(!plate){alert('Plate required');return;}
+  var files=(document.getElementById('vImg')||{}).files||[];
+  var imgs=[];
+  for(var i=0;i<Math.min(files.length,5);i++){
+    try{imgs.push(await fileToDataUrl(files[i]));}catch(e){}
+  }
+  slUpdate(function(d){
+    if(!d.vehicles)d.vehicles=[];
+    d.vehicles.push({
+      id:Date.now(), plate:plate,
+      category:(document.getElementById('vCat')||{}).value||'Safari car',
+      model:(document.getElementById('vModel')||{}).value||'',
+      year:Number((document.getElementById('vYear')||{}).value)||2022,
+      seats:Number((document.getElementById('vSeats')||{}).value)||7,
+      dayRate:Number((document.getElementById('vRate')||{}).value)||180,
+      safariDayRate:Number((document.getElementById('vRate')||{}).value)||180,
+      transferRate:80,
+      features:((document.getElementById('vFeat')||{}).value||'').split(',').map(function(s){return s.trim()}).filter(Boolean),
+      status:'Available', images:imgs, image:imgs[0]||'', base:'Arusha',
+      insuranceExpiry:'', insuranceNote:'', tala:'', inspected:false
+    });
+  });
+  document.getElementById('vehForm').style.display='none';
+  pushActivity('Vehicle added: '+plate);
+  pushAlert('New vehicle listed','info');
+  renderFleet();
 }
 function setCharterStatus(ref, status){
   slUpdate(function(d){
@@ -504,56 +568,10 @@ function renderBookings(){
 
 function simCharter(){slUpdate(function(d){var v=d.vehicles.find(function(x){return x.status==='Available'})||d.vehicles[0];var ref='CH-'+Math.floor(900+Math.random()*99);d.charters.unshift({ref:ref,operator:'Dreamtrails Expeditions',vehicleId:v.id,plate:v.plate,start:'2026-11-02',end:'2026-11-08',route:'Arusha-Serengeti',driver:'TBA',value:v.dayRate*6,status:'Reserved',createdAt:Date.now()});d.messages.unshift({id:Date.now(),side:'fleet',from:'Dreamtrails Expeditions',initials:'DT',text:'New charter '+ref,time:Date.now(),type:'info'})});pushAlert('New operator charter','warn');pushActivity('New charter from operator');alert('Operator charter received');go('bookings')}
 
-async function addDriver(){
-  var n=(document.getElementById('dName')||{}).value;n=(n||'').trim();
-  if(!n){alert('Name required');return;}
-  var img='';
-  var f=document.getElementById('dImg');
-  if(f&&f.files&&f.files[0]){try{img=await fileToDataUrl(f.files[0]);}catch(e){}}
-  slUpdate(function(d){
-    if(!d.drivers)d.drivers=[];
-    d.drivers.push({
-      id:Date.now(), name:n,
-      phone:(document.getElementById('dPhone')||{}).value||'',
-      lic:(document.getElementById('dLic')||{}).value||'',
-      lang:(document.getElementById('dLang')||{}).value||'',
-      status:'Available', rating:5, trips:0, image:img
-    });
-  });
-  document.getElementById('drvForm').style.display='none';
-  pushActivity('Driver added: '+n);
-  renderDrivers();
-}
-function renderDrivers(){
-  var list=slGet().drivers||[];
-  var pg=paginate('drivers',list,10);
-  var el=document.getElementById('drvGrid');
-  if(!el)return;
-  el.innerHTML=pg.slice.map(function(d){
-    var img=d.image?'<img src="'+d.image+'" style="width:100%;height:100%;object-fit:cover">':'<i data-lucide="user" class="ph-icon"></i>';
-    return '<div class="prop-card"><div class="img" style="height:120px">'+img+'</div><div class="body"><h4>'+esc(d.name)+'</h4><div class="meta">'+esc(d.phone)+' · Lic '+esc(d.lic)+'</div><div class="meta">'+esc(d.lang)+'</div><div style="margin-top:6px">'+badge(d.status)+' · ★'+(d.rating||5)+' · '+(d.trips||0)+' trips</div></div></div>';
-  }).join('');
-  renderPager('pagerDrivers','drivers',pg.total,'renderDrivers');
-  lucide.createIcons();
-}
 
-function addDriver(){var n=document.getElementById('dName').value.trim();if(!n)return;slUpdate(function(d){d.drivers.push({id:Date.now(),name:n,phone:document.getElementById('dPhone').value,lic:document.getElementById('dLic').value,lang:document.getElementById('dLang').value,status:'Available',rating:5,trips:0,base:document.getElementById('dBase').value,notes:document.getElementById('dNotes').value})});document.getElementById('drvF').style.display='none';renderDrivers()}
-function renderRates(){document.getElementById('rateTable').innerHTML=slGet().vehicles.map(function(v){return '<tr><td>'+esc(v.plate)+'</td><td><input type="number" id="rd'+v.id+'" value="'+v.dayRate+'" style="width:80px"></td><td><input type="number" id="rs'+v.id+'" value="'+v.safariDayRate+'" style="width:80px"></td><td><input type="number" id="rt'+v.id+'" value="'+v.transferRate+'" style="width:80px"></td><td><button class="btn btn-primary" onclick="saveVRate('+v.id+')">Save</button></td></tr>'}).join('')}
-function saveVRate(id){slUpdate(function(d){d.vehicles.forEach(function(v){if(v.id===id){v.dayRate=Number(document.getElementById('rd'+id).value)||v.dayRate;v.safariDayRate=Number(document.getElementById('rs'+id).value)||v.safariDayRate;v.transferRate=Number(document.getElementById('rt'+id).value)||v.transferRate}})});alert('Saved')}
 
-function acceptAgr(id){slUpdate(function(d){d.agreements.forEach(function(a){if(a.id===id){a.operatorAgreed=true;a.status='Signed';a.signedAt=new Date().toISOString().slice(0,10)}})});renderAgr()}
-function renderIns(){document.getElementById('insTable').innerHTML=slGet().vehicles.map(function(v){return '<tr><td>'+esc(v.plate)+'</td><td>'+esc(v.insuranceExpiry)+'</td><td>'+(v.parkReg?'Yes':'No')+'</td><td>'+badge(v.status)+'</td></tr>'}).join('')}
-function renderMessages(){
-  ensureWelcomeMsg();
-  var msgs=slGet().messages.filter(function(m){return m.side==='fleet';});
-  var unread=msgs.filter(function(m){return m.unread;}).length;
-  var b=document.getElementById('bMsg');
-  if(b){if(unread>0){b.textContent=String(unread);b.setAttribute('data-count',unread);b.classList.add('msg-unread');}else{b.textContent='';b.setAttribute('data-count','0');b.classList.remove('msg-unread');}}
-  var pg=paginate('messages',msgs,10);
-  var el=document.getElementById('msgList');
-  if(el)el.innerHTML=pg.slice.map(function(m){return '<div class="msg-row" style="'+(m.unread?'background:#f0faf5;':'')+'cursor:pointer" onclick="markPartnerMsgRead(\''+String(m.id).replace(/'/g,"\\'")+'\')"><div class="msg-av">'+esc(m.initials||'SL')+'</div><div><strong>'+esc(m.from)+'</strong> <span class="meta">'+(m.time?new Date(m.time).toLocaleString():'')+'</span><div>'+esc(m.text)+'</div>'+(m.unread?'<span class="badge badge-pending">Unread</span>':'')+'</div></div>';}).join('')||'<div class="meta" style="padding:12px">No messages yet.</div>';
-  renderPager('pagerMessages','messages',pg.total,'renderMessages');
-}
+
+
 function markPartnerMsgRead(id){slUpdate(function(d){(d.messages||[]).forEach(function(m){if(String(m.id)===String(id))m.unread=false;});});renderMessages();}
 
 
@@ -590,15 +608,7 @@ function saveManual(){
   renderRevenue();
 }
 
-function renderTeam(){document.getElementById('teamList').innerHTML=(slGet().team.fleet||[]).map(function(m){return '<div class="team-row"><div><strong>'+esc(m.name)+'</strong><div class="meta">'+esc(m.email)+' · '+esc(m.role)+'</div></div></div>'}).join('')}
-function addMember(){var n=document.getElementById('mName').value.trim(),e=document.getElementById('mEmail').value.trim();if(!n||!e)return;slUpdate(function(d){d.team.fleet.push({id:Date.now(),name:n,email:e,role:document.getElementById('mRole').value})});renderTeam()}
-function calShift(n){calMonth.setMonth(calMonth.getMonth()+n);renderCal()}
-function fillAvSelects(){
-  var sel=document.getElementById('avVehicle');if(!sel)return;
-  var cur=sel.value;
-  sel.innerHTML='<option value="">— Select vehicle —</option>'+(slGet().vehicles||[]).map(function(v){return '<option value="'+v.id+'">'+esc(v.plate)+' · '+esc(v.model||v.category||'')+'</option>';}).join('');
-  if(cur)sel.value=cur;
-}
+
 function renderCal(){
   var y=calMonth.getFullYear(),m=calMonth.getMonth();
   document.getElementById('calLabel').textContent=calMonth.toLocaleString('default',{month:'long',year:'numeric'});
@@ -682,6 +692,149 @@ function sendFleetProforma(ref){
   pushAlert('Proforma '+pfId+' sent','info');pushActivity('Proforma '+pfId+' → '+c.operator);alert('Proforma '+pfId+' sent to '+c.operator);refresh();
 }
 
-function refresh(){renderDash();renderFleet();renderBookings();renderDrivers();renderRates();renderIns();renderMessages();renderRevenue();renderTeam();fillAvSelects();renderCal();if(window.renderFleetQuotes)renderFleetQuotes();if(document.getElementById("page-account")&&document.getElementById("page-account").classList.contains("active")){loadPaymentProfile();}}
+
+function loadFleetTeam(){
+  try{
+    var raw=localStorage.getItem('sl_fleet_team');
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return [{id:1,name:'Fleet Admin',email:'dispatch@safarifleet.tz',role:'Admin',status:'Active',isMain:true,approvedAt:Date.now()}];
+}
+function saveFleetTeam(list){localStorage.setItem('sl_fleet_team',JSON.stringify(list));}
+function genTempPassword(){return 'SL'+Math.random().toString(36).slice(2,8).toUpperCase();}
+function renderTeam(){
+  var list=loadFleetTeam();
+  var pending=list.filter(function(m){return m.status==='Pending';}).length;
+  var ban=document.getElementById('fleetPendingBanner');
+  if(ban) ban.innerHTML=pending?'<strong>'+pending+' member(s) awaiting SafariLink Admin approval.</strong> Platform admin must approve before login details are sent.':'';
+  var body=document.getElementById('teamList');
+  if(!body)return;
+  body.innerHTML=list.map(function(m,i){
+    var actions='';
+    if(m.status==='Pending'){
+      actions='<button class="btn btn-primary" onclick="approveFleetMember('+i+')">Approve (SafariLink Admin)</button> <button class="btn" onclick="rejectFleetMember('+i+')">Reject</button>';
+    } else if(m.status==='Active' && !m.isMain){
+      actions='<button class="btn" onclick="showFleetLoginDetails('+i+')">Login details</button>';
+    } else if(m.isMain){
+      actions='<span class="meta">Main admin</span>';
+    }
+    return '<tr><td>'+esc(m.name)+(m.isMain?' <span class="badge badge-paid">Main</span>':'')+'</td><td style="word-break:break-all">'+esc(m.email)+'</td><td>'+esc(m.role)+'</td><td>'+badge(m.status==='Active'?'confirmed':(m.status==='Pending'?'pending':'cancelled'))+' '+esc(m.status)+'</td><td>'+actions+'</td></tr>';
+  }).join('');
+}
+function addMember(){
+  var n=(document.getElementById('mName')||{}).value;n=(n||'').trim();
+  var e=(document.getElementById('mEmail')||{}).value;e=(e||'').trim();
+  var r=(document.getElementById('mRole')||{}).value||'Manager';
+  if(!n||!e){alert('Name and email required');return;}
+  var list=loadFleetTeam();
+  list.push({id:Date.now(),name:n,email:e,role:r,status:'Pending',isMain:false});
+  saveFleetTeam(list);
+  document.getElementById('memF').style.display='none';
+  document.getElementById('mName').value='';
+  document.getElementById('mEmail').value='';
+  renderTeam();
+  alert('Member submitted — SafariLink Admin must approve before they can log in');
+}
+function approveFleetMember(i){
+  var list=loadFleetTeam();
+  var m=list[i];if(!m||m.status!=='Pending')return;
+  var temp=genTempPassword();
+  m.status='Active';m.approvedAt=Date.now();m.tempPassword=temp;
+  saveFleetTeam(list);
+  slUpdate(function(d){
+    if(!d.team)d.team={};if(!d.team.fleet)d.team.fleet=[];
+    d.team.fleet.push({id:m.id,name:m.name,email:m.email,role:m.role,status:'Active'});
+    if(!d.messages)d.messages=[];
+    d.messages.unshift({id:Date.now(),fromActivity:true,unread:true,side:'fleet',from:'SafariLink Admin',initials:'SL',
+      text:'Team member approved: '+m.name+' ('+m.role+'). Temp password sent to '+m.email,time:Date.now(),type:'info'});
+  });
+  alert('Approved. Temporary password for '+m.email+': '+temp+'\n(Simulated email sent)');
+  renderTeam();
+}
+function rejectFleetMember(i){
+  var list=loadFleetTeam();
+  if(!list[i]||list[i].status!=='Pending')return;
+  list.splice(i,1);saveFleetTeam(list);renderTeam();
+}
+function showFleetLoginDetails(i){
+  var m=loadFleetTeam()[i];if(!m)return;
+  alert('Login for '+m.name+'\nEmail: '+m.email+'\nRole: '+m.role+'\nTemp password: '+(m.tempPassword||'(already changed)')+'\nThey should change password on first login.');
+}
+function openChangePassword(){
+  var email=prompt('Account email to change password for:','dispatch@safarifleet.tz');
+  if(!email)return;
+  var np=prompt('New password (min 6 characters):');
+  if(!np||np.length<6){alert('Password too short');return;}
+  localStorage.setItem('sl_fleet_pwd_'+email.toLowerCase(), np);
+  alert('Password updated for '+email);
+}
+function requestPasswordReset(){
+  var email=prompt('Email for password reset link:','dispatch@safarifleet.tz');
+  if(!email)return;
+  alert('Password reset link simulated sent to '+email);
+}
+
+
+function renderIns(){
+  var body=document.getElementById('insTable');if(!body)return;
+  var list=slGet().vehicles||[];
+  body.innerHTML=list.map(function(v){
+    var exp=v.insuranceExpiry||'';
+    var note=v.insuranceNote||'';
+    var tala=v.tala||'';
+    var insp=!!v.inspected;
+    return '<tr>'+
+      '<td><strong>'+esc(v.plate)+'</strong><div class="meta">'+esc(v.model||v.category||'')+'</div></td>'+
+      '<td><input type="date" id="insExp'+v.id+'" value="'+exp+'" style="width:140px"></td>'+
+      '<td><input id="insNote'+v.id+'" value="'+note.replace(/"/g,'&quot;')+'" placeholder="e.g. 12 months" style="width:120px"></td>'+
+      '<td><input id="insTala'+v.id+'" value="'+tala.replace(/"/g,'&quot;')+'" placeholder="Optional TALA #" style="width:120px"></td>'+
+      '<td><select id="insInsp'+v.id+'"><option value="0"'+(insp?'':' selected')+'>Not inspected</option><option value="1"'+(insp?' selected':'')+'>Inspected</option></select></td>'+
+      '<td><button class="btn btn-primary" onclick="saveVehicleIns('+v.id+')">Update</button></td></tr>';
+  }).join('')||'<tr><td colspan="6" class="meta">Add vehicles first</td></tr>';
+}
+function saveVehicleIns(id){
+  slUpdate(function(d){
+    (d.vehicles||[]).forEach(function(v){
+      if(v.id===id){
+        v.insuranceExpiry=(document.getElementById('insExp'+id)||{}).value||'';
+        v.insuranceNote=(document.getElementById('insNote'+id)||{}).value||'';
+        v.tala=(document.getElementById('insTala'+id)||{}).value||'';
+        v.inspected=((document.getElementById('insInsp'+id)||{}).value==='1');
+      }
+    });
+  });
+  pushActivity('Insurance updated');
+  pushAlert('Insurance / inspection updated','info');
+  alert('Saved');
+  renderIns();
+}
+
+async function addDriver(){
+  var n=(document.getElementById('dName')||{}).value;n=(n||'').trim();
+  if(!n){alert('Name required');return;}
+  var img='';
+  var f=document.getElementById('dImg');
+  if(f&&f.files&&f.files[0]){try{img=await fileToDataUrl(f.files[0]);}catch(e){}}
+  slUpdate(function(d){
+    if(!d.drivers)d.drivers=[];
+    d.drivers.push({id:Date.now(),name:n,phone:(document.getElementById('dPhone')||{}).value||'',lic:(document.getElementById('dLic')||{}).value||'',lang:(document.getElementById('dLang')||{}).value||'',status:'Available',rating:5,trips:0,image:img});
+  });
+  var form=document.getElementById('drvForm');if(form)form.style.display='none';
+  pushActivity('Driver added: '+n);
+  renderDrivers();
+}
+function renderDrivers(){
+  var list=slGet().drivers||[];
+  var pg=paginate('drivers',list,10);
+  var el=document.getElementById('drvGrid');if(!el)return;
+  el.innerHTML=pg.slice.map(function(d){
+    var img=d.image?'<img src="'+d.image+'" style="width:100%;height:100%;object-fit:cover">':'<i data-lucide="user" class="ph-icon"></i>';
+    return '<div class="prop-card"><div class="img" style="height:120px">'+img+'</div><div class="body"><h4>'+esc(d.name)+'</h4><div class="meta">'+esc(d.phone)+' · Lic '+esc(d.lic)+'</div><div class="meta">'+esc(d.lang)+'</div><div style="margin-top:6px">'+badge(d.status)+'</div></div></div>';
+  }).join('');
+  renderPager('pagerDrivers','drivers',pg.total,'renderDrivers');
+  lucide.createIcons();
+}
+
+function refresh(){renderDash();renderFleet();renderBookings();renderDrivers();renderRates();renderIns();renderMessages();renderRevenue();renderTeam();fillAvSelects();renderCal();if(window.renderFleetQuotes)renderFleetQuotes();if(document.getElementById("page-account")&&document.getElementById("page-account").classList.contains("active"))loadPaymentProfile();}}
 slEnsure();ensureWelcomeMsg();loadPaymentProfile();refresh();slOnChange(refresh);lucide.createIcons();
 </script></body></html>
