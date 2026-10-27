@@ -383,7 +383,7 @@ var page=location.pathname.split('/').pop();if(map[page]&&map[page].indexOf(u.ro
      Inventory & rates per property for operators to book
      ============================================================ -->
 <div class="page" id="page-rooms">
-<div class="filters"><button class="btn btn-primary" onclick="document.getElementById('roomForm').style.display='block'"><i data-lucide="plus"></i> Add room type</button></div>
+<div class="filters"><button class="btn btn-primary" onclick="fillPropertySelects();document.getElementById('roomForm').style.display='block'"><i data-lucide="plus"></i> Add room type</button></div>
 <div id="roomForm" class="card" style="display:none;padding:16px;margin-bottom:14px;max-width:800px">
 <div class="form-grid">
 <div class="form-group"><label>Name *</label><input id="rName"></div>
@@ -708,36 +708,35 @@ function pushActivity(text) {
   });
 }
 
-function checkReminders(){
-  try{
-    var now=Date.now();
-    (slGet().reservations||[]).forEach(function(r){
-      if(r.status==='reserved'&&r.createdAt&&now-r.createdAt>86400000*2){
-        /* overdue reminder handled in messages */
-      }
-    });
-  }catch(e){}
-}
+function checkReminders(){ /* activity messages only — no reminders */ }
+
 
 function ensureWelcomeMsg() {
   slUpdate(function(d) {
     if (!d.messages) d.messages = [];
-    if (!d._accomMsgClean) {
-      d.messages = d.messages.filter(function(m) {
-        return m.side !== 'accommodation' || m.keep || m.type === 'welcome' || m.fromActivity || m.type === 'reminder';
-      });
-      d._accomMsgClean = true;
-    }
+    // Keep welcome + activity only for accommodation (drop reminders/static)
+    d.messages = d.messages.filter(function(m) {
+      if (m.side !== 'accommodation') return true;
+      if (m.type === 'reminder') return false;
+      return m.type === 'welcome' || m.fromActivity || m.keep || m.type === 'info' || m.type === 'activity';
+    });
     var has = d.messages.some(function(m){ return m.type === 'welcome' && m.side === 'accommodation'; });
     if (!has) {
       d.messages.unshift({
-        id: 'welcome-accom', type: 'welcome', keep: true, side: 'accommodation',
-        from: 'SafariLink', initials: 'SL', unread: false, time: Date.now(),
-        text: 'Welcome. Reservations, reminders and operator messages will appear here when there is activity.'
+        id: Date.now()-1,
+        side: 'accommodation',
+        from: 'SafariLink',
+        initials: 'SL',
+        text: 'Welcome to your Accommodation dashboard. New reservations, confirmations and proformas will appear here as activity happens.',
+        time: Date.now(),
+        type: 'welcome',
+        keep: true,
+        unread: false
       });
     }
   });
 }
+
 
 
 function renderDash(){
@@ -918,8 +917,10 @@ async function addProp(){
 }
 
 function renderRooms(){
+  fillPropertySelects();
   var rProp=document.getElementById('rProp');
-  if(rProp) rProp.innerHTML=slGet().properties.map(function(p){return '<option value="'+p.id+'">'+esc(p.name)+'</option>'}).join('');
+  var props=slGet().properties||[];
+  if(rProp) rProp.innerHTML='<option value="">— Select property —</option>'+props.map(function(p){return '<option value="'+p.id+'">'+esc(p.name)+'</option>'}).join('');
   var list=slGet().roomTypes||[];
   var pg=paginate('rooms',list,10);
   document.getElementById('roomGrid').innerHTML=pg.slice.map(function(r){var img=(r.images&&r.images[0])?'<img src="'+r.images[0]+'">':'<i data-lucide="bed-double" class="ph-icon"></i><span style="font-size:.75rem">No photo</span>';return '<div class="prop-card"><div class="img">'+img+'</div><div class="body"><h4>'+esc(r.name)+'</h4><div class="meta">'+esc(propName(r.propertyId))+' · STO '+money(r.sto)+' · '+r.units+' units</div><div class="meta">'+esc((r.amenities||[]).join(' · '))+'</div></div></div>'}).join('');
@@ -1070,14 +1071,42 @@ function calShift(n){
   renderCal();
 }
 
-function fillAvSelects(){
-  var ps=document.getElementById('avProp');
-  if(!ps)return;
-  var cur=ps.value;
-  ps.innerHTML='<option value="">— Select property —</option>'+(slGet().properties||[]).map(function(p){return '<option value="'+p.id+'">'+esc(p.name)+'</option>';}).join('');
-  if(cur)ps.value=cur;
-  onAvPropChange();
+
+function ensureAccomData(){
+  slUpdate(function(d){
+    if(!d.properties) d.properties=[];
+    if(!d.roomTypes) d.roomTypes=[];
+    if(!d.reservations) d.reservations=[];
+    if(!d.team) d.team={};
+    if(!d.team.accommodation) d.team.accommodation=[];
+    if(!d.messages) d.messages=[];
+    if(!d.accomAlerts) d.accomAlerts=[];
+    if(!d.properties.length){
+      d.properties=[
+        {id:1,name:'Serengeti Hill Camp',type:'Tented Camp',location:'Central Serengeti',status:'available',desc:'Tented camp with wildlife views.',amenities:['Wi-Fi','Restaurant'],images:[],unitsTotal:12},
+        {id:2,name:'Ngoro View Lodge',type:'Lodge',location:'Ngorongoro Rim',status:'available',desc:'Lodge on the crater rim.',amenities:['Wi-Fi','Restaurant'],images:[],unitsTotal:16}
+      ];
+    }
+    if(!d.roomTypes.length){
+      d.roomTypes=[
+        {id:1,propertyId:1,name:'Luxury Tent',guests:2,units:6,sto:220,pub:320,amenities:['En-suite'],images:[]},
+        {id:2,propertyId:1,name:'Family Suite',guests:4,units:2,sto:350,pub:450,amenities:['En-suite'],images:[]},
+        {id:3,propertyId:2,name:'Standard Room',guests:2,units:10,sto:130,pub:180,amenities:['En-suite'],images:[]}
+      ];
+    }
+  });
 }
+function fillPropertySelects(){
+  var props=slGet().properties||[];
+  var opts='<option value="">— Select property —</option>'+props.map(function(p){return '<option value="'+p.id+'">'+esc(p.name)+'</option>';}).join('');
+  ['rProp','avProp'].forEach(function(id){
+    var el=document.getElementById(id); if(!el)return;
+    var cur=el.value; el.innerHTML=opts; if(cur) try{el.value=cur;}catch(e){}
+  });
+  if(typeof onAvPropChange==='function') onAvPropChange();
+}
+
+function fillAvSelects(){ fillPropertySelects(); }
 function renderCal(){
   var y=calMonth.getFullYear(),m=calMonth.getMonth();
   document.getElementById('calLabel').textContent=calMonth.toLocaleString('default',{month:'long',year:'numeric'});
@@ -1118,46 +1147,112 @@ function toggleBlock(key){
   renderCal();
 }
 
+
+
+function getAccomTeam(){
+  var d=slGet();
+  if(!d.team) d.team={};
+  if(!d.team.accommodation) d.team.accommodation=[];
+  return d.team.accommodation;
+}
 function renderTeam(){
-  var list=slGet().team&&slGet().team.accommodation||[];
-  if(!list.length){
-    // seed admin seat
-    list=[{id:1,name:'Admin',email:(document.getElementById('coEmail')||{}).value||'admin@serengetihill.tz',role:'Admin',status:'Active'}];
-  }
+  var list=getAccomTeam().slice();
+  // If empty: show empty state — admin is created via request-access / first login, not auto-invented here
   var pending=list.filter(function(m){return m.status==='Pending';}).length;
   var banner=document.getElementById('teamPendingBanner');
-  if(banner) banner.textContent=pending? (pending+' member(s) waiting for SafariLink admin approval'):'';
+  if(banner){
+    if(!list.length) banner.textContent='No team seats yet. After your Admin account is created via request access, you can add Manager and Sales here.';
+    else if(pending) banner.textContent=pending+' member(s) waiting for SafariLink admin approval. They will receive a temporary password when approved.';
+    else banner.textContent='';
+  }
+  var activeAdmin=list.some(function(m){return m.role==='Admin'&&(m.status==='Active'||!m.status);});
   var btn=document.getElementById('btnAddMember');
-  if(btn) btn.style.display=list.length>=3?'none':'inline-flex';
+  if(btn){
+    // Only Admin can add; max 3 seats
+    btn.style.display=(list.length>=3 || (list.length&&!activeAdmin))?'none':'inline-flex';
+    if(!list.length) btn.style.display='none'; // no seats until admin exists
+  }
   var el=document.getElementById('teamList');
   if(!el)return;
+  if(!list.length){
+    el.innerHTML='<tr><td colspan="4" class="meta">No accounts yet. Complete request access to create the Admin account, then use Add Manager / Sales.</td></tr>';
+    return;
+  }
   el.innerHTML=list.map(function(m){
-    return '<tr><td><strong>'+esc(m.name)+'</strong></td><td style="word-break:break-all">'+esc(m.email)+'</td><td>'+esc(m.role)+'</td><td>'+badge(m.status||'Active')+'</td></tr>';
+    var st=m.status||'Active';
+    return '<tr><td><strong>'+esc(m.name)+'</strong></td><td style="word-break:break-all">'+esc(m.email)+'</td><td>'+esc(m.role)+'</td><td>'+badge(st)+
+      (st==='Pending'?' <span class="meta">Awaiting SafariLink</span>':'')+
+      (m.tempPassword&&st==='Active'?' <span class="meta">temp issued</span>':'')+
+      '</td></tr>';
   }).join('');
 }
 function addMember(){
-  var n=(document.getElementById('mName')||{}).value;n=(n||'').trim();
-  var e=(document.getElementById('mEmail')||{}).value;e=(e||'').trim();
+  var n=(document.getElementById('mName')||{}).value; n=(n||'').trim();
+  var e=(document.getElementById('mEmail')||{}).value; e=(e||'').trim();
   var role=(document.getElementById('mRole')||{}).value||'Manager';
   if(!n||!e){alert('Name and email required');return;}
-  var list=(slGet().team&&slGet().team.accommodation)||[];
-  if(list.length>=3){alert('Maximum 3 accounts (Admin, Manager, Sales)');return;}
-  if(role==='Admin'){alert('Admin is the first registered account only');return;}
+  if(role==='Admin'){alert('Admin is only the first account from request access — choose Manager or Sales');return;}
+  var list=getAccomTeam();
+  if(!list.length || !list.some(function(m){return m.role==='Admin';})){
+    alert('Admin account must exist first (via request access / registration)');
+    return;
+  }
+  if(list.length>=3){alert('Maximum 3 accounts: Admin, Manager, Sales');return;}
+  if(list.some(function(m){return (m.email||'').toLowerCase()===e.toLowerCase();})){
+    alert('That email is already on the team');return;
+  }
   slUpdate(function(d){
-    if(!d.team)d.team={};
-    if(!d.team.accommodation)d.team.accommodation=[];
-    if(!d.team.accommodation.length){
-      d.team.accommodation.push({id:1,name:'Admin',email:'admin@serengetihill.tz',role:'Admin',status:'Active'});
-    }
-    if(d.team.accommodation.length>=3)return;
-    d.team.accommodation.push({id:Date.now(),name:n,email:e,role:role,status:'Pending',tempPassword:'Temp'+Math.floor(1000+Math.random()*9000)});
-    if(!d.messages)d.messages=[];
-    d.messages.unshift({id:Date.now(),side:'accommodation',from:'SafariLink',initials:'SL',text:'Team member '+n+' ('+role+') submitted — waiting SafariLink admin approval.',time:Date.now(),type:'info',fromActivity:true,unread:true});
+    if(!d.team) d.team={};
+    if(!d.team.accommodation) d.team.accommodation=[];
+    d.team.accommodation.push({
+      id: Date.now(),
+      name: n,
+      email: e,
+      role: role,
+      status: 'Pending',
+      requestedAt: Date.now(),
+      tempPassword: null
+    });
+    if(!d.messages) d.messages=[];
+    d.messages.unshift({
+      id: Date.now(), side:'accommodation', from:'SafariLink', initials:'SL',
+      text: 'Team request: '+n+' ('+role+') submitted for SafariLink admin approval.',
+      time: Date.now(), type:'info', fromActivity:true, unread:true
+    });
+    if(!d.accomAlerts) d.accomAlerts=[];
+    d.accomAlerts.unshift({text:'New team member pending approval: '+n+' · '+role, kind:'warn', time:Date.now()});
+    d.accomAlerts=d.accomAlerts.slice(0,3);
   });
   document.getElementById('memF').style.display='none';
+  if(document.getElementById('mName')) document.getElementById('mName').value='';
+  if(document.getElementById('mEmail')) document.getElementById('mEmail').value='';
   renderTeam();
-  alert('Submitted for SafariLink admin approval');
+  renderMessages();
+  alert('Submitted — SafariLink admin must approve. Member will get a temporary password by email when approved.');
 }
+function ensureAdminSeatFromSession(){
+  // If logged-in accommodation user exists and team empty, create Admin seat once
+  try{
+    var u=null;
+    try{u=JSON.parse(sessionStorage.getItem('safariLinkUser')||'null');}catch(e){}
+    if(!u) try{u=JSON.parse(localStorage.getItem('safarilink_user')||'null');}catch(e){}
+    if(!u || (u.role!=='accommodation' && u.role!=='accommodation-provider')) return;
+    slUpdate(function(d){
+      if(!d.team) d.team={};
+      if(!d.team.accommodation) d.team.accommodation=[];
+      if(d.team.accommodation.length) return;
+      d.team.accommodation.push({
+        id: Date.now(),
+        name: u.name||'Admin',
+        email: u.email||'admin@property.tz',
+        role: 'Admin',
+        status: 'Active',
+        createdAt: Date.now()
+      });
+    });
+  }catch(e){}
+}
+
 function saveAccomAccount(){
   var a={email:(document.getElementById('coEmail')||{}).value||'',name:(document.getElementById('coName')||{}).value||'',phone:(document.getElementById('coPhone')||{}).value||''};
   localStorage.setItem('sl_accom_account',JSON.stringify(a));
