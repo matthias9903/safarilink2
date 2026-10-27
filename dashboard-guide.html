@@ -105,6 +105,27 @@
   .alert-item.warn { border-left-color: #f59e0b; }
   .alert-item.info { border-left-color: #0891b2; }
   .cal .day { cursor: pointer; }
+
+  .chips {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px;
+  }
+  .chips label {
+    display: flex; align-items: center; gap: 8px;
+    background: #fff; border: 1px solid var(--border-light);
+    border-radius: 8px; padding: 10px 12px; cursor: pointer;
+    font-size: .85rem; transition: border-color .15s, background .15s;
+  }
+  .chips label:hover { border-color: var(--accent-green); background: #f0faf5; }
+  .chips label:has(input:checked) {
+    border-color: var(--forest-green); background: #ecfdf5;
+    font-weight: 600; color: var(--forest-green);
+  }
+  .chips input { width: 16px; height: 16px; accent-color: var(--forest-green); flex-shrink: 0; }
+  .section-card { background:#fff; border:1px solid var(--border-light); border-radius:10px; padding:16px; margin-bottom:16px; }
+  .section-card h3 { font-size:1rem; margin-bottom:12px; }
+
   .sidebar-badge {
     margin-left: auto; background: #f59e0b; color: #000;
     font-size: .68rem; padding: 2px 7px; border-radius: 10px; font-weight: 700;
@@ -244,17 +265,17 @@
 <a class="sidebar-link" data-p="services" onclick="go('services')"><i data-lucide="briefcase"></i><span> My Services</span></a>
 <a class="sidebar-link" data-p="availability" onclick="go('availability')"><i data-lucide="calendar-range"></i><span> Availability</span></a>
 <div class="sidebar-section">Profile</div>
-<a class="sidebar-link" data-p="profile" onclick="go('profile')"><i data-lucide="user-circle"></i>Guide Profile</a>
-<a class="sidebar-link" data-p="pricing" onclick="go('pricing')"><i data-lucide="tag"></i>Day Rates</a>
-<a class="sidebar-link" data-p="regions" onclick="go('regions')"><i data-lucide="map"></i>Parks & Regions</a>
-<a class="sidebar-link" data-p="languages" onclick="go('languages')"><i data-lucide="languages"></i>Languages & Skills</a>
-<a class="sidebar-link" data-p="certs" onclick="go('certs')"><i data-lucide="award"></i>Licences</a>
-<a class="sidebar-link" data-p="reviews" onclick="go('reviews')"><i data-lucide="star"></i>Reviews</a>
+<a class="sidebar-link" data-p="profile" onclick="go('profile')"><i data-lucide="user-circle"></i><span> Guide Profile</span></a>
+<a class="sidebar-link" data-p="pricing" onclick="go('pricing')"><i data-lucide="tag"></i><span> Day Rates</span></a>
+<a class="sidebar-link" data-p="regions" onclick="go('regions')"><i data-lucide="map"></i><span> Parks & Regions</span></a>
+<a class="sidebar-link" data-p="languages" onclick="go('languages')"><i data-lucide="languages"></i><span> Languages & Skills</span></a>
+<a class="sidebar-link" data-p="certs" onclick="go('certs')"><i data-lucide="award"></i><span> Licences</span></a>
+<a class="sidebar-link" data-p="reviews" onclick="go('reviews')"><i data-lucide="star"></i><span> Reviews</span></a>
 <div class="sidebar-section">Ops</div>
 <a class="sidebar-link" data-p="messages" onclick="go('messages')"><i data-lucide="message-square"></i><span> Messages</span><span class="sidebar-badge msg-unread" id="bMsg" data-count="0"></span></a>
-<a class="sidebar-link" data-p="quotes" onclick="go('quotes')"><i data-lucide="file-text"></i>Quotes / Proformas</a>
-<a class="sidebar-link" data-p="account" onclick="go('account')"><i data-lucide="settings"></i>Account & Team</a>
-<a class="sidebar-link" data-p="earnings" onclick="go('earnings')"><i data-lucide="bar-chart-3"></i>Earnings</a>
+<a class="sidebar-link" data-p="quotes" onclick="go('quotes')"><i data-lucide="file-text"></i><span> Quotes / Proformas</span></a>
+<a class="sidebar-link" data-p="account" onclick="go('account')"><i data-lucide="settings"></i><span> Account</span></a>
+<a class="sidebar-link" data-p="earnings" onclick="go('earnings')"><i data-lucide="bar-chart-3"></i><span> Earnings</span></a>
 </nav>
 <div class="sidebar-footer"><div style="color:#fff;font-weight:600">Daniel Mwamba</div><div style="opacity:.5;font-size:.7rem"><span class="live-dot"></span>Guide · Live</div></div></aside>
 <div class="main"><header class="topbar"><div><h2 id="title">Dashboard</h2><p id="sub">Live</p></div>
@@ -309,24 +330,80 @@
 <div class="form-group"><label>Day</label><input type="number" id="pDay"></div><div class="form-group"><label>Half day</label><input type="number" id="pHalf"></div>
 <div class="form-group"><label>Overnight</label><input type="number" id="pNight"></div><div class="form-group"><label>Mountain</label><input type="number" id="pMtn"></div>
 </div><button class="btn btn-primary" style="margin-top:10px" onclick="savePricing()"><i data-lucide="save"></i> Save</button></div></div>
-<div class="page" id="page-regions"><div class="chips" id="regionChips">
-<label><input type="checkbox" value="Serengeti NP"> Serengeti NP</label><label><input type="checkbox" value="Ngorongoro"> Ngorongoro</label>
-<label><input type="checkbox" value="Tarangire"> Tarangire</label><label><input type="checkbox" value="Lake Manyara"> Lake Manyara</label>
-<label><input type="checkbox" value="Arusha NP"> Arusha NP</label><label><input type="checkbox" value="Kilimanjaro"> Kilimanjaro</label>
-<label><input type="checkbox" value="Ruaha"> Ruaha</label><label><input type="checkbox" value="Nyerere / Selous"> Nyerere / Selous</label>
-</div><button class="btn btn-primary" style="margin-top:12px" onclick="saveRegions()"><i data-lucide="save"></i> Save</button></div>
-<div class="page" id="page-languages"><div class="chips" id="langChips">
-<label><input type="checkbox" value="English"> English</label><label><input type="checkbox" value="Swahili"> Swahili</label>
-<label><input type="checkbox" value="French"> French</label><label><input type="checkbox" value="German"> German</label>
-<label><input type="checkbox" value="Spanish"> Spanish</label><label><input type="checkbox" value="Italian"> Italian</label>
-<label><input type="checkbox" value="Japanese"> Japanese</label><label><input type="checkbox" value="Chinese"> Chinese</label>
-<label><input type="checkbox" value="Korean"> Korean</label>
-</div><p class="meta" style="margin:12px 0">Skills</p><div class="chips" id="skillChips">
-<label><input type="checkbox" value="Big cats"> Big cats</label><label><input type="checkbox" value="Birding"> Birding</label>
-<label><input type="checkbox" value="Photography"> Photography</label><label><input type="checkbox" value="Walking safari"> Walking safari</label>
-<label><input type="checkbox" value="First aid"> First aid</label>
-</div><button class="btn btn-primary" style="margin-top:12px" onclick="saveLang()"><i data-lucide="save"></i> Save</button></div>
-<div class="page" id="page-certs"><div class="prop-grid" id="certGrid"></div></div>
+<div class="page" id="page-regions">
+<div class="section-card">
+  <h3>Parks &amp; regions you guide</h3>
+  <p class="meta" style="margin-bottom:14px">Select all areas where you work. These appear on your operator-facing profile.</p>
+  <div class="chips" id="regionChips">
+    <label><input type="checkbox" value="Serengeti NP"> Serengeti NP</label>
+    <label><input type="checkbox" value="Ngorongoro"> Ngorongoro</label>
+    <label><input type="checkbox" value="Tarangire"> Tarangire</label>
+    <label><input type="checkbox" value="Lake Manyara"> Lake Manyara</label>
+    <label><input type="checkbox" value="Arusha NP"> Arusha NP</label>
+    <label><input type="checkbox" value="Kilimanjaro"> Kilimanjaro</label>
+    <label><input type="checkbox" value="Ruaha"> Ruaha</label>
+    <label><input type="checkbox" value="Nyerere / Selous"> Nyerere / Selous</label>
+    <label><input type="checkbox" value="Mikumi"> Mikumi</label>
+    <label><input type="checkbox" value="Katavi"> Katavi</label>
+    <label><input type="checkbox" value="Mahale"> Mahale</label>
+    <label><input type="checkbox" value="Gombe"> Gombe</label>
+  </div>
+  <button class="btn btn-primary" style="margin-top:16px" onclick="saveRegions()"><i data-lucide="save"></i> Save regions</button>
+</div>
+</div>
+<div class="page" id="page-languages">
+<div class="section-card">
+  <h3>Languages</h3>
+  <p class="meta" style="margin-bottom:14px">Languages you guide in — including Japanese, Chinese and Korean for safari travellers.</p>
+  <div class="chips" id="langChips">
+    <label><input type="checkbox" value="English"> English</label>
+    <label><input type="checkbox" value="Swahili"> Swahili</label>
+    <label><input type="checkbox" value="French"> French</label>
+    <label><input type="checkbox" value="German"> German</label>
+    <label><input type="checkbox" value="Spanish"> Spanish</label>
+    <label><input type="checkbox" value="Italian"> Italian</label>
+    <label><input type="checkbox" value="Japanese"> Japanese</label>
+    <label><input type="checkbox" value="Chinese"> Chinese</label>
+    <label><input type="checkbox" value="Korean"> Korean</label>
+  </div>
+</div>
+<div class="section-card">
+  <h3>Skills &amp; specialisations</h3>
+  <p class="meta" style="margin-bottom:14px">Select skills operators can filter on. You can change these anytime.</p>
+  <div class="chips" id="skillChips">
+    <label><input type="checkbox" value="Big cats"> Big cats</label>
+    <label><input type="checkbox" value="Birding"> Birding</label>
+    <label><input type="checkbox" value="Photography"> Photography</label>
+    <label><input type="checkbox" value="Walking safari"> Walking safari</label>
+    <label><input type="checkbox" value="First aid"> First aid</label>
+    <label><input type="checkbox" value="Cultural"> Cultural</label>
+    <label><input type="checkbox" value="Mountain / trekking"> Mountain / trekking</label>
+    <label><input type="checkbox" value="Night drives"> Night drives</label>
+  </div>
+  <button class="btn btn-primary" style="margin-top:16px" onclick="saveLang()"><i data-lucide="save"></i> Save languages &amp; skills</button>
+</div>
+</div>
+<div class="page" id="page-certs">
+<div class="section-card">
+  <h3>Licences &amp; certificates</h3>
+  <p class="meta" style="margin-bottom:12px">Add or update your guide licence and certificates. Operators can see these on your profile.</p>
+  <div class="filters">
+    <button class="btn btn-primary" onclick="document.getElementById('certForm').style.display=document.getElementById('certForm').style.display==='none'?'block':'none'"><i data-lucide="plus"></i> Add / edit licence</button>
+  </div>
+  <div id="certForm" class="card" style="display:none;padding:14px;margin-bottom:14px">
+    <input type="hidden" id="certEditId" value="">
+    <div class="form-grid">
+      <div class="form-group"><label>Name *</label><input id="certName" placeholder="Tour guide licence"></div>
+      <div class="form-group"><label>Issuer</label><input id="certIssuer" placeholder="Ministry of Natural Resources"></div>
+      <div class="form-group"><label>Valid to</label><input type="date" id="certValid"></div>
+      <div class="form-group"><label>Licence / cert number</label><input id="certNo" placeholder="Optional"></div>
+    </div>
+    <button class="btn btn-primary" style="margin-top:10px" onclick="saveCert()"><i data-lucide="save"></i> Save licence</button>
+    <button class="btn" style="margin-top:10px" onclick="document.getElementById('certForm').style.display='none'">Cancel</button>
+  </div>
+  <div class="prop-grid" id="certGrid"></div>
+</div>
+</div>
 <div class="page" id="page-reviews"><div class="card" style="padding:16px" id="revList"></div></div>
 <div class="page" id="page-messages"><div class="card" style="padding:8px 16px" id="msgList"></div><div class="pager" id="pagerMessages"></div></div>
 <div class="page" id="page-earnings"><div class="stats">
@@ -347,9 +424,19 @@
 </div></div>
 
 <div class="page" id="page-quotes">
-<div class="card" style="overflow-x:auto"><table>
-<thead><tr><th>Ref</th><th>To (operator)</th><th>Job</th><th>Detail</th><th>Amount</th><th>Status</th><th></th></tr></thead>
-<tbody id="guideQuotesBody"></tbody></table></div>
+<div class="section-card" style="padding:0;overflow:hidden">
+  <div style="padding:14px 16px;border-bottom:1px solid var(--border-light)">
+    <h3 style="font-size:1rem;margin:0">Quotes / proformas</h3>
+    <p class="meta" style="margin:4px 0 0">Sent to operators from Schedule → Details. Includes your bank details automatically.</p>
+  </div>
+  <div style="overflow-x:auto">
+  <table>
+  <thead><tr><th>Ref</th><th>To (operator)</th><th>Job</th><th>Detail</th><th>Amount</th><th>Status</th><th></th></tr></thead>
+  <tbody id="guideQuotesBody"></tbody>
+  </table>
+  </div>
+  <div class="pager" id="pagerQuotes" style="padding:12px"></div>
+</div>
 </div>
 <div class="page" id="page-account">
 <div class="card" style="padding:16px;margin-bottom:14px">
@@ -423,7 +510,7 @@ function ensureWelcomeMsg(){slUpdate(function(d){if(!d.messages)d.messages=[];if
 function toggleCollapse(){var sb=document.getElementById('sidebar');var icon=document.getElementById('collapseIcon');sb.classList.toggle('collapsed');if(icon){icon.setAttribute('data-lucide',sb.classList.contains('collapsed')?'chevrons-right':'chevrons-left');lucide.createIcons()}}
 function logout(){sessionStorage.removeItem('safariLinkUser');try{localStorage.removeItem('safarilink_user')}catch(e){}location.href='index.html'}
 var TITLES={   dashboard:['Dashboard','Upcoming jobs, open requests, earnings and rating'],   schedule:['My Schedule','Confirmed and in-progress guide assignments'],   requests:['Job Requests','Accept or decline new operator requests'],   services:['My Services','Game drives, walking, birding and other offerings'],   availability:['Availability Calendar','Block dates you are not available'],   profile:['Guide Profile','Name, photo, years, bio — synced to operator cards'],   pricing:['Day Rates','Full day, half day, overnight and mountain fees'],   regions:['Parks & Regions','Areas you guide — shown on operator cards'],   languages:['Languages & Skills','Including Japanese, Chinese and Korean'],   certs:['Licences & Certificates','Tour guide licence and first aid'],   reviews:['Reviews','Operator feedback and ratings'],   messages:['Messages','Messages from operators'],   quotes:['Quotes / Proformas','Job proformas with service, days and bank details'],
-   account:['Account & Team','Payment details + team roles like operator'],
+   account:['Account','Payment details + team roles like operator'],
    earnings:['Earnings','Confirmed and completed guide fees'] };
 var calMonth=new Date();calMonth.setDate(1);
 function guide(){return slGet().guides[0]}
@@ -459,11 +546,16 @@ function getPaymentProfile(){try{var r=localStorage.getItem('sl_guide_payment');
 function renderGuideQuotes(){
   var body=document.getElementById('guideQuotesBody');if(!body)return;
   var list=(slGet().partnerQuotes||[]).filter(function(q){return q.type==='Guide';});
-  body.innerHTML=list.map(function(q){return '<tr><td><strong>'+esc(q.id)+'</strong></td><td>'+esc(q.toOperator||'—')+'</td><td>'+esc(q.jobRef||'—')+'</td><td>'+esc(q.detail)+'</td><td>'+money(q.amount)+'</td><td>'+badge(q.status||'Sent')+'</td><td><button class="btn" onclick="printGuideQuote(\''+q.id+'\')">PDF</button></td></tr>';}).join('')||'<tr><td colspan="7" class="meta">Send a proforma from Schedule or Requests</td></tr>';
+  var pg=paginate('quotes',list,10);
+  body.innerHTML=pg.slice.map(function(q){
+    return '<tr><td><strong>'+esc(q.id)+'</strong></td><td>'+esc(q.toOperator||'—')+'</td><td>'+esc(q.jobRef||'—')+'</td><td>'+esc(q.detail)+'</td><td>'+money(q.amount)+'</td><td>'+badge(q.status||'Sent')+'</td><td><button class="btn" onclick="printGuideQuote(\''+String(q.id).replace(/'/g,"\'")+'\')">PDF</button></td></tr>';
+  }).join('')||'<tr><td colspan="7" class="meta">No proformas yet — send from Schedule → Details.</td></tr>';
+  renderPager('pagerQuotes','quotes',pg.total,'renderGuideQuotes');
 }
+
 function printGuideQuote(id){
   var q=(slGet().partnerQuotes||[]).find(function(x){return x.id===id});if(!q)return;var inv=getPaymentProfile();
-  var html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+q.id+'</title><style>body{font-family:system-ui;max-width:640px;margin:40px auto}.box{border:1px solid #d4cfc6;border-radius:10px;padding:16px;margin:12px 0}.k{color:#888;font-size:.78rem;margin-top:6px}</style></head><body><h1 style="color:#1a5a3a">Guide Proforma</h1><div class="box"><strong>'+esc(q.id)+'</strong><br>'+esc(q.detail)+'<br>Amount: <strong>'+money(q.amount)+'</strong></div><div class="box"><strong>Bank details</strong><div class="k">Bank</div>'+esc(q.bankName||inv.bankName)+'<div class="k">Address</div>'+esc(q.bankAddress||inv.bankAddress)+'<div class="k">SWIFT</div>'+esc(q.swift||inv.swift)+'<div class="k">Account name</div>'+esc(q.accountName||inv.accountName)+'<div class="k">Account number</div>'+esc(q.accountNumber||inv.accountNumber)+'<div class="k">Branch</div>'+esc(q.branchName||inv.branchName)+'</div><script>onload=function(){setTimeout(print,300)}<\/script></body></html>';
+  var html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+q.id+'</title><style>body{font-family:system-ui;max-width:640px;margin:40px auto}.box{border:1px solid #d4cfc6;border-radius:10px;padding:16px;margin:12px 0}.k{color:#888;font-size:.78rem;margin-top:6px}</style></head><body><h1 style="color:#1a5a3a">Guide Proforma</h1><div class="box"><strong>'+esc(q.id)+'</strong><br>'+esc(q.detail)+'<br>Amount: <strong>'+money(q.amount)+'</strong></div><div class="box"><strong>Bank details</strong><div class="k">Bank</div>'+esc(q.bankName||inv.bankName)+'<div class="k">Address</div>'+esc(q.bankAddress||inv.bankAddress)+'<div class="k">SWIFT</div>'+esc(q.swift||inv.swift)+'<div class="k">Account name</div>'+esc(q.accountName||inv.accountName)+'<div class="k">Account number</div>'+esc(q.accountNumber||inv.accountNumber)+'<div class="k">Branch</div>'+esc(q.branchName||inv.branchName)+'</div><scr'+'ipt>onload=function(){setTimeout(print,300)}<\/scr'+'ipt></body></html>';
   var w=window.open('','_blank');if(w){w.document.write(html);w.document.close();}
 }
 function sendGuideProforma(ref){
@@ -605,8 +697,13 @@ function fillRegions(){var set={};(guide().regions||[]).forEach(function(r){set[
 function saveRegions(){var sel=[];document.querySelectorAll('#regionChips input:checked').forEach(function(c){sel.push(c.value)});slUpdate(function(d){d.guides[0].regions=sel;});alert('Saved — operators updated');}
 function fillLang(){var set={},sk={};(guide().languages||[]).forEach(function(r){set[r]=1});(guide().skills||[]).forEach(function(r){sk[r]=1});document.querySelectorAll('#langChips input').forEach(function(c){c.checked=!!set[c.value]});document.querySelectorAll('#skillChips input').forEach(function(c){c.checked=!!sk[c.value]});}
 function saveLang(){var L=[],S=[];document.querySelectorAll('#langChips input:checked').forEach(function(c){L.push(c.value)});document.querySelectorAll('#skillChips input:checked').forEach(function(c){S.push(c.value)});slUpdate(function(d){d.guides[0].languages=L;d.guides[0].skills=S;});alert('Saved — operators updated');}
-function renderCerts(){var el=document.getElementById('certGrid');if(!el)return;el.innerHTML=((guide().certs)||[]).map(function(c){return '<div class="prop-card"><div class="body"><h4>'+esc(c.name)+'</h4><div class="meta">'+esc(c.issuer||'')+' · to '+esc(c.validTo||'')+'</div></div></div>';}).join('')||'<div class="meta">No licences yet</div>';}
-function renderReviews(){var el=document.getElementById('revList');if(!el)return;el.innerHTML=((guide().reviews)||[]).map(function(r){return '<div style="padding:10px 0;border-bottom:1px solid var(--border-light)"><strong>'+esc(r.operator)+'</strong> · '+r.score+' ★ · '+esc(r.park||'')+'<div class="meta">'+esc(r.text||'')+'</div></div>';}).join('')||'<div class="meta">No reviews yet</div>';}
+
+function renderReviews(){
+  var el=document.getElementById('revList');if(!el)return;
+  el.innerHTML=((guide().reviews)||[]).map(function(r){
+    return '<div style="padding:10px 0;border-bottom:1px solid var(--border-light)"><strong>'+esc(r.operator)+'</strong> · '+(r.score||'')+' ★ · '+esc(r.park||'')+'<div class="meta">'+esc(r.text||'')+'</div></div>';
+  }).join('')||'<div class="meta">No reviews yet</div>';
+}
 function renderMessages(){
   ensureWelcomeMsg();
   var msgs=(slGet().messages||[]).filter(function(m){return m.side==='guide';});
@@ -620,6 +717,52 @@ function renderMessages(){
   }).join('')||'<div class="meta" style="padding:12px">No messages yet.</div>';
   renderPager('pagerMessages','messages',pg.total,'renderMessages');
 }
+function editCert(i){
+  var c=((guide().certs)||[])[i];if(!c)return;
+  document.getElementById('certEditId').value=String(i);
+  document.getElementById('certName').value=c.name||'';
+  document.getElementById('certIssuer').value=c.issuer||'';
+  document.getElementById('certValid').value=c.validTo||'';
+  document.getElementById('certNo').value=c.number||'';
+  document.getElementById('certForm').style.display='block';
+}
+function deleteCert(i){
+  if(!confirm('Remove this licence?'))return;
+  slUpdate(function(d){if(d.guides&&d.guides[0]&&d.guides[0].certs)d.guides[0].certs.splice(i,1);});
+  renderCerts();
+}
+function saveCert(){
+  var name=(document.getElementById('certName')||{}).value;name=(name||'').trim();
+  if(!name){alert('Licence name required');return;}
+  var item={name:name,issuer:(document.getElementById('certIssuer')||{}).value||'',validTo:(document.getElementById('certValid')||{}).value||'',number:(document.getElementById('certNo')||{}).value||''};
+  var editId=(document.getElementById('certEditId')||{}).value;
+  slUpdate(function(d){
+    if(!d.guides||!d.guides[0])return;
+    if(!d.guides[0].certs)d.guides[0].certs=[];
+    if(editId!==''&&editId!=null&&!isNaN(Number(editId))) d.guides[0].certs[Number(editId)]=item;
+    else d.guides[0].certs.push(item);
+  });
+  document.getElementById('certForm').style.display='none';
+  if(document.getElementById('certEditId'))document.getElementById('certEditId').value='';
+  if(document.getElementById('certName'))document.getElementById('certName').value='';
+  renderCerts();
+  alert('Licence saved — visible to operators');
+}
+
+function renderCerts(){
+  var el=document.getElementById('certGrid');if(!el)return;
+  var list=(guide().certs)||[];
+  el.innerHTML=list.map(function(c,i){
+    return '<div class="prop-card"><div class="body"><h4>'+esc(c.name)+'</h4>'+
+      '<div class="meta">'+esc(c.issuer||'')+(c.number?' · #'+esc(c.number):'')+'</div>'+
+      '<div class="meta">Valid to '+esc(c.validTo||'—')+'</div>'+
+      '<div style="margin-top:8px;display:flex;gap:6px">'+
+      '<button class="btn" onclick="editCert('+i+')">Edit</button>'+
+      '<button class="btn" onclick="deleteCert('+i+')">Remove</button></div></div></div>';
+  }).join('')||'<div class="meta">No licences yet — add your tour guide licence above.</div>';
+}
+
+
 function markGuideMsgRead(id){slUpdate(function(d){(d.messages||[]).forEach(function(m){if(String(m.id)===String(id))m.unread=false;});});renderMessages();}
 function renderEarnings(){
   var jobs=slGet().guideJobs||[];
