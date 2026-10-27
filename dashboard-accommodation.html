@@ -502,48 +502,92 @@ var page=location.pathname.split('/').pop();if(map[page]&&map[page].indexOf(u.ro
      ============================================================ -->
 <div class="page" id="page-account">
 
-<div class="card" style="padding:16px;margin-bottom:14px;width:100%">
-<h3 style="margin-bottom:8px">Company profile</h3>
-<p class="meta" style="margin-bottom:12px">First registered account is Admin. Max 3 seats: Admin, Manager, Sales. New members need SafariLink admin approval and receive a temporary password.</p>
-<div class="form-grid">
-<div class="form-group full"><label>Login email (Admin)</label><input id="coEmail" type="email" style="word-break:break-all" placeholder="admin@serengetihill.tz"></div>
-<div class="form-group"><label>Company / display name</label><input id="coName" value="Serengeti Hill Camp"></div>
-<div class="form-group"><label>Phone</label><input id="coPhone" placeholder="+255 …"></div>
+<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+  <div>
+    <h3 style="margin:0 0 4px">Accounts &amp; Team</h3>
+    <p class="meta" style="margin:0">Company profile, login roles, and team access</p>
+  </div>
+  <button class="btn btn-primary" id="btnAddMember" onclick="document.getElementById('memF').style.display='block'"><i data-lucide="user-plus"></i> Invite member</button>
 </div>
-<button class="btn btn-primary" style="margin-top:10px" onclick="saveAccomAccount()"><i data-lucide="save"></i> Save account</button>
-<button type="button" class="btn" style="margin-top:10px" onclick="openChangePassword()">Change password</button>
-<button type="button" class="btn" style="margin-top:10px" onclick="requestPasswordReset()">Reset via email</button>
+
+<div class="stats" style="grid-template-columns:1fr 1fr;margin-bottom:12px">
+  <div class="stat"><div class="lbl">Company</div><div class="val" style="font-size:1.1rem" id="kpiCompanyName">Serengeti Hill Camp</div></div>
+  <div class="stat"><div class="lbl">Team seats</div><div class="val" id="teamSeatCount">—</div></div>
+</div>
+<div class="stats" style="grid-template-columns:1fr;margin-bottom:16px">
+  <div class="stat"><div class="lbl">Login email</div><div class="val" id="kpiLoginEmail" style="font-size:0.95rem;font-weight:600;overflow-wrap:anywhere;word-break:break-all;line-height:1.35">—</div></div>
+</div>
+
+<div id="teamPendingBanner" class="alert-item warn" style="display:none;margin-bottom:14px"></div>
+
+<div id="memF" class="card" style="display:none;padding:16px;margin-bottom:14px;width:100%">
+  <h3 style="margin-bottom:10px;font-size:1rem">Invite team member</h3>
+  <p class="meta" style="margin-bottom:12px">Admin invites Manager or Sales. SafariLink admin approves, then login details are emailed.</p>
+  <div class="form-grid">
+    <div class="form-group"><label>Name</label><input id="mName" placeholder="Full name"></div>
+    <div class="form-group full"><label>Login email</label><input id="mEmail" type="email" placeholder="long.email@company.co.tz" style="width:100%;word-break:break-all"></div>
+    <div class="form-group"><label>Role</label>
+      <select id="mRole"><option>Manager</option><option>Sales</option></select>
+    </div>
+  </div>
+  <button class="btn btn-primary" style="margin-top:10px" onclick="addMember()"><i data-lucide="save"></i> Save member</button>
+  <button class="btn" style="margin-top:10px" onclick="document.getElementById('memF').style.display='none'">Cancel</button>
+</div>
+
+<div class="card" style="padding:0;margin-bottom:14px;width:100%;overflow:hidden">
+  <div style="padding:14px 16px;border-bottom:1px solid var(--border-light)"><strong>Team members</strong></div>
+  <div style="overflow-x:auto">
+  <table style="width:100%">
+    <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th></tr></thead>
+    <tbody id="teamList"></tbody>
+  </table>
+  </div>
 </div>
 
 <div class="card" style="padding:16px;margin-bottom:14px;width:100%">
-<h3 style="margin-bottom:10px">Payment &amp; invoice details</h3>
-<p class="meta" style="margin-bottom:12px">Included automatically on every proforma to operators.</p>
-<div class="form-grid">
-<div class="form-group"><label>Bank name *</label><input id="payBankName" placeholder="CRDB Bank Plc"></div>
-<div class="form-group"><label>Branch name</label><input id="payBranch" placeholder="Clock Tower"></div>
-<div class="form-group full"><label>Bank address</label><input id="payBankAddress" placeholder="Arusha, Tanzania"></div>
-<div class="form-group"><label>SWIFT / BIC</label><input id="paySwift" placeholder="CORUTZTZ"></div>
-<div class="form-group"><label>Account name *</label><input id="payAccName" placeholder="Serengeti Hill Camp Ltd"></div>
-<div class="form-group"><label>Account number *</label><input id="payAccNo" placeholder="01J1098765432"></div>
-<div class="form-group"><label>Invoice email</label><input id="payEmail" type="email" placeholder="accounts@serengetihill.tz"></div>
-<div class="form-group"><label>Invoice phone</label><input id="payPhone" placeholder="+255 700 000 000"></div>
-</div>
-<button class="btn btn-primary" style="margin-top:12px" onclick="savePaymentProfile()"><i data-lucide="save"></i> Save payment details</button>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+    <h3 style="margin:0">Company profile</h3>
+    <button class="btn btn-primary" onclick="saveCompanyProfile()"><i data-lucide="save"></i> Save</button>
+  </div>
+  <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start">
+    <div style="text-align:center">
+      <div id="companyLogoBox" onclick="document.getElementById('companyLogoInput').click()" style="width:88px;height:88px;border-radius:10px;background:var(--khaki);border:2px dashed var(--border-light);display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden">
+        <span style="font-size:.7rem;color:var(--warm-gray);padding:6px">Logo</span>
+      </div>
+      <input type="file" id="companyLogoInput" accept="image/*" style="display:none" onchange="handleCompanyLogo(this)">
+    </div>
+    <div style="flex:1;min-width:240px">
+      <div class="form-grid">
+        <div class="form-group"><label>Company name</label><input id="coName" value="Serengeti Hill Camp"></div>
+        <div class="form-group"><label>Region / base</label><input id="coRegion" value="Arusha, Tanzania"></div>
+        <div class="form-group full"><label>Login email</label><input id="coEmail" type="email" style="word-break:break-all;width:100%" placeholder="admin@serengetihill.tz"></div>
+        <div class="form-group"><label>Phone</label><input id="coPhone" placeholder="+255 …" value="+255 754 000 000"></div>
+        <div class="form-group"><label>Website (optional)</label><input id="coWeb" placeholder="https://"></div>
+        <div class="form-group full"><label>Address</label><input id="coAddress" placeholder="Street, city, country"></div>
+        <div class="form-group full"><label>About</label><textarea id="coAbout" rows="2" placeholder="Short description of your property / company">Tented camp and lodge partner on SafariLink.</textarea></div>
+      </div>
+    </div>
+  </div>
+  <p style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+    <button type="button" class="btn" onclick="openChangePassword(document.getElementById('coEmail').value||'')">Change password</button>
+    <button type="button" class="btn" onclick="requestPasswordReset(document.getElementById('coEmail').value||'')">Reset via email</button>
+  </p>
 </div>
 
-<div class="card" style="padding:16px;width:100%">
-<h3 style="margin-bottom:8px">Team seats (max 3)</h3>
-<p class="meta" style="margin-bottom:12px">Admin can add Manager and Sales only. Pending members wait for SafariLink admin approval. Temporary password is issued on approval.</p>
-<div id="teamPendingBanner" class="meta" style="margin-bottom:10px"></div>
-<div class="filters"><button class="btn btn-primary" id="btnAddMember" onclick="document.getElementById('memF').style.display='block'"><i data-lucide="user-plus"></i> Add Manager / Sales</button></div>
-<div id="memF" style="display:none;margin:12px 0" class="form-grid">
-<div class="form-group"><label>Name</label><input id="mName"></div>
-<div class="form-group"><label>Email</label><input id="mEmail" type="email"></div>
-<div class="form-group"><label>Role</label><select id="mRole"><option>Manager</option><option>Sales</option></select></div>
-<div class="form-group"><label>&nbsp;</label><button class="btn btn-primary" onclick="addMember()"><i data-lucide="save"></i> Submit for approval</button></div>
-</div>
-<table style="width:100%"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th></tr></thead>
-<tbody id="teamList"></tbody></table>
+<div class="card" style="padding:16px;margin-bottom:14px;width:100%">
+  <h3 style="margin-bottom:10px">Payment &amp; invoice details</h3>
+  <p class="meta" style="margin-bottom:12px">Included automatically on every proforma to operators.</p>
+  <div class="form-grid">
+    <div class="form-group"><label>Bank name *</label><input id="payBankName" placeholder="CRDB Bank Plc"></div>
+    <div class="form-group"><label>Branch name</label><input id="payBranch" placeholder="Clock Tower"></div>
+    <div class="form-group full"><label>Bank address</label><input id="payBankAddress" placeholder="Arusha, Tanzania"></div>
+    <div class="form-group"><label>SWIFT / BIC</label><input id="paySwift" placeholder="CORUTZTZ"></div>
+    <div class="form-group"><label>Account name *</label><input id="payAccName" placeholder="Serengeti Hill Camp Ltd"></div>
+    <div class="form-group"><label>Account number *</label><input id="payAccNo" placeholder="01J1098765432"></div>
+    <div class="form-group"><label>Invoice email</label><input id="payEmail" type="email" placeholder="accounts@serengetihill.tz"></div>
+    <div class="form-group"><label>Invoice phone</label><input id="payPhone" placeholder="+255 700 000 000"></div>
+  </div>
+  <button class="btn btn-primary" style="margin-top:12px" onclick="savePaymentProfile()"><i data-lucide="save"></i> Save payment details</button>
 </div>
 </div>
 
@@ -1149,125 +1193,238 @@ function toggleBlock(key){
 
 
 
-function getAccomTeam(){
-  var d=slGet();
-  if(!d.team) d.team={};
-  if(!d.team.accommodation) d.team.accommodation=[];
-  return d.team.accommodation;
+
+
+
+
+
+
+var ACCOM_TEAM_KEY = 'sl_accom_team_v1';
+function loadAccomTeam(){
+  try {
+    var raw = localStorage.getItem(ACCOM_TEAM_KEY);
+    if (raw) {
+      var arr = JSON.parse(raw);
+      if (Array.isArray(arr) && arr.length) return arr;
+    }
+  } catch(e){}
+  // Fallback: shared platform team if present
+  try {
+    var d = slGet();
+    if (d && d.team && d.team.accommodation && d.team.accommodation.length) return d.team.accommodation;
+  } catch(e){}
+  return [];
 }
-function renderTeam(){
-  var list=getAccomTeam().slice();
-  // If empty: show empty state — admin is created via request-access / first login, not auto-invented here
-  var pending=list.filter(function(m){return m.status==='Pending';}).length;
-  var banner=document.getElementById('teamPendingBanner');
-  if(banner){
-    if(!list.length) banner.textContent='No team seats yet. After your Admin account is created via request access, you can add Manager and Sales here.';
-    else if(pending) banner.textContent=pending+' member(s) waiting for SafariLink admin approval. They will receive a temporary password when approved.';
-    else banner.textContent='';
-  }
-  var activeAdmin=list.some(function(m){return m.role==='Admin'&&(m.status==='Active'||!m.status);});
-  var btn=document.getElementById('btnAddMember');
-  if(btn){
-    // Only Admin can add; max 3 seats
-    btn.style.display=(list.length>=3 || (list.length&&!activeAdmin))?'none':'inline-flex';
-    if(!list.length) btn.style.display='none'; // no seats until admin exists
-  }
-  var el=document.getElementById('teamList');
-  if(!el)return;
-  if(!list.length){
-    el.innerHTML='<tr><td colspan="4" class="meta">No accounts yet. Complete request access to create the Admin account, then use Add Manager / Sales.</td></tr>';
-    return;
-  }
-  el.innerHTML=list.map(function(m){
-    var st=m.status||'Active';
-    return '<tr><td><strong>'+esc(m.name)+'</strong></td><td style="word-break:break-all">'+esc(m.email)+'</td><td>'+esc(m.role)+'</td><td>'+badge(st)+
-      (st==='Pending'?' <span class="meta">Awaiting SafariLink</span>':'')+
-      (m.tempPassword&&st==='Active'?' <span class="meta">temp issued</span>':'')+
-      '</td></tr>';
-  }).join('');
+function saveAccomTeam(list){
+  try { localStorage.setItem(ACCOM_TEAM_KEY, JSON.stringify(list)); } catch(e){}
+  try {
+    slUpdate(function(d){
+      if (!d.team) d.team = {};
+      d.team.accommodation = list;
+    });
+  } catch(e){}
 }
-function addMember(){
-  var n=(document.getElementById('mName')||{}).value; n=(n||'').trim();
-  var e=(document.getElementById('mEmail')||{}).value; e=(e||'').trim();
-  var role=(document.getElementById('mRole')||{}).value||'Manager';
-  if(!n||!e){alert('Name and email required');return;}
-  if(role==='Admin'){alert('Admin is only the first account from request access — choose Manager or Sales');return;}
-  var list=getAccomTeam();
-  if(!list.length || !list.some(function(m){return m.role==='Admin';})){
-    alert('Admin account must exist first (via request access / registration)');
-    return;
-  }
-  if(list.length>=3){alert('Maximum 3 accounts: Admin, Manager, Sales');return;}
-  if(list.some(function(m){return (m.email||'').toLowerCase()===e.toLowerCase();})){
-    alert('That email is already on the team');return;
-  }
-  slUpdate(function(d){
-    if(!d.team) d.team={};
-    if(!d.team.accommodation) d.team.accommodation=[];
-    d.team.accommodation.push({
-      id: Date.now(),
-      name: n,
-      email: e,
-      role: role,
-      status: 'Pending',
-      requestedAt: Date.now(),
-      tempPassword: null
-    });
-    if(!d.messages) d.messages=[];
-    d.messages.unshift({
-      id: Date.now(), side:'accommodation', from:'SafariLink', initials:'SL',
-      text: 'Team request: '+n+' ('+role+') submitted for SafariLink admin approval.',
-      time: Date.now(), type:'info', fromActivity:true, unread:true
-    });
-    if(!d.accomAlerts) d.accomAlerts=[];
-    d.accomAlerts.unshift({text:'New team member pending approval: '+n+' · '+role, kind:'warn', time:Date.now()});
-    d.accomAlerts=d.accomAlerts.slice(0,3);
-  });
-  document.getElementById('memF').style.display='none';
-  if(document.getElementById('mName')) document.getElementById('mName').value='';
-  if(document.getElementById('mEmail')) document.getElementById('mEmail').value='';
-  renderTeam();
-  renderMessages();
-  alert('Submitted — SafariLink admin must approve. Member will get a temporary password by email when approved.');
+function genTempPassword(){
+  var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+  var s = 'SL-';
+  for (var i=0;i<8;i++) s += chars.charAt(Math.floor(Math.random()*chars.length));
+  return s;
 }
 function ensureAdminSeatFromSession(){
-  // If logged-in accommodation user exists and team empty, create Admin seat once
-  try{
-    var u=null;
-    try{u=JSON.parse(sessionStorage.getItem('safariLinkUser')||'null');}catch(e){}
-    if(!u) try{u=JSON.parse(localStorage.getItem('safarilink_user')||'null');}catch(e){}
-    if(!u || (u.role!=='accommodation' && u.role!=='accommodation-provider')) return;
+  var list = loadAccomTeam();
+  if (list.length) return;
+  var u = null;
+  try { u = JSON.parse(sessionStorage.getItem('safariLinkUser')||'null'); } catch(e){}
+  if (!u) try { u = JSON.parse(localStorage.getItem('safarilink_user')||'null'); } catch(e){}
+  if (!u) return;
+  if (u.role !== 'accommodation' && u.role !== 'accommodation-provider') return;
+  list = [{
+    id: 1,
+    name: u.name || 'Admin',
+    email: u.email || 'admin@property.tz',
+    role: 'Admin',
+    status: 'Active',
+    isMain: true,
+    approvedAt: Date.now()
+  }];
+  saveAccomTeam(list);
+}
+function renderTeam(){
+  ensureAdminSeatFromSession();
+  var list = loadAccomTeam();
+  var pending = list.filter(function(m){ return m.status === 'Pending'; }).length;
+  var cnt = document.getElementById('teamSeatCount');
+  if (cnt) cnt.textContent = list.length + (pending ? ' · ' + pending + ' pending' : '');
+  var banner = document.getElementById('teamPendingBanner');
+  if (banner) {
+    if (pending) {
+      banner.style.display = 'block';
+      banner.innerHTML = '<strong>'+pending+' member(s) awaiting SafariLink Admin approval.</strong> Platform admin must approve before login details are sent.';
+    } else {
+      banner.style.display = 'none';
+      banner.innerHTML = '';
+    }
+  }
+  var btn = document.getElementById('btnAddMember');
+  if (btn) {
+    var hasAdmin = list.some(function(m){ return m.role === 'Admin' || m.isMain; });
+    btn.style.display = (hasAdmin && list.length < 3) ? 'inline-flex' : 'none';
+  }
+  var el = document.getElementById('teamList');
+  if (!el) return;
+  if (!list.length) {
+    el.innerHTML = '<tr><td colspan="4" class="meta">No team yet. Admin is created when the account is registered via request access.</td></tr>';
+    return;
+  }
+  el.innerHTML = list.map(function(m){
+    var roleLabel = (m.isMain || m.role === 'Admin') ? 'Admin · Main' : m.role;
+    var actions = '';
+    if (m.status === 'Pending') {
+      actions = '<div class="meta" style="margin-top:4px;color:#92400e">Awaiting <strong>SafariLink Admin</strong> approval — login will be emailed after approval.</div>';
+    } else if (m.status === 'Active' && !m.isMain && m.role !== 'Admin') {
+      actions = '<div class="meta" style="margin-top:4px">Approved by SafariLink · login emailed</div>';
+    }
+    return '<tr><td><strong>'+esc(m.name)+'</strong></td><td style="word-break:break-all">'+esc(m.email)+'</td><td>'+esc(roleLabel)+'</td><td>'+badge(m.status||'Active')+actions+'</td></tr>';
+  }).join('');
+  // KPIs
+  var main = list.find(function(m){ return m.isMain || m.role === 'Admin'; }) || list[0];
+  if (main) {
+    if (document.getElementById('kpiLoginEmail')) document.getElementById('kpiLoginEmail').textContent = main.email || '—';
+    if (document.getElementById('coEmail') && !document.getElementById('coEmail').value) document.getElementById('coEmail').value = main.email || '';
+  }
+  try {
+    var a = JSON.parse(localStorage.getItem('sl_accom_account')||'{}');
+    if (a.name && document.getElementById('kpiCompanyName')) document.getElementById('kpiCompanyName').textContent = a.name;
+  } catch(e){}
+}
+function addMember(){
+  var list = loadAccomTeam();
+  var n = (document.getElementById('mName')||{}).value; n = (n||'').trim();
+  var e = (document.getElementById('mEmail')||{}).value; e = (e||'').trim();
+  var role = (document.getElementById('mRole')||{}).value || 'Manager';
+  if (!n || !e) { alert('Name and email required'); return; }
+  if (role === 'Admin') { alert('Admin is the main account only — choose Manager or Sales'); return; }
+  if (!list.some(function(m){ return m.role === 'Admin' || m.isMain; })) {
+    alert('Admin account must exist first'); return;
+  }
+  if (list.length >= 3) { alert('Team is full'); return; }
+  if (list.some(function(m){ return (m.email||'').toLowerCase() === e.toLowerCase(); })) {
+    alert('That email is already on the team'); return;
+  }
+  list.push({
+    id: Date.now(),
+    name: n,
+    email: e,
+    role: role,
+    status: 'Pending',
+    requestedAt: Date.now(),
+    tempPassword: null
+  });
+  saveAccomTeam(list);
+  try {
     slUpdate(function(d){
-      if(!d.team) d.team={};
-      if(!d.team.accommodation) d.team.accommodation=[];
-      if(d.team.accommodation.length) return;
-      d.team.accommodation.push({
-        id: Date.now(),
-        name: u.name||'Admin',
-        email: u.email||'admin@property.tz',
-        role: 'Admin',
-        status: 'Active',
-        createdAt: Date.now()
+      if (!d.pendingTeam) d.pendingTeam = [];
+      d.pendingTeam.push({ side: 'accommodation', name: n, email: e, role: role, requestedAt: Date.now() });
+      if (!d.messages) d.messages = [];
+      d.messages.unshift({
+        id: Date.now(), side: 'accommodation', from: 'SafariLink', initials: 'SL',
+        text: 'Team request: '+n+' ('+role+') submitted for SafariLink admin approval.',
+        time: Date.now(), type: 'info', fromActivity: true, unread: true
       });
+      if (!d.accomAlerts) d.accomAlerts = [];
+      d.accomAlerts.unshift({ text: 'Team member pending: '+n+' · '+role, kind: 'warn', time: Date.now() });
+      d.accomAlerts = d.accomAlerts.slice(0, 3);
     });
-  }catch(e){}
+  } catch(e){}
+  document.getElementById('memF').style.display = 'none';
+  if (document.getElementById('mName')) document.getElementById('mName').value = '';
+  if (document.getElementById('mEmail')) document.getElementById('mEmail').value = '';
+  renderTeam();
+  if (typeof renderMessages === 'function') renderMessages();
+  alert('Member saved — awaiting SafariLink admin approval. Login details will be emailed after approval.');
 }
 
-function saveAccomAccount(){
-  var a={email:(document.getElementById('coEmail')||{}).value||'',name:(document.getElementById('coName')||{}).value||'',phone:(document.getElementById('coPhone')||{}).value||''};
-  localStorage.setItem('sl_accom_account',JSON.stringify(a));
-  alert('Account saved');
+
+
+
+
+
+function showToast(msg){
+  try { alert(msg); } catch(e){}
 }
-function openChangePassword(){
-  var email=prompt('Login email:','admin@serengetihill.tz');if(!email)return;
-  var np=prompt('New password (min 6 characters):');if(!np||np.length<6){alert('Password too short');return;}
-  localStorage.setItem('sl_accom_pwd_'+email.toLowerCase(),np);
+function saveCompanyProfile(){
+  var p = {
+    name: (document.getElementById('coName')||{}).value||'',
+    region: (document.getElementById('coRegion')||{}).value||'',
+    email: (document.getElementById('coEmail')||{}).value||'',
+    phone: (document.getElementById('coPhone')||{}).value||'',
+    website: (document.getElementById('coWeb')||{}).value||'',
+    address: (document.getElementById('coAddress')||{}).value||'',
+    about: (document.getElementById('coAbout')||{}).value||'',
+    logo: window._companyLogo||''
+  };
+  try { localStorage.setItem('sl_accom_company_profile', JSON.stringify(p)); } catch(e){}
+  try { localStorage.setItem('sl_accom_account', JSON.stringify({email:p.email,name:p.name,phone:p.phone})); } catch(e){}
+  if (document.getElementById('kpiCompanyName')) document.getElementById('kpiCompanyName').textContent = p.name||'—';
+  if (document.getElementById('kpiLoginEmail') && p.email) document.getElementById('kpiLoginEmail').textContent = p.email;
+  alert('Company profile saved');
+}
+function handleCompanyLogo(input){
+  var f = input.files && input.files[0]; if (!f) return;
+  var r = new FileReader();
+  r.onload = function(){
+    window._companyLogo = r.result;
+    var box = document.getElementById('companyLogoBox');
+    if (box) box.innerHTML = '<img src="'+r.result+'" style="width:100%;height:100%;object-fit:cover">';
+  };
+  r.readAsDataURL(f);
+}
+function loadCompanyProfile(){
+  try {
+    var raw = localStorage.getItem('sl_accom_company_profile');
+    if (!raw) return;
+    var p = JSON.parse(raw);
+    if (document.getElementById('coName')) document.getElementById('coName').value = p.name||'';
+    if (document.getElementById('coRegion')) document.getElementById('coRegion').value = p.region||'';
+    if (document.getElementById('coEmail')) document.getElementById('coEmail').value = p.email||'';
+    if (document.getElementById('coPhone')) document.getElementById('coPhone').value = p.phone||'';
+    if (document.getElementById('coWeb')) document.getElementById('coWeb').value = p.website||'';
+    if (document.getElementById('coAddress')) document.getElementById('coAddress').value = p.address||'';
+    if (document.getElementById('coAbout')) document.getElementById('coAbout').value = p.about||'';
+    if (p.logo) {
+      window._companyLogo = p.logo;
+      var box = document.getElementById('companyLogoBox');
+      if (box) box.innerHTML = '<img src="'+p.logo+'" style="width:100%;height:100%;object-fit:cover">';
+    }
+    if (p.name && document.getElementById('kpiCompanyName')) document.getElementById('kpiCompanyName').textContent = p.name;
+    if (p.email && document.getElementById('kpiLoginEmail')) document.getElementById('kpiLoginEmail').textContent = p.email;
+  } catch(e){}
+}
+function openChangePassword(email){
+  email = email || (document.getElementById('coEmail')||{}).value || prompt('Login email');
+  if (!email) return;
+  var nw = prompt('New password for '+email+' (min 8 characters)');
+  if (!nw || nw.length < 8) { alert('Password must be at least 8 characters'); return; }
+  var conf = prompt('Confirm new password');
+  if (nw !== conf) { alert('Passwords do not match'); return; }
+  try {
+    localStorage.setItem('safarilink_pwd_' + email.toLowerCase(), btoa(nw));
+    localStorage.setItem('sl_accom_pwd_' + email.toLowerCase(), nw);
+  } catch(e){}
   alert('Password updated for '+email);
 }
-function requestPasswordReset(){
-  var email=prompt('Email for password reset link:','admin@serengetihill.tz');if(!email)return;
-  alert('Password reset link simulated sent to '+email);
+function requestPasswordReset(email){
+  email = email || (document.getElementById('coEmail')||{}).value || prompt('Email for password reset');
+  if (!email) return;
+  var token = 'rst_' + Math.random().toString(36).slice(2, 12);
+  try {
+    localStorage.setItem('safarilink_reset_' + token, JSON.stringify({ email: email, at: Date.now(), side: 'accommodation' }));
+  } catch(e){}
+  var base = (location.origin || '') + (location.pathname || '').replace(/[^/]*$/, '');
+  var link = base + 'reset-password.html?token=' + token;
+  alert('Password reset email (simulated)\n\nTo: '+email+'\n\nReset link:\n'+link+'\n\nValid for this browser session.');
 }
+function saveAccomAccount(){ saveCompanyProfile(); }
 
 function loadPaymentProfile(){
   try{var a=JSON.parse(localStorage.getItem('sl_accom_account')||'{}');
@@ -1342,7 +1499,7 @@ function printAccomQuote(id){
   var w=window.open('','_blank');if(w){w.document.write(html);w.document.close();}
 }
 
-function refresh(){renderDash();renderRes();renderProps();renderRooms();renderRates();renderGallery();renderMessages();renderRevenue();renderOcc();renderGuests();renderTeam();fillAvSelects();renderCal();if(window.renderAccomQuotes)renderAccomQuotes();if(document.getElementById("page-account")&&document.getElementById("page-account").classList.contains("active"))loadPaymentProfile()}
+function refresh(){renderDash();renderRes();renderProps();renderRooms();renderRates();renderGallery();renderMessages();renderRevenue();renderOcc();renderGuests();renderTeam();fillAvSelects();renderCal();if(window.renderAccomQuotes)renderAccomQuotes();if(document.getElementById("page-account")&&document.getElementById("page-account").classList.contains("active")){loadPaymentProfile();loadCompanyProfile();}}
 document.getElementById('memF')&&document.querySelector('[onclick*=memF]')&&null;
 slEnsure();checkReminders();loadPaymentProfile();refresh();slOnChange(refresh);
 
