@@ -333,7 +333,10 @@
 <div class="card" style="padding:14px"><div class="cal" id="calGrid"></div>
 <p class="meta" style="margin-top:8px">Green = available · Red = blocked / on hire · Click a day to toggle block</p></div>
 </div>
-<div class="page" id="page-rates"><div class="card" style="overflow-x:auto"><table><thead><tr><th>Vehicle</th><th>Day</th><th>Safari</th><th>Transfer</th><th></th></tr></thead><tbody id="rateTable"></tbody></table></div></div>
+<div class="page" id="page-rates">
+<p class="meta" style="margin-bottom:12px">Day and transfer rates for all vehicles. <strong>Safari package rates</strong> apply only to safari vehicles (extended 4x4 / Land Cruiser). Other categories cannot take safari packages.</p>
+<div class="card" style="overflow-x:auto"><table><thead><tr><th>Vehicle</th><th>Category</th><th>Day</th><th>Safari</th><th>Transfer</th><th></th></tr></thead><tbody id="rateTable"></tbody></table></div>
+</div>
 <div class="page" id="page-insurance">
 <p class="meta" style="margin-bottom:10px">Live insurance, TALA and inspection per vehicle. Edit and click Update — saved to the live store.</p>
 <div class="card" style="overflow-x:auto;padding:0">
@@ -358,6 +361,7 @@
 <button class="btn btn-primary" onclick="document.getElementById('offlineRevBox').style.display='block'"><i data-lucide="plus"></i> Offline tracking</button>
 <button class="btn" onclick="renderRevenue()"><i data-lucide="refresh-cw"></i> SafariLink revenue</button>
 </div>
+
 <div id="offlineRevBox" class="card" style="display:none;padding:14px;margin-bottom:14px;max-width:480px">
 <div class="form-grid">
 <div class="form-group"><label>Extra revenue (not from SafariLink)</label><input type="number" id="mRev" value="0"></div>
@@ -370,6 +374,28 @@
 <h3 style="margin-bottom:10px">Performance ranking</h3>
 <div id="revRank"></div>
 </div>
+
+<div class="card" style="padding:16px;margin-bottom:14px;width:100%">
+  <h3 style="font-size:1rem;margin-bottom:6px">Utilisation explorer</h3>
+  <p class="meta" style="margin-bottom:14px">Inspect vehicle utilisation by week, month or year from live charter data.</p>
+  <div class="filters" style="margin-bottom:12px">
+    <button type="button" class="btn btn-primary" id="utilModeWeek" onclick="setUtilMode('week')">By week</button>
+    <button type="button" class="btn" id="utilModeMonth" onclick="setUtilMode('month')">By month</button>
+    <button type="button" class="btn" id="utilModeYear" onclick="setUtilMode('year')">By year</button>
+  </div>
+  <div class="form-grid" style="margin-bottom:12px">
+    <div class="form-group" id="utilWeekWrap"><label>Week starting</label><input type="date" id="utilWeekStart" onchange="runUtilExplorer()"></div>
+    <div class="form-group" id="utilMonthWrap" style="display:none"><label>Month</label><input type="month" id="utilMonth" onchange="runUtilExplorer()"></div>
+    <div class="form-group" id="utilYearWrap" style="display:none"><label>Year</label><select id="utilYearSel" onchange="runUtilExplorer()"></select></div>
+    <div class="form-group"><label>Vehicle (optional)</label><select id="utilVehicleFilter" onchange="runUtilExplorer()"><option value="">All vehicles</option></select></div>
+  </div>
+  <div class="stats" style="grid-template-columns:repeat(3,1fr);margin-bottom:0">
+    <div class="stat"><div class="lbl">Period utilisation</div><div class="val" id="utilExplorePct">—</div></div>
+    <div class="stat"><div class="lbl">Hire days</div><div class="val" id="utilExploreDays">—</div></div>
+    <div class="stat"><div class="lbl">Capacity (vehicles × days)</div><div class="val" id="utilExploreCap">—</div></div>
+  </div>
+  <div id="utilExploreDetail" style="margin-top:14px"></div>
+</div>
 </div>
 <div class="page" id="page-quotes">
 <div class="card" style="overflow-x:auto"><table>
@@ -378,53 +404,96 @@
 </div>
 
 <div class="page" id="page-account">
-<div class="card" style="padding:16px;margin-bottom:14px">
-<h3 style="margin-bottom:8px">Company profile</h3>
-<div class="form-grid">
-<div class="form-group"><label>Company name</label><input id="coName" value="Safari Fleet Tanzania"></div>
-<div class="form-group"><label>Phone</label><input id="coPhone" placeholder="+255 …"></div>
-<div class="form-group full"><label>Address</label><input id="coAddress"></div>
-<div class="form-group full"><label>Login email</label><input id="coEmail" type="email" style="word-break:break-all"></div>
+
+<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+  <div>
+    <h3 style="margin:0 0 4px">Accounts &amp; Team</h3>
+    <p class="meta" style="margin:0">Company profile, login roles, and team access</p>
+  </div>
+  <button class="btn btn-primary" id="btnAddMember" onclick="document.getElementById('memF').style.display='block'"><i data-lucide="user-plus"></i> Invite member</button>
 </div>
-<button class="btn btn-primary" style="margin-top:10px" onclick="saveCompany()"><i data-lucide="save"></i> Save profile</button>
+
+<div class="stats" style="grid-template-columns:1fr 1fr;margin-bottom:12px">
+  <div class="stat"><div class="lbl">Company</div><div class="val" style="font-size:1.1rem" id="kpiCompanyName">Safari Fleet Tanzania</div></div>
+  <div class="stat"><div class="lbl">Team seats</div><div class="val" id="teamSeatCount">—</div></div>
 </div>
-<div class="card" style="padding:16px;margin-bottom:14px">
-<h3 style="margin-bottom:8px">Payment &amp; invoice details</h3>
-<p class="meta" style="margin-bottom:10px">Saved once — included automatically on every proforma to operators.</p>
-<div class="form-grid">
-<div class="form-group"><label>Bank name *</label><input id="payBankName" placeholder="NMB Bank"></div>
-<div class="form-group"><label>Branch name</label><input id="payBranch" placeholder="Arusha"></div>
-<div class="form-group full"><label>Bank address</label><input id="payBankAddress"></div>
-<div class="form-group"><label>SWIFT</label><input id="paySwift" placeholder="NMIBTZTZ"></div>
-<div class="form-group"><label>Account name *</label><input id="payAccName" placeholder="Safari Fleet Tanzania Ltd"></div>
-<div class="form-group"><label>Account number *</label><input id="payAccNo"></div>
-<div class="form-group"><label>Invoice email</label><input id="payEmail" type="email"></div>
-<div class="form-group"><label>Invoice phone</label><input id="payPhone"></div>
+<div class="stats" style="grid-template-columns:1fr;margin-bottom:16px">
+  <div class="stat"><div class="lbl">Login email</div><div class="val" id="kpiLoginEmail" style="font-size:0.95rem;font-weight:600;overflow-wrap:anywhere;word-break:break-all;line-height:1.35">—</div></div>
 </div>
-<button class="btn btn-primary" style="margin-top:10px" onclick="savePaymentProfile()"><i data-lucide="save"></i> Save payment details</button>
+
+<div id="fleetPendingBanner" class="alert-item warn" style="display:none;margin-bottom:14px"></div>
+
+<div id="memF" class="card" style="display:none;padding:16px;margin-bottom:14px;width:100%">
+  <h3 style="margin-bottom:10px;font-size:1rem">Invite team member</h3>
+  <p class="meta" style="margin-bottom:12px">Admin invites Manager or Sales. SafariLink admin approves, then login details are emailed.</p>
+  <div class="form-grid">
+    <div class="form-group"><label>Name</label><input id="mName" placeholder="Full name"></div>
+    <div class="form-group full"><label>Login email</label><input id="mEmail" type="email" placeholder="long.email@company.co.tz" style="width:100%;word-break:break-all"></div>
+    <div class="form-group"><label>Role</label>
+      <select id="mRole"><option>Manager</option><option>Sales</option></select>
+    </div>
+  </div>
+  <button class="btn btn-primary" style="margin-top:10px" onclick="addMember()"><i data-lucide="save"></i> Save member</button>
+  <button class="btn" style="margin-top:10px" onclick="document.getElementById('memF').style.display='none'">Cancel</button>
 </div>
-<div class="card" style="padding:16px">
-<h3 style="margin-bottom:8px">Team accounts</h3>
-<p class="meta" style="margin-bottom:10px">First registered account is <strong>Admin</strong>. Admin adds Manager/Sales. New members need <strong>SafariLink Admin</strong> approval, then receive a temporary password. 
-<button type="button" class="btn" onclick="openChangePassword()">Change password</button>
-<button type="button" class="btn" onclick="requestPasswordReset()">Reset via email</button></p>
-<div id="fleetPendingBanner" class="meta" style="margin-bottom:8px;color:#92400e"></div>
-<p class="meta" style="margin-bottom:8px">First account is Admin. Admin can add Manager and Sales.</p>
-<div class="filters"><button class="btn btn-primary" onclick="document.getElementById('memF').style.display=document.getElementById('memF').style.display==='none'?'block':'none'"><i data-lucide="user-plus"></i> Add member</button></div>
-<div id="memF" style="display:none;margin-bottom:12px;padding:12px;border:1px solid var(--border-light);border-radius:8px" class="form-grid">
-<div class="form-group"><label>Name *</label><input id="mName"></div>
-<div class="form-group"><label>Email *</label><input id="mEmail" type="email" style="word-break:break-all"></div>
-<div class="form-group"><label>Role</label><select id="mRole"><option>Manager</option><option>Sales</option></select></div>
-<div class="form-group"><label>&nbsp;</label><button class="btn btn-primary" onclick="addMember()">Submit for approval</button></div>
+
+<div class="card" style="padding:0;margin-bottom:14px;width:100%;overflow:hidden">
+  <div style="padding:14px 16px;border-bottom:1px solid var(--border-light)"><strong>Team members</strong></div>
+  <div style="overflow-x:auto">
+  <table style="width:100%">
+    <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th></tr></thead>
+    <tbody id="teamList"></tbody>
+  </table>
+  </div>
 </div>
-<div class="card" style="overflow-x:auto;padding:0;border:1px solid var(--border-light)">
-<table>
-<thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
-<tbody id="teamList"></tbody>
-</table>
+
+<div class="card" style="padding:16px;margin-bottom:14px;width:100%">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+    <h3 style="margin:0">Company profile</h3>
+    <button class="btn btn-primary" onclick="saveCompanyProfile()"><i data-lucide="save"></i> Save</button>
+  </div>
+  <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start">
+    <div style="text-align:center">
+      <div id="companyLogoBox" onclick="document.getElementById('companyLogoInput').click()" style="width:88px;height:88px;border-radius:10px;background:var(--khaki);border:2px dashed var(--border-light);display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden">
+        <span style="font-size:.7rem;color:var(--warm-gray);padding:6px">Logo</span>
+      </div>
+      <input type="file" id="companyLogoInput" accept="image/*" style="display:none" onchange="handleCompanyLogo(this)">
+    </div>
+    <div style="flex:1;min-width:240px">
+      <div class="form-grid">
+        <div class="form-group"><label>Company name</label><input id="coName" value="Safari Fleet Tanzania"></div>
+        <div class="form-group"><label>Region / base</label><input id="coRegion" value="Arusha, Tanzania"></div>
+        <div class="form-group full"><label>Login email</label><input id="coEmail" type="email" style="word-break:break-all;width:100%" placeholder="dispatch@safarifleet.tz"></div>
+        <div class="form-group"><label>Phone</label><input id="coPhone" placeholder="+255 …" value="+255 754 000 000"></div>
+        <div class="form-group"><label>Website (optional)</label><input id="coWeb" placeholder="https://"></div>
+        <div class="form-group full"><label>Address</label><input id="coAddress" placeholder="Street, city, country"></div>
+        <div class="form-group full"><label>About</label><textarea id="coAbout" rows="2" placeholder="Short description">Safari fleet partner on SafariLink.</textarea></div>
+      </div>
+    </div>
+  </div>
+  <p style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+    <button type="button" class="btn" onclick="window.openChangePassword && window.openChangePassword((document.getElementById('coEmail')||{}).value||'')">Change password</button>
+    <button type="button" class="btn" onclick="window.requestPasswordReset && window.requestPasswordReset((document.getElementById('coEmail')||{}).value||'')">Reset via email</button>
+  </p>
+</div>
+
+<div class="card" style="padding:16px;margin-bottom:14px;width:100%">
+  <h3 style="margin-bottom:10px">Payment &amp; invoice details</h3>
+  <p class="meta" style="margin-bottom:12px">Included automatically on every proforma to operators.</p>
+  <div class="form-grid">
+    <div class="form-group"><label>Bank name *</label><input id="payBankName" placeholder="NMB Bank"></div>
+    <div class="form-group"><label>Branch name</label><input id="payBranch" placeholder="Arusha"></div>
+    <div class="form-group full"><label>Bank address</label><input id="payBankAddress" placeholder="Arusha, Tanzania"></div>
+    <div class="form-group"><label>SWIFT / BIC</label><input id="paySwift" placeholder="NMIBTZTZ"></div>
+    <div class="form-group"><label>Account name *</label><input id="payAccName" placeholder="Safari Fleet Tanzania Ltd"></div>
+    <div class="form-group"><label>Account number *</label><input id="payAccNo" placeholder="21210012345"></div>
+    <div class="form-group"><label>Invoice email</label><input id="payEmail" type="email" placeholder="accounts@safarifleet.tz"></div>
+    <div class="form-group"><label>Invoice phone</label><input id="payPhone" placeholder="+255 700 000 000"></div>
+  </div>
+  <button class="btn btn-primary" style="margin-top:12px" onclick="savePaymentProfile()"><i data-lucide="save"></i> Save payment details</button>
 </div>
 </div>
-</div>
+
 <div class="modal-bg" id="modal" onclick="if(event.target===this)this.classList.remove('show')"><div class="modal"><div id="modalBody"></div></div></div>
 <script>
 
@@ -658,27 +727,44 @@ function renderDrivers(){
 }
 
 
-function renderRates(){document.getElementById('rateTable').innerHTML=slGet().vehicles.map(function(v){return '<tr><td>'+esc(v.plate)+'</td><td><input type="number" id="rd'+v.id+'" value="'+v.dayRate+'" style="width:80px"></td><td><input type="number" id="rs'+v.id+'" value="'+v.safariDayRate+'" style="width:80px"></td><td><input type="number" id="rt'+v.id+'" value="'+v.transferRate+'" style="width:80px"></td><td><button class="btn btn-primary" onclick="saveVRate('+v.id+')">Save</button></td></tr>'}).join('')}
-function saveVRate(id){slUpdate(function(d){d.vehicles.forEach(function(v){if(v.id===id){v.dayRate=Number(document.getElementById('rd'+id).value)||v.dayRate;v.safariDayRate=Number(document.getElementById('rs'+id).value)||v.safariDayRate;v.transferRate=Number(document.getElementById('rt'+id).value)||v.transferRate}})});alert('Saved')}
-
-function acceptAgr(id){slUpdate(function(d){d.agreements.forEach(function(a){if(a.id===id){a.operatorAgreed=true;a.status='Signed';a.signedAt=new Date().toISOString().slice(0,10)}})});renderAgr()}
-function renderIns(){
-  var body=document.getElementById('insTable');if(!body)return;
+function isSafariVehicle(v){
+  var cat = String(v.category||v.model||'').toLowerCase();
+  return cat.indexOf('safari')>=0 || cat.indexOf('land cruiser')>=0 || cat.indexOf('landcruiser')>=0 || cat.indexOf('4x4')>=0;
+}
+function renderRates(){
+  var body=document.getElementById('rateTable');if(!body)return;
   var list=slGet().vehicles||[];
   body.innerHTML=list.map(function(v){
-    var exp=v.insuranceExpiry||'';
-    var note=v.insuranceNote||'';
-    var tala=v.tala||'';
-    var insp=!!v.inspected;
-    return '<tr>'+
-      '<td><strong>'+esc(v.plate)+'</strong><div class="meta">'+esc(v.model||v.category||'')+'</div></td>'+
-      '<td><input type="date" id="insExp'+v.id+'" value="'+exp+'" style="width:140px"></td>'+
-      '<td><input id="insNote'+v.id+'" value="'+String(note).replace(/"/g,'&quot;')+'" placeholder="e.g. 12 months" style="width:120px"></td>'+
-      '<td><input id="insTala'+v.id+'" value="'+String(tala).replace(/"/g,'&quot;')+'" placeholder="Optional TALA #" style="width:120px"></td>'+
-      '<td><select id="insInsp'+v.id+'"><option value="0"'+(insp?'':' selected')+'>Not inspected</option><option value="1"'+(insp?' selected':'')+'>Inspected</option></select></td>'+
-      '<td><button class="btn btn-primary" onclick="saveVehicleIns('+v.id+')">Update</button></td></tr>';
+    var safari=isSafariVehicle(v);
+    var safariCell=safari
+      ? '<input type="number" id="rs'+v.id+'" value="'+(v.safariDayRate!=null?v.safariDayRate:v.dayRate||0)+'" style="width:80px">'
+      : '<input type="number" id="rs'+v.id+'" value="" style="width:80px;opacity:.45" disabled title="Safari packages only for safari vehicles"><span class="meta"> N/A</span>';
+    return '<tr><td><strong>'+esc(v.plate)+'</strong><div class="meta">'+esc(v.model||'')+'</div></td><td>'+esc(v.category||'')+'</td>'+
+      '<td><input type="number" id="rd'+v.id+'" value="'+(v.dayRate||0)+'" style="width:80px"></td>'+
+      '<td>'+safariCell+'</td>'+
+      '<td><input type="number" id="rt'+v.id+'" value="'+(v.transferRate||0)+'" style="width:80px"></td>'+
+      '<td><button class="btn btn-primary" onclick="saveVRate('+v.id+')">Save</button></td></tr>';
   }).join('')||'<tr><td colspan="6" class="meta">Add vehicles first</td></tr>';
 }
+function saveVRate(id){
+  slUpdate(function(d){
+    (d.vehicles||[]).forEach(function(v){
+      if(v.id===id){
+        v.dayRate=Number(document.getElementById('rd'+id).value)||v.dayRate;
+        v.transferRate=Number(document.getElementById('rt'+id).value)||v.transferRate;
+        if(isSafariVehicle(v)){
+          var el=document.getElementById('rs'+id);
+          if(el && !el.disabled) v.safariDayRate=Number(el.value)||v.safariDayRate||v.dayRate;
+        } else {
+          v.safariDayRate=null;
+        }
+      }
+    });
+  });
+  alert('Saved');
+  renderRates();
+}
+
 function saveVehicleIns(id){
   slUpdate(function(d){
     (d.vehicles||[]).forEach(function(v){
@@ -772,13 +858,7 @@ function toggleFleetBlock(key){
   renderCal();
 }
 
-function saveCompany(){var p={name:(document.getElementById("coName")||{}).value||"",phone:(document.getElementById("coPhone")||{}).value||"",address:(document.getElementById("coAddress")||{}).value||"",email:(document.getElementById("coEmail")||{}).value||""};localStorage.setItem("sl_fleet_company",JSON.stringify(p));alert("Company profile saved");}
-function loadPaymentProfile(){
-  try{var p=JSON.parse(localStorage.getItem('sl_fleet_payment')||'{}');
-    var map={payBankName:'bankName',payBranch:'branchName',payBankAddress:'bankAddress',paySwift:'swift',payAccName:'accountName',payAccNo:'accountNumber',payEmail:'email',payPhone:'phone'};
-    Object.keys(map).forEach(function(id){var el=document.getElementById(id);if(el&&p[map[id]])el.value=p[map[id]];});
-  }catch(e){}
-}
+
 function savePaymentProfile(){
   var p={bankName:(document.getElementById('payBankName')||{}).value||'',branchName:(document.getElementById('payBranch')||{}).value||'',bankAddress:(document.getElementById('payBankAddress')||{}).value||'',swift:(document.getElementById('paySwift')||{}).value||'',accountName:(document.getElementById('payAccName')||{}).value||'',accountNumber:(document.getElementById('payAccNo')||{}).value||'',email:(document.getElementById('payEmail')||{}).value||'',phone:(document.getElementById('payPhone')||{}).value||''};
   if(!p.bankName||!p.accountName||!p.accountNumber){alert('Bank name, account name and number required');return;}
@@ -798,7 +878,7 @@ function renderFleetQuotes(){
 
 function printFleetQuote(id){
   var q=(slGet().partnerQuotes||[]).find(function(x){return x.id===id});if(!q)return;var inv=getPaymentProfile();
-  var html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+q.id+'</title><style>body{font-family:system-ui;max-width:640px;margin:40px auto}.box{border:1px solid #d4cfc6;border-radius:10px;padding:16px;margin:12px 0}.k{color:#888;font-size:.78rem;margin-top:6px}</style></head><body><h1 style="color:#1a5a3a">Fleet Proforma</h1><div class="box"><strong>'+esc(q.id)+'</strong><br>'+esc(q.detail)+'<br>Amount: <strong>'+money(q.amount)+'</strong></div><div class="box"><strong>Bank details</strong><div class="k">Bank</div>'+esc(q.bankName||inv.bankName)+'<div class="k">Address</div>'+esc(q.bankAddress||inv.bankAddress)+'<div class="k">SWIFT</div>'+esc(q.swift||inv.swift)+'<div class="k">Account name</div>'+esc(q.accountName||inv.accountName)+'<div class="k">Account number</div>'+esc(q.accountNumber||inv.accountNumber)+'<div class="k">Branch</div>'+esc(q.branchName||inv.branchName)+'</div><script>onload=function(){setTimeout(print,300)}<\/script></body></html>';
+  var html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+q.id+'</title><style>body{font-family:system-ui;max-width:640px;margin:40px auto}.box{border:1px solid #d4cfc6;border-radius:10px;padding:16px;margin:12px 0}.k{color:#888;font-size:.78rem;margin-top:6px}</style></head><body><h1 style="color:#1a5a3a">Fleet Proforma</h1><div class="box"><strong>'+esc(q.id)+'</strong><br>'+esc(q.detail)+'<br>Amount: <strong>'+money(q.amount)+'</strong></div><div class="box"><strong>Bank details</strong><div class="k">Bank</div>'+esc(q.bankName||inv.bankName)+'<div class="k">Address</div>'+esc(q.bankAddress||inv.bankAddress)+'<div class="k">SWIFT</div>'+esc(q.swift||inv.swift)+'<div class="k">Account name</div>'+esc(q.accountName||inv.accountName)+'<div class="k">Account number</div>'+esc(q.accountNumber||inv.accountNumber)+'<div class="k">Branch</div>'+esc(q.branchName||inv.branchName)+'</div><scr'+'ipt>onload=function(){setTimeout(print,300)}<\/scr'+'ipt></body></html>';
   var w=window.open('','_blank');if(w){w.document.write(html);w.document.close();}
 }
 function sendFleetProforma(ref){
@@ -818,91 +898,178 @@ function sendFleetProforma(ref){
 }
 
 
-function loadFleetTeam(){
-  try{var raw=localStorage.getItem('sl_fleet_team');if(raw)return JSON.parse(raw);}catch(e){}
-  return [{id:1,name:'Fleet Admin',email:'dispatch@safarifleet.tz',role:'Admin',status:'Active',isMain:true,approvedAt:Date.now()}];
+
+
+
+
+
+
+
+
+
+
+function loadPaymentProfile(){
+  try{var p=JSON.parse(localStorage.getItem('sl_fleet_payment')||'{}');
+    var map={payBankName:'bankName',payBranch:'branchName',payBankAddress:'bankAddress',paySwift:'swift',payAccName:'accountName',payAccNo:'accountNumber',payEmail:'email',payPhone:'phone'};
+    Object.keys(map).forEach(function(id){var el=document.getElementById(id);if(el&&p[map[id]])el.value=p[map[id]];});
+  }catch(e){}
 }
-function saveFleetTeam(list){localStorage.setItem('sl_fleet_team',JSON.stringify(list));}
-function genTempPassword(){return 'SL'+Math.random().toString(36).slice(2,8).toUpperCase();}
+function renderIns(){
+  var body=document.getElementById('insTable');if(!body)return;
+  var list=slGet().vehicles||[];
+  body.innerHTML=list.map(function(v){
+    var exp=v.insuranceExpiry||'';
+    var note=v.insuranceNote||'';
+    var tala=v.tala||'';
+    var insp=!!v.inspected;
+    return '<tr>'+
+      '<td><strong>'+esc(v.plate)+'</strong><div class="meta">'+esc(v.model||v.category||'')+'</div></td>'+
+      '<td><input type="date" id="insExp'+v.id+'" value="'+exp+'" style="width:140px"></td>'+
+      '<td><input id="insNote'+v.id+'" value="'+String(note).replace(/"/g,'&quot;')+'" placeholder="e.g. 12 months" style="width:120px"></td>'+
+      '<td><input id="insTala'+v.id+'" value="'+String(tala).replace(/"/g,'&quot;')+'" placeholder="Optional TALA #" style="width:120px"></td>'+
+      '<td><select id="insInsp'+v.id+'"><option value="0"'+(insp?'':' selected')+'>Not inspected</option><option value="1"'+(insp?' selected':'')+'>Inspected</option></select></td>'+
+      '<td><button class="btn btn-primary" onclick="saveVehicleIns('+v.id+')">Update</button></td></tr>';
+  }).join('')||'<tr><td colspan="6" class="meta">Add vehicles first</td></tr>';
+}
+var FLEET_TEAM_KEY='sl_fleet_team_v1';
+function loadFleetTeam(){
+  try{var raw=localStorage.getItem(FLEET_TEAM_KEY);if(raw){var arr=JSON.parse(raw);if(Array.isArray(arr)&&arr.length){
+    var cleaned=arr.filter(function(m){return m.role==='Admin'||m.isMain||m.requestedAt||m.status==='Pending'||(m.approvedAt&&m.role!=='Admin');});
+    if(cleaned.length!==arr.length)try{localStorage.setItem(FLEET_TEAM_KEY,JSON.stringify(cleaned));}catch(e){}
+    return cleaned;
+  }}}catch(e){}
+  try{var old=localStorage.getItem('sl_fleet_team');if(old){var arr=JSON.parse(old);if(Array.isArray(arr)&&arr.length){
+    var only=arr.filter(function(m){return m.role==='Admin'||m.isMain;});
+    if(!only.length) only=[{id:1,name:'Fleet Admin',email:'dispatch@safarifleet.tz',role:'Admin',status:'Active',isMain:true,approvedAt:Date.now()}];
+    localStorage.setItem(FLEET_TEAM_KEY,JSON.stringify(only));return only;
+  }}}catch(e){}
+  return [];
+}
+function saveFleetTeam(list){try{localStorage.setItem(FLEET_TEAM_KEY,JSON.stringify(list));}catch(e){}}
+function ensureAdminSeatFromSession(){
+  var list=loadFleetTeam();if(list.length)return;
+  var u=null;try{u=JSON.parse(sessionStorage.getItem('safariLinkUser')||'null');}catch(e){}
+  if(!u)try{u=JSON.parse(localStorage.getItem('safarilink_user')||'null');}catch(e){}
+  if(!u)return;
+  if(u.role!=='fleet'&&u.role!=='fleet-owner')return;
+  saveFleetTeam([{id:1,name:u.name||'Fleet Admin',email:u.email||'dispatch@safarifleet.tz',role:'Admin',status:'Active',isMain:true,approvedAt:Date.now()}]);
+}
 function renderTeam(){
+  ensureAdminSeatFromSession();
   var list=loadFleetTeam();
   var pending=list.filter(function(m){return m.status==='Pending';}).length;
+  var cnt=document.getElementById('teamSeatCount');
+  if(cnt)cnt.textContent=list.length+(pending?' · '+pending+' pending':'');
   var ban=document.getElementById('fleetPendingBanner');
-  if(ban) ban.innerHTML=pending?'<strong>'+pending+' member(s) awaiting SafariLink Admin approval.</strong> Platform admin must approve before login details are sent.':'';
-  var body=document.getElementById('teamList');
-  if(!body)return;
-  // support table or div
-  if(body.tagName==='TBODY'){
-    body.innerHTML=list.map(function(m,i){
-      var actions='';
-      if(m.status==='Pending') actions='<button class="btn btn-primary" onclick="approveFleetMember('+i+')">Approve (SafariLink Admin)</button> <button class="btn" onclick="rejectFleetMember('+i+')">Reject</button>';
-      else if(m.status==='Active'&&!m.isMain) actions='<button class="btn" onclick="showFleetLoginDetails('+i+')">Login details</button>';
-      else if(m.isMain) actions='<span class="meta">Main admin</span>';
-      return '<tr><td>'+esc(m.name)+(m.isMain?' <span class="badge badge-paid">Main</span>':'')+'</td><td style="word-break:break-all">'+esc(m.email)+'</td><td>'+esc(m.role)+'</td><td>'+esc(m.status)+'</td><td>'+actions+'</td></tr>';
-    }).join('');
-  } else {
-    body.innerHTML=list.map(function(m,i){
-      var actions='';
-      if(m.status==='Pending') actions='<button class="btn btn-primary" onclick="approveFleetMember('+i+')">Approve (SafariLink Admin)</button> <button class="btn" onclick="rejectFleetMember('+i+')">Reject</button>';
-      else if(m.status==='Active'&&!m.isMain) actions='<button class="btn" onclick="showFleetLoginDetails('+i+')">Login details</button>';
-      return '<div class="team-row"><div><strong>'+esc(m.name)+'</strong><div class="meta">'+esc(m.email)+' · '+esc(m.role)+' · '+esc(m.status)+'</div></div><div>'+actions+'</div></div>';
-    }).join('');
-  }
+  if(ban){if(pending){ban.style.display='block';ban.innerHTML='<strong>'+pending+' member(s) awaiting SafariLink Admin approval.</strong> Platform admin must approve before login details are sent.';}else{ban.style.display='none';ban.innerHTML='';}}
+  var btn=document.getElementById('btnAddMember');
+  if(btn){var hasAdmin=list.some(function(m){return m.role==='Admin'||m.isMain;});btn.style.display=(hasAdmin&&list.length<3)?'inline-flex':'none';}
+  var body=document.getElementById('teamList');if(!body)return;
+  if(!list.length){body.innerHTML='<tr><td colspan="4" class="meta">No team yet. Admin is created when the account is registered via request access.</td></tr>';return;}
+  body.innerHTML=list.map(function(m){
+    var roleLabel=(m.isMain||m.role==='Admin')?'Admin · Main':m.role;
+    var actions='';
+    if(m.status==='Pending') actions='<div class="meta" style="margin-top:4px;color:#92400e">Awaiting <strong>SafariLink Admin</strong> approval — login will be emailed after approval.</div>';
+    else if(m.status==='Active'&&!m.isMain&&m.role!=='Admin') actions='<div class="meta" style="margin-top:4px">Approved by SafariLink · login emailed</div>';
+    return '<tr><td><strong>'+esc(m.name)+'</strong></td><td style="word-break:break-all">'+esc(m.email)+'</td><td>'+esc(roleLabel)+'</td><td>'+badge(m.status||'Active')+actions+'</td></tr>';
+  }).join('');
+  var main=list.find(function(m){return m.isMain||m.role==='Admin';})||list[0];
+  if(main&&document.getElementById('kpiLoginEmail'))document.getElementById('kpiLoginEmail').textContent=main.email||'—';
+  try{var a=JSON.parse(localStorage.getItem('sl_fleet_company_profile')||'{}');if(a.name&&document.getElementById('kpiCompanyName'))document.getElementById('kpiCompanyName').textContent=a.name;}catch(e){}
 }
 function addMember(){
+  var list=loadFleetTeam();
   var n=(document.getElementById('mName')||{}).value;n=(n||'').trim();
   var e=(document.getElementById('mEmail')||{}).value;e=(e||'').trim();
-  var r=(document.getElementById('mRole')||{}).value||'Manager';
+  var role=(document.getElementById('mRole')||{}).value||'Manager';
   if(!n||!e){alert('Name and email required');return;}
-  var list=loadFleetTeam();
-  list.push({id:Date.now(),name:n,email:e,role:r,status:'Pending',isMain:false});
+  if(role==='Admin'){alert('Admin is the main account only');return;}
+  if(!list.some(function(m){return m.role==='Admin'||m.isMain;})){alert('Admin account must exist first');return;}
+  if(list.length>=3){alert('Team is full');return;}
+  if(list.some(function(m){return (m.email||'').toLowerCase()===e.toLowerCase();})){alert('Email already on team');return;}
+  list.push({id:Date.now(),name:n,email:e,role:role,status:'Pending',requestedAt:Date.now()});
   saveFleetTeam(list);
-  var memF=document.getElementById('memF');if(memF)memF.style.display='none';
-  if(document.getElementById('mName'))document.getElementById('mName').value='';
-  if(document.getElementById('mEmail'))document.getElementById('mEmail').value='';
+  document.getElementById('memF').style.display='none';
   renderTeam();
-  alert('Member submitted — SafariLink Admin must approve before they can log in');
+  alert('Member saved — awaiting SafariLink admin approval.');
 }
-function approveFleetMember(i){
-  var list=loadFleetTeam();
-  var m=list[i];if(!m||m.status!=='Pending')return;
-  var temp=genTempPassword();
-  m.status='Active';m.approvedAt=Date.now();m.tempPassword=temp;
-  saveFleetTeam(list);
-  slUpdate(function(d){
-    if(!d.team)d.team={};if(!d.team.fleet)d.team.fleet=[];
-    d.team.fleet.push({id:m.id,name:m.name,email:m.email,role:m.role,status:'Active'});
-    if(!d.messages)d.messages=[];
-    d.messages.unshift({id:Date.now(),fromActivity:true,unread:true,side:'fleet',from:'SafariLink Admin',initials:'SL',
-      text:'Team member approved: '+m.name+' ('+m.role+'). Temp password sent to '+m.email,time:Date.now(),type:'info'});
-  });
-  alert('Approved. Temporary password for '+m.email+': '+temp+'\n(Simulated email sent)');
-  renderTeam();
+function saveCompanyProfile(){
+  var p={name:(document.getElementById('coName')||{}).value||'',region:(document.getElementById('coRegion')||{}).value||'',email:(document.getElementById('coEmail')||{}).value||'',phone:(document.getElementById('coPhone')||{}).value||'',website:(document.getElementById('coWeb')||{}).value||'',address:(document.getElementById('coAddress')||{}).value||'',about:(document.getElementById('coAbout')||{}).value||'',logo:window._companyLogo||''};
+  try{localStorage.setItem('sl_fleet_company_profile',JSON.stringify(p));}catch(e){}
+  if(document.getElementById('kpiCompanyName'))document.getElementById('kpiCompanyName').textContent=p.name||'—';
+  if(document.getElementById('kpiLoginEmail')&&p.email)document.getElementById('kpiLoginEmail').textContent=p.email;
+  alert('Company profile saved');
 }
-function rejectFleetMember(i){
-  var list=loadFleetTeam();
-  if(!list[i]||list[i].status!=='Pending')return;
-  list.splice(i,1);saveFleetTeam(list);renderTeam();
+function handleCompanyLogo(input){var f=input.files&&input.files[0];if(!f)return;var r=new FileReader();r.onload=function(){window._companyLogo=r.result;var box=document.getElementById('companyLogoBox');if(box)box.innerHTML='<img src="'+r.result+'" style="width:100%;height:100%;object-fit:cover">';};r.readAsDataURL(f);}
+function loadCompanyProfile(){
+  try{var raw=localStorage.getItem('sl_fleet_company_profile');if(!raw)return;var p=JSON.parse(raw);
+    ['coName','coRegion','coEmail','coPhone','coWeb','coAddress','coAbout'].forEach(function(id){var map={coName:'name',coRegion:'region',coEmail:'email',coPhone:'phone',coWeb:'website',coAddress:'address',coAbout:'about'};var el=document.getElementById(id);if(el)el.value=p[map[id]]||'';});
+    if(p.logo){window._companyLogo=p.logo;var box=document.getElementById('companyLogoBox');if(box)box.innerHTML='<img src="'+p.logo+'" style="width:100%;height:100%;object-fit:cover">';}
+    if(p.name&&document.getElementById('kpiCompanyName'))document.getElementById('kpiCompanyName').textContent=p.name;
+    if(p.email&&document.getElementById('kpiLoginEmail'))document.getElementById('kpiLoginEmail').textContent=p.email;
+  }catch(e){}
 }
-function showFleetLoginDetails(i){
-  var m=loadFleetTeam()[i];if(!m)return;
-  alert('Login for '+m.name+'\nEmail: '+m.email+'\nRole: '+m.role+'\nTemp password: '+(m.tempPassword||'(already changed)')+'\nThey should change password on first login.');
-}
-function openChangePassword(){
-  var email=prompt('Account email to change password for:','dispatch@safarifleet.tz');
-  if(!email)return;
-  var np=prompt('New password (min 6 characters):');
-  if(!np||np.length<6){alert('Password too short');return;}
-  localStorage.setItem('sl_fleet_pwd_'+email.toLowerCase(), np);
+function openChangePassword(email){
+  email=email||(document.getElementById('coEmail')||{}).value||'';
+  if(!email)email=prompt('Login email for password change');if(!email)return;
+  var nw=prompt('New password for '+email+' (min 8 characters)');if(nw===null)return;
+  if(!nw||nw.length<8){alert('Password must be at least 8 characters');return;}
+  var conf=prompt('Confirm new password');if(conf===null)return;if(nw!==conf){alert('Passwords do not match');return;}
+  try{localStorage.setItem('safarilink_pwd_'+String(email).toLowerCase(),btoa(nw));localStorage.setItem('sl_fleet_pwd_'+String(email).toLowerCase(),nw);}catch(e){}
   alert('Password updated for '+email);
 }
-function requestPasswordReset(){
-  var email=prompt('Email for password reset link:','dispatch@safarifleet.tz');
-  if(!email)return;
-  alert('Password reset link simulated sent to '+email);
+function requestPasswordReset(email){
+  email=email||(document.getElementById('coEmail')||{}).value||'';
+  if(!email)email=prompt('Email for password reset');if(!email)return;
+  var token='rst_'+Math.random().toString(36).slice(2,12);
+  try{localStorage.setItem('safarilink_reset_'+token,JSON.stringify({email:email,at:Date.now(),side:'fleet'}));}catch(e){}
+  var base=(location.origin||'')+(location.pathname||'').replace(/[^/]*$/,'');
+  alert('Password reset email (simulated)\n\nTo: '+email+'\n\nReset link:\n'+base+'reset-password.html?token='+token);
+}
+var utilMode='week';
+function setUtilMode(mode){
+  utilMode=mode||'week';
+  ['week','month','year'].forEach(function(m){var btn=document.getElementById('utilMode'+m.charAt(0).toUpperCase()+m.slice(1));if(btn)btn.className='btn'+(m===utilMode?' btn-primary':'');});
+  if(document.getElementById('utilWeekWrap'))document.getElementById('utilWeekWrap').style.display=utilMode==='week'?'':'none';
+  if(document.getElementById('utilMonthWrap'))document.getElementById('utilMonthWrap').style.display=utilMode==='month'?'':'none';
+  if(document.getElementById('utilYearWrap'))document.getElementById('utilYearWrap').style.display=utilMode==='year'?'':'none';
+  runUtilExplorer();
+}
+function fillUtilControls(){
+  var ysel=document.getElementById('utilYearSel');
+  if(ysel&&ysel.options&&!ysel.options.length){var y=new Date().getFullYear();for(var i=y-2;i<=y+2;i++){var o=document.createElement('option');o.value=String(i);o.textContent=String(i);if(i===y)o.selected=true;ysel.appendChild(o);}}
+  var today=new Date();
+  if(document.getElementById('utilWeekStart')&&!document.getElementById('utilWeekStart').value){var ws=new Date(today);ws.setDate(today.getDate()-today.getDay());document.getElementById('utilWeekStart').value=ws.toISOString().slice(0,10);}
+  if(document.getElementById('utilMonth')&&!document.getElementById('utilMonth').value)document.getElementById('utilMonth').value=today.toISOString().slice(0,7);
+  var vf=document.getElementById('utilVehicleFilter');
+  if(vf){var cur=vf.value;vf.innerHTML='<option value="">All vehicles</option>'+(slGet().vehicles||[]).map(function(v){return '<option value="'+v.id+'">'+esc(v.plate)+' · '+esc(v.model||v.category||'')+'</option>';}).join('');if(cur)try{vf.value=cur;}catch(e){}}
+}
+function runUtilExplorer(){
+  fillUtilControls();
+  var charters=(slGet().charters||[]).filter(function(c){return c.status!=='Cancelled';});
+  var vehicles=slGet().vehicles||[];
+  var vid=Number((document.getElementById('utilVehicleFilter')||{}).value)||0;
+  if(vid){charters=charters.filter(function(c){return c.vehicleId===vid||String(c.vehicleId)===String(vid);});vehicles=vehicles.filter(function(v){return v.id===vid;});}
+  var vCount=vehicles.length||1;
+  var start,end,label,daysInPeriod;
+  if(utilMode==='year'){var y=Number((document.getElementById('utilYearSel')||{}).value)||new Date().getFullYear();start=new Date(y,0,1);end=new Date(y+1,0,1);label='Year '+y;daysInPeriod=(y%4===0)?366:365;}
+  else if(utilMode==='month'){var mv=(document.getElementById('utilMonth')||{}).value||new Date().toISOString().slice(0,7);var parts=mv.split('-');var yy=Number(parts[0]),mm=Number(parts[1])-1;start=new Date(yy,mm,1);end=new Date(yy,mm+1,1);label=start.toLocaleString('default',{month:'long',year:'numeric'});daysInPeriod=new Date(yy,mm+1,0).getDate();}
+  else{var wsv=(document.getElementById('utilWeekStart')||{}).value||new Date().toISOString().slice(0,10);start=new Date(wsv);start.setHours(0,0,0,0);end=new Date(start);end.setDate(start.getDate()+7);label='Week of '+start.toISOString().slice(0,10);daysInPeriod=7;}
+  var hireDays=0;
+  charters.forEach(function(c){var a=new Date(c.start),b=new Date(c.end);for(var t0=new Date(a);t0<=b;t0.setDate(t0.getDate()+1)){if(t0>=start&&t0<end)hireDays++;}});
+  var cap=vCount*daysInPeriod;
+  var pct=cap?Math.min(100,Math.round(hireDays/cap*100)):0;
+  if(document.getElementById('utilExplorePct'))document.getElementById('utilExplorePct').textContent=pct+'%';
+  if(document.getElementById('utilExploreDays'))document.getElementById('utilExploreDays').textContent=String(hireDays);
+  if(document.getElementById('utilExploreCap'))document.getElementById('utilExploreCap').textContent=cap+' ('+vCount+' veh × '+daysInPeriod+'d)';
+  var det=document.getElementById('utilExploreDetail');
+  if(det){
+    det.innerHTML='<p class="meta"><strong>'+esc(label)+'</strong> · '+hireDays+' hire days out of '+cap+' capacity.</p>';
+    if(!vid){det.innerHTML+=(slGet().vehicles||[]).map(function(v){var hd=0;(slGet().charters||[]).filter(function(c){return c.status!=='Cancelled'&&(c.vehicleId===v.id||String(c.vehicleId)===String(v.id));}).forEach(function(c){var a=new Date(c.start),b=new Date(c.end);for(var t0=new Date(a);t0<=b;t0.setDate(t0.getDate()+1)){if(t0>=start&&t0<end)hd++;}});var vp=daysInPeriod?Math.min(100,Math.round(hd/daysInPeriod*100)):0;return '<div style="margin-top:8px"><div style="display:flex;justify-content:space-between;font-size:.84rem"><span><strong>'+esc(v.plate)+'</strong> · '+esc(v.model||v.category||'')+'</span><strong>'+vp+'% · '+hd+'/'+daysInPeriod+' days</strong></div><div style="height:8px;background:var(--khaki);border-radius:4px"><div style="width:'+vp+'%;height:100%;background:var(--accent-green);border-radius:4px"></div></div></div>';}).join('');}
+  }
 }
 
-function refresh(){renderDash();renderFleet();renderBookings();renderDrivers();renderRates();renderIns();renderMessages();renderRevenue();renderTeam();fillAvSelects();renderCal();if(window.renderFleetQuotes)renderFleetQuotes();if(document.getElementById("page-account")&&document.getElementById("page-account").classList.contains("active")){loadPaymentProfile();}}
-slEnsure();ensureWelcomeMsg();loadPaymentProfile();refresh();slOnChange(refresh);lucide.createIcons();
-</script></body></html>
 
+function refresh(){renderDash();renderFleet();renderBookings();renderDrivers();renderRates();renderIns();renderMessages();renderRevenue();renderTeam();fillAvSelects();renderCal();if(window.renderFleetQuotes)renderFleetQuotes();if(document.getElementById("page-account")&&document.getElementById("page-account").classList.contains("active")){loadPaymentProfile();loadCompanyProfile();renderTeam();} try{runUtilExplorer();}catch(e){}}
+slEnsure();ensureWelcomeMsg();loadPaymentProfile();loadCompanyProfile();refresh();slOnChange(refresh);lucide.createIcons();
+</script></body></html>
