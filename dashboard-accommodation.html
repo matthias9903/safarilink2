@@ -670,7 +670,7 @@ function slEnsure(){
       {id:3,side:'fleet',from:'Dreamtrails Expeditions',initials:'DT',text:'CH-901 on the road — Serengeti leg starts tomorrow.',time:Date.now()-7200000,type:'info'},
       {id:4,side:'guide',from:'Dreamtrails Expeditions',initials:'DT',text:'GJ-440 pickup at Arusha Coffee Lodge, 07:00 on 22 Oct.',time:Date.now()-5400000,type:'info'}
     ],
-    team:{accommodation:[{id:1,name:'Camp Admin',email:'admin@serengetihill.tz',role:'Admin'},{id:2,name:'Front Office Manager',email:'manager@serengetihill.tz',role:'Manager'},{id:3,name:'Sales Lead',email:'sales@serengetihill.tz',role:'Sales'}],fleet:[{id:1,name:'Dispatch Lead',email:'dispatch@safarifleet.tz',role:'Admin'}],guide:[]},
+    team:{accommodation:[{id:1,name:'Camp Admin',email:'admin@serengetihill.tz',role:'Admin',status:'Active',isMain:true}],fleet:[{id:1,name:'Dispatch Lead',email:'dispatch@safarifleet.tz',role:'Admin',status:'Active',isMain:true}],guide:[]},
     manualStats:{extraBookings:0,extraRevenue:0,extraOccNights:0},
     calendarBlocks:{accommodation:{},fleet:{},guide:{}}
   };
@@ -1205,13 +1205,21 @@ function loadAccomTeam(){
     var raw = localStorage.getItem(ACCOM_TEAM_KEY);
     if (raw) {
       var arr = JSON.parse(raw);
-      if (Array.isArray(arr) && arr.length) return arr;
+      if (Array.isArray(arr) && arr.length) {
+        // Drop legacy seeded Manager/Sales that were never invited (no requestedAt / not pending path)
+        // Keep Admin + anyone with requestedAt or explicitly Pending/Active from invite
+        var cleaned = arr.filter(function(m){
+          if (m.role === 'Admin' || m.isMain) return true;
+          if (m.requestedAt || m.status === 'Pending') return true;
+          if (m.approvedAt && m.role !== 'Admin') return true; // approved invite
+          return false; // drop fake pre-seeded Manager/Sales
+        });
+        if (cleaned.length !== arr.length) {
+          try { localStorage.setItem(ACCOM_TEAM_KEY, JSON.stringify(cleaned)); } catch(e){}
+        }
+        return cleaned;
+      }
     }
-  } catch(e){}
-  // Fallback: shared platform team if present
-  try {
-    var d = slGet();
-    if (d && d.team && d.team.accommodation && d.team.accommodation.length) return d.team.accommodation;
   } catch(e){}
   return [];
 }
@@ -1230,6 +1238,24 @@ function genTempPassword(){
   for (var i=0;i<8;i++) s += chars.charAt(Math.floor(Math.random()*chars.length));
   return s;
 }
+
+function cleanLegacyAccomTeam(){
+  try {
+    var d = slGet();
+    if (d && d.team && Array.isArray(d.team.accommodation) && d.team.accommodation.length > 1) {
+      var only = d.team.accommodation.filter(function(m){ return m.role==='Admin' || m.isMain; });
+      if (!only.length) only = [{id:1,name:'Camp Admin',email:'admin@serengetihill.tz',role:'Admin',status:'Active',isMain:true}];
+      // Only strip if none of the extras look invited
+      var hasInvite = d.team.accommodation.some(function(m){ return m.requestedAt || (m.status==='Pending'); });
+      if (!hasInvite) {
+        d.team.accommodation = only;
+        slSave(d);
+        localStorage.setItem(ACCOM_TEAM_KEY, JSON.stringify(only));
+      }
+    }
+  } catch(e){}
+}
+
 function ensureAdminSeatFromSession(){
   var list = loadAccomTeam();
   if (list.length) return;
@@ -1250,7 +1276,7 @@ function ensureAdminSeatFromSession(){
   saveAccomTeam(list);
 }
 function renderTeam(){
-  ensureAdminSeatFromSession();
+  cleanLegacyAccomTeam();ensureAdminSeatFromSession();
   var list = loadAccomTeam();
   var pending = list.filter(function(m){ return m.status === 'Pending'; }).length;
   var cnt = document.getElementById('teamSeatCount');
