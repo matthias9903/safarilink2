@@ -24,19 +24,24 @@
 
   /* ── RESET & BASE ── */
   * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden; }
   body {
     font-family: system-ui, sans-serif;
     background: var(--warm-off-white);
     color: var(--charcoal);
     display: flex;
     min-height: 100vh;
+    height: 100%;
+    overflow: hidden;
   }
 
   /* ── SIDEBAR (navigation + collapse) ── */
   .sidebar {
     width: 240px; background: var(--charcoal); color: #ccc;
     display: flex; flex-direction: column; flex-shrink: 0;
-    transition: width .3s ease; position: relative; overflow-x: visible;
+    transition: width .3s ease;
+    position: fixed; top: 0; left: 0; bottom: 0; height: 100vh; z-index: 100;
+    overflow: hidden;
   }
   .sidebar.collapsed { width: 68px; }
   .sidebar.collapsed .logo-text,
@@ -71,7 +76,7 @@
   }
   .logo-text { font-weight: 700; color: #fff; }
   .logo-text span { color: var(--accent-green); }
-  .sidebar-nav { padding: 12px; flex: 1; overflow-y: auto; }
+  .sidebar-nav { padding: 12px; flex: 1; overflow-y: auto; min-height: 0; -webkit-overflow-scrolling: touch; }
   .sidebar-section {
     font-size: .68rem; text-transform: uppercase;
     color: rgba(255,255,255,.35); padding: 12px 8px 6px;
@@ -112,7 +117,11 @@
   .sidebar-footer { padding: 14px; border-top: 1px solid rgba(255,255,255,.08); font-size: .8rem; }
 
   /* ── MAIN LAYOUT ── */
-  .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .main {
+    flex: 1; min-width: 0; display: flex; flex-direction: column;
+    height: 100vh; max-height: 100vh; overflow: hidden;
+    margin-left: 240px; transition: margin-left .3s ease;
+  }
   .topbar {
     background: #fff; padding: 14px 22px; border-bottom: 1px solid var(--border-light);
     display: flex; justify-content: space-between; align-items: center;
@@ -120,7 +129,11 @@
   }
   .topbar h2 { font-size: 1.15rem; }
   .topbar p { font-size: .78rem; color: var(--warm-gray); }
-  .content { padding: 22px; flex: 1; }
+  .content {
+    padding: 22px; flex: 1; min-height: 0; width: 100%;
+    overflow-y: auto; overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
 
   /* ── PAGES ── */
   .page { display: none; }
@@ -526,7 +539,21 @@ function badge(s){return '<span class="badge badge-'+String(s).toLowerCase().rep
 function money(n){return '$'+Number(n||0).toLocaleString()}
 function fileToDataUrl(f){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(r.result)};r.onerror=rej;r.readAsDataURL(f)})}
 
-function toggleCollapse(){var sb=document.getElementById('sidebar');var icon=document.getElementById('collapseIcon');sb.classList.toggle('collapsed');if(icon){icon.setAttribute('data-lucide',sb.classList.contains('collapsed')?'chevrons-right':'chevrons-left');lucide.createIcons()}}
+function toggleCollapse(){
+  var sb=document.getElementById('sidebar');
+  if(!sb)return;
+  sb.classList.toggle('collapsed');
+  var main=document.querySelector('.main');
+  if(main){
+    if(sb.classList.contains('collapsed')) main.style.marginLeft='68px';
+    else main.style.marginLeft='240px';
+  }
+  var icon=document.getElementById('collapseIcon');
+  if(icon){
+    icon.setAttribute('data-lucide', sb.classList.contains('collapsed')?'chevrons-right':'chevrons-left');
+  }
+  if(window.lucide) lucide.createIcons();
+}
 function logout(){sessionStorage.removeItem('safariLinkUser');try{localStorage.removeItem('safarilink_user')}catch(e){}location.href='index.html'}
 var TITLES={
   dashboard:['Dashboard','On hire, availability, revenue and live operator activity'],
