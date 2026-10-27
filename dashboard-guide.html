@@ -123,7 +123,7 @@
     font-weight: 600; color: var(--forest-green);
   }
   .chips input { width: 16px; height: 16px; accent-color: var(--forest-green); flex-shrink: 0; }
-  .section-card { background:#fff; border:1px solid var(--border-light); border-radius:10px; padding:16px; margin-bottom:16px; }
+  .section-card { background:#fff; border:1px solid var(--border-light); border-radius:10px; padding:16px; margin-bottom:16px; width:100%; box-sizing:border-box; }
   .section-card h3 { font-size:1rem; margin-bottom:12px; }
 
   .sidebar-badge {
@@ -141,11 +141,11 @@
   }
   .topbar h2 { font-size: 1.15rem; }
   .topbar p { font-size: .78rem; color: var(--warm-gray); }
-  .content { padding: 22px; flex: 1; }
+  .content { padding: 22px; flex: 1; width: 100%; min-width: 0; }
 
   /* ── PAGES ── */
   .page { display: none; }
-  .page.active { display: block; }
+  .page.active { display: block; width: 100%; }
 
   /* ── BUTTONS ── */
   .btn {
@@ -163,7 +163,7 @@
   .stat .val { font-size: 1.55rem; font-weight: 700; }
 
   /* ── CARDS ── */
-  .card { background: #fff; border: 1px solid var(--border-light); border-radius: 10px; }
+  .card { background: #fff; border: 1px solid var(--border-light); border-radius: 10px; width: 100%; box-sizing: border-box; }
 
   /* ── TABLES ── */
   table { width: 100%; border-collapse: collapse; font-size: .84rem; }
@@ -420,8 +420,8 @@
 <button class="btn btn-primary" style="margin-top:8px" onclick="saveGuideOffline()">Save offline total</button>
 </div>
 <div class="card" style="overflow-x:auto"><table><thead><tr><th>Ref</th><th>Operator</th><th>Fee</th><th>Status</th></tr></thead><tbody id="earnTable"></tbody></table>
-<div class="pager" id="pagerEarnings"></div></div></div>
-</div></div>
+<div class="pager" id="pagerEarnings"></div></div>
+</div>
 
 <div class="page" id="page-quotes">
 <div class="section-card" style="padding:0;overflow:hidden">
@@ -439,7 +439,7 @@
 </div>
 </div>
 <div class="page" id="page-account">
-<div class="card" style="padding:16px;margin-bottom:14px">
+<div class="card" style="padding:16px;margin-bottom:14px;width:100%">
 <h3 style="margin-bottom:8px">Account</h3>
 <p class="meta" style="margin-bottom:10px">Single guide account — no team seats.</p>
 <div class="form-grid">
