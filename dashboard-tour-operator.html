@@ -434,6 +434,29 @@
   .quote-summary-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.85rem; }
   .quote-summary-row.total { font-size: 1.1rem; font-weight: 700; border-top: 1px solid var(--border); padding-top: 12px; margin-top: 6px; color: var(--primary); }
 
+  
+  #quotes-page table td, #quotes-page table th {
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+  #quotes-page table td:nth-child(3) {
+    white-space: normal;
+    max-width: 220px;
+  }
+  #quotes-page .btn-row {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    gap: 10px;
+    align-items: center;
+  }
+  #quotes-page .btn-row .btn {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  #quotes-page .badge {
+    white-space: nowrap;
+  }
+
   /* ── RESPONSIVE ── */
   @media (max-width: 768px) {
     .sidebar { transform: translateX(-100%); }
@@ -1217,7 +1240,7 @@
             <div class="card" style="margin-top:16px;">
                 <div class="card-header">
                     <div class="card-title">Company profile</div>
-                    <button type="button" class="btn btn-primary btn-sm" onclick="saveCompanyProfile()"><i data-lucide="save" style="width:14px;height:14px;"></i> Save to favorites</button>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="saveCompanyProfile()"><i data-lucide="save" style="width:14px;height:14px;"></i> Save</button>
                 </div>
                 <div class="card-body">
                     <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;">
@@ -2714,7 +2737,7 @@ window.renderQuotesPage = function() {
       '<td>$'+Number(q.amount||0).toLocaleString()+'</td>' +
       '<td style="white-space:nowrap;"><span class="badge '+st+'" style="white-space:nowrap;">'+esc(q.booked?'Booked':(q.status||'Draft'))+'</span></td>' +
       '<td>'+bookCell+'</td>' +
-      '<td style="white-space:nowrap;"><div class="btn-row"><button type="button" class="btn btn-secondary btn-sm" onclick="redownloadClientQuote(\''+q.id+'\')">Client PDF</button> <button type="button" class="btn btn-secondary btn-sm" style="margin-left:8px" onclick="deleteOpQuote(\''+q.id+'\')">Delete</button></div></td>' +
+      '<td style="white-space:nowrap;"><div class="btn-row"><button type="button" class="btn btn-secondary btn-sm" onclick="redownloadClientQuote(\''+q.id+'\')">Client PDF</button><button type="button" class="btn btn-secondary btn-sm" style="margin-left:10px" onclick="deleteOpQuote(\''+q.id+'\')">Delete</button></div></td>' +
       '</tr>';
   }).join('') || '<tr><td colspan="7" style="color:var(--warm-gray);">No quotes yet — generate one from Itineraries.</td></tr>';
   renderPager('pagerMyQuotes', 'myQuotes', pg.total, 'renderQuotesPage');
@@ -3021,38 +3044,36 @@ window.showQuoteTab = function(which) {
 function ensureWelcomeMessage() {
   slUpdate(function(d) {
     if (!d.messages) d.messages = [];
-    // never show reminders
+    // strip reminders always
     d.messages = (d.messages||[]).filter(function(m){ return m.type !== 'reminder'; });
-    // keep only one welcome, pin it as oldest among system
-    var welcome = null;
-    var rest = [];
-    (d.messages||[]).forEach(function(m){
+    // only one welcome ever
+    var hasWelcome = false;
+    d.messages = d.messages.filter(function(m){
       if (m.type === 'welcome') {
-        if (!welcome) welcome = m;
-      } else {
-        rest.push(m);
+        if (hasWelcome) return false;
+        hasWelcome = true;
+        return true;
       }
+      return true;
     });
-    if (!welcome && !d._welcomeShown) {
-      welcome = {
-        id: 'welcome', type: 'welcome', keep: true, unread: false,
-        from: 'SafariLink', initials: 'SL', side: 'operator',
+    // first-time sign-in only
+    if (!hasWelcome && !d._operatorWelcomeDone) {
+      d.messages.unshift({
+        id: 'welcome-op',
+        type: 'welcome',
+        keep: true,
+        unread: false,
+        from: 'SafariLink',
+        initials: 'SL',
+        side: 'operator',
         text: 'Welcome to SafariLink. This is your inbox — messages from partners and activity updates will appear here after this.',
         time: Date.now()
-      };
-      d._welcomeShown = true;
+      });
+      d._operatorWelcomeDone = true;
     }
-    // welcome first (bottom of sorted newest-first list is fine; render sorts by time)
-    d.messages = rest;
-    if (welcome) {
-      welcome.type = 'welcome';
-      welcome.keep = true;
-      welcome.unread = false;
-      d.messages.push(welcome);
-    }
-    d._msgsCleaned = true;
   });
 }
+
 
 
 /* ============================================
@@ -3073,43 +3094,45 @@ window.addOpFavorite = function(item){
   if(!item){ showToast('Nothing to save'); return; }
   var name = item.name || item.title || item.plate || 'Partner';
   var id = String(item.id || ((item.kind||item.type||'x') + '-' + (item.refId||name)));
-  var added = false;
-  slUpdate(function(d){
-    if(!d.operatorFavorites) d.operatorFavorites = [];
-    var exists = d.operatorFavorites.some(function(f){ return String(f.id) === id; });
-    if(exists) return;
-    d.operatorFavorites.unshift({
-      id: id,
-      refId: item.refId != null ? item.refId : item.id,
-      name: name,
-      type: item.type || 'Partner',
-      kind: item.kind || String(item.type||'partner').toLowerCase(),
-      myRating: 0,
-      savedAt: Date.now()
-    });
-    added = true;
-  });
-  // re-read to confirm
-  var list = [];
-  try { list = (slGet().operatorFavorites||[]); } catch(e){}
-  var ok = list.some(function(f){ return String(f.id) === id; });
-  if(ok){
-    showToast(name + ' saved to Favorites — open Favorites to rate (1–5 stars)');
-    if(window.renderOpFavorites) renderOpFavorites();
-  } else if(!added){
-    showToast(name + ' is already in Favorites');
-  } else {
-    showToast('Could not save favorite — try again');
+  var refId = item.refId != null ? item.refId : item.id;
+  var type = item.type || 'Partner';
+  var kind = item.kind || String(type).toLowerCase();
+  var d = slGet();
+  if(!d.operatorFavorites) d.operatorFavorites = [];
+  var exists = d.operatorFavorites.some(function(f){ return String(f.id) === id; });
+  if(exists){
+    showToast(name + ' is already in Favorites — open Favorites to rate');
+    return;
   }
+  d.operatorFavorites.unshift({
+    id: id,
+    refId: refId,
+    name: name,
+    type: type,
+    kind: kind,
+    myRating: 0,
+    savedAt: Date.now()
+  });
+  slSave(d);
+  showToast(name + ' saved to Favorites. Open Favorites to rate 1–5 stars.');
+  try { if(window.renderOpFavorites) renderOpFavorites(); } catch(e){}
+  try { updateOpBadges(); } catch(e){}
 };
+
 
 window.renderOpFavorites = function(){
   var el = document.getElementById('opFavoritesList');
   if(!el) return;
   var favs = [];
-  try { favs = (slGet().operatorFavorites || []); } catch(e){}
+  try {
+    var raw = localStorage.getItem(SL_KEY);
+    var d = raw ? JSON.parse(raw) : slGet();
+    favs = (d && d.operatorFavorites) ? d.operatorFavorites.slice() : [];
+  } catch(e){
+    try { favs = (slGet().operatorFavorites || []).slice(); } catch(e2){}
+  }
   if(!favs.length){
-    el.innerHTML = '<p style="color:var(--warm-gray);line-height:1.5;">No favorites yet.<br>Open <strong>Accommodation</strong>, <strong>Fleet</strong> or <strong>Guides</strong> → open a partner → click <strong>Save to favorites</strong>.<br>Then return here to <strong>rate them 1–5 stars</strong>.</p>';
+    el.innerHTML = '<p style="color:var(--warm-gray);line-height:1.5;">No favorites yet.<br>Open <strong>Accommodation</strong>, <strong>Fleet</strong> or <strong>Guides</strong> → open a partner → click <strong>Save to favorites</strong>.<br>Then open this page to <strong>rate them 1–5 stars</strong>.</p>';
     return;
   }
   el.innerHTML = favs.map(function(f){
@@ -3121,11 +3144,11 @@ window.renderOpFavorites = function(){
       '<div style="font-weight:700;">'+esc(f.name||'Partner')+'</div>'+
       '<div style="font-size:.8rem;color:var(--warm-gray);margin:4px 0 10px;">'+esc(f.type||'Partner')+'</div>'+
       '<div style="margin-bottom:10px;"><div style="font-size:.75rem;font-weight:600;margin-bottom:6px;">Rate this partner (1–5)</div><div style="display:flex;gap:4px;flex-wrap:wrap;">'+stars+'</div>'+
-      (rating?'<div class="meta" style="margin-top:6px;">Your rating: '+rating+'/5</div>':'')+'</div>'+
+      (rating?'<div class="meta" style="margin-top:6px;">Your rating: '+rating+'/5 · shared with partner</div>':'')+'</div>'+
       '<button type="button" class="btn btn-secondary btn-sm" onclick="removeFavorite(\''+String(f.id).replace(/'/g,"\'")+'\')">Remove</button></div>';
   }).join('');
-  if(window.lucide) lucide.createIcons();
 };
+
 
 window.removeFavorite = function(id){
   slUpdate(function(d){
