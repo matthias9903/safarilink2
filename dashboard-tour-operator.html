@@ -355,6 +355,16 @@
     gap: 10px;
     align-items: center;
   }
+  #quotePanelPartner table th,
+  #quotePanelPartner table td {
+    white-space: nowrap;
+    vertical-align: middle;
+    padding: 10px 12px;
+  }
+  #quotePanelPartner table td:nth-child(4) {
+    white-space: normal;
+    max-width: 220px;
+  }
   #quotes-page .quote-actions .btn {
     flex-shrink: 0;
     white-space: nowrap;
@@ -1375,7 +1385,8 @@ function renderOpMessages(){
   try {
     msgs = (slGet().messages || []).filter(function(m){
       if (m.type === 'reminder') return false;
-      return !m.side || m.side === 'operator' || m.side === 'accommodation' || m.side === 'fleet' || m.side === 'guide' || m.type==='welcome' || m.fromActivity;
+      if (m.type === 'welcome' || m.keep) return true;
+      return !!(m.fromActivity || m.activity);
     }).slice().sort(function(a,b){ return (b.time||0)-(a.time||0); });
   } catch(e){}
   var pg = paginate('messages', msgs, 10);
@@ -2949,23 +2960,40 @@ window.renderPartnerQuotes = function(){
   if(!body) return;
   var list = [];
   try { list = (slGet().partnerQuotes||[]).slice(); } catch(e){}
+  // sort newest first
+  list.sort(function(a,b){ return (b.time||0)-(a.time||0); });
   if(!list.length){
-    list = [
-      { id:'PF-AC-101', from:'Serengeti Hill Camp', type:'Accommodation', detail:'Proforma multi-room stay', amount:1200, status:'Sent',
-        bankName:'CRDB Bank Plc', bankAddress:'Clock Tower Branch, Arusha', swift:'CORUTZTZ', accountName:'Serengeti Hill Camp Ltd', accountNumber:'01J1098765432', branchName:'Clock Tower' },
-      { id:'PF-FL-44', from:'Northern Fleet Ltd', type:'Fleet', detail:'Charter 5 days', amount:900, status:'Sent',
-        bankName:'NMB Bank', bankAddress:'Arusha Branch', swift:'NMIBTZTZ', accountName:'Northern Fleet Ltd', accountNumber:'21210012345', branchName:'Arusha' }
-    ];
+    body.innerHTML = '<tr><td colspan="7" style="color:var(--warm-gray);padding:20px;text-align:center;">No partner quotes yet. When accommodation, fleet or guides send a proforma, it appears here.</td></tr>';
+    renderPager('pagerPartnerQuotes', 'partnerQuotes', 0, 'renderPartnerQuotes');
+    return;
   }
   var pg = paginate('partnerQuotes', list, 10);
   body.innerHTML = pg.slice.map(function(q){
-    return '<tr><td><strong>'+esc(q.id)+'</strong></td><td>'+esc(q.from)+'</td><td>'+esc(q.type)+'</td><td>'+esc(q.detail)+'</td>' +
-      '<td>$'+Number(q.amount||0).toLocaleString()+'</td><td><span class="badge badge-info">'+esc(q.status||'Sent')+'</span></td>' +
-      '<td><button class="btn btn-secondary btn-sm" onclick="printPartnerQuote(\''+String(q.id).replace(/'/g,"\'")+'\')">PDF</button></td></tr>';
+    var id = String(q.id||'').replace(/'/g,"\'");
+    return '<tr style="vertical-align:middle;">' +
+      '<td style="white-space:nowrap;"><strong>'+esc(q.id)+'</strong></td>' +
+      '<td style="white-space:nowrap;">'+esc(q.from||'—')+'</td>' +
+      '<td style="white-space:nowrap;"><span class="badge badge-info">'+esc(q.type||'Partner')+'</span></td>' +
+      '<td style="max-width:220px;white-space:normal;font-size:.85rem;">'+esc(q.detail||'—')+'</td>' +
+      '<td style="white-space:nowrap;font-weight:600;">$'+Number(q.amount||0).toLocaleString()+'</td>' +
+      '<td style="white-space:nowrap;"><span class="badge badge-success">'+esc(q.status||'Sent')+'</span></td>' +
+      '<td style="white-space:nowrap;"><div class="quote-actions" style="display:flex;gap:8px;align-items:center;flex-wrap:nowrap;">' +
+      '<button type="button" class="btn btn-secondary btn-sm" onclick="printPartnerQuote(\''+id+'\')">PDF</button>' +
+      '<button type="button" class="btn btn-secondary btn-sm" onclick="deletePartnerQuote(\''+id+'\')">Delete</button>' +
+      '</div></td></tr>';
   }).join('');
   renderPager('pagerPartnerQuotes', 'partnerQuotes', pg.total, 'renderPartnerQuotes');
 };
+window.deletePartnerQuote = function(id){
+  if(!confirm('Delete this partner quote?')) return;
+  slUpdate(function(d){
+    d.partnerQuotes = (d.partnerQuotes||[]).filter(function(q){ return String(q.id)!==String(id); });
+  });
+  renderPartnerQuotes();
+  showToast('Partner quote deleted');
+};
 window.printPartnerQuote = function(id){
+
   var list = [];
   try { list = (slGet().partnerQuotes||[]); } catch(e){}
   var q = list.find(function(x){ return x.id===id; }) || {
@@ -3040,7 +3068,16 @@ window.showQuoteTab = function(which) {
 function ensureWelcomeMessage() {
   slUpdate(function(d) {
     if (!d.messages) d.messages = [];
+    // remove reminders always
     d.messages = (d.messages||[]).filter(function(m){ return m.type !== 'reminder'; });
+    // one-time strip of old static demo messages
+    if (!d._opMsgsActivityOnly) {
+      d.messages = d.messages.filter(function(m){
+        return m.type === 'welcome' || m.keep || m.fromActivity || m.activity;
+      });
+      d._opMsgsActivityOnly = true;
+    }
+    // only one welcome
     var hasWelcome = false;
     d.messages = d.messages.filter(function(m){
       if (m.type === 'welcome') {
@@ -3054,7 +3091,7 @@ function ensureWelcomeMessage() {
       d.messages.unshift({
         id: 'welcome-op', type: 'welcome', keep: true, unread: false,
         from: 'SafariLink', initials: 'SL', side: 'operator',
-        text: 'Welcome to SafariLink. This is your inbox — messages from partners and activity updates will appear here after this.',
+        text: 'Welcome to SafariLink. This is your inbox — messages appear here when there is new activity with partners (reservations, leases, quotes, and updates).',
         time: Date.now()
       });
       d._operatorWelcomeDone = true;
