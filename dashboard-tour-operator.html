@@ -334,6 +334,33 @@
   }
   .pager button:disabled { opacity: 0.4; cursor: not-allowed; }
 
+  #quotes-page table { table-layout: auto; width: 100%; }
+  #quotes-page table th,
+  #quotes-page table td {
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+  #quotes-page table td:nth-child(2),
+  #quotes-page table td:nth-child(3) {
+    white-space: normal;
+    max-width: 180px;
+  }
+  #quotes-page .badge {
+    white-space: nowrap;
+    display: inline-flex;
+  }
+  #quotes-page .quote-actions {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 10px;
+    align-items: center;
+  }
+  #quotes-page .quote-actions .btn {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+
 
   /* ── MODAL ── */
   .modal-overlay {
@@ -1693,6 +1720,8 @@ window.switchPage = function(pageName) {
     if (pageName === 'quotes') { renderQuotesPage(); if (window.renderPartnerQuotes) renderPartnerQuotes(); }
     if (pageName === 'trips') { renderTripsPage(); }
     if (pageName === 'tasks') { renderTasksPage(); }
+    if (pageName === 'favorites') { if (window.renderOpFavorites) renderOpFavorites(); }
+    if (pageName === 'messages') { if (window.renderOpMessages) renderOpMessages(); }
     // Close mobile sidebar
     document.getElementById('sidebar').classList.remove('open');
     document.getElementById('sidebar-overlay').classList.remove('active');
@@ -2704,7 +2733,7 @@ window.renderQuotesPage = function() {
       '<td>$'+Number(q.amount||0).toLocaleString()+'</td>' +
       '<td><span class="badge '+st+'">'+esc(q.booked?'Booked':(q.status||'Draft'))+'</span></td>' +
       '<td>'+bookCell+'</td>' +
-      '<td><button class="btn btn-secondary btn-sm" onclick="redownloadClientQuote(\''+q.id+'\')">Client PDF</button><span style="display:inline-block;width:10px"></span> <button class="btn btn-secondary btn-sm" onclick="deleteOpQuote(\''+q.id+'\')">Delete</button></td>' +
+      '<td><div class="quote-actions"><button type="button" class="btn btn-secondary btn-sm" onclick="redownloadClientQuote(\''+q.id+'\')">Client PDF</button><button type="button" class="btn btn-secondary btn-sm" onclick="deleteOpQuote(\''+q.id+'\')">Delete</button></div></td>' +
       '</tr>';
   }).join('') || '<tr><td colspan="7" style="color:var(--warm-gray);">No quotes yet — generate one from Itineraries.</td></tr>';
   renderPager('pagerMyQuotes', 'myQuotes', pg.total, 'renderQuotesPage');
@@ -3087,6 +3116,7 @@ window.addOpFavorite = function(item){
     showToast(name + ' is already in Favorites — open Favorites to rate');
     return;
   }
+  d.favorites = d.operatorFavorites;
   d.operatorFavorites.unshift({
     id: id,
     refId: item.refId != null ? item.refId : item.id,
@@ -3096,6 +3126,7 @@ window.addOpFavorite = function(item){
     myRating: 0,
     savedAt: Date.now()
   });
+  d.favorites = d.operatorFavorites;
   slSave(d);
   showToast(name + ' saved to Favorites. Open Favorites to rate 1–5 stars.');
   try { if(window.renderOpFavorites) renderOpFavorites(); } catch(e){}
@@ -3126,9 +3157,12 @@ window.renderOpFavorites = function(){
   var el = document.getElementById('opFavoritesList');
   if(!el) return;
   var favs = [];
-  try { var d = slGet(); favs = d.operatorFavorites || d.favorites || []; } catch(e){}
+  try {
+    var d = slGet();
+    favs = (d.operatorFavorites && d.operatorFavorites.length) ? d.operatorFavorites.slice() : (d.favorites||[]).slice();
+  } catch(e){}
   if(!favs.length){
-    el.innerHTML = '<p style="color:var(--warm-gray);">No favorites yet. Star partners from Accommodation, Fleet or Guides when booking.</p>';
+    el.innerHTML = '<p style="color:var(--warm-gray);line-height:1.55;max-width:520px;">No favorites yet.<br><br><strong>How to add &amp; rate:</strong><br>1. Open <strong>Accommodation</strong>, <strong>Fleet</strong> or <strong>Guides</strong><br>2. Open a partner card / details<br>3. Click <strong>Save to favorites</strong><br>4. Return here and rate them with the 1–5 stars</p>';
     return;
   }
   var pg = paginate('favorites', favs, 10);
@@ -3136,17 +3170,22 @@ window.renderOpFavorites = function(){
     var type = f.type || f.kind || 'Partner';
     var name = f.name || f.title || 'Partner';
     var rating = f.myRating || 0;
+    var fid = String(f.id||'').replace(/'/g,"\'");
     var stars = [1,2,3,4,5].map(function(n){
-      return '<button type="button" class="btn btn-sm" style="padding:4px 6px;'+(n<=rating?'background:#fef3c7;':'')+'" onclick="rateFavorite(\''+String(f.id).replace(/'/g,"\\'")+'\','+n+')">'+(n<=rating?'★':'☆')+'</button>';
+      return '<button type="button" class="btn btn-sm" title="Rate '+n+'/5" style="padding:4px 8px;font-size:1.1rem;'+(n<=rating?'background:#fef3c7;border-color:#f59e0b;':'')+'" onclick="rateFavorite(\''+fid+'\','+n+')">'+(n<=rating?'★':'☆')+'</button>';
     }).join('');
-    return '<div style="border:1px solid var(--border);border-radius:10px;padding:14px;">'+
-      '<div style="font-weight:700;">'+esc(name)+'</div>'+
-      '<div style="font-size:.8rem;color:var(--warm-gray);margin:4px 0 10px;">'+esc(type)+'</div>'+
-      '<div style="margin-bottom:10px;"><span style="font-size:.75rem;font-weight:600;">Your rating</span><div style="display:flex;gap:4px;margin-top:4px;">'+stars+'</div></div>'+
-      '<button type="button" class="btn btn-secondary btn-sm" onclick="removeFavorite(\''+String(f.id).replace(/'/g,"\\'")+'\')">Remove</button></div>';
+    return '<div style="border:1px solid var(--border);border-radius:10px;padding:16px;background:#fff;">'+
+      '<div style="font-weight:700;font-size:1rem;">'+esc(name)+'</div>'+
+      '<div style="font-size:.8rem;color:var(--warm-gray);margin:4px 0 12px;">'+esc(type)+'</div>'+
+      '<div style="margin-bottom:12px;"><div style="font-size:.78rem;font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em;color:var(--warm-gray);">Rate this partner</div>'+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;">'+stars+'</div>'+
+      (rating?'<div style="margin-top:8px;font-size:.82rem;color:var(--forest-green);font-weight:600;">Your rating: '+rating+'/5 (shared with partner)</div>':'')+
+      '</div>'+
+      '<button type="button" class="btn btn-secondary btn-sm" onclick="removeFavorite(\''+fid+'\')">Remove from favorites</button></div>';
   }).join('');
   renderPager('pagerFavorites','favorites', pg.total, 'renderOpFavorites');
 };
+
 
 window.removeFavorite = function(id){
   slUpdate(function(d){
