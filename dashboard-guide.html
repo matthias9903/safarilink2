@@ -455,7 +455,6 @@
 <div class="page" id="page-account">
 <div class="card" style="padding:16px;margin-bottom:14px;width:100%">
 <h3 style="margin-bottom:8px">Account</h3>
-<p class="meta" style="margin-bottom:10px">Single guide account — no team seats.</p>
 <div class="form-grid">
 <div class="form-group full"><label>Login email</label><input id="coEmail" type="email" style="word-break:break-all" placeholder="guide@example.com"></div>
 <div class="form-group"><label>Display name</label><input id="coName" value="Daniel Mwamba"></div>
@@ -856,7 +855,45 @@ function savePaymentProfile(){
 }
 function getPaymentProfile(){try{var r=localStorage.getItem('sl_guide_payment');if(r)return JSON.parse(r);}catch(e){}return{bankName:'CRDB Bank',bankAddress:'Arusha',swift:'CORUTZTZ',accountName:'Daniel Mwamba',accountNumber:'01501234567',branchName:'Arusha',email:'',phone:''};}
 
-function refresh(){ensureWelcomeMsg();renderDash();renderSchedule();renderRequests();renderServices();fillProfile();fillPricing();fillRegions();fillLang();renderCerts();renderReviews();renderMessages();renderEarnings();renderCal();renderGuideQuotes();if(document.getElementById("page-account")&&document.getElementById("page-account").classList.contains("active"))loadPaymentProfile()}
-slEnsure();ensureWelcomeMsg();loadPaymentProfile();refresh();slOnChange(refresh);lucide.createIcons();
+
+function getSessionUser(){
+  try{var a=sessionStorage.getItem('safariLinkUser');if(a)return JSON.parse(a);}catch(e){}
+  try{var b=localStorage.getItem('safarilink_user');if(b)return JSON.parse(b);}catch(e){}
+  return null;
+}
+function loadGuideAccount(){
+  var g = (typeof guide==='function') ? guide() : {};
+  var u = getSessionUser() || {};
+  var saved = {};
+  try{saved=JSON.parse(localStorage.getItem('sl_guide_account')||'{}');}catch(e){}
+  var email = saved.email || u.email || g.email || '';
+  var phone = saved.phone || g.phone || u.phone || '';
+  var name = saved.name || g.name || u.name || '';
+  if(document.getElementById('coEmail')) document.getElementById('coEmail').value = email;
+  if(document.getElementById('coPhone')) document.getElementById('coPhone').value = phone;
+  if(document.getElementById('coName') && name) document.getElementById('coName').value = name;
+}
+function saveGuideAccount(){
+  var p = {
+    email: (document.getElementById('coEmail')||{}).value||'',
+    name: (document.getElementById('coName')||{}).value||'',
+    phone: (document.getElementById('coPhone')||{}).value||''
+  };
+  try{localStorage.setItem('sl_guide_account', JSON.stringify(p));}catch(e){}
+  // keep guide profile phone/name in sync
+  try{
+    slUpdate(function(d){
+      if(!d.guides||!d.guides[0])return;
+      if(p.name) d.guides[0].name = p.name;
+      if(p.phone) d.guides[0].phone = p.phone;
+      if(p.email) d.guides[0].email = p.email;
+    });
+  }catch(e){}
+  alert('Account saved');
+  if(typeof fillProfile==='function') fillProfile();
+}
+
+function refresh(){ensureWelcomeMsg();renderDash();renderSchedule();renderRequests();renderServices();fillProfile();fillPricing();fillRegions();fillLang();renderCerts();renderReviews();renderMessages();renderEarnings();renderCal();renderGuideQuotes();if(document.getElementById("page-account")&&document.getElementById("page-account").classList.contains("active")){loadPaymentProfile();loadGuideAccount();}}
+slEnsure();ensureWelcomeMsg();loadGuideAccount();loadPaymentProfile();refresh();slOnChange(refresh);lucide.createIcons();
 </script><div class="modal-bg" id="modal" onclick="if(event.target===this)this.classList.remove('show')"><div class="modal"><div id="modalBody"></div></div></div>
 </body></html>
