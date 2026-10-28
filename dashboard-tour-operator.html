@@ -2250,7 +2250,7 @@ window.initImagePlaceholders = function() {
               '<tbody>'+roomRows+'</tbody></table></div>' +
             '<div style="display:flex;gap:8px;">' +
                 '<button class="btn btn-primary" style="flex:1;justify-content:center;" onclick="accomReserve('+a.id+')"><i data-lucide="send" style="width:14px;height:14px;"></i> Reserve</button>' +
-                '<button class="btn btn-secondary" onclick="addOpFavorite({id:'ac-'+a.id,refId:a.id,name:a.name,type:'Accommodation',kind:'accommodation'})"><i data-lucide="heart" style="width:14px;height:14px;"></i> Save to favorites</button>' +
+                '<button class="btn btn-secondary" onclick="addOpFavoriteByKey(\x27ac\x27,'+a.id+')"><i data-lucide="heart" style="width:14px;height:14px;"></i> Save to favorites</button>' +
             '</div>';
         if (window.lucide) lucide.createIcons();
         openModal('accomDetailModal');
@@ -2341,7 +2341,7 @@ window.initImagePlaceholders = function() {
             '<p style="color:var(--charcoal);line-height:1.5;">' + esc(v.description) + '</p>' +
             '<div style="display:flex;gap:8px;margin-top:16px;">' +
                 '<button class="btn btn-primary" style="flex:1;justify-content:center;" onclick="fleetLease(' + v.id + ')"><i data-lucide="key" style="width:14px;height:14px;"></i> Lease Vehicle</button>' +
-                '<button class="btn btn-secondary" onclick="addOpFavorite({id:'fl-'+v.id,refId:v.id,name:v.name||v.plate,type:'Fleet',kind:'fleet'})"><i data-lucide="heart" style="width:14px;height:14px;"></i> Save to favorites</button>' +
+                '<button class="btn btn-secondary" onclick="addOpFavoriteByKey(\x27fl\x27,'+v.id+')"><i data-lucide="heart" style="width:14px;height:14px;"></i> Save to favorites</button>' +
             '</div>';
         initImagePlaceholders();
         openModal('fleetDetailModal');
@@ -2430,7 +2430,7 @@ window.initImagePlaceholders = function() {
             '<p style="color:var(--charcoal);line-height:1.5;">' + esc(g.highlight) + '</p>' +
             '<div style="display:flex;gap:8px;margin-top:16px;">' +
                 '<button class="btn btn-primary" style="flex:1;justify-content:center;" onclick="guideRequest(' + g.id + ')"><i data-lucide="compass" style="width:14px;height:14px;"></i> Request Guide</button>' +
-                '<button class="btn btn-secondary" onclick="addOpFavorite({id:'gd-'+g.id,refId:g.id,name:g.name,type:'Guide',kind:'guide'})"><i data-lucide="heart" style="width:14px;height:14px;"></i> Save to favorites</button>' +
+                '<button class="btn btn-secondary" onclick="addOpFavoriteByKey(\x27gd\x27,'+g.id+')"><i data-lucide="heart" style="width:14px;height:14px;"></i> Save to favorites</button>' +
             '</div>';
         initImagePlaceholders();
         openModal('guideDetailModal');
@@ -3090,6 +3090,29 @@ window.deleteOpQuote = function(id){
   if (window.renderQuotesPage) renderQuotesPage();
   showToast('Quote deleted');
 };
+
+window.addOpFavoriteByKey = function(kind, id){
+  id = Number(id) || id;
+  var item = null;
+  try {
+    if(kind==='ac'){
+      var list = (typeof getLiveAccommodations==='function') ? getLiveAccommodations() : (slGet().properties||[]);
+      var a = list.find(function(x){ return x.id===id || String(x.id)===String(id); });
+      if(a) item = {id:'ac-'+a.id, refId:a.id, name:a.name, type:'Accommodation', kind:'accommodation'};
+    } else if(kind==='fl'){
+      var list = (typeof getLiveFleet==='function') ? getLiveFleet() : (slGet().vehicles||[]);
+      var v = list.find(function(x){ return x.id===id || String(x.id)===String(id); });
+      if(v) item = {id:'fl-'+v.id, refId:v.id, name:v.name||v.plate, type:'Fleet', kind:'fleet'};
+    } else if(kind==='gd'){
+      var list = (typeof getLiveGuides==='function') ? getLiveGuides() : (slGet().guides||[]);
+      var g = list.find(function(x){ return x.id===id || String(x.id)===String(id); });
+      if(g) item = {id:'gd-'+g.id, refId:g.id, name:g.name, type:'Guide', kind:'guide'};
+    }
+  } catch(e){}
+  if(!item){ showToast('Could not save favorite'); return; }
+  addOpFavorite(item);
+};
+
 window.addOpFavorite = function(item){
   if(!item){ showToast('Nothing to save'); return; }
   var name = item.name || item.title || item.plate || 'Partner';
