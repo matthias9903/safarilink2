@@ -361,6 +361,17 @@
     vertical-align: middle;
     padding: 10px 12px;
   }
+  /* From column — long names wrap to ~2 lines without bloating the row */
+  #quotePanelPartner td.pq-from,
+  #quotePanelPartner table td:nth-child(2),
+  #quotePanelPartner table th:nth-child(2) {
+    white-space: normal;
+    max-width: 160px;
+    min-width: 120px;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    line-height: 1.35;
+  }
   #quotePanelPartner table td:nth-child(4) {
     white-space: normal;
     max-width: 220px;
@@ -2972,7 +2983,7 @@ window.renderPartnerQuotes = function(){
     var id = String(q.id||'').replace(/'/g,"\'");
     return '<tr style="vertical-align:middle;">' +
       '<td style="white-space:nowrap;"><strong>'+esc(q.id)+'</strong></td>' +
-      '<td style="white-space:nowrap;">'+esc(q.from||'—')+'</td>' +
+      '<td class="pq-from">'+esc(q.from||'—')+'</td>' +
       '<td style="white-space:nowrap;"><span class="badge badge-info">'+esc(q.type||'Partner')+'</span></td>' +
       '<td style="max-width:220px;white-space:normal;font-size:.85rem;">'+esc(q.detail||'—')+'</td>' +
       '<td style="white-space:nowrap;font-weight:600;">$'+Number(q.amount||0).toLocaleString()+'</td>' +
@@ -3529,3 +3540,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </body>
 </html>
+
