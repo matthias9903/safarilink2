@@ -28,8 +28,9 @@
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; height: 100%; overflow: hidden; }
+  html { scroll-behavior: smooth; }
 
+  html, body { height: 100%; overflow: hidden; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
     background: var(--warm-off-white); color: var(--charcoal); line-height: 1.6;
@@ -41,7 +42,7 @@
 
   .sidebar {
     width: 240px; background: var(--charcoal); color: #ccc;
-    overflow: hidden; position: fixed; top: 0; left: 0; bottom: 0; height: 100vh; z-index: 1000;
+    overflow-x: hidden; overflow-y: hidden; position: fixed; top: 0; left: 0; bottom: 0; height: 100vh; z-index: 1000;
     transition: transform 0.3s ease, width 0.3s ease; display: flex; flex-direction: column;
   }
   .sidebar.collapsed { width: 68px; }
@@ -520,11 +521,11 @@
                 <div class="nav-section-title">Operations</div>
                 <div class="nav-item" onclick="switchPage('quotes')">
                     <i data-lucide="file-text"></i> <span>Quotes</span>
-                    <span id="quoteNavBadge" style="display:none;margin-left:auto;background:#0891b2;color:#fff;font-size:.65rem;font-weight:700;min-width:18px;height:18px;border-radius:99px;padding:0 5px;align-items:center;justify-content:center;"></span>
+                    <span id="quoteNavBadge" style="display:none;margin-left:auto;background:#0891b2;color:#fff;font-size:0.68rem;font-weight:700;padding:2px 7px;border-radius:10px;"></span>
                 </div>
                 <div class="nav-item" onclick="switchPage('tasks')">
                     <i data-lucide="clipboard-list"></i> <span>Tasks</span>
-                    <span id="taskNavBadge" style="display:none;margin-left:auto;background:#f59e0b;color:#000;font-size:.65rem;font-weight:700;min-width:18px;height:18px;border-radius:99px;padding:0 5px;align-items:center;justify-content:center;"></span>
+                    <span id="taskNavBadge" style="display:none;margin-left:auto;background:#f59e0b;color:#000;font-size:0.68rem;font-weight:700;padding:2px 7px;border-radius:10px;"></span>
                 </div>
                 <div class="nav-item" onclick="switchPage('favorites')">
                     <i data-lucide="star"></i> <span>Favorites</span>
@@ -904,7 +905,6 @@
                     <div class="page-title">Accommodation Directory</div>
                     <div class="page-subtitle">Browse, manage &amp; source safari accommodations</div>
                 </div>
-                
             </div>
 
             <!-- Filter Toolbar -->
@@ -948,7 +948,6 @@
                     <div class="page-title">Fleet Management</div>
                     <div class="page-subtitle">Browse, lease, and manage safari vehicles</div>
                 </div>
-                
             </div>
 
             <!-- Filter Toolbar -->
@@ -993,7 +992,6 @@
                     <div class="page-title">Professional Guides</div>
                     <div class="page-subtitle">Browse and source experienced safari guides</div>
                 </div>
-                
             </div>
 
             <!-- Filter Toolbar -->
@@ -1082,43 +1080,38 @@
              ========================================== -->
         <div id="tasks-page" class="page">
             <div class="page-header">
-                <div class="page-title">Tasks</div>
-                <button class="create-btn" onclick="window.openAddTask()"><i data-lucide="plus"></i> New Task</button>
+                <div>
+                    <div class="page-title">Tasks</div>
+                    <div class="page-subtitle">Track follow-ups across itineraries and partners</div>
+                </div>
+                <button class="create-btn" type="button" onclick="window.openAddTask()"><i data-lucide="plus"></i> New Task</button>
+            </div>
+            <div class="card">
+                <div class="card-body" style="overflow-x:auto;">
+                    <table>
+                        <thead>
+                            <tr><th>Task</th><th>Related</th><th>Due Date</th><th>Assignee</th><th>Status</th><th></th></tr>
+                        </thead>
+                        <tbody id="opTasksBody"></tbody>
+                    </table>
+                </div>
+                <div class="pager" id="pagerTasks" style="padding:0 20px 16px;"></div>
+            </div>
+        </div>
+
+        <div id="favorites-page" class="page">
+            <div class="page-header">
+                <div>
+                    <div class="page-title">Favorites</div>
+                    <div class="page-subtitle">Saved partners — rate those you have worked with</div>
+                </div>
             </div>
             <div class="card">
                 <div class="card-body">
-                    <table>
-                        <thead>
-                            <tr><th>Task</th><th>Itinerary</th><th>Due Date</th><th>Assignee</th><th>Status</th></tr>
-                        </thead>
-                        <tbody id="tasksBody"></tbody>
-                    </table>
+                    <div id="opFavoritesList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;"></div>
+                    <div class="pager" id="pagerFavorites" style="margin-top:14px;"></div>
                 </div>
             </div>
-        </div>
-
-        <!-- ==========================================
-             FAVORITES PAGE
-             ========================================== -->
-        <div id="favorites-page" class="page">
-            <div class="page-header">
-              <div><div class="page-title">Favorites</div><div class="page-subtitle">Saved partners — remove anytime</div></div>
-            </div>
-            <div class="card"><div class="card-body">
-              <div id="favGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;"></div>
-              <div class="pager" id="pagerFav"></div>
-            </div></div>
-        </div>
-
-        <!-- ========== -->
-                <div id="trips-page" class="page">
-            <div class="page-header">
-                <div>
-                    <div class="page-title">Trips</div>
-                    <div class="page-subtitle">Booked quotes become trips — progress updates with the schedule</div>
-                </div>
-            </div>
-            <div id="tripsListLive"></div>
         </div>
 
         <div id="messages-page" class="page">
@@ -1219,25 +1212,26 @@
             </div>
 
             <div class="card" style="margin-top:16px;">
-                <div class="card-header"><div class="card-title">Payment &amp; invoice details</div>
-                  <button type="button" class="btn btn-primary btn-sm" onclick="saveOpPaymentProfile()"><i data-lucide="save" style="width:14px;height:14px;"></i> Save</button>
+                <div class="card-header">
+                    <div class="card-title">Payment &amp; invoice details</div>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="saveOpPaymentProfile()"><i data-lucide="save" style="width:14px;height:14px;"></i> Save</button>
                 </div>
                 <div class="card-body">
-                  <p style="font-size:.82rem;color:var(--warm-gray);margin-bottom:12px;">Saved details attach automatically to operator quotes you generate for clients.</p>
-                  <div class="form-row">
-                    <div class="form-group"><label>Bank name *</label><input id="opPayBankName" placeholder="CRDB Bank Plc"></div>
-                    <div class="form-group"><label>Branch name</label><input id="opPayBranch" placeholder="Arusha"></div>
-                  </div>
-                  <div class="form-group"><label>Bank address</label><input id="opPayBankAddress" placeholder="Arusha, Tanzania"></div>
-                  <div class="form-row">
-                    <div class="form-group"><label>SWIFT / BIC</label><input id="opPaySwift" placeholder="CORUTZTZ"></div>
-                    <div class="form-group"><label>Account name *</label><input id="opPayAccName" placeholder="Dreamtrails Expeditions Ltd"></div>
-                  </div>
-                  <div class="form-row">
-                    <div class="form-group"><label>Account number *</label><input id="opPayAccNo" placeholder="01J1..."></div>
-                    <div class="form-group"><label>Invoice email</label><input id="opPayEmail" type="email"></div>
-                  </div>
-                  <div class="form-group"><label>Invoice phone</label><input id="opPayPhone" placeholder="+255 …"></div>
+                    <p style="font-size:.82rem;color:var(--warm-gray);margin-bottom:12px;">Attached automatically to operator quotes you generate for clients.</p>
+                    <div class="form-row">
+                        <div class="form-group"><label>Bank name *</label><input id="opPayBankName" placeholder="CRDB Bank Plc"></div>
+                        <div class="form-group"><label>Branch name</label><input id="opPayBranch" placeholder="Arusha"></div>
+                    </div>
+                    <div class="form-group"><label>Bank address</label><input id="opPayBankAddress" placeholder="Arusha, Tanzania"></div>
+                    <div class="form-row">
+                        <div class="form-group"><label>SWIFT / BIC</label><input id="opPaySwift" placeholder="CORUTZTZ"></div>
+                        <div class="form-group"><label>Account name *</label><input id="opPayAccName" placeholder="Dreamtrails Expeditions Ltd"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Account number *</label><input id="opPayAccNo" placeholder="01J…"></div>
+                        <div class="form-group"><label>Invoice email</label><input id="opPayEmail" type="email"></div>
+                    </div>
+                    <div class="form-group"><label>Invoice phone</label><input id="opPayPhone" placeholder="+255 …"></div>
                 </div>
             </div>
         </div>
@@ -1354,7 +1348,7 @@ function renderOpMessages(){
   try {
     msgs = (slGet().messages || []).filter(function(m){
       if (m.type === 'reminder') return false;
-      return m.type==='welcome' || m.fromActivity || !m.side || m.side === 'operator' || m.side === 'accommodation' || m.side === 'fleet' || m.side === 'guide';
+      return !m.side || m.side === 'operator' || m.side === 'accommodation' || m.side === 'fleet' || m.side === 'guide' || m.type==='welcome' || m.fromActivity;
     }).slice().sort(function(a,b){ return (b.time||0)-(a.time||0); });
   } catch(e){}
   var pg = paginate('messages', msgs, 10);
@@ -1367,7 +1361,7 @@ function renderOpMessages(){
       '<span style="font-size:.75rem;color:var(--warm-gray);">'+(m.time?new Date(m.time).toLocaleString():'')+'</span></div>' +
       '<div style="font-size:.85rem;margin-top:4px;">'+esc(m.text||'')+'</div>' +
       (m.unread?'<span class="badge badge-info" style="margin-top:6px;">Unread</span>':'') +
-      (m.type!=='welcome'?' <button class="btn btn-danger btn-sm" style="margin-top:6px;" onclick="event.stopPropagation();deleteOpMessage(\''+String(m.id).replace(/'/g,"\\'")+'\')">Delete</button>':'') +
+      (m.type==='welcome'?'':'<div style="margin-top:8px;"><button type="button" class="btn btn-secondary btn-sm" onclick="event.stopPropagation();deleteOpMessage(\''+String(m.id).replace(/'/g,"\\'")+'\')">Delete</button></div>') +
       '</div></div></div>';
   }).join('') || '<p style="color:var(--warm-gray);padding:12px;">No messages yet.</p>';
   renderPager('pagerMessages', 'messages', pg.total, 'renderOpMessages');
@@ -1684,14 +1678,9 @@ window.switchPage = function(pageName) {
     if (pageName === 'guides') { guideRenderCards(getLiveGuides()); }
     if (pageName === 'messages') { renderOpMessages(); }
     if (pageName === 'dashboard') { renderOpDashboard(); }
-    if (pageName === 'favorites') { if(window.renderOpFavorites) renderOpFavorites(); }
-    if (pageName === 'tasks') { if(window.renderTasksPage) renderTasksPage(); }
-    if (pageName === 'quotes') { if(window.renderQuotesPage) renderQuotesPage(); if(window.renderPartnerQuotes) renderPartnerQuotes(); }
-    try{ updateOpBadges(); }catch(e){}
     if (pageName === 'accounts') {
       renderOpTeam();
       if (window.loadCompanyProfile) loadCompanyProfile();
-      try{ loadOpPaymentProfile(); }catch(e){}
       try {
         var em = (document.getElementById('coEmail')||{}).value || 'dreamtrailsexpedictions@gmail.com';
         var el = document.getElementById('kpiLoginEmail');
@@ -2180,10 +2169,6 @@ window.initImagePlaceholders = function() {
                     '<button class="btn btn-secondary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();accomViewDetail(' + a.id + ')">Details</button>' +
                     '<button class="btn btn-primary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();accomReserve(' + a.id + ')"><i data-lucide="send" style="width:14px;height:14px;"></i> Reserve</button>' +
                 '</div>' +
-                '<div style="display:flex;gap:6px;margin-top:8px;">' +
-                    '<button class="btn btn-secondary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();addFavorite({id:' + a.id + ',type:'Accommodation',name:'' + esc(a.name).replace(/'/g,"\'") + '',meta:'' + esc(a.location||'').replace(/'/g,"\'") + ''})"><i data-lucide="star" style="width:14px;height:14px;"></i> Favorite</button>' +
-                    '<button class="btn btn-secondary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();openRatePartner('Accommodation','' + String(a.id) + '','' + esc(a.name).replace(/'/g,"\'") + '')">Rate</button>' +
-                '</div>' +
             '</div>' +
         '</div>';
     }).join('');
@@ -2280,10 +2265,6 @@ window.initImagePlaceholders = function() {
                     '<button class="btn btn-secondary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();fleetViewDetail(' + v.id + ')"><i data-lucide="eye" style="width:14px;height:14px;"></i> Details</button>' +
                     '<button class="btn btn-primary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();fleetLease(' + v.id + ')"><i data-lucide="key" style="width:14px;height:14px;"></i> Lease</button>' +
                 '</div>' +
-                '<div style="display:flex;gap:6px;margin-top:8px;">' +
-                    '<button class="btn btn-secondary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();addFavorite({id:' + v.id + ',type:\'Fleet\',name:\'' + esc(v.plate||v.name||'').replace(/'/g,"\\'") + '\',meta:\'' + esc(v.model||v.category||'').replace(/'/g,"\\'") + '\'})"><i data-lucide="star" style="width:14px;height:14px;"></i> Favorite</button>' +
-                    '<button class="btn btn-secondary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();openRatePartner(\'Fleet\',\'' + String(v.id) + '\',\'' + esc(v.plate||v.name||'').replace(/'/g,"\\'") + '\')">Rate</button>' +
-                '</div>' +
                 '</div>' +
             '</div>';
         }).join('');
@@ -2373,10 +2354,6 @@ window.initImagePlaceholders = function() {
                 '<div style="display:flex;gap:8px;margin-top:10px;">' +
                     '<button class="btn btn-secondary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();guideViewDetail(' + g.id + ')">Details</button>' +
                     '<button class="btn btn-primary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();guideRequest(' + g.id + ')"><i data-lucide="compass" style="width:14px;height:14px;"></i> Request</button>' +
-                '</div>' +
-                '<div style="display:flex;gap:6px;margin-top:8px;">' +
-                    '<button class="btn btn-secondary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();addFavorite({id:' + g.id + ',type:\'Guide\',name:\'' + esc(g.name||'').replace(/'/g,"\\'") + '\',meta:\'' + esc((g.specialization||g.spec||'')).replace(/'/g,"\\'") + '\'})"><i data-lucide="star" style="width:14px;height:14px;"></i> Favorite</button>' +
-                    '<button class="btn btn-secondary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();openRatePartner(\'Guide\',\'' + String(g.id) + '\',\'' + esc(g.name||'').replace(/'/g,"\\'") + '\')">Rate</button>' +
                 '</div>' +
             '</div>' +
         '</div>';
@@ -2727,7 +2704,7 @@ window.renderQuotesPage = function() {
       '<td>$'+Number(q.amount||0).toLocaleString()+'</td>' +
       '<td><span class="badge '+st+'">'+esc(q.booked?'Booked':(q.status||'Draft'))+'</span></td>' +
       '<td>'+bookCell+'</td>' +
-      '<td><button class="btn btn-secondary btn-sm" onclick="redownloadClientQuote(\''+q.id+'\')">Client PDF</button></td>' +
+      '<td><button class="btn btn-secondary btn-sm" onclick="redownloadClientQuote(\''+q.id+'\')">Client PDF</button> <button class="btn btn-secondary btn-sm" onclick="deleteOpQuote(\''+q.id+'\')">Delete</button></td>' +
       '</tr>';
   }).join('') || '<tr><td colspan="7" style="color:var(--warm-gray);">No quotes yet — generate one from Itineraries.</td></tr>';
   renderPager('pagerMyQuotes', 'myQuotes', pg.total, 'renderQuotesPage');
@@ -2917,11 +2894,7 @@ window.submitAddGuide = function(){
 window.openAddTask = function(){
   var d = document.getElementById('addTaskDue');
   if(d) d.value = new Date().toISOString().slice(0,10);
-  if(typeof window.openModal==='function') window.openModal('addTaskModal');
-  else {
-    var m=document.getElementById('addTaskModal');
-    if(m) m.classList.add('active');
-  }
+  openModal('addTaskModal');
 };
 window.submitAddTask = function(){
   var text = (document.getElementById('addTaskText')||{}).value; text=(text||'').trim();
@@ -3059,129 +3032,128 @@ function ensureWelcomeMessage() {
 
 
 
-/* ── Operator favorites, ratings, badges, deletes, payment ── */
-function opFavKey(){ return 'sl_op_favorites_v1'; }
-function loadOpFavorites(){
-  try{ var r=localStorage.getItem(opFavKey()); if(r) return JSON.parse(r)||[]; }catch(e){}
-  return [];
-}
-function saveOpFavorites(list){ try{ localStorage.setItem(opFavKey(), JSON.stringify(list)); }catch(e){} }
-window.addFavorite = function(item){
-  var list=loadOpFavorites();
-  if(list.some(function(x){ return x.type===item.type && String(x.id)===String(item.id); })){ showToast('Already in favorites'); return; }
-  list.unshift({ id:item.id, type:item.type, name:item.name, meta:item.meta||'', at:Date.now() });
-  saveOpFavorites(list);
-  showToast('Added to favorites');
-  if(window.renderOpFavorites) renderOpFavorites();
-};
-window.removeFavorite = function(type, id){
-  var list=loadOpFavorites().filter(function(x){ return !(x.type===type && String(x.id)===String(id)); });
-  saveOpFavorites(list);
-  showToast('Removed from favorites');
-  renderOpFavorites();
-};
-window.renderOpFavorites = function(){
-  var grid=document.getElementById('favGrid'); if(!grid) return;
-  var list=loadOpFavorites();
-  var pg=paginate('fav', list, 10);
-  if(!pg.slice.length){ grid.innerHTML='<p class="meta">No favorites yet. Star partners from Accommodation, Fleet or Guides.</p>'; }
-  else {
-    grid.innerHTML=pg.slice.map(function(f){
-      return '<div style="padding:16px;border:1px solid var(--border);border-radius:8px;position:relative">'+
-        '<strong>'+esc(f.name)+'</strong><br><span style="font-size:.8rem;color:var(--warm-gray)">'+esc(f.type)+' · '+esc(f.meta||'')+'</span>'+
-        '<div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">'+
-        '<button class="btn btn-secondary btn-sm" onclick="openRatePartner(\''+esc(f.type)+'\',\''+String(f.id).replace(/'/g,"\\'")+'\',\''+esc(f.name).replace(/'/g,"\\'")+'\')">Rate</button>'+
-        '<button class="btn btn-danger btn-sm" onclick="removeFavorite(\''+esc(f.type)+'\',\''+String(f.id).replace(/'/g,"\\'")+'\')">Remove</button>'+
-        '</div></div>';
-    }).join('');
-  }
-  if(typeof renderPager==='function') renderPager('pagerFav','fav',pg.total,'renderOpFavorites');
-};
-
-window.openRatePartner = function(type, id, name){
-  var score = prompt('Rate '+name+' (1–5 stars):', '5');
-  if(score===null) return;
-  score = Math.max(1, Math.min(5, Number(score)||5));
-  var note = prompt('Optional comment:', '')||'';
-  slUpdate(function(d){
-    if(!d.partnerRatings) d.partnerRatings = [];
-    d.partnerRatings.unshift({ type:type, id:id, name:name, score:score, note:note, from:'operator', at:Date.now() });
-    // push into partner-side aggregates
-    if(type==='Accommodation' || type==='accommodation'){
-      if(!d.accomReviews) d.accomReviews=[];
-      d.accomReviews.unshift({ propertyId:id, property:name, score:score, text:note, from:'Tour operator', at:Date.now() });
-    }
-    if(type==='Fleet' || type==='fleet'){
-      if(!d.fleetReviews) d.fleetReviews=[];
-      d.fleetReviews.unshift({ vehicleId:id, name:name, score:score, text:note, from:'Tour operator', at:Date.now() });
-    }
-    if(type==='Guide' || type==='guide'){
-      if(!d.guideReviews) d.guideReviews=[];
-      d.guideReviews.unshift({ guideId:id, name:name, score:score, text:note, from:'Tour operator', at:Date.now() });
-      if(d.guides && d.guides[0]){
-        var g=d.guides[0];
-        var n=g.reviewsCount||0; var r=g.rating||5;
-        g.rating = Math.round(((r*n)+score)/(n+1)*10)/10;
-        g.reviewsCount = n+1;
-      }
-    }
-    if(!d.messages) d.messages=[];
-    d.messages.unshift({ id:Date.now(), fromActivity:true, unread:true, side:'operator', from:'SafariLink', initials:'SL',
-      text:'You rated '+name+' · '+score+'/5', time:Date.now(), type:'info' });
-  });
-  showToast('Rating submitted — visible on partner profile');
-  updateOpBadges();
+window.openAddTask = function(){
+  var d = document.getElementById('addTaskDue');
+  if(d) d.value = new Date().toISOString().slice(0,10);
+  if (typeof openModal === 'function') openModal('addTaskModal');
+  else { var m = document.getElementById('addTaskModal'); if(m) m.classList.add('active'); }
 };
 
 window.deleteOpMessage = function(id){
-  slUpdate(function(d){ d.messages=(d.messages||[]).filter(function(m){ return String(m.id)!==String(id); }); });
-  if(window.renderOpMessages) renderOpMessages();
+  if(!confirm('Delete this message?')) return;
+  slUpdate(function(d){ d.messages = (d.messages||[]).filter(function(m){ return String(m.id) !== String(id); }); });
+  if (window.renderOpMessages) renderOpMessages();
+  if (window.updateOpBadges) updateOpBadges();
+  showToast('Message deleted');
+};
+
+window.renderTasksPage = function(){
+  var body = document.getElementById('opTasksBody');
+  if(!body) return;
+  var s = (typeof opActivityGet==='function') ? opActivityGet() : {tasks:[]};
+  var list = (s.tasks||[]).slice();
+  var pg = paginate('tasks', list, 10);
+  body.innerHTML = pg.slice.map(function(tk){
+    var st = tk.status||'Open';
+    var badge = (st==='Done'||st==='Completed') ? 'badge-success' : (st==='Pending'?'badge-warning':'badge-info');
+    return '<tr><td><strong>'+esc(tk.task||'')+'</strong></td><td>'+esc(tk.related||'—')+'</td><td>'+esc(tk.due||'—')+'</td><td>'+esc(tk.assignee||'—')+'</td>'+
+      '<td><span class="badge '+badge+'">'+esc(st)+'</span></td>'+
+      '<td><button type="button" class="btn btn-secondary btn-sm" onclick="deleteOpTask('+tk.id+')">Delete</button></td></tr>';
+  }).join('') || '<tr><td colspan="6" style="color:var(--warm-gray);">No tasks yet. Click New Task to add one.</td></tr>';
+  renderPager('pagerTasks','tasks', pg.total, 'renderTasksPage');
   updateOpBadges();
 };
+
 window.deleteOpTask = function(id){
-  var s=opActivityGet();
-  s.tasks=(s.tasks||[]).filter(function(x){ return String(x.id)!==String(id); });
+  if(!confirm('Delete this task?')) return;
+  var s = opActivityGet();
+  s.tasks = (s.tasks||[]).filter(function(x){ return x.id !== id; });
   opActivitySave(s);
-  if(window.renderTasksPage) renderTasksPage();
-  updateOpBadges();
-};
-window.deleteOpQuote = function(id){
-  var s=opActivityGet();
-  s.quotes=(s.quotes||[]).filter(function(x){ return String(x.id)!==String(id); });
-  opActivitySave(s);
-  try{ slUpdate(function(d){ d.partnerQuotes=(d.partnerQuotes||[]).filter(function(x){ return String(x.id)!==String(id); }); }); }catch(e){}
-  if(window.renderQuotesPage) renderQuotesPage();
-  if(window.renderPartnerQuotes) renderPartnerQuotes();
-  updateOpBadges();
+  renderTasksPage();
+  showToast('Task deleted');
 };
 
-function updateOpBadges(){
-  var msgs=[];
-  try{ msgs=(slGet().messages||[]).filter(function(m){ return (m.side==='operator'||!m.side) && m.unread; }); }catch(e){}
-  var el=document.getElementById('msgNavBadge');
-  if(el){
-    if(msgs.length){ el.style.display='inline-flex'; el.textContent=String(msgs.length); el.classList.add('show'); }
-    else { el.style.display='none'; el.textContent=''; el.classList.remove('show'); }
+window.renderOpFavorites = function(){
+  var el = document.getElementById('opFavoritesList');
+  if(!el) return;
+  var favs = [];
+  try { var d = slGet(); favs = d.operatorFavorites || d.favorites || []; } catch(e){}
+  if(!favs.length){
+    el.innerHTML = '<p style="color:var(--warm-gray);">No favorites yet. Star partners from Accommodation, Fleet or Guides when booking.</p>';
+    return;
   }
-  var openTasks=0;
-  try{ openTasks=(opActivityGet().tasks||[]).filter(function(x){ return x.status==='Open'||x.status==='Pending'; }).length; }catch(e){}
-  var tb=document.getElementById('taskNavBadge');
-  if(tb){ if(openTasks){ tb.style.display='inline-flex'; tb.textContent=String(openTasks);} else { tb.style.display='none'; tb.textContent=''; } }
-  var newQuotes=0;
-  try{ newQuotes=(slGet().partnerQuotes||[]).filter(function(q){ return q.status==='Sent'||q.unread; }).length; }catch(e){}
-  try{ newQuotes += (opActivityGet().quotes||[]).filter(function(q){ return q.status==='Draft'||q.status==='Sent'; }).length; }catch(e){}
-  var qb=document.getElementById('quoteNavBadge');
-  if(qb){ if(newQuotes){ qb.style.display='inline-flex'; qb.textContent=String(newQuotes);} else { qb.style.display='none'; qb.textContent=''; } }
-}
+  var pg = paginate('favorites', favs, 10);
+  el.innerHTML = pg.slice.map(function(f){
+    var type = f.type || f.kind || 'Partner';
+    var name = f.name || f.title || 'Partner';
+    var rating = f.myRating || 0;
+    var stars = [1,2,3,4,5].map(function(n){
+      return '<button type="button" class="btn btn-sm" style="padding:4px 6px;'+(n<=rating?'background:#fef3c7;':'')+'" onclick="rateFavorite(\''+String(f.id).replace(/'/g,"\\'")+'\','+n+')">'+(n<=rating?'★':'☆')+'</button>';
+    }).join('');
+    return '<div style="border:1px solid var(--border);border-radius:10px;padding:14px;">'+
+      '<div style="font-weight:700;">'+esc(name)+'</div>'+
+      '<div style="font-size:.8rem;color:var(--warm-gray);margin:4px 0 10px;">'+esc(type)+'</div>'+
+      '<div style="margin-bottom:10px;"><span style="font-size:.75rem;font-weight:600;">Your rating</span><div style="display:flex;gap:4px;margin-top:4px;">'+stars+'</div></div>'+
+      '<button type="button" class="btn btn-secondary btn-sm" onclick="removeFavorite(\''+String(f.id).replace(/'/g,"\\'")+'\')">Remove</button></div>';
+  }).join('');
+  renderPager('pagerFavorites','favorites', pg.total, 'renderOpFavorites');
+};
 
-/* Payment profile for operator quotes */
-function loadOpPaymentProfile(){
-  try{
-    var p=JSON.parse(localStorage.getItem('sl_op_payment')||'{}');
-    var map={opPayBankName:'bankName',opPayBranch:'branchName',opPayBankAddress:'bankAddress',opPaySwift:'swift',opPayAccName:'accountName',opPayAccNo:'accountNumber',opPayEmail:'email',opPayPhone:'phone'};
-    Object.keys(map).forEach(function(id){ var el=document.getElementById(id); if(el&&p[map[id]]) el.value=p[map[id]]; });
-  }catch(e){}
-}
+window.removeFavorite = function(id){
+  slUpdate(function(d){
+    d.operatorFavorites = (d.operatorFavorites||d.favorites||[]).filter(function(f){ return String(f.id)!==String(id); });
+    d.favorites = d.operatorFavorites;
+  });
+  renderOpFavorites();
+  showToast('Removed from favorites');
+};
+
+window.rateFavorite = function(id, stars){
+  stars = Number(stars)||0;
+  slUpdate(function(d){
+    if(!d.operatorFavorites) d.operatorFavorites = d.favorites||[];
+    d.operatorFavorites.forEach(function(f){
+      if(String(f.id)===String(id)){ f.myRating = stars; f.ratedAt = Date.now(); }
+    });
+    d.favorites = d.operatorFavorites;
+    var fav = (d.operatorFavorites||[]).find(function(f){ return String(f.id)===String(id); });
+    if(fav){
+      var review = { id: Date.now(), from: 'Dreamtrails Expeditions', rating: stars, text: 'Operator rating', time: Date.now(), side: 'operator' };
+      var kind = (fav.type||fav.kind||'').toLowerCase();
+      if(kind.indexOf('accom')>=0){
+        if(!d.accomReviews) d.accomReviews=[]; d.accomReviews.unshift(review);
+        (d.properties||[]).forEach(function(p){ if(String(p.id)===String(fav.refId||fav.id)){ p.rating=stars; p.reviewsCount=(p.reviewsCount||0)+1; }});
+      } else if(kind.indexOf('fleet')>=0 || kind.indexOf('vehicle')>=0){
+        if(!d.fleetReviews) d.fleetReviews=[]; d.fleetReviews.unshift(review);
+        (d.vehicles||[]).forEach(function(v){ if(String(v.id)===String(fav.refId||fav.id)){ v.rating=stars; }});
+      } else if(kind.indexOf('guide')>=0){
+        if(!d.guideReviews) d.guideReviews=[]; d.guideReviews.unshift(review);
+        (d.guides||[]).forEach(function(g){ if(String(g.id)===String(fav.refId||fav.id)){ g.rating=stars; g.reviewsCount=(g.reviewsCount||0)+1; }});
+      }
+    }
+  });
+  renderOpFavorites();
+  showToast('Rating saved — shared with partner');
+};
+
+window.deleteOpQuote = function(id){
+  if(!confirm('Delete this quote?')) return;
+  try { var s=opActivityGet(); s.quotes=(s.quotes||[]).filter(function(q){return String(q.id)!==String(id);}); opActivitySave(s); } catch(e){}
+  try { slUpdate(function(d){ if(d.operatorQuotes) d.operatorQuotes=d.operatorQuotes.filter(function(q){return String(q.id)!==String(id);}); }); } catch(e){}
+  if(window.renderQuotesPage) renderQuotesPage();
+  updateOpBadges();
+  showToast('Quote deleted');
+};
+
+window.getOpPaymentProfile = function(){
+  try{var r=localStorage.getItem('sl_operator_payment');if(r)return JSON.parse(r);}catch(e){}
+  return {bankName:'',bankAddress:'',swift:'',accountName:'',accountNumber:'',branchName:'',email:'',phone:''};
+};
+window.loadOpPaymentProfile = function(){
+  var p = getOpPaymentProfile();
+  var map = {opPayBankName:'bankName',opPayBranch:'branchName',opPayBankAddress:'bankAddress',opPaySwift:'swift',opPayAccName:'accountName',opPayAccNo:'accountNumber',opPayEmail:'email',opPayPhone:'phone'};
+  Object.keys(map).forEach(function(id){ var el=document.getElementById(id); if(el) el.value=p[map[id]]||''; });
+};
 window.saveOpPaymentProfile = function(){
   var p={
     bankName:(document.getElementById('opPayBankName')||{}).value||'',
@@ -3194,37 +3166,49 @@ window.saveOpPaymentProfile = function(){
     phone:(document.getElementById('opPayPhone')||{}).value||''
   };
   if(!p.bankName||!p.accountName||!p.accountNumber){ showToast('Bank name, account name and number required'); return; }
-  try{ localStorage.setItem('sl_op_payment', JSON.stringify(p)); }catch(e){}
+  localStorage.setItem('sl_operator_payment', JSON.stringify(p));
   showToast('Payment details saved — will attach to new operator quotes');
 };
-function getOpPaymentProfile(){
-  try{ var r=localStorage.getItem('sl_op_payment'); if(r) return JSON.parse(r); }catch(e){}
-  return { bankName:'', bankAddress:'', swift:'', accountName:'', accountNumber:'', branchName:'', email:'', phone:'' };
-}
 
-/* Patch renderTasksPage to support delete if body exists */
-var _origRenderTasks = window.renderTasksPage;
-window.renderTasksPage = function(){
-  if(typeof _origRenderTasks==='function'){
-    try{ _origRenderTasks(); }catch(e){}
-  }
-  var body=document.getElementById('tasksBody');
-  if(!body) return;
-  // If original left empty or static missing delete, rebuild
-  var s=opActivityGet();
-  var list=s.tasks||[];
-  var pg=paginate('tasks', list, 10);
-  body.innerHTML = pg.slice.map(function(tk){
-    return '<tr><td>'+esc(tk.task)+'</td><td>'+esc(tk.related||'')+'</td><td>'+esc(tk.due||'')+'</td><td>'+esc(tk.assignee||'')+'</td><td>'+esc(tk.status||'Open')+
-      '</td><td><button class="btn btn-danger btn-sm" onclick="deleteOpTask(\''+String(tk.id)+'\')">Delete</button></td></tr>';
-  }).join('') || '<tr><td colspan="6" style="color:var(--warm-gray)">No tasks — create one with New Task</td></tr>';
-  if(!document.getElementById('pagerTasks')){
-    var card=body.closest('.card-body')||body.parentNode;
-    var p=document.createElement('div'); p.className='pager'; p.id='pagerTasks'; card.appendChild(p);
-  }
-  if(typeof renderPager==='function') renderPager('pagerTasks','tasks',pg.total,'renderTasksPage');
-  updateOpBadges();
+window.updateOpBadges = function(){
+  try {
+    var unread = (slGet().messages||[]).filter(function(m){
+      if(m.type==='reminder'||m.type==='welcome') return false;
+      return !!m.unread && (!m.side || m.side==='operator' || m.fromActivity);
+    }).length;
+    var badge = document.getElementById('msgNavBadge');
+    if(badge){
+      if(unread>0){ badge.style.display='inline-flex'; badge.textContent=String(unread); badge.classList.add('show'); }
+      else { badge.style.display='none'; badge.textContent=''; badge.classList.remove('show'); }
+    }
+  } catch(e){}
+  try {
+    var s = opActivityGet();
+    var openTasks = (s.tasks||[]).filter(function(tk){ return (tk.status||'Open')!=='Done' && (tk.status||'')!=='Completed'; }).length;
+    var tb = document.getElementById('taskNavBadge');
+    if(tb){ if(openTasks>0){ tb.style.display='inline-flex'; tb.textContent=String(openTasks);} else { tb.style.display='none'; } }
+    var quotes = (s.quotes||[]).length;
+    try { quotes = Math.max(quotes, (slGet().operatorQuotes||[]).length); } catch(e){}
+    var qb = document.getElementById('quoteNavBadge');
+    if(qb){ if(quotes>0){ qb.style.display='inline-flex'; qb.textContent=String(quotes);} else { qb.style.display='none'; } }
+  } catch(e){}
 };
+
+(function(){
+  var _sp = window.switchPage;
+  window.switchPage = function(pageName){
+    if(typeof _sp === 'function') _sp(pageName);
+    try {
+      if(pageName==='tasks') renderTasksPage();
+      if(pageName==='favorites') renderOpFavorites();
+      if(pageName==='messages'){ renderOpMessages(); updateOpBadges(); }
+      if(pageName==='quotes' && window.renderQuotesPage) renderQuotesPage();
+      if(pageName==='accounts'){ if(window.renderOpTeam) renderOpTeam(); loadOpPaymentProfile(); }
+    } catch(e){}
+    updateOpBadges();
+    if(window.lucide) lucide.createIcons();
+  };
+})();
 
 
 /* ============================================
@@ -3244,10 +3228,8 @@ document.addEventListener('DOMContentLoaded', function() {
     switchPage('dashboard');
     renderOpDashboard();
     renderOpTeam();
-    try{ ensureWelcomeMessage(); }catch(e){}
-    try{ updateOpBadges(); }catch(e){}
-    try{ renderOpFavorites(); }catch(e){}
-    try{ loadOpPaymentProfile(); }catch(e){}
+    try{loadOpPaymentProfile();}catch(e){}
+    try{updateOpBadges();}catch(e){}
 
     // When partners update data, refresh open pages
     slOnChange(function() {
@@ -3260,8 +3242,6 @@ document.addEventListener('DOMContentLoaded', function() {
       else if (id === 'guides-page') guideRenderCards(getLiveGuides());
       else if (id === 'messages-page') renderOpMessages();
       else if (id === 'accounts-page') renderOpTeam();
-      else if (id === 'favorites-page') renderOpFavorites();
-      try{ updateOpBadges(); }catch(e){}
     });
 });
 </script>
