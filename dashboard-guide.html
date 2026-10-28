@@ -24,19 +24,24 @@
 
   /* ── RESET & BASE ── */
   * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden; }
   body {
     font-family: system-ui, sans-serif;
     background: var(--warm-off-white);
     color: var(--charcoal);
     display: flex;
     min-height: 100vh;
+    height: 100%;
+    overflow: hidden;
   }
 
   /* ── SIDEBAR (navigation + collapse) ── */
   .sidebar {
     width: 240px; background: var(--charcoal); color: #ccc;
     display: flex; flex-direction: column; flex-shrink: 0;
-    transition: width .3s ease; position: relative; overflow-x: visible;
+    transition: width .3s ease;
+    position: fixed; top: 0; left: 0; bottom: 0; height: 100vh; z-index: 100;
+    overflow: hidden;
   }
   .sidebar.collapsed { width: 68px; }
   .sidebar.collapsed .logo-text,
@@ -71,7 +76,7 @@
   }
   .logo-text { font-weight: 700; color: #fff; }
   .logo-text span { color: var(--accent-green); }
-  .sidebar-nav { padding: 12px; flex: 1; overflow-y: auto; }
+  .sidebar-nav { padding: 12px; flex: 1; overflow-y: auto; min-height: 0; -webkit-overflow-scrolling: touch; }
   .sidebar-section {
     font-size: .68rem; text-transform: uppercase;
     color: rgba(255,255,255,.35); padding: 12px 8px 6px;
@@ -133,7 +138,11 @@
   .sidebar-footer { padding: 14px; border-top: 1px solid rgba(255,255,255,.08); font-size: .8rem; }
 
   /* ── MAIN LAYOUT ── */
-  .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .main {
+    flex: 1; min-width: 0; display: flex; flex-direction: column;
+    height: 100vh; max-height: 100vh; overflow: hidden;
+    margin-left: 240px; transition: margin-left .3s ease;
+  }
   .topbar {
     background: #fff; padding: 14px 22px; border-bottom: 1px solid var(--border-light);
     display: flex; justify-content: space-between; align-items: center;
@@ -141,7 +150,11 @@
   }
   .topbar h2 { font-size: 1.15rem; }
   .topbar p { font-size: .78rem; color: var(--warm-gray); }
-  .content { padding: 22px; flex: 1; width: 100%; min-width: 0; }
+  .content {
+    padding: 22px; flex: 1; width: 100%; min-width: 0; min-height: 0;
+    overflow-y: auto; overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
 
   /* ── PAGES ── */
   .page { display: none; }
@@ -271,11 +284,12 @@
 <a class="sidebar-link" data-p="languages" onclick="go('languages')"><i data-lucide="languages"></i><span> Languages & Skills</span></a>
 <a class="sidebar-link" data-p="certs" onclick="go('certs')"><i data-lucide="award"></i><span> Licences</span></a>
 <a class="sidebar-link" data-p="reviews" onclick="go('reviews')"><i data-lucide="star"></i><span> Reviews</span></a>
-<div class="sidebar-section">Ops</div>
+<div class="sidebar-section">Operations</div>
 <a class="sidebar-link" data-p="messages" onclick="go('messages')"><i data-lucide="message-square"></i><span> Messages</span><span class="sidebar-badge msg-unread" id="bMsg" data-count="0"></span></a>
 <a class="sidebar-link" data-p="quotes" onclick="go('quotes')"><i data-lucide="file-text"></i><span> Quotes / Proformas</span></a>
-<a class="sidebar-link" data-p="account" onclick="go('account')"><i data-lucide="settings"></i><span> Account</span></a>
 <a class="sidebar-link" data-p="earnings" onclick="go('earnings')"><i data-lucide="bar-chart-3"></i><span> Earnings</span></a>
+<div class="sidebar-section">Settings</div>
+<a class="sidebar-link" data-p="account" onclick="go('account')"><i data-lucide="settings"></i><span> Account</span></a>
 </nav>
 <div class="sidebar-footer"><div style="color:#fff;font-weight:600">Daniel Mwamba</div><div style="opacity:.5;font-size:.7rem"><span class="live-dot"></span>Guide · Live</div></div></aside>
 <div class="main"><header class="topbar"><div><h2 id="title">Dashboard</h2><p id="sub">Live</p></div>
@@ -507,7 +521,19 @@ function renderPager(elId,key,total,onChange){var el=document.getElementById(elI
 function pushAlert(text,kind){slUpdate(function(d){if(!d.guideAlerts)d.guideAlerts=[];d.guideAlerts.unshift({text:text,kind:kind||'info',time:Date.now()});d.guideAlerts=d.guideAlerts.slice(0,3);});}
 function ensureWelcomeMsg(){slUpdate(function(d){if(!d.messages)d.messages=[];if(!d._guideMsgClean){d.messages=d.messages.filter(function(m){return m.side!=='guide'||m.keep||m.type==='welcome'||m.fromActivity||m.type==='reminder';});d._guideMsgClean=true;}var has=d.messages.some(function(m){return m.type==='welcome'&&m.side==='guide';});if(!has){d.messages.unshift({id:'welcome-guide',type:'welcome',keep:true,side:'guide',from:'SafariLink',initials:'SL',unread:false,time:Date.now(),text:'Welcome. Operator requests, reminders and system messages appear here when there is activity.'});}});}
 
-function toggleCollapse(){var sb=document.getElementById('sidebar');var icon=document.getElementById('collapseIcon');sb.classList.toggle('collapsed');if(icon){icon.setAttribute('data-lucide',sb.classList.contains('collapsed')?'chevrons-right':'chevrons-left');lucide.createIcons()}}
+function toggleCollapse(){
+  var sb=document.getElementById('sidebar');
+  if(!sb)return;
+  sb.classList.toggle('collapsed');
+  var main=document.querySelector('.main');
+  if(main){
+    if(sb.classList.contains('collapsed')) main.style.marginLeft='68px';
+    else main.style.marginLeft='240px';
+  }
+  var icon=document.getElementById('collapseIcon');
+  if(icon){ icon.setAttribute('data-lucide', sb.classList.contains('collapsed')?'chevrons-right':'chevrons-left'); }
+  if(window.lucide) lucide.createIcons();
+}
 function logout(){sessionStorage.removeItem('safariLinkUser');try{localStorage.removeItem('safarilink_user')}catch(e){}location.href='index.html'}
 var TITLES={   dashboard:['Dashboard','Upcoming jobs, open requests, earnings and rating'],   schedule:['My Schedule','Confirmed and in-progress guide assignments'],   requests:['Job Requests','Accept or decline new operator requests'],   services:['My Services','Game drives, walking, birding and other offerings'],   availability:['Availability Calendar','Block dates you are not available'],   profile:['Guide Profile','Name, photo, years, bio — synced to operator cards'],   pricing:['Day Rates','Full day, half day, overnight and mountain fees'],   regions:['Parks & Regions','Areas you guide — shown on operator cards'],   languages:['Languages & Skills','Including Japanese, Chinese and Korean'],   certs:['Licences & Certificates','Tour guide licence and first aid'],   reviews:['Reviews','Operator feedback and ratings'],   messages:['Messages','Messages from operators'],   quotes:['Quotes / Proformas','Job proformas with service, days and bank details'],
    account:['Account','Payment details + team roles like operator'],
