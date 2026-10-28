@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -11,7 +11,7 @@
     --warm-off-white: #f8f7f4; --khaki: #e8e5dd; --charcoal: #2c2c2c;
     --warm-gray: #a39e95; --border-light: #d4cfc6;
     --status-available: #10b981; --status-pending: #f59e0b; --status-unavailable: #dc2626;
-    --status-info: #0891b2;
+    --status-info: #0891b2<!DOCTYPE;
     --shadow-sm: 0 1px 2px rgba(0,0,0,0.05); --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
     --shadow-lg: 0 12px 24px rgba(0,0,0,0.12);
     --radius-sm: 6px; --radius-md: 10px; --radius-lg: 16px;
@@ -115,8 +115,15 @@
     transition: margin-left 0.3s ease;
   }
   .btn-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-  #quotesTableBody .btn { white-space: nowrap; }
-  #quotesTableBody td:last-child { white-space: nowrap; min-width: 190px; }
+  #quotesTableBody .btn { white-space: nowrap; flex-shrink: 0; }
+  #quotesTableBody td { white-space: nowrap; }
+  #quotesTableBody td:last-child { white-space: nowrap; min-width: 220px; }
+  #quotesTableBody .badge { white-space: nowrap; display: inline-flex; }
+  #quotesTableBody .btn-row, #quotesTableBody td:last-child > div {
+    display: inline-flex; flex-wrap: nowrap; gap: 8px; align-items: center;
+  }
+  #partnerQuotesBody .btn, #partnerQuotesBody .badge { white-space: nowrap; }
+  #partnerQuotesBody td { white-space: nowrap; }
 
   /* ── PAGES ── */
   .page { display: none; }
@@ -1122,7 +1129,7 @@
             <div class="page-header">
                 <div>
                     <div class="page-title">Favorites</div>
-                    <div class="page-subtitle">Save partners from detail pages, then rate them here (1–5 stars)</div>
+                    <div class="page-subtitle">Save partners from Accommodation / Fleet / Guides details, then rate them here with the stars (1–5)</div>
                 </div>
             </div>
             <div class="card">
@@ -2707,7 +2714,7 @@ window.renderQuotesPage = function() {
       '<td>$'+Number(q.amount||0).toLocaleString()+'</td>' +
       '<td style="white-space:nowrap;"><span class="badge '+st+'" style="white-space:nowrap;">'+esc(q.booked?'Booked':(q.status||'Draft'))+'</span></td>' +
       '<td>'+bookCell+'</td>' +
-      '<td style="white-space:nowrap;"><div class="btn-row"><button type="button" class="btn btn-secondary btn-sm" onclick="redownloadClientQuote(\''+q.id+'\')">Client PDF</button><button type="button" class="btn btn-secondary btn-sm" onclick="deleteOpQuote(\''+q.id+'\')">Delete</button></div></td>' +
+      '<td style="white-space:nowrap;"><div class="btn-row"><button type="button" class="btn btn-secondary btn-sm" onclick="redownloadClientQuote(\''+q.id+'\')">Client PDF</button> <button type="button" class="btn btn-secondary btn-sm" style="margin-left:8px" onclick="deleteOpQuote(\''+q.id+'\')">Delete</button></div></td>' +
       '</tr>';
   }).join('') || '<tr><td colspan="7" style="color:var(--warm-gray);">No quotes yet — generate one from Itineraries.</td></tr>';
   renderPager('pagerMyQuotes', 'myQuotes', pg.total, 'renderQuotesPage');
@@ -3014,26 +3021,36 @@ window.showQuoteTab = function(which) {
 function ensureWelcomeMessage() {
   slUpdate(function(d) {
     if (!d.messages) d.messages = [];
+    // never show reminders
     d.messages = (d.messages||[]).filter(function(m){ return m.type !== 'reminder'; });
-    if (!d._msgsCleaned) {
-      d.messages = d.messages.filter(function(m) {
-        return m.type === 'welcome' || m.fromActivity || m.keep;
-      });
-      d._msgsCleaned = true;
-    }
-    var welcomes = d.messages.filter(function(m){ return m.type === 'welcome'; });
-    d.messages = d.messages.filter(function(m){ return m.type !== 'welcome'; });
-    if (welcomes.length) {
-      d.messages.push(welcomes[0]);
-    } else if (!d._welcomeShown) {
-      d.messages.push({
+    // keep only one welcome, pin it as oldest among system
+    var welcome = null;
+    var rest = [];
+    (d.messages||[]).forEach(function(m){
+      if (m.type === 'welcome') {
+        if (!welcome) welcome = m;
+      } else {
+        rest.push(m);
+      }
+    });
+    if (!welcome && !d._welcomeShown) {
+      welcome = {
         id: 'welcome', type: 'welcome', keep: true, unread: false,
         from: 'SafariLink', initials: 'SL', side: 'operator',
-        text: 'Welcome to SafariLink. Partner messages will appear here when there is new activity.',
+        text: 'Welcome to SafariLink. This is your inbox — messages from partners and activity updates will appear here after this.',
         time: Date.now()
-      });
+      };
       d._welcomeShown = true;
     }
+    // welcome first (bottom of sorted newest-first list is fine; render sorts by time)
+    d.messages = rest;
+    if (welcome) {
+      welcome.type = 'welcome';
+      welcome.keep = true;
+      welcome.unread = false;
+      d.messages.push(welcome);
+    }
+    d._msgsCleaned = true;
   });
 }
 
@@ -3053,46 +3070,63 @@ window.deleteOpQuote = function(id){
   showToast('Quote deleted');
 };
 window.addOpFavorite = function(item){
-  if(!item || !item.name){ showToast('Nothing to save'); return; }
-  var id = String(item.id || ((item.kind||'x') + '-' + (item.refId||item.name)));
-  var already = false;
+  if(!item){ showToast('Nothing to save'); return; }
+  var name = item.name || item.title || item.plate || 'Partner';
+  var id = String(item.id || ((item.kind||item.type||'x') + '-' + (item.refId||name)));
+  var added = false;
   slUpdate(function(d){
     if(!d.operatorFavorites) d.operatorFavorites = [];
-    already = d.operatorFavorites.some(function(f){ return String(f.id) === id; });
-    if(already) return;
+    var exists = d.operatorFavorites.some(function(f){ return String(f.id) === id; });
+    if(exists) return;
     d.operatorFavorites.unshift({
-      id: id, refId: item.refId || item.id, name: item.name,
-      type: item.type || 'Partner', kind: item.kind || 'partner',
-      myRating: 0, savedAt: Date.now()
+      id: id,
+      refId: item.refId != null ? item.refId : item.id,
+      name: name,
+      type: item.type || 'Partner',
+      kind: item.kind || String(item.type||'partner').toLowerCase(),
+      myRating: 0,
+      savedAt: Date.now()
     });
+    added = true;
   });
-  if(already) showToast(item.name + ' is already in Favorites');
-  else showToast(item.name + ' saved — open Favorites to rate');
-  if(window.renderOpFavorites) renderOpFavorites();
+  // re-read to confirm
+  var list = [];
+  try { list = (slGet().operatorFavorites||[]); } catch(e){}
+  var ok = list.some(function(f){ return String(f.id) === id; });
+  if(ok){
+    showToast(name + ' saved to Favorites — open Favorites to rate (1–5 stars)');
+    if(window.renderOpFavorites) renderOpFavorites();
+  } else if(!added){
+    showToast(name + ' is already in Favorites');
+  } else {
+    showToast('Could not save favorite — try again');
+  }
 };
+
 window.renderOpFavorites = function(){
   var el = document.getElementById('opFavoritesList');
   if(!el) return;
   var favs = [];
   try { favs = (slGet().operatorFavorites || []); } catch(e){}
   if(!favs.length){
-    el.innerHTML = '<p style="color:var(--warm-gray);">No favorites yet. Open Accommodation, Fleet or Guides, open details, click <strong>Save to favorites</strong>, then rate here.</p>';
+    el.innerHTML = '<p style="color:var(--warm-gray);line-height:1.5;">No favorites yet.<br>Open <strong>Accommodation</strong>, <strong>Fleet</strong> or <strong>Guides</strong> → open a partner → click <strong>Save to favorites</strong>.<br>Then return here to <strong>rate them 1–5 stars</strong>.</p>';
     return;
   }
   el.innerHTML = favs.map(function(f){
     var rating = f.myRating || 0;
     var stars = [1,2,3,4,5].map(function(n){
-      return '<button type="button" class="btn btn-sm" style="padding:4px 8px;font-size:1rem;'+(n<=rating?'background:#fef3c7;':'')+'" onclick="rateFavorite(\''+String(f.id).replace(/'/g,"\\'")+'\','+n+')">'+(n<=rating?'★':'☆')+'</button>';
+      return '<button type="button" class="btn btn-sm" title="Rate '+n+'" style="padding:4px 8px;font-size:1.05rem;'+(n<=rating?'background:#fef3c7;border-color:#f59e0b;':'')+'" onclick="rateFavorite(\''+String(f.id).replace(/'/g,"\'")+'\','+n+')">'+(n<=rating?'★':'☆')+'</button>';
     }).join('');
     return '<div style="border:1px solid var(--border);border-radius:10px;padding:14px;">'+
-      '<div style="font-weight:700;">'+esc(f.name||'')+'</div>'+
-      '<div style="font-size:.8rem;color:var(--warm-gray);margin:4px 0 10px;">'+esc(f.type||'')+'</div>'+
-      '<div style="padding:10px;background:#f8f7f4;border-radius:8px;margin-bottom:10px;">'+
-      '<div style="font-size:.75rem;font-weight:600;margin-bottom:6px;">Rate this partner (1–5 stars)</div>'+
-      '<div style="display:flex;gap:4px;flex-wrap:wrap;">'+stars+'</div></div>'+
-      '<button type="button" class="btn btn-secondary btn-sm" onclick="removeFavorite(\''+String(f.id).replace(/'/g,"\\'")+'\')">Remove</button></div>';
+      '<div style="font-weight:700;">'+esc(f.name||'Partner')+'</div>'+
+      '<div style="font-size:.8rem;color:var(--warm-gray);margin:4px 0 10px;">'+esc(f.type||'Partner')+'</div>'+
+      '<div style="margin-bottom:10px;"><div style="font-size:.75rem;font-weight:600;margin-bottom:6px;">Rate this partner (1–5)</div><div style="display:flex;gap:4px;flex-wrap:wrap;">'+stars+'</div>'+
+      (rating?'<div class="meta" style="margin-top:6px;">Your rating: '+rating+'/5</div>':'')+'</div>'+
+      '<button type="button" class="btn btn-secondary btn-sm" onclick="removeFavorite(\''+String(f.id).replace(/'/g,"\'")+'\')">Remove</button></div>';
   }).join('');
+  if(window.lucide) lucide.createIcons();
 };
+
 window.removeFavorite = function(id){
   slUpdate(function(d){
     d.operatorFavorites = (d.operatorFavorites||[]).filter(function(f){ return String(f.id)!==String(id); });
