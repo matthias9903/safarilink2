@@ -28,11 +28,12 @@
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
+  html { scroll-behavior: smooth; height: 100%; overflow: hidden; }
 
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
     background: var(--warm-off-white); color: var(--charcoal); line-height: 1.6;
+    height: 100%; overflow: hidden;
   }
 
   /* ── DASHBOARD LAYOUT ── */
@@ -40,7 +41,7 @@
 
   .sidebar {
     width: 240px; background: var(--charcoal); color: #ccc;
-    overflow-x: visible; overflow-y: auto; position: fixed; top: 0; left: 0; height: 100vh; z-index: 1000;
+    overflow: hidden; position: fixed; top: 0; left: 0; bottom: 0; height: 100vh; z-index: 1000;
     transition: transform 0.3s ease, width 0.3s ease; display: flex; flex-direction: column;
   }
   .sidebar.collapsed { width: 68px; }
@@ -86,7 +87,7 @@
   .sidebar-logo .logo-text span { color: var(--accent-green); }
   .sidebar-logo svg, .sidebar-logo i { width: 24px; height: 24px; }
 
-  .sidebar-nav { padding: 16px 12px; flex: 1; }
+  .sidebar-nav { padding: 16px 12px; flex: 1; overflow-y: auto; min-height: 0; -webkit-overflow-scrolling: touch; }
 
   .nav-section { margin-bottom: 8px; }
   .nav-section-title {
@@ -108,8 +109,9 @@
   .sidebar.collapsed #msgNavBadge { position: absolute; top: 4px; right: 8px; margin: 0; }
 
   .main-content {
-    margin-left: 240px; flex: 1; padding: 28px 32px; min-height: 100vh;
-    transition: margin-left 0.3s ease;
+    margin-left: 240px; flex: 1; padding: 28px 32px;
+    height: 100vh; max-height: 100vh; overflow-y: auto; overflow-x: hidden;
+    transition: margin-left 0.3s ease; -webkit-overflow-scrolling: touch;
   }
 
   /* ── PAGES ── */
@@ -518,9 +520,11 @@
                 <div class="nav-section-title">Operations</div>
                 <div class="nav-item" onclick="switchPage('quotes')">
                     <i data-lucide="file-text"></i> <span>Quotes</span>
+                    <span id="quoteNavBadge" style="display:none;margin-left:auto;background:#0891b2;color:#fff;font-size:.65rem;font-weight:700;min-width:18px;height:18px;border-radius:99px;padding:0 5px;align-items:center;justify-content:center;"></span>
                 </div>
                 <div class="nav-item" onclick="switchPage('tasks')">
                     <i data-lucide="clipboard-list"></i> <span>Tasks</span>
+                    <span id="taskNavBadge" style="display:none;margin-left:auto;background:#f59e0b;color:#000;font-size:.65rem;font-weight:700;min-width:18px;height:18px;border-radius:99px;padding:0 5px;align-items:center;justify-content:center;"></span>
                 </div>
                 <div class="nav-item" onclick="switchPage('favorites')">
                     <i data-lucide="star"></i> <span>Favorites</span>
@@ -900,7 +904,7 @@
                     <div class="page-title">Accommodation Directory</div>
                     <div class="page-subtitle">Browse, manage &amp; source safari accommodations</div>
                 </div>
-                <button class="create-btn" onclick="openModal('addPropModal')">+ Add Property</button>
+                
             </div>
 
             <!-- Filter Toolbar -->
@@ -944,7 +948,7 @@
                     <div class="page-title">Fleet Management</div>
                     <div class="page-subtitle">Browse, lease, and manage safari vehicles</div>
                 </div>
-                <button class="create-btn" onclick="openModal('addFleetModal')">+ Add Vehicle</button>
+                
             </div>
 
             <!-- Filter Toolbar -->
@@ -989,7 +993,7 @@
                     <div class="page-title">Professional Guides</div>
                     <div class="page-subtitle">Browse and source experienced safari guides</div>
                 </div>
-                <button class="create-btn" onclick="openModal('addGuideModal')">+ Add Guide</button>
+                
             </div>
 
             <!-- Filter Toolbar -->
@@ -1079,7 +1083,7 @@
         <div id="tasks-page" class="page">
             <div class="page-header">
                 <div class="page-title">Tasks</div>
-                <button class="create-btn" onclick="openAddTask()"><i data-lucide="plus"></i> New Task</button>
+                <button class="create-btn" onclick="window.openAddTask()"><i data-lucide="plus"></i> New Task</button>
             </div>
             <div class="card">
                 <div class="card-body">
@@ -1087,23 +1091,7 @@
                         <thead>
                             <tr><th>Task</th><th>Itinerary</th><th>Due Date</th><th>Assignee</th><th>Status</th></tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>Confirm Serengeti Heritage Camp</strong></td><td>5-Day Serengeti</td>
-                                <td>12 Sep 2024</td><td>Grace Ntuli</td>
-                                <td><span class="badge badge-warning">Pending</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Send vehicle lease agreement</strong></td><td>5-Day Serengeti</td>
-                                <td>13 Sep 2024</td><td>Mathias Mwembe</td>
-                                <td><span class="badge badge-success">Completed</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Source accommodation for Zanzibar</strong></td><td>Zanzibar + Safari</td>
-                                <td>01 Oct 2024</td><td>Grace Ntuli</td>
-                                <td><span class="badge badge-info">To Do</span></td>
-                            </tr>
-                        </tbody>
+                        <tbody id="tasksBody"></tbody>
                     </table>
                 </div>
             </div>
@@ -1113,30 +1101,16 @@
              FAVORITES PAGE
              ========================================== -->
         <div id="favorites-page" class="page">
-            <div class="page-header"><div class="page-title">Favorites</div></div>
-            <div class="card">
-                <div class="card-body">
-                    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;">
-                        <div style="padding:16px;border:1px solid var(--border);border-radius:8px;">
-                            <strong>Serengeti Heritage Camp</strong><br>
-                            <span style="font-size:.8rem;color:var(--warm-gray);">Lodge · Serengeti</span>
-                        </div>
-                        <div style="padding:16px;border:1px solid var(--border);border-radius:8px;">
-                            <strong>Toyota Land Cruiser TZ-456</strong><br>
-                            <span style="font-size:.8rem;color:var(--warm-gray);">4x4 · 7 Seats</span>
-                        </div>
-                        <div style="padding:16px;border:1px solid var(--border);border-radius:8px;">
-                            <strong>Joseph Mwangi</strong><br>
-                            <span style="font-size:.8rem;color:var(--warm-gray);">Guide · Big Cats Specialist</span>
-                        </div>
-                    </div>
-                </div>
+            <div class="page-header">
+              <div><div class="page-title">Favorites</div><div class="page-subtitle">Saved partners — remove anytime</div></div>
             </div>
+            <div class="card"><div class="card-body">
+              <div id="favGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;"></div>
+              <div class="pager" id="pagerFav"></div>
+            </div></div>
         </div>
 
-        <!-- ==========================================
-             TRIPS PAGE (placeholder)
-             ========================================== -->
+        <!-- ========== -->
                 <div id="trips-page" class="page">
             <div class="page-header">
                 <div>
@@ -1241,6 +1215,29 @@
                         </div>
                     </div>
                     <p style="font-size:.82rem;color:var(--warm-gray);margin-top:10px;">First account is Admin (main). New members need <strong>SafariLink platform Admin</strong> approval. <button type="button" class="btn btn-secondary btn-sm" onclick="openChangePassword(document.getElementById('coEmail').value||'dreamtrailsexpedictions@gmail.com')">Change password</button> <button type="button" class="btn btn-secondary btn-sm" onclick="requestPasswordReset(document.getElementById('coEmail').value)">Reset via email</button></p>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top:16px;">
+                <div class="card-header"><div class="card-title">Payment &amp; invoice details</div>
+                  <button type="button" class="btn btn-primary btn-sm" onclick="saveOpPaymentProfile()"><i data-lucide="save" style="width:14px;height:14px;"></i> Save</button>
+                </div>
+                <div class="card-body">
+                  <p style="font-size:.82rem;color:var(--warm-gray);margin-bottom:12px;">Saved details attach automatically to operator quotes you generate for clients.</p>
+                  <div class="form-row">
+                    <div class="form-group"><label>Bank name *</label><input id="opPayBankName" placeholder="CRDB Bank Plc"></div>
+                    <div class="form-group"><label>Branch name</label><input id="opPayBranch" placeholder="Arusha"></div>
+                  </div>
+                  <div class="form-group"><label>Bank address</label><input id="opPayBankAddress" placeholder="Arusha, Tanzania"></div>
+                  <div class="form-row">
+                    <div class="form-group"><label>SWIFT / BIC</label><input id="opPaySwift" placeholder="CORUTZTZ"></div>
+                    <div class="form-group"><label>Account name *</label><input id="opPayAccName" placeholder="Dreamtrails Expeditions Ltd"></div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group"><label>Account number *</label><input id="opPayAccNo" placeholder="01J1..."></div>
+                    <div class="form-group"><label>Invoice email</label><input id="opPayEmail" type="email"></div>
+                  </div>
+                  <div class="form-group"><label>Invoice phone</label><input id="opPayPhone" placeholder="+255 …"></div>
                 </div>
             </div>
         </div>
@@ -1356,7 +1353,8 @@ function renderOpMessages(){
   var msgs = [];
   try {
     msgs = (slGet().messages || []).filter(function(m){
-      return !m.side || m.side === 'operator' || m.side === 'accommodation' || m.side === 'fleet' || m.side === 'guide' || m.type==='welcome' || m.type==='reminder';
+      if (m.type === 'reminder') return false;
+      return m.type==='welcome' || m.fromActivity || !m.side || m.side === 'operator' || m.side === 'accommodation' || m.side === 'fleet' || m.side === 'guide';
     }).slice().sort(function(a,b){ return (b.time||0)-(a.time||0); });
   } catch(e){}
   var pg = paginate('messages', msgs, 10);
@@ -1369,6 +1367,7 @@ function renderOpMessages(){
       '<span style="font-size:.75rem;color:var(--warm-gray);">'+(m.time?new Date(m.time).toLocaleString():'')+'</span></div>' +
       '<div style="font-size:.85rem;margin-top:4px;">'+esc(m.text||'')+'</div>' +
       (m.unread?'<span class="badge badge-info" style="margin-top:6px;">Unread</span>':'') +
+      (m.type!=='welcome'?' <button class="btn btn-danger btn-sm" style="margin-top:6px;" onclick="event.stopPropagation();deleteOpMessage(\''+String(m.id).replace(/'/g,"\\'")+'\')">Delete</button>':'') +
       '</div></div></div>';
   }).join('') || '<p style="color:var(--warm-gray);padding:12px;">No messages yet.</p>';
   renderPager('pagerMessages', 'messages', pg.total, 'renderOpMessages');
@@ -1685,9 +1684,14 @@ window.switchPage = function(pageName) {
     if (pageName === 'guides') { guideRenderCards(getLiveGuides()); }
     if (pageName === 'messages') { renderOpMessages(); }
     if (pageName === 'dashboard') { renderOpDashboard(); }
+    if (pageName === 'favorites') { if(window.renderOpFavorites) renderOpFavorites(); }
+    if (pageName === 'tasks') { if(window.renderTasksPage) renderTasksPage(); }
+    if (pageName === 'quotes') { if(window.renderQuotesPage) renderQuotesPage(); if(window.renderPartnerQuotes) renderPartnerQuotes(); }
+    try{ updateOpBadges(); }catch(e){}
     if (pageName === 'accounts') {
       renderOpTeam();
       if (window.loadCompanyProfile) loadCompanyProfile();
+      try{ loadOpPaymentProfile(); }catch(e){}
       try {
         var em = (document.getElementById('coEmail')||{}).value || 'dreamtrailsexpedictions@gmail.com';
         var el = document.getElementById('kpiLoginEmail');
@@ -2176,6 +2180,10 @@ window.initImagePlaceholders = function() {
                     '<button class="btn btn-secondary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();accomViewDetail(' + a.id + ')">Details</button>' +
                     '<button class="btn btn-primary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();accomReserve(' + a.id + ')"><i data-lucide="send" style="width:14px;height:14px;"></i> Reserve</button>' +
                 '</div>' +
+                '<div style="display:flex;gap:6px;margin-top:8px;">' +
+                    '<button class="btn btn-secondary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();addFavorite({id:' + a.id + ',type:'Accommodation',name:'' + esc(a.name).replace(/'/g,"\'") + '',meta:'' + esc(a.location||'').replace(/'/g,"\'") + ''})"><i data-lucide="star" style="width:14px;height:14px;"></i> Favorite</button>' +
+                    '<button class="btn btn-secondary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();openRatePartner('Accommodation','' + String(a.id) + '','' + esc(a.name).replace(/'/g,"\'") + '')">Rate</button>' +
+                '</div>' +
             '</div>' +
         '</div>';
     }).join('');
@@ -2272,6 +2280,10 @@ window.initImagePlaceholders = function() {
                     '<button class="btn btn-secondary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();fleetViewDetail(' + v.id + ')"><i data-lucide="eye" style="width:14px;height:14px;"></i> Details</button>' +
                     '<button class="btn btn-primary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();fleetLease(' + v.id + ')"><i data-lucide="key" style="width:14px;height:14px;"></i> Lease</button>' +
                 '</div>' +
+                '<div style="display:flex;gap:6px;margin-top:8px;">' +
+                    '<button class="btn btn-secondary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();addFavorite({id:' + v.id + ',type:\'Fleet\',name:\'' + esc(v.plate||v.name||'').replace(/'/g,"\\'") + '\',meta:\'' + esc(v.model||v.category||'').replace(/'/g,"\\'") + '\'})"><i data-lucide="star" style="width:14px;height:14px;"></i> Favorite</button>' +
+                    '<button class="btn btn-secondary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();openRatePartner(\'Fleet\',\'' + String(v.id) + '\',\'' + esc(v.plate||v.name||'').replace(/'/g,"\\'") + '\')">Rate</button>' +
+                '</div>' +
                 '</div>' +
             '</div>';
         }).join('');
@@ -2361,6 +2373,10 @@ window.initImagePlaceholders = function() {
                 '<div style="display:flex;gap:8px;margin-top:10px;">' +
                     '<button class="btn btn-secondary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();guideViewDetail(' + g.id + ')">Details</button>' +
                     '<button class="btn btn-primary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();guideRequest(' + g.id + ')"><i data-lucide="compass" style="width:14px;height:14px;"></i> Request</button>' +
+                '</div>' +
+                '<div style="display:flex;gap:6px;margin-top:8px;">' +
+                    '<button class="btn btn-secondary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();addFavorite({id:' + g.id + ',type:\'Guide\',name:\'' + esc(g.name||'').replace(/'/g,"\\'") + '\',meta:\'' + esc((g.specialization||g.spec||'')).replace(/'/g,"\\'") + '\'})"><i data-lucide="star" style="width:14px;height:14px;"></i> Favorite</button>' +
+                    '<button class="btn btn-secondary btn-sm" style="flex:1;justify-content:center;" onclick="event.stopPropagation();openRatePartner(\'Guide\',\'' + String(g.id) + '\',\'' + esc(g.name||'').replace(/'/g,"\\'") + '\')">Rate</button>' +
                 '</div>' +
             '</div>' +
         '</div>';
@@ -2901,7 +2917,11 @@ window.submitAddGuide = function(){
 window.openAddTask = function(){
   var d = document.getElementById('addTaskDue');
   if(d) d.value = new Date().toISOString().slice(0,10);
-  openModal('addTaskModal');
+  if(typeof window.openModal==='function') window.openModal('addTaskModal');
+  else {
+    var m=document.getElementById('addTaskModal');
+    if(m) m.classList.add('active');
+  }
 };
 window.submitAddTask = function(){
   var text = (document.getElementById('addTaskText')||{}).value; text=(text||'').trim();
@@ -3038,6 +3058,175 @@ function ensureWelcomeMessage() {
 }
 
 
+
+/* ── Operator favorites, ratings, badges, deletes, payment ── */
+function opFavKey(){ return 'sl_op_favorites_v1'; }
+function loadOpFavorites(){
+  try{ var r=localStorage.getItem(opFavKey()); if(r) return JSON.parse(r)||[]; }catch(e){}
+  return [];
+}
+function saveOpFavorites(list){ try{ localStorage.setItem(opFavKey(), JSON.stringify(list)); }catch(e){} }
+window.addFavorite = function(item){
+  var list=loadOpFavorites();
+  if(list.some(function(x){ return x.type===item.type && String(x.id)===String(item.id); })){ showToast('Already in favorites'); return; }
+  list.unshift({ id:item.id, type:item.type, name:item.name, meta:item.meta||'', at:Date.now() });
+  saveOpFavorites(list);
+  showToast('Added to favorites');
+  if(window.renderOpFavorites) renderOpFavorites();
+};
+window.removeFavorite = function(type, id){
+  var list=loadOpFavorites().filter(function(x){ return !(x.type===type && String(x.id)===String(id)); });
+  saveOpFavorites(list);
+  showToast('Removed from favorites');
+  renderOpFavorites();
+};
+window.renderOpFavorites = function(){
+  var grid=document.getElementById('favGrid'); if(!grid) return;
+  var list=loadOpFavorites();
+  var pg=paginate('fav', list, 10);
+  if(!pg.slice.length){ grid.innerHTML='<p class="meta">No favorites yet. Star partners from Accommodation, Fleet or Guides.</p>'; }
+  else {
+    grid.innerHTML=pg.slice.map(function(f){
+      return '<div style="padding:16px;border:1px solid var(--border);border-radius:8px;position:relative">'+
+        '<strong>'+esc(f.name)+'</strong><br><span style="font-size:.8rem;color:var(--warm-gray)">'+esc(f.type)+' · '+esc(f.meta||'')+'</span>'+
+        '<div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">'+
+        '<button class="btn btn-secondary btn-sm" onclick="openRatePartner(\''+esc(f.type)+'\',\''+String(f.id).replace(/'/g,"\\'")+'\',\''+esc(f.name).replace(/'/g,"\\'")+'\')">Rate</button>'+
+        '<button class="btn btn-danger btn-sm" onclick="removeFavorite(\''+esc(f.type)+'\',\''+String(f.id).replace(/'/g,"\\'")+'\')">Remove</button>'+
+        '</div></div>';
+    }).join('');
+  }
+  if(typeof renderPager==='function') renderPager('pagerFav','fav',pg.total,'renderOpFavorites');
+};
+
+window.openRatePartner = function(type, id, name){
+  var score = prompt('Rate '+name+' (1–5 stars):', '5');
+  if(score===null) return;
+  score = Math.max(1, Math.min(5, Number(score)||5));
+  var note = prompt('Optional comment:', '')||'';
+  slUpdate(function(d){
+    if(!d.partnerRatings) d.partnerRatings = [];
+    d.partnerRatings.unshift({ type:type, id:id, name:name, score:score, note:note, from:'operator', at:Date.now() });
+    // push into partner-side aggregates
+    if(type==='Accommodation' || type==='accommodation'){
+      if(!d.accomReviews) d.accomReviews=[];
+      d.accomReviews.unshift({ propertyId:id, property:name, score:score, text:note, from:'Tour operator', at:Date.now() });
+    }
+    if(type==='Fleet' || type==='fleet'){
+      if(!d.fleetReviews) d.fleetReviews=[];
+      d.fleetReviews.unshift({ vehicleId:id, name:name, score:score, text:note, from:'Tour operator', at:Date.now() });
+    }
+    if(type==='Guide' || type==='guide'){
+      if(!d.guideReviews) d.guideReviews=[];
+      d.guideReviews.unshift({ guideId:id, name:name, score:score, text:note, from:'Tour operator', at:Date.now() });
+      if(d.guides && d.guides[0]){
+        var g=d.guides[0];
+        var n=g.reviewsCount||0; var r=g.rating||5;
+        g.rating = Math.round(((r*n)+score)/(n+1)*10)/10;
+        g.reviewsCount = n+1;
+      }
+    }
+    if(!d.messages) d.messages=[];
+    d.messages.unshift({ id:Date.now(), fromActivity:true, unread:true, side:'operator', from:'SafariLink', initials:'SL',
+      text:'You rated '+name+' · '+score+'/5', time:Date.now(), type:'info' });
+  });
+  showToast('Rating submitted — visible on partner profile');
+  updateOpBadges();
+};
+
+window.deleteOpMessage = function(id){
+  slUpdate(function(d){ d.messages=(d.messages||[]).filter(function(m){ return String(m.id)!==String(id); }); });
+  if(window.renderOpMessages) renderOpMessages();
+  updateOpBadges();
+};
+window.deleteOpTask = function(id){
+  var s=opActivityGet();
+  s.tasks=(s.tasks||[]).filter(function(x){ return String(x.id)!==String(id); });
+  opActivitySave(s);
+  if(window.renderTasksPage) renderTasksPage();
+  updateOpBadges();
+};
+window.deleteOpQuote = function(id){
+  var s=opActivityGet();
+  s.quotes=(s.quotes||[]).filter(function(x){ return String(x.id)!==String(id); });
+  opActivitySave(s);
+  try{ slUpdate(function(d){ d.partnerQuotes=(d.partnerQuotes||[]).filter(function(x){ return String(x.id)!==String(id); }); }); }catch(e){}
+  if(window.renderQuotesPage) renderQuotesPage();
+  if(window.renderPartnerQuotes) renderPartnerQuotes();
+  updateOpBadges();
+};
+
+function updateOpBadges(){
+  var msgs=[];
+  try{ msgs=(slGet().messages||[]).filter(function(m){ return (m.side==='operator'||!m.side) && m.unread; }); }catch(e){}
+  var el=document.getElementById('msgNavBadge');
+  if(el){
+    if(msgs.length){ el.style.display='inline-flex'; el.textContent=String(msgs.length); el.classList.add('show'); }
+    else { el.style.display='none'; el.textContent=''; el.classList.remove('show'); }
+  }
+  var openTasks=0;
+  try{ openTasks=(opActivityGet().tasks||[]).filter(function(x){ return x.status==='Open'||x.status==='Pending'; }).length; }catch(e){}
+  var tb=document.getElementById('taskNavBadge');
+  if(tb){ if(openTasks){ tb.style.display='inline-flex'; tb.textContent=String(openTasks);} else { tb.style.display='none'; tb.textContent=''; } }
+  var newQuotes=0;
+  try{ newQuotes=(slGet().partnerQuotes||[]).filter(function(q){ return q.status==='Sent'||q.unread; }).length; }catch(e){}
+  try{ newQuotes += (opActivityGet().quotes||[]).filter(function(q){ return q.status==='Draft'||q.status==='Sent'; }).length; }catch(e){}
+  var qb=document.getElementById('quoteNavBadge');
+  if(qb){ if(newQuotes){ qb.style.display='inline-flex'; qb.textContent=String(newQuotes);} else { qb.style.display='none'; qb.textContent=''; } }
+}
+
+/* Payment profile for operator quotes */
+function loadOpPaymentProfile(){
+  try{
+    var p=JSON.parse(localStorage.getItem('sl_op_payment')||'{}');
+    var map={opPayBankName:'bankName',opPayBranch:'branchName',opPayBankAddress:'bankAddress',opPaySwift:'swift',opPayAccName:'accountName',opPayAccNo:'accountNumber',opPayEmail:'email',opPayPhone:'phone'};
+    Object.keys(map).forEach(function(id){ var el=document.getElementById(id); if(el&&p[map[id]]) el.value=p[map[id]]; });
+  }catch(e){}
+}
+window.saveOpPaymentProfile = function(){
+  var p={
+    bankName:(document.getElementById('opPayBankName')||{}).value||'',
+    branchName:(document.getElementById('opPayBranch')||{}).value||'',
+    bankAddress:(document.getElementById('opPayBankAddress')||{}).value||'',
+    swift:(document.getElementById('opPaySwift')||{}).value||'',
+    accountName:(document.getElementById('opPayAccName')||{}).value||'',
+    accountNumber:(document.getElementById('opPayAccNo')||{}).value||'',
+    email:(document.getElementById('opPayEmail')||{}).value||'',
+    phone:(document.getElementById('opPayPhone')||{}).value||''
+  };
+  if(!p.bankName||!p.accountName||!p.accountNumber){ showToast('Bank name, account name and number required'); return; }
+  try{ localStorage.setItem('sl_op_payment', JSON.stringify(p)); }catch(e){}
+  showToast('Payment details saved — will attach to new operator quotes');
+};
+function getOpPaymentProfile(){
+  try{ var r=localStorage.getItem('sl_op_payment'); if(r) return JSON.parse(r); }catch(e){}
+  return { bankName:'', bankAddress:'', swift:'', accountName:'', accountNumber:'', branchName:'', email:'', phone:'' };
+}
+
+/* Patch renderTasksPage to support delete if body exists */
+var _origRenderTasks = window.renderTasksPage;
+window.renderTasksPage = function(){
+  if(typeof _origRenderTasks==='function'){
+    try{ _origRenderTasks(); }catch(e){}
+  }
+  var body=document.getElementById('tasksBody');
+  if(!body) return;
+  // If original left empty or static missing delete, rebuild
+  var s=opActivityGet();
+  var list=s.tasks||[];
+  var pg=paginate('tasks', list, 10);
+  body.innerHTML = pg.slice.map(function(tk){
+    return '<tr><td>'+esc(tk.task)+'</td><td>'+esc(tk.related||'')+'</td><td>'+esc(tk.due||'')+'</td><td>'+esc(tk.assignee||'')+'</td><td>'+esc(tk.status||'Open')+
+      '</td><td><button class="btn btn-danger btn-sm" onclick="deleteOpTask(\''+String(tk.id)+'\')">Delete</button></td></tr>';
+  }).join('') || '<tr><td colspan="6" style="color:var(--warm-gray)">No tasks — create one with New Task</td></tr>';
+  if(!document.getElementById('pagerTasks')){
+    var card=body.closest('.card-body')||body.parentNode;
+    var p=document.createElement('div'); p.className='pager'; p.id='pagerTasks'; card.appendChild(p);
+  }
+  if(typeof renderPager==='function') renderPager('pagerTasks','tasks',pg.total,'renderTasksPage');
+  updateOpBadges();
+};
+
+
 /* ============================================
    INITIALIZE
    ============================================ */
@@ -3055,6 +3244,10 @@ document.addEventListener('DOMContentLoaded', function() {
     switchPage('dashboard');
     renderOpDashboard();
     renderOpTeam();
+    try{ ensureWelcomeMessage(); }catch(e){}
+    try{ updateOpBadges(); }catch(e){}
+    try{ renderOpFavorites(); }catch(e){}
+    try{ loadOpPaymentProfile(); }catch(e){}
 
     // When partners update data, refresh open pages
     slOnChange(function() {
@@ -3067,6 +3260,8 @@ document.addEventListener('DOMContentLoaded', function() {
       else if (id === 'guides-page') guideRenderCards(getLiveGuides());
       else if (id === 'messages-page') renderOpMessages();
       else if (id === 'accounts-page') renderOpTeam();
+      else if (id === 'favorites-page') renderOpFavorites();
+      try{ updateOpBadges(); }catch(e){}
     });
 });
 </script>
