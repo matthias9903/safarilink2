@@ -364,6 +364,70 @@
   }
   .hero-visual { position: relative; }
 
+    /* Hero interconnected ecosystem */
+    .ecosystem-illustration.eco-network {
+      position: relative; width: 100%; height: 420px;
+      background: linear-gradient(145deg, #f0faf5 0%, #eef6ff 45%, #f8f7f4 100%);
+      border-radius: var(--radius-lg); overflow: hidden;
+      border: 1px solid var(--border-light); box-shadow: var(--shadow-md);
+    }
+    .eco-network-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .eco-node {
+      position: absolute; z-index: 2; background: #fff; border: 1px solid var(--border-light);
+      border-radius: 12px; padding: 12px 14px; min-width: 132px; box-shadow: var(--shadow-sm); text-align: left;
+    }
+    .eco-node-icon {
+      width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 0.7rem; font-weight: 800; margin-bottom: 8px;
+    }
+    .eco-node-icon.hub {
+      background: linear-gradient(135deg, #1a5a3a, #3fb983); width: 40px; height: 40px; font-size: 0.75rem;
+    }
+    .eco-node-title { font-size: 0.78rem; font-weight: 700; color: var(--charcoal); }
+    .eco-node-sub { font-size: 0.65rem; color: var(--warm-gray); margin-top: 2px; line-height: 1.3; }
+    .eco-hub {
+      top: 50%; left: 50%; transform: translate(-50%, -50%); min-width: 150px; text-align: center;
+      border-color: rgba(63,185,131,0.45); box-shadow: 0 8px 24px rgba(26,90,58,0.12);
+    }
+    .eco-hub .eco-node-icon { margin-left: auto; margin-right: auto; }
+    .eco-n1 { top: 8%; left: 6%; }
+    .eco-n2 { top: 8%; right: 6%; left: auto; }
+    .eco-n3 { bottom: 14%; left: 6%; }
+    .eco-n4 { bottom: 14%; right: 6%; left: auto; }
+    .eco-network-caption {
+      position: absolute; bottom: 12px; left: 16px; right: 16px; z-index: 2;
+      font-size: 0.72rem; color: var(--warm-gray); text-align: center;
+      background: rgba(255,255,255,0.85); border-radius: 100px; padding: 8px 14px;
+      border: 1px solid var(--border-light);
+    }
+    /* Platform slides */
+    .platform-tabs { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 28px 0 20px; }
+    .platform-tab {
+      border: 1px solid var(--border-light); background: #fff; color: var(--charcoal);
+      border-radius: 100px; padding: 10px 18px; font-size: 0.85rem; font-weight: 600;
+      cursor: pointer; font-family: inherit; transition: all 0.2s;
+    }
+    .platform-tab:hover { border-color: var(--forest-green); color: var(--forest-green); }
+    .platform-tab.active { background: var(--forest-green); color: #fff; border-color: var(--forest-green); }
+    .platform-slide { display: none; }
+    .platform-slide.active { display: block; animation: fadeIn 0.35s ease; }
+    .platform-nav-row { display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 18px; }
+    .platform-nav-btn {
+      width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border-light);
+      background: #fff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+      color: var(--charcoal); transition: all 0.2s; font-size: 1rem;
+    }
+    .platform-nav-btn:hover { background: var(--forest-green); color: #fff; border-color: var(--forest-green); }
+    .product-preview-frame {
+      border-radius: 16px; border: 1px solid var(--border-light);
+      box-shadow: 0 20px 50px rgba(26, 90, 58, 0.1); overflow: hidden; background: #fff;
+    }
+    @media (max-width: 640px) {
+      .ecosystem-illustration.eco-network { height: 380px; }
+      .eco-node { min-width: 110px; padding: 10px; }
+    }
+
+
         /* --- ECOSYSTEM ILLUSTRATION (from original) --- */
         .ecosystem-illustration {
   position: relative;
@@ -454,6 +518,103 @@
     .sl-btn-white:hover { background: var(--khaki); }
     .sl-fade-up { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s ease; }
     .sl-fade-up.visible { opacity: 1; transform: translateY(0); }
+
+    .why-grid-modern {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+    .why-card-m {
+      background: #fff;
+      border: 1px solid var(--border-light);
+      border-radius: 16px;
+      padding: 26px 22px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+      height: 100%;
+    }
+    .why-card-m:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 32px rgba(26,90,58,0.09);
+      border-color: rgba(63,185,131,0.35);
+    }
+    .why-card-m-num {
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: var(--forest-green);
+      margin-bottom: 12px;
+    }
+    .why-card-m h4 {
+      font-size: 1.05rem;
+      margin-bottom: 10px;
+      color: var(--charcoal);
+      letter-spacing: -0.02em;
+    }
+    .why-card-m p {
+      font-size: 0.9rem;
+      line-height: 1.65;
+      color: var(--warm-gray);
+      margin: 0;
+    }
+    @media (max-width: 900px) {
+      .why-grid-modern { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 560px) {
+      .why-grid-modern { grid-template-columns: 1fr; }
+    }
+
+
+    .problem-grid-modern { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .problem-card-m {
+      background: #fff; border: 1px solid var(--border-light); border-radius: 16px;
+      padding: 22px 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); height: 100%;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .problem-card-m:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(26,90,58,0.08); }
+    .problem-card-m-tag {
+      display: inline-block; font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--forest-green); background: #ecfdf5;
+      padding: 4px 10px; border-radius: 100px; margin-bottom: 12px;
+    }
+    .problem-card-m h4 { font-size: 1.02rem; margin-bottom: 8px; color: var(--charcoal); }
+    .problem-card-m p { font-size: 0.88rem; line-height: 1.6; color: var(--warm-gray); margin: 0; }
+    .problem-transition {
+      text-align: center; background: #fff; border: 1px solid var(--border-light);
+      border-radius: 16px; padding: 28px 24px;
+    }
+    .problem-transition h3 { font-size: 1.25rem; color: var(--charcoal); margin-bottom: 8px; }
+    .problem-transition p { max-width: 640px; margin: 0 auto; font-size: 0.95rem; }
+    .how-flow { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 36px; }
+    .how-flow-step {
+      background: #fff; border: 1px solid var(--border-light); border-radius: 14px;
+      padding: 18px 14px; height: 100%;
+    }
+    .how-flow-num {
+      width: 28px; height: 28px; border-radius: 50%; background: var(--forest-green); color: #fff;
+      font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;
+    }
+    .how-flow-step h4 { font-size: 0.92rem; margin-bottom: 6px; color: var(--charcoal); }
+    .how-flow-step p { font-size: 0.8rem; line-height: 1.55; margin: 0; color: var(--warm-gray); }
+    .how-roles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .how-role {
+      background: linear-gradient(180deg, #f8fbf9, #fff); border: 1px solid var(--border-light);
+      border-radius: 14px; padding: 18px 16px;
+    }
+    .how-role-label {
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--forest-green); margin-bottom: 8px;
+    }
+    .how-role p { font-size: 0.85rem; line-height: 1.55; margin: 0; color: var(--charcoal); }
+    @media (max-width: 1000px) {
+      .problem-grid-modern { grid-template-columns: 1fr 1fr; }
+      .how-flow { grid-template-columns: 1fr 1fr 1fr; }
+      .how-roles { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 640px) {
+      .problem-grid-modern, .how-flow, .how-roles { grid-template-columns: 1fr; }
+    }
+
     .sl-img-placeholder-inner {
       width: 100%; display: flex; align-items: center; justify-content: center;
       font-size: 0.7rem; font-weight: 600; color: rgba(255,255,255,0.6);
@@ -949,72 +1110,44 @@
   </div>
   <!-- Right: Ecosystem Illustration -->
   <div class="hero-visual">
-  <div class="ecosystem-illustration">
-  <div class="eco-map">
-  <svg viewBox="0 0 500 420" fill="none">
-  <path d="M100 350 Q150 300 250 310 Q350 320 400 280" stroke="#1a5a3a" stroke-width="0.8" fill="none" opacity="0.4"/>
-  <path d="M80 320 Q160 270 260 280 Q360 290 420 250" stroke="#1a5a3a" stroke-width="0.6" fill="none" opacity="0.3"/>
-  <path d="M60 290 Q140 240 240 250 Q340 260 440 220" stroke="#1a5a3a" stroke-width="0.5" fill="none" opacity="0.25"/>
-  <path d="M90 200 Q180 160 280 170 Q380 180 420 140" stroke="#1a5a3a" stroke-width="0.6" fill="none" opacity="0.3"/>
-  <path d="M120 170 Q200 130 300 140 Q380 150 400 110" stroke="#1a5a3a" stroke-width="0.5" fill="none" opacity="0.2"/>
-  <path d="M150 120 Q220 90 310 100 Q370 110 390 80" stroke="#1a5a3a" stroke-width="0.4" fill="none" opacity="0.15"/>
-  <path d="M360 90 Q370 50 385 40 Q400 50 410 90" stroke="#1a5a3a" stroke-width="0.8" fill="none" opacity="0.3"/>
-  <path d="M350 100 Q370 60 390 50 Q410 60 420 100" stroke="#1a5a3a" stroke-width="0.5" fill="none" opacity="0.2"/>
-  <ellipse cx="180" cy="140" rx="40" ry="20" stroke="#1a5a3a" stroke-width="0.5" fill="none" opacity="0.15"/>
+  <div class="ecosystem-illustration eco-network">
+  <svg class="eco-network-svg" viewBox="0 0 520 400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <line x1="260" y1="200" x2="120" y2="95" stroke="#1a5a3a" stroke-width="2" stroke-dasharray="5 5" opacity="0.35"/>
+    <line x1="260" y1="200" x2="400" y2="95" stroke="#1a5a3a" stroke-width="2" stroke-dasharray="5 5" opacity="0.35"/>
+    <line x1="260" y1="200" x2="110" y2="310" stroke="#1a5a3a" stroke-width="2" stroke-dasharray="5 5" opacity="0.35"/>
+    <line x1="260" y1="200" x2="410" y2="310" stroke="#1a5a3a" stroke-width="2" stroke-dasharray="5 5" opacity="0.35"/>
+    <circle r="3.5" fill="#3fb983"><animateMotion dur="3.2s" repeatCount="indefinite" path="M260,200 L120,95"/></circle>
+    <circle r="3.5" fill="#0891b2"><animateMotion dur="3.6s" repeatCount="indefinite" path="M260,200 L400,95"/></circle>
+    <circle r="3.5" fill="#b08d3a"><animateMotion dur="3.4s" repeatCount="indefinite" path="M260,200 L110,310"/></circle>
+    <circle r="3.5" fill="#10b981"><animateMotion dur="3.8s" repeatCount="indefinite" path="M260,200 L410,310"/></circle>
   </svg>
+  <div class="eco-node eco-hub">
+    <div class="eco-node-icon hub">SL</div>
+    <div class="eco-node-title">SafariLink</div>
+    <div class="eco-node-sub">Live network hub</div>
   </div>
-  <div class="eco-location" style="top:28%;left:25%;"><div class="eco-location-dot"></div><div class="eco-location-name">Arusha</div></div>
-  <div class="eco-location" style="top:18%;left:55%;"><div class="eco-location-dot"></div><div class="eco-location-name">Serengeti</div></div>
-  <div class="eco-location" style="top:30%;left:42%;"><div class="eco-location-dot"></div><div class="eco-location-name">Ngorongoro</div></div>
-  <div class="eco-location" style="top:45%;left:35%;"><div class="eco-location-dot"></div><div class="eco-location-name">Tarangire</div></div>
-  <div class="eco-location" style="top:12%;left:72%;"><div class="eco-location-dot"></div><div class="eco-location-name">Kilimanjaro</div></div>
-  <div class="eco-location" style="top:68%;left:20%;"><div class="eco-location-dot"></div><div class="eco-location-name">Zanzibar</div></div>
-  <div class="eco-card" style="top:15%;left:5%;">
-  <div class="eco-card-glow" style="background:var(--forest-green);top:-8px;left:-8px;"></div>
-  <div class="eco-card-icon" style="background:var(--forest-green);">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+  <div class="eco-node eco-n1">
+    <div class="eco-node-icon" style="background:#1a5a3a;">TO</div>
+    <div class="eco-node-title">Tour operators</div>
+    <div class="eco-node-sub">Quotes · trips · sourcing</div>
   </div>
-  <div class="eco-card-title">200+ Lodges</div>
-  <div class="eco-card-sub">STO rates available</div>
+  <div class="eco-node eco-n2">
+    <div class="eco-node-icon" style="background:#0891b2;">AC</div>
+    <div class="eco-node-title">Accommodation</div>
+    <div class="eco-node-sub">Rooms · rates · reservations</div>
   </div>
-  <div class="eco-card" style="top:5%;right:8%;">
-  <div class="eco-card-glow" style="background:#0891b2;top:-8px;right:-8px;"></div>
-  <div class="eco-card-icon" style="background:#0891b2;">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+  <div class="eco-node eco-n3">
+    <div class="eco-node-icon" style="background:#b08d3a;">FL</div>
+    <div class="eco-node-title">Fleet partners</div>
+    <div class="eco-node-sub">Vehicles · charters · drivers</div>
   </div>
-  <div class="eco-card-title">150+ Vehicles</div>
-  <div class="eco-card-sub">Ready to lease</div>
+  <div class="eco-node eco-n4">
+    <div class="eco-node-icon" style="background:#10b981;">GD</div>
+    <div class="eco-node-title">Guides</div>
+    <div class="eco-node-sub">Jobs · schedule · parks</div>
   </div>
-  <div class="eco-card" style="bottom:22%;right:5%;">
-  <div class="eco-card-glow" style="background:#b08d3a;bottom:-8px;right:-8px;"></div>
-  <div class="eco-card-icon" style="background:#b08d3a;">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-  </div>
-  <div class="eco-card-title">100+ Guides</div>
-  <div class="eco-card-sub">Verified professionals</div>
-  </div>
-  <div class="eco-card" style="bottom:15%;left:8%;">
-  <div class="eco-card-glow" style="background:var(--accent-green);bottom:-8px;left:-8px;"></div>
-  <div class="eco-card-icon" style="background:var(--accent-green);">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-  </div>
-  <div class="eco-card-title">Reservations</div>
-  <div class="eco-card-sub">Instant confirmations</div>
-  </div>
-  <div class="eco-flow-dot" style="top:40%;left:32%;"></div>
-  <div class="eco-flow-line" style="top:40%;left:34%;width:40px;transform:rotate(-10deg);"></div>
-  <div class="eco-flow-dot" style="top:35%;left:50%;"></div>
-  <div class="eco-flow-line" style="top:35%;left:52%;width:30px;transform:rotate(15deg);"></div>
-  <div class="eco-flow-dot" style="top:50%;left:45%;"></div>
-  <div class="eco-flow-line" style="top:51%;left:38%;width:35px;transform:rotate(-5deg);"></div>
-  <div class="eco-flow-dot" style="top:25%;left:40%;"></div>
-  <div class="eco-stats">
-  <div class="eco-stat-pill"><div class="eco-dot" style="background:var(--forest-green);"></div>200+ Properties</div>
-  <div class="eco-stat-pill"><div class="eco-dot" style="background:#0891b2;"></div>150+ Vehicles</div>
-  <div class="eco-stat-pill"><div class="eco-dot" style="background:#b08d3a;"></div>100+ Guides</div>
-  <div class="eco-stat-pill"><div class="eco-dot" style="background:var(--accent-green);"></div>24hr Confirmations</div>
-  </div>
-  </div>
+  <div class="eco-network-caption">Reservations, quotes and updates flow both ways — live between operators and partners.</div>
+</div>
   </div>
   </div>
         </div>
@@ -1159,106 +1292,104 @@
 <!-- ============================================================
      SECTION 2 — THE PROBLEM
      ============================================================ -->
-<section class="sl-section sl-section-alt">
+<section class="sl-section sl-section-alt" id="the-problem">
   <div class="container">
-    <div class="sl-center sl-fade-up" style="margin-bottom:40px;">
+    <div class="sl-center sl-fade-up" style="margin-bottom:48px;">
       <span class="sl-label">The Problem</span>
-      <h2 class="sl-heading" style="max-width:700px;margin:0 auto 12px;">Tanzania tourism shouldn't run on scattered WhatsApp messages, emails and spreadsheets.</h2>
-      <p class="sl-sub" style="max-width:640px;margin:0 auto;">Tour operators spend valuable time searching for suppliers, checking availability, requesting rates, following up on reservations and manually building itineraries across different tools.</p>
+      <h2 class="sl-heading" style="max-width:720px;margin:0 auto 14px;">Tanzania’s tourism businesses are connected in real life — but not on one system.</h2>
+      <p class="sl-sub" style="max-width:640px;margin:0 auto;">Tour operators, lodges, fleet owners and guides still run bookings across WhatsApp, email, phone calls and spreadsheets. That slows everyone down and leaves gaps in the trip.</p>
     </div>
-
-    <div class="problem-steps sl-fade-up">
-      <div class="problem-step">
-        <div class="problem-step-arrow" style="display:none;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-        </div>
-        <div class="problem-step-num">Step 01</div>
-        <h4>Search</h4>
-        <p>Call or message multiple suppliers</p>
+    <div class="problem-grid-modern sl-fade-up">
+      <div class="problem-card-m">
+        <div class="problem-card-m-tag">Tour operators</div>
+        <h4>Scattered sourcing</h4>
+        <p>Hunting for rooms, cars and guides across chats and spreadsheets — then rebuilding the same quote by hand.</p>
       </div>
-      <div class="problem-step">
-        <div class="problem-step-num">Step 02</div>
-        <h4>Check</h4>
-        <p>Ask about availability</p>
+      <div class="problem-card-m">
+        <div class="problem-card-m-tag">Accommodation</div>
+        <h4>Invisible inventory</h4>
+        <p>Availability and STO rates live offline, so operators cannot see what is actually bookable in real time.</p>
       </div>
-      <div class="problem-step">
-        <div class="problem-step-num">Step 03</div>
-        <h4>Request</h4>
-        <p>Wait for B2B/STO rates</p>
+      <div class="problem-card-m">
+        <div class="problem-card-m-tag">Fleet partners</div>
+        <h4>Charter chaos</h4>
+        <p>Lease requests arrive by message; confirmations, drivers and vehicle status are hard to track in one place.</p>
       </div>
-      <div class="problem-step">
-        <div class="problem-step-num">Step 04</div>
-        <h4>Source</h4>
-        <p>Find vehicles and guides</p>
-      </div>
-      <div class="problem-step">
-        <div class="problem-step-num">Step 05</div>
-        <h4>Build</h4>
-        <p>Create itineraries manually</p>
-      </div>
-      <div class="problem-step">
-        <div class="problem-step-num">Step 06</div>
-        <h4>Calculate</h4>
-        <p>Work out costs and margins</p>
-      </div>
-      <div class="problem-step">
-        <div class="problem-step-num">Step 07</div>
-        <h4>Confirm</h4>
-        <p>Follow up on reservations</p>
-      </div>
-      <div class="problem-step">
-        <div class="problem-step-num">Step 08</div>
-        <h4>Manage</h4>
-        <p>Track everything across channels</p>
+      <div class="problem-card-m">
+        <div class="problem-card-m-tag">Guides</div>
+        <h4>Job requests lost in chat</h4>
+        <p>Assignments, parks, dates and payments are negotiated ad hoc — with little shared history for the next trip.</p>
       </div>
     </div>
-
-    <div class="problem-transition sl-fade-up">
-      <h3>SafariLink brings these operations together.</h3>
-      <p>One connected workspace for sourcing, planning, costing and managing Tanzania tourism operations.</p>
-      <div style="margin-top:24px;">
-         <a href="how-it-works.html" class="sl-btn sl-btn-primary">
-          See How It Works
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-        </a>
-      </div>
+    <div class="problem-transition sl-fade-up" style="margin-top:40px;">
+      <h3>SafariLink is the operating network that ties them together.</h3>
+      <p>One live workspace where operators source and plan trips, and partners receive, confirm and fulfil work — with shared status from first request to paid booking.</p>
     </div>
   </div>
 </section>
-
 
 <!-- ============================================================
      SECTION 3 — HOW SAFARILINK WORKS
      ============================================================ -->
 <section id="how-it-works" class="sl-section">
-    <div class="container">
-      <div class="sl-center" style="margin-bottom:16px;">
-        <span class="sl-label">How It Works</span>
-        <h2 class="sl-heading">From inquiry to confirmed trip — in one workflow.</h2>
-        <p class="sl-sub">SafariLink brings sourcing, planning, costing, and management into a single connected pipeline.</p>
+  <div class="container">
+    <div class="sl-center sl-fade-up" style="margin-bottom:48px;">
+      <span class="sl-label">How it works</span>
+      <h2 class="sl-heading" style="max-width:720px;margin:0 auto 14px;">One network. Four workspaces. One live trip.</h2>
+      <p class="sl-sub" style="max-width:660px;margin:0 auto;">SafariLink is not only an itinerary tool. It is the B2B operating layer between tour operators and the suppliers who deliver the safari on the ground.</p>
+    </div>
+    <div class="how-flow sl-fade-up">
+      <div class="how-flow-step">
+        <div class="how-flow-num">1</div>
+        <h4>Join the network</h4>
+        <p>Tour operators, accommodation, fleet and guides each get a dedicated dashboard after SafariLink approval.</p>
       </div>
-      <div class="timeline">
-        <div class="timeline-step">
-          <div class="timeline-num">1</div><h4>Source</h4><p>Search and compare suppliers across the network.</p>
-        </div>
-        <div class="timeline-step">
-          <div class="timeline-num">2</div><h4>Request</h4><p>Send availability and rate requests in one click.</p>
-        </div>
-        <div class="timeline-step">
-          <div class="timeline-num">3</div><h4>Confirm</h4><p>Suppliers confirm directly in the platform.</p>
-        </div>
-        <div class="timeline-step">
-          <div class="timeline-num">4</div><h4>Build</h4><p>Drag days into a client-ready itinerary.</p>
-        </div>
-        <div class="timeline-step">
-          <div class="timeline-num">5</div><h4>Cost</h4><p>Margins calculate automatically as you go.</p>
-        </div>
-        <div class="timeline-step">
-          <div class="timeline-num">6</div><h4>Manage</h4><p>Track every reservation and document live.</p>
-        </div>
+      <div class="how-flow-step">
+        <div class="how-flow-num">2</div>
+        <h4>Publish what is live</h4>
+        <p>Partners list properties, rooms, vehicles, drivers, guides, rates and availability — visible to operators in real time.</p>
+      </div>
+      <div class="how-flow-step">
+        <div class="how-flow-num">3</div>
+        <h4>Source &amp; request</h4>
+        <p>Operators search the network, reserve rooms, lease vehicles and request guides with clear dates and notes.</p>
+      </div>
+      <div class="how-flow-step">
+        <div class="how-flow-num">4</div>
+        <h4>Confirm &amp; quote</h4>
+        <p>Partners confirm, send proformas with bank details, and mark paid — operators see status update on their side.</p>
+      </div>
+      <div class="how-flow-step">
+        <div class="how-flow-num">5</div>
+        <h4>Build the client trip</h4>
+        <p>Operators assemble days, costs and a client quote from confirmed services — without rebuilding everything in Excel.</p>
+      </div>
+      <div class="how-flow-step">
+        <div class="how-flow-num">6</div>
+        <h4>Operate together</h4>
+        <p>Messages, tasks, ratings and trip progress stay linked across dashboards until the safari is delivered.</p>
       </div>
     </div>
-  </section>
+    <div class="how-roles sl-fade-up">
+      <div class="how-role">
+        <div class="how-role-label">Tour operator</div>
+        <p>Itineraries, sourcing, quotes, trips, partner messages and team accounts in one place.</p>
+      </div>
+      <div class="how-role">
+        <div class="how-role-label">Accommodation</div>
+        <p>Properties, room types, rates, reservations, proformas and occupancy tools.</p>
+      </div>
+      <div class="how-role">
+        <div class="how-role-label">Fleet</div>
+        <p>Vehicles, drivers, availability, charter bookings, utilisation and invoices.</p>
+      </div>
+      <div class="how-role">
+        <div class="how-role-label">Guides</div>
+        <p>Profile, parks, languages, job requests, schedule, earnings and proformas.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- ============================================================
      SECTION 4 — CORE PLATFORM FEATURES
@@ -1360,116 +1491,200 @@
     </div>
 
     <div class="product-preview-wrap sl-fade-up">
-      <div class="product-preview-frame">
-        <div class="product-preview-topbar">
-          <div class="product-dot" style="background:#e74c3c;"></div>
-          <div class="product-dot" style="background:#f39c12;"></div>
-          <div class="product-dot" style="background:#27ae60;"></div>
-          <div style="flex:1;text-align:center;font-size:0.75rem;color:var(--warm-gray);font-weight:500;">app.safarilink.co.tz</div>
-        </div>
-        <div class="product-preview-body">
-          <div class="product-sidebar-mock">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px;padding:0 4px;">
-              <div style="width:28px;height:28px;border-radius:6px;background:var(--forest-green);display:flex;align-items:center;justify-content:center;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg>
-              </div>
-              <span style="font-size:0.8rem;font-weight:700;color:var(--charcoal);">SafariLink</span>
-            </div>
-            <div class="product-sidebar-item active">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-              Dashboard
-            </div>
-            <div class="product-sidebar-item">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg>
-              Itinerary Builder
-            </div>
-            <div class="product-sidebar-item">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-              Accommodation
-            </div>
-            <div class="product-sidebar-item">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>
-              Fleet
-            </div>
-            <div class="product-sidebar-item">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-              Guides
-            </div>
-            <div class="product-sidebar-item">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-              Quotes
-            </div>
-            <div class="product-sidebar-item">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-              Messages
-            </div>
-          </div>
-          <div class="product-main-mock">
-            <!-- Mock Dashboard Content -->
-            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
-              <div style="background:#fff;border:1px solid var(--border-light);border-radius:8px;padding:14px;">
-                <div style="font-size:0.65rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--warm-gray);margin-bottom:6px;">Active Trips</div>
-                <div style="font-size:1.4rem;font-weight:800;color:var(--forest-green);">12</div>
-              </div>
-              <div style="background:#fff;border:1px solid var(--border-light);border-radius:8px;padding:14px;">
-                <div style="font-size:0.65rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--warm-gray);margin-bottom:6px;">Pending</div>
-                <div style="font-size:1.4rem;font-weight:800;color:#b08d3a;">5</div>
-              </div>
-              <div style="background:#fff;border:1px solid var(--border-light);border-radius:8px;padding:14px;">
-                <div style="font-size:0.65rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--warm-gray);margin-bottom:6px;">This Month</div>
-                <div style="font-size:1.4rem;font-weight:800;color:var(--charcoal);">8</div>
-              </div>
-              <div style="background:#fff;border:1px solid var(--border-light);border-radius:8px;padding:14px;">
-                <div style="font-size:0.65rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--warm-gray);margin-bottom:6px;">Suppliers</div>
-                <div style="font-size:1.4rem;font-weight:800;color:var(--forest-green);">24</div>
-              </div>
-            </div>
-            <div style="background:#fff;border:1px solid var(--border-light);border-radius:8px;padding:16px;">
-              <div style="font-size:0.8rem;font-weight:700;color:var(--charcoal);margin-bottom:12px;">Recent Itineraries</div>
-              <div style="display:flex;flex-direction:column;gap:8px;">
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--warm-off-white);border-radius:6px;">
-                  <div>
-                    <div style="font-size:0.75rem;font-weight:600;color:var(--charcoal);">5-Day Serengeti and Ngorongoro</div>
-                    <div style="font-size:0.65rem;color:var(--warm-gray);">Sep 15 - Sep 20 · 2 travelers</div>
-                  </div>
-                  <div style="font-size:0.6rem;font-weight:600;padding:3px 8px;border-radius:10px;background:rgba(16,185,129,0.1);color:#10b981;">Confirmed</div>
-                </div>
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--warm-off-white);border-radius:6px;">
-                  <div>
-                    <div style="font-size:0.75rem;font-weight:600;color:var(--charcoal);">7-Day Luxury Safari</div>
-                    <div style="font-size:0.65rem;color:var(--warm-gray);">Sep 28 - Oct 05 · 4 travelers</div>
-                  </div>
-                  <div style="font-size:0.6rem;font-weight:600;padding:3px 8px;border-radius:10px;background:rgba(245,166,35,0.1);color:#b08d3a;">Pending</div>
-                </div>
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--warm-off-white);border-radius:6px;">
-                  <div>
-                    <div style="font-size:0.75rem;font-weight:600;color:var(--charcoal);">Zanzibar and Safari Combo</div>
-                    <div style="font-size:0.65rem;color:var(--warm-gray);">Oct 10 - Oct 18 · 2 travelers</div>
-                  </div>
-                  <div style="font-size:0.6rem;font-weight:600;padding:3px 8px;border-radius:10px;background:rgba(163,158,149,0.1);color:var(--warm-gray);">Draft</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div class="platform-tabs" role="tablist">
+        <button type="button" class="platform-tab active" data-slide="0" onclick="showPlatformSlide(0)">Tour operator</button>
+        <button type="button" class="platform-tab" data-slide="1" onclick="showPlatformSlide(1)">Accommodation</button>
+        <button type="button" class="platform-tab" data-slide="2" onclick="showPlatformSlide(2)">Fleet</button>
+        <button type="button" class="platform-tab" data-slide="3" onclick="showPlatformSlide(3)">Guides</button>
       </div>
+      <div class="platform-slide active" data-slide="0">
+        <div class="product-preview-frame">
+          <div class="product-preview-topbar">
+            <div class="product-dot" style="background:#e74c3c;"></div>
+            <div class="product-dot" style="background:#f39c12;"></div>
+            <div class="product-dot" style="background:#27ae60;"></div>
+            <div style="flex:1;text-align:center;font-size:0.75rem;color:var(--warm-gray);font-weight:500;">app.safarilink.co.tz · Tour operator</div>
+          </div>
+          <div class="product-preview-body">
+            <div class="product-sidebar-mock">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;padding:0 4px;">
+                <div style="width:28px;height:28px;border-radius:6px;background:var(--forest-green);display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.65rem;font-weight:800;">SL</div>
+                <span style="font-size:0.8rem;font-weight:700;color:var(--charcoal);">SafariLink</span>
+              </div>
+              <div class="product-sidebar-item active">Dashboard</div>
+<div class="product-sidebar-item">Itineraries</div>
+<div class="product-sidebar-item">Accommodation</div>
+<div class="product-sidebar-item">Fleet</div>
+<div class="product-sidebar-item">Guides</div>
+<div class="product-sidebar-item">Quotes</div>
+<div class="product-sidebar-item">Messages</div>
 
-      <!-- Callout Labels (Desktop Only) -->
-      <div class="product-callout" style="top:60px;left:-12px;display:flex;align-items:center;gap:6px;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg>
-        Itinerary Builder
-      </div>
-      <div class="product-callout" style="top:140px;right:-12px;display:flex;align-items:center;gap:6px;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/></svg>
-        Accommodation Search
-      </div>
-      <div class="product-callout" style="bottom:100px;left:-12px;display:flex;align-items:center;gap:6px;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5"/></svg>
-        Cost and Margin
-      </div>
-      <div class="product-callout" style="bottom:30px;right:-12px;display:flex;align-items:center;gap:6px;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-        Reservations
+            </div>
+            <div class="product-main-mock" style="padding:16px;overflow:auto;">
+              <div style="font-size:1rem;font-weight:700;margin-bottom:4px;">Operator dashboard</div>
+              <div style="font-size:0.75rem;color:var(--warm-gray);margin-bottom:14px;">Live after login · linked to partners</div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;"><div style="background:#fff;border:1px solid var(--border-light);border-radius:10px;padding:12px;">
+          <div style="font-size:0.65rem;text-transform:uppercase;letter-spacing:.04em;color:var(--warm-gray);margin-bottom:4px;">Active trips</div>
+          <div style="font-size:1.25rem;font-weight:700;color:var(--charcoal);">12</div>
+          <div style="font-size:0.7rem;color:var(--warm-gray);margin-top:2px;">This month</div>
+        </div><div style="background:#fff;border:1px solid var(--border-light);border-radius:10px;padding:12px;">
+          <div style="font-size:0.65rem;text-transform:uppercase;letter-spacing:.04em;color:var(--warm-gray);margin-bottom:4px;">Open quotes</div>
+          <div style="font-size:1.25rem;font-weight:700;color:var(--charcoal);">8</div>
+          <div style="font-size:0.7rem;color:var(--warm-gray);margin-top:2px;">Awaiting reply</div>
+        </div><div style="background:#fff;border:1px solid var(--border-light);border-radius:10px;padding:12px;">
+          <div style="font-size:0.65rem;text-transform:uppercase;letter-spacing:.04em;color:var(--warm-gray);margin-bottom:4px;">Partners</div>
+          <div style="font-size:1.25rem;font-weight:700;color:var(--charcoal);">46</div>
+          <div style="font-size:0.7rem;color:var(--warm-gray);margin-top:2px;">Verified</div>
+        </div></div>
+              <div style="background:#fff;border:1px solid var(--border-light);border-radius:10px;padding:12px 14px;">
+                <div style="font-size:0.8rem;font-weight:700;margin-bottom:8px;">Recent partner activity</div>
+                <div style="display:flex;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px solid var(--border-light);font-size:0.78rem;"><span>Serengeti Hill Camp · reservation confirmed</span><span style="color:var(--warm-gray);white-space:nowrap;">2h</span></div><div style="display:flex;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px solid var(--border-light);font-size:0.78rem;"><span>Northern Fleet · charter proforma</span><span style="color:var(--warm-gray);white-space:nowrap;">5h</span></div><div style="display:flex;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px solid var(--border-light);font-size:0.78rem;"><span>Guide Daniel · request accepted</span><span style="color:var(--warm-gray);white-space:nowrap;">1d</span></div>
+              </div>
+            </div>
+          </div>
+        </div></div>
+      <div class="platform-slide" data-slide="1">
+        <div class="product-preview-frame">
+          <div class="product-preview-topbar">
+            <div class="product-dot" style="background:#e74c3c;"></div>
+            <div class="product-dot" style="background:#f39c12;"></div>
+            <div class="product-dot" style="background:#27ae60;"></div>
+            <div style="flex:1;text-align:center;font-size:0.75rem;color:var(--warm-gray);font-weight:500;">app.safarilink.co.tz · Accommodation</div>
+          </div>
+          <div class="product-preview-body">
+            <div class="product-sidebar-mock">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;padding:0 4px;">
+                <div style="width:28px;height:28px;border-radius:6px;background:var(--forest-green);display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.65rem;font-weight:800;">SL</div>
+                <span style="font-size:0.8rem;font-weight:700;color:var(--charcoal);">SafariLink</span>
+              </div>
+              <div class="product-sidebar-item active">Dashboard</div>
+<div class="product-sidebar-item">Reservations</div>
+<div class="product-sidebar-item">My properties</div>
+<div class="product-sidebar-item">Room types</div>
+<div class="product-sidebar-item">Rates</div>
+<div class="product-sidebar-item">Messages</div>
+<div class="product-sidebar-item">Account</div>
+
+            </div>
+            <div class="product-main-mock" style="padding:16px;overflow:auto;">
+              <div style="font-size:1rem;font-weight:700;margin-bottom:4px;">Accommodation partner</div>
+              <div style="font-size:0.75rem;color:var(--warm-gray);margin-bottom:14px;">Live after login · linked to partners</div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;"><div style="background:#fff;border:1px solid var(--border-light);border-radius:10px;padding:12px;">
+          <div style="font-size:0.65rem;text-transform:uppercase;letter-spacing:.04em;color:var(--warm-gray);margin-bottom:4px;">Open requests</div>
+          <div style="font-size:1.25rem;font-weight:700;color:var(--charcoal);">5</div>
+          <div style="font-size:0.7rem;color:var(--warm-gray);margin-top:2px;">From operators</div>
+        </div><div style="background:#fff;border:1px solid var(--border-light);border-radius:10px;padding:12px;">
+          <div style="font-size:0.65rem;text-transform:uppercase;letter-spacing:.04em;color:var(--warm-gray);margin-bottom:4px;">Occupancy</div>
+          <div style="font-size:1.25rem;font-weight:700;color:var(--charcoal);">72%</div>
+          <div style="font-size:0.7rem;color:var(--warm-gray);margin-top:2px;">This week</div>
+        </div><div style="background:#fff;border:1px solid var(--border-light);border-radius:10px;padding:12px;">
+          <div style="font-size:0.65rem;text-transform:uppercase;letter-spacing:.04em;color:var(--warm-gray);margin-bottom:4px;">Proformas</div>
+          <div style="font-size:1.25rem;font-weight:700;color:var(--charcoal);">3</div>
+          <div style="font-size:0.7rem;color:var(--warm-gray);margin-top:2px;">Awaiting pay</div>
+        </div></div>
+              <div style="background:#fff;border:1px solid var(--border-light);border-radius:10px;padding:12px 14px;">
+                <div style="font-size:0.8rem;font-weight:700;margin-bottom:8px;">Incoming operator reservations</div>
+                <div style="display:flex;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px solid var(--border-light);font-size:0.78rem;"><span>Dreamtrails · 2× Luxury Tent · 22–25 Oct</span><span style="color:var(--warm-gray);white-space:nowrap;">New</span></div><div style="display:flex;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px solid var(--border-light);font-size:0.78rem;"><span>Kilimanjaro Trails · Standard ×3</span><span style="color:var(--warm-gray);white-space:nowrap;">Confirm</span></div><div style="display:flex;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px solid var(--border-light);font-size:0.78rem;"><span>Safari Nest · paid deposit</span><span style="color:var(--warm-gray);white-space:nowrap;">Paid</span></div>
+              </div>
+            </div>
+          </div>
+        </div></div>
+      <div class="platform-slide" data-slide="2">
+        <div class="product-preview-frame">
+          <div class="product-preview-topbar">
+            <div class="product-dot" style="background:#e74c3c;"></div>
+            <div class="product-dot" style="background:#f39c12;"></div>
+            <div class="product-dot" style="background:#27ae60;"></div>
+            <div style="flex:1;text-align:center;font-size:0.75rem;color:var(--warm-gray);font-weight:500;">app.safarilink.co.tz · Fleet</div>
+          </div>
+          <div class="product-preview-body">
+            <div class="product-sidebar-mock">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;padding:0 4px;">
+                <div style="width:28px;height:28px;border-radius:6px;background:var(--forest-green);display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.65rem;font-weight:800;">SL</div>
+                <span style="font-size:0.8rem;font-weight:700;color:var(--charcoal);">SafariLink</span>
+              </div>
+              <div class="product-sidebar-item active">Dashboard</div>
+<div class="product-sidebar-item">Charter bookings</div>
+<div class="product-sidebar-item">My fleet</div>
+<div class="product-sidebar-item">Drivers</div>
+<div class="product-sidebar-item">Availability</div>
+<div class="product-sidebar-item">Messages</div>
+<div class="product-sidebar-item">Account</div>
+
+            </div>
+            <div class="product-main-mock" style="padding:16px;overflow:auto;">
+              <div style="font-size:1rem;font-weight:700;margin-bottom:4px;">Fleet partner</div>
+              <div style="font-size:0.75rem;color:var(--warm-gray);margin-bottom:14px;">Live after login · linked to partners</div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;"><div style="background:#fff;border:1px solid var(--border-light);border-radius:10px;padding:12px;">
+          <div style="font-size:0.65rem;text-transform:uppercase;letter-spacing:.04em;color:var(--warm-gray);margin-bottom:4px;">Open charters</div>
+          <div style="font-size:1.25rem;font-weight:700;color:var(--charcoal);">4</div>
+          <div style="font-size:0.7rem;color:var(--warm-gray);margin-top:2px;">This week</div>
+        </div><div style="background:#fff;border:1px solid var(--border-light);border-radius:10px;padding:12px;">
+          <div style="font-size:0.65rem;text-transform:uppercase;letter-spacing:.04em;color:var(--warm-gray);margin-bottom:4px;">Vehicles live</div>
+          <div style="font-size:1.25rem;font-weight:700;color:var(--charcoal);">18</div>
+          <div style="font-size:0.7rem;color:var(--warm-gray);margin-top:2px;">On network</div>
+        </div><div style="background:#fff;border:1px solid var(--border-light);border-radius:10px;padding:12px;">
+          <div style="font-size:0.65rem;text-transform:uppercase;letter-spacing:.04em;color:var(--warm-gray);margin-bottom:4px;">Utilisation</div>
+          <div style="font-size:1.25rem;font-weight:700;color:var(--charcoal);">64%</div>
+          <div style="font-size:0.7rem;color:var(--warm-gray);margin-top:2px;">Month</div>
+        </div></div>
+              <div style="background:#fff;border:1px solid var(--border-light);border-radius:10px;padding:12px 14px;">
+                <div style="font-size:0.8rem;font-weight:700;margin-bottom:8px;">Operator lease requests</div>
+                <div style="display:flex;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px solid var(--border-light);font-size:0.78rem;"><span>Dreamtrails · Land Cruiser · 5 days</span><span style="color:var(--warm-gray);white-space:nowrap;">New</span></div><div style="display:flex;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px solid var(--border-light);font-size:0.78rem;"><span>Arusha Overland · Hiace · 3 days</span><span style="color:var(--warm-gray);white-space:nowrap;">Proforma</span></div><div style="display:flex;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px solid var(--border-light);font-size:0.78rem;"><span>Safari Nest · Coaster · confirmed</span><span style="color:var(--warm-gray);white-space:nowrap;">Confirmed</span></div>
+              </div>
+            </div>
+          </div>
+        </div></div>
+      <div class="platform-slide" data-slide="3">
+        <div class="product-preview-frame">
+          <div class="product-preview-topbar">
+            <div class="product-dot" style="background:#e74c3c;"></div>
+            <div class="product-dot" style="background:#f39c12;"></div>
+            <div class="product-dot" style="background:#27ae60;"></div>
+            <div style="flex:1;text-align:center;font-size:0.75rem;color:var(--warm-gray);font-weight:500;">app.safarilink.co.tz · Guide</div>
+          </div>
+          <div class="product-preview-body">
+            <div class="product-sidebar-mock">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;padding:0 4px;">
+                <div style="width:28px;height:28px;border-radius:6px;background:var(--forest-green);display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.65rem;font-weight:800;">SL</div>
+                <span style="font-size:0.8rem;font-weight:700;color:var(--charcoal);">SafariLink</span>
+              </div>
+              <div class="product-sidebar-item active">Dashboard</div>
+<div class="product-sidebar-item">My schedule</div>
+<div class="product-sidebar-item">Job requests</div>
+<div class="product-sidebar-item">Availability</div>
+<div class="product-sidebar-item">Profile</div>
+<div class="product-sidebar-item">Messages</div>
+<div class="product-sidebar-item">Account</div>
+
+            </div>
+            <div class="product-main-mock" style="padding:16px;overflow:auto;">
+              <div style="font-size:1rem;font-weight:700;margin-bottom:4px;">Guide partner</div>
+              <div style="font-size:0.75rem;color:var(--warm-gray);margin-bottom:14px;">Live after login · linked to partners</div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;"><div style="background:#fff;border:1px solid var(--border-light);border-radius:10px;padding:12px;">
+          <div style="font-size:0.65rem;text-transform:uppercase;letter-spacing:.04em;color:var(--warm-gray);margin-bottom:4px;">Open jobs</div>
+          <div style="font-size:1.25rem;font-weight:700;color:var(--charcoal);">3</div>
+          <div style="font-size:0.7rem;color:var(--warm-gray);margin-top:2px;">Requests</div>
+        </div><div style="background:#fff;border:1px solid var(--border-light);border-radius:10px;padding:12px;">
+          <div style="font-size:0.65rem;text-transform:uppercase;letter-spacing:.04em;color:var(--warm-gray);margin-bottom:4px;">Booked days</div>
+          <div style="font-size:1.25rem;font-weight:700;color:var(--charcoal);">11</div>
+          <div style="font-size:0.7rem;color:var(--warm-gray);margin-top:2px;">This month</div>
+        </div><div style="background:#fff;border:1px solid var(--border-light);border-radius:10px;padding:12px;">
+          <div style="font-size:0.65rem;text-transform:uppercase;letter-spacing:.04em;color:var(--warm-gray);margin-bottom:4px;">Rating</div>
+          <div style="font-size:1.25rem;font-weight:700;color:var(--charcoal);">4.9</div>
+          <div style="font-size:0.7rem;color:var(--warm-gray);margin-top:2px;">Operators</div>
+        </div></div>
+              <div style="background:#fff;border:1px solid var(--border-light);border-radius:10px;padding:12px 14px;">
+                <div style="font-size:0.8rem;font-weight:700;margin-bottom:8px;">Job requests from operators</div>
+                <div style="display:flex;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px solid var(--border-light);font-size:0.78rem;"><span>Dreamtrails · Serengeti · 4 days</span><span style="color:var(--warm-gray);white-space:nowrap;">New</span></div><div style="display:flex;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px solid var(--border-light);font-size:0.78rem;"><span>Northern Trails · Ngorongoro day</span><span style="color:var(--warm-gray);white-space:nowrap;">Proforma</span></div><div style="display:flex;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px solid var(--border-light);font-size:0.78rem;"><span>Safari Nest · Tarangire · paid</span><span style="color:var(--warm-gray);white-space:nowrap;">Paid</span></div>
+              </div>
+            </div>
+          </div>
+        </div></div>
+      <div class="platform-nav-row">
+        <button type="button" class="platform-nav-btn" onclick="showPlatformSlide((window._platformSlide||0)-1)" aria-label="Previous">&#8592;</button>
+        <span id="platformSlideLabel" style="font-size:0.8rem;color:var(--warm-gray);min-width:140px;text-align:center;">Tour operator</span>
+        <button type="button" class="platform-nav-btn" onclick="showPlatformSlide((window._platformSlide||0)+1)" aria-label="Next">&#8594;</button>
       </div>
     </div>
 
@@ -1579,47 +1794,48 @@
 <!-- ============================================================
      SECTION 8 — WHY SAFARILINK
      ============================================================ -->
-<section class="sl-section sl-section-alt">
+<section class="sl-section sl-section-alt" id="why-safarilink">
   <div class="container">
-    <div class="sl-center sl-fade-up" style="margin-bottom:16px;">
+    <div class="sl-center sl-fade-up" style="margin-bottom:48px;">
       <span class="sl-label">Why SafariLink</span>
-      <h2 class="sl-heading">Built in Tanzania. Designed for Tanzania tourism.</h2>
-      <p class="sl-sub">SafariLink is being built around the operational realities of Tanzania's tourism industry — from B2B rates and supplier availability to vehicles, professional guides and itinerary coordination.</p>
+      <h2 class="sl-heading" style="max-width:720px;margin:0 auto 14px;">Built for how Tanzania tourism actually operates.</h2>
+      <p class="sl-sub" style="max-width:640px;margin:0 auto;">Not a generic booking site. A B2B operating network where operators and partners share live inventory, requests, confirmations and payment details in one place.</p>
     </div>
 
-    <div class="why-grid sl-fade-up">
-      <div class="why-item">
-        <div class="why-item-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
-        </div>
-        <h4>Tanzania-Focused</h4>
-        <p>Designed specifically around Tanzania's tourism ecosystem.</p>
+    <div class="why-grid-modern sl-fade-up">
+      <div class="why-card-m">
+        <div class="why-card-m-num">01</div>
+        <h4>Four workspaces, one network</h4>
+        <p>Tour operators, accommodation, fleet and guides each have a dashboard — but reservations, leases, jobs and quotes stay linked across all of them.</p>
       </div>
-      <div class="why-item">
-        <div class="why-item-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-        </div>
-        <h4>B2B-First</h4>
-        <p>Built for tour operators, DMCs and tourism suppliers.</p>
+      <div class="why-card-m">
+        <div class="why-card-m-num">02</div>
+        <h4>Live inventory, not offline lists</h4>
+        <p>Rooms, vehicles and guide availability are published by partners and shown to operators in real time — so sourcing matches what can actually be delivered.</p>
       </div>
-      <div class="why-item">
-        <div class="why-item-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-        </div>
-        <h4>Local Understanding</h4>
-        <p>Designed with an understanding of how tourism businesses operate on the ground.</p>
+      <div class="why-card-m">
+        <div class="why-card-m-num">03</div>
+        <h4>Requests to proforma to paid</h4>
+        <p>From reservation and charter requests through partner proformas with bank details, confirmations and paid status — without losing the thread in WhatsApp.</p>
       </div>
-      <div class="why-item">
-        <div class="why-item-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-        </div>
-        <h4>Connected Operations</h4>
-        <p>Bring accommodation, vehicles, guides, itineraries and reservations into one workflow.</p>
+      <div class="why-card-m">
+        <div class="why-card-m-num">04</div>
+        <h4>Client-ready operator workflow</h4>
+        <p>Itinerary building, costing, operator quotes and trip progress sit next to partner sourcing — so the client offer reflects confirmed supply.</p>
+      </div>
+      <div class="why-card-m">
+        <div class="why-card-m-num">05</div>
+        <h4>Designed for Tanzania B2B</h4>
+        <p>STO rates, multi-room stays, safari vehicles, parks, guide languages and local payment details are part of the product — not an afterthought.</p>
+      </div>
+      <div class="why-card-m">
+        <div class="why-card-m-num">06</div>
+        <h4>Shared status &amp; accountability</h4>
+        <p>Messages, activity alerts, ratings and team accounts keep operators and partners aligned from first request until the safari is delivered.</p>
       </div>
     </div>
   </div>
 </section>
-
 
 <!-- SECTION 8 — TRUST -->
   <section id="trust" class="sl-section sl-section-alt">
@@ -1846,6 +2062,23 @@
 <script>
   // Lucide icons
   if (window.lucide) { lucide.createIcons(); }
+
+  window._platformSlide = 0;
+  window.showPlatformSlide = function(n){
+    var labels = ['Tour operator','Accommodation','Fleet','Guides'];
+    var total = 4;
+    n = ((Number(n) % total) + total) % total;
+    window._platformSlide = n;
+    document.querySelectorAll('.platform-slide').forEach(function(el){
+      el.classList.toggle('active', String(el.getAttribute('data-slide')) === String(n));
+    });
+    document.querySelectorAll('.platform-tab').forEach(function(el){
+      el.classList.toggle('active', String(el.getAttribute('data-slide')) === String(n));
+    });
+    var lab = document.getElementById('platformSlideLabel');
+    if(lab) lab.textContent = labels[n];
+  };
+
 
   // Page navigation guards (safe for a standalone copy)
   window.navigateTo = window.navigateTo || function (page) {
