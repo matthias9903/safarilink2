@@ -267,9 +267,53 @@
     .sidebar { display: none; }
   }
 
+
+  /* ── LIGHT SIDEBAR (content-matched) ── */
+  .sidebar {
+    background: var(--warm-off-white) !important;
+    color: var(--forest-green) !important;
+    border-right: 1px solid var(--border-light);
+  }
+  .sidebar-brand {
+    border-bottom: 1px solid var(--border-light) !important;
+  }
+  .logo-icon {
+    background: #fff !important;
+    border: 1px solid var(--border-light);
+    overflow: hidden;
+    padding: 3px;
+    box-sizing: border-box;
+  }
+  .logo-icon img {
+    width: 100%; height: 100%; object-fit: contain; display: block;
+  }
+  .logo-text { color: var(--forest-green) !important; }
+  .logo-text span { color: var(--accent-green) !important; }
+  .sidebar-section {
+    color: rgba(26, 90, 58, 0.55) !important;
+  }
+  .sidebar-link {
+    color: var(--forest-green) !important;
+  }
+  .sidebar-link:hover {
+    background: rgba(26, 90, 58, 0.08) !important;
+    color: var(--forest-green) !important;
+  }
+  .sidebar-link.active {
+    background: rgba(63, 185, 131, 0.15) !important;
+    color: var(--forest-green) !important;
+    font-weight: 600;
+  }
+  .sidebar-footer {
+    border-top: 1px solid var(--border-light) !important;
+    color: var(--forest-green);
+  }
+  .sidebar-footer > div:first-child { color: var(--forest-green) !important; }
+  .sidebar-footer > div:last-child { opacity: 0.75 !important; color: var(--forest-green) !important; }
+
 </style></head>
 <script>(function(){function ru(){try{var a=sessionStorage.getItem('safariLinkUser');if(a)return JSON.parse(a)}catch(e){}try{var b=localStorage.getItem('safarilink_user');if(b)return JSON.parse(b)}catch(e){}return null}var u=ru();if(!u){location.href='login.html';return}var map={'dashboard-fleet.html':['fleet','fleet-owner'],'dashboard-accommodation.html':['accommodation','accommodation-provider'],'dashboard-tour-operator.html':['tour-operator','service-offering'],'dashboard-guide.html':['guide']};var page=location.pathname.split('/').pop();if(map[page]&&map[page].indexOf(u.role)===-1)location.href='login.html';})();</script><body>
-<aside class="sidebar" id="sidebar"><div class="sidebar-brand"><div class="logo-icon"><img src="safarilink-emblem-transparent.png" alt="SafariLink" style="width:100%;height:100%;object-fit:contain;display:block;"></div><div class="logo-text">Safari<span>Link</span></div><button type="button" class="sidebar-collapse-btn" onclick="toggleCollapse()" title="Collapse / expand menu"><i data-lucide="chevrons-left" id="collapseIcon"></i></button></div>
+<aside class="sidebar" id="sidebar"><div class="sidebar-brand"><div class="logo-icon"><img src="safarilink-emblem-transparent.png" alt="SafariLink" style="width:100%;height:100%;object-fit:contain;display:block;"><img src="safarilink-emblem-transparent.png" alt="SafariLink" style="width:100%;height:100%;object-fit:contain;display:block;"></div><div class="logo-text">Safari<span>Link</span></div><button type="button" class="sidebar-collapse-btn" onclick="toggleCollapse()" title="Collapse / expand menu"><i data-lucide="chevrons-left" id="collapseIcon"></i></button></div>
 <nav class="sidebar-nav">
 <div class="sidebar-section">Main</div>
 <a class="sidebar-link active" data-p="dashboard" onclick="go('dashboard')"><i data-lucide="layout-dashboard"></i><span> Dashboard</span></a>
@@ -291,7 +335,7 @@
 <div class="sidebar-section">Settings</div>
 <a class="sidebar-link" data-p="account" onclick="go('account')"><i data-lucide="settings"></i><span> Account</span></a>
 </nav>
-<div class="sidebar-footer"><div style="color:#fff;font-weight:600">Daniel Mwamba</div><div style="opacity:.5;font-size:.7rem"><span class="live-dot"></span>Guide · Live</div></div></aside>
+<div class="sidebar-footer"><div style="color:var(--forest-green);font-weight:600">Daniel Mwamba</div><div style="opacity:.5;font-size:.7rem"><span class="live-dot"></span>Guide · Live</div></div></aside>
 <div class="main"><header class="topbar"><div><h2 id="title">Dashboard</h2><p id="sub">Live</p></div>
 <div style="display:flex;gap:8px"><button class="btn" onclick="logout()"><i data-lucide="log-out"></i> Log out</button><button class="btn btn-primary" onclick="go('profile')"><i data-lucide="user-circle"></i> Edit profile</button></div></header>
 <div class="content">
