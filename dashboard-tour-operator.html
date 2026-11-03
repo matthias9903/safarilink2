@@ -485,6 +485,44 @@
     .form-row { grid-template-columns: 1fr; }
     .day-field-row { grid-template-columns: 1fr; }
   }
+
+  /* ── LIGHT SIDEBAR (content-matched) ── */
+  .sidebar {
+    background: var(--warm-off-white) !important;
+    color: var(--forest-green) !important;
+    border-right: 1px solid var(--border-light);
+  }
+  .sidebar-header {
+    border-bottom: 1px solid var(--border-light) !important;
+  }
+  .sidebar-logo { color: var(--forest-green) !important; }
+  .sidebar-logo .logo-icon {
+    background: #fff !important;
+    border: 1px solid var(--border-light);
+    overflow: hidden;
+    padding: 3px;
+    box-sizing: border-box;
+  }
+  .sidebar-logo .logo-icon img {
+    width: 100%; height: 100%; object-fit: contain; display: block;
+  }
+  .sidebar-logo .logo-text { color: var(--forest-green) !important; }
+  .sidebar-logo .logo-text span { color: var(--accent-green) !important; }
+  .nav-section-title {
+    color: rgba(26, 90, 58, 0.55) !important;
+  }
+  .nav-item {
+    color: var(--forest-green) !important;
+  }
+  .nav-item:hover {
+    background: rgba(26, 90, 58, 0.08) !important;
+    color: var(--forest-green) !important;
+  }
+  .nav-item.active {
+    background: rgba(63, 185, 131, 0.15) !important;
+    color: var(--forest-green) !important;
+  }
+
 </style>
 </head>
 <script>
