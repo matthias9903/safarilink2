@@ -4,12 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Security — SafariLink Tanzania B2B</title>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-<!-- 🔐  SECURITY PAGE — PUBLISHING CHECKLIST  🔐
+<!-- SECURITY PAGE — PUBLISHING CHECKLIST
   Before publishing security.html, confirm and replace:
-  1. [Insert Security Email] → real security@ address
+  1. security@safarilink.co.tz → real security@ address
   2. [Insert General Email]  → real general contact
   3. [Insert Website]        → your domain
   4. [Insert Registered Business Address] → physical address
@@ -232,6 +233,11 @@
   footer .links a:hover{color:#fff;}
   footer small{font-size:.75rem;color:#999;}
 
+  
+  .sec-icon{width:18px;height:18px;color:var(--forest-green);flex-shrink:0;}
+  .protect-item{gap:10px;}
+  a.email-box{display:inline-block;}
+
   /* ── Responsive ────────────────────────────── */
   @media(max-width:900px){
     .protect-grid{grid-template-columns:repeat(2,1fr);}
@@ -291,18 +297,18 @@
   </div>
 
   <div class="protect-grid">
-    <div class="protect-item"><span class="icon">🏢</span> Company information</div>
-    <div class="protect-item"><span class="icon">👤</span> User accounts</div>
-    <div class="protect-item"><span class="icon">🧑‍💼</span> Client information</div>
-    <div class="protect-item"><span class="icon">🏨</span> Supplier information</div>
-    <div class="protect-item"><span class="icon">🔒</span> STO rates</div>
-    <div class="protect-item"><span class="icon">📋</span> Reservation information</div>
-    <div class="protect-item"><span class="icon">💰</span> Financial information</div>
-    <div class="protect-item"><span class="icon">📄</span> Documents</div>
-    <div class="protect-item"><span class="icon">💬</span> Internal communications</div>
-    <div class="protect-item"><span class="icon">⚙️</span> Operational data</div>
-    <div class="protect-item"><span class="icon">🔑</span> API credentials</div>
-    <div class="protect-item"><span class="icon">🔐</span> Authentication information</div>
+    <div class="protect-item"><i data-lucide="building-2" class="sec-icon"></i> Company information</div>
+    <div class="protect-item"><i data-lucide="user" class="sec-icon"></i> User accounts</div>
+    <div class="protect-item"><i data-lucide="briefcase" class="sec-icon"></i> Client information</div>
+    <div class="protect-item"><i data-lucide="hotel" class="sec-icon"></i> Supplier information</div>
+    <div class="protect-item"><i data-lucide="lock" class="sec-icon"></i> STO rates</div>
+    <div class="protect-item"><i data-lucide="clipboard-list" class="sec-icon"></i> Reservation information</div>
+    <div class="protect-item"><i data-lucide="banknote" class="sec-icon"></i> Financial information</div>
+    <div class="protect-item"><i data-lucide="file-text" class="sec-icon"></i> Documents</div>
+    <div class="protect-item"><i data-lucide="messages-square" class="sec-icon"></i> Internal communications</div>
+    <div class="protect-item"><i data-lucide="settings" class="sec-icon"></i> Operational data</div>
+    <div class="protect-item"><i data-lucide="key" class="sec-icon"></i> API credentials</div>
+    <div class="protect-item"><i data-lucide="shield-check" class="sec-icon"></i> Authentication information</div>
   </div>
 
   <!-- ============ ACCOUNT SECURITY ============ -->
@@ -423,7 +429,7 @@
   </div>
 
   <div class="sto-banner">
-    <div class="sto-icon">🔒</div>
+    <div class="sto-icon"><i data-lucide="lock" style="width:22px;height:22px;"></i></div>
     <div>
       <h3>STO rates are protected by layered access controls</h3>
       <p>
@@ -649,9 +655,7 @@
       Please report it through the security email below. Do not publicly disclose a vulnerability
       before SafariLink has had an opportunity to investigate and address it.
     </p>
-    <div class="email-box">
-      📧 [Insert Security Email]
-    </div>
+    <a class="email-box" href="mailto:security@safarilink.co.tz">security@safarilink.co.tz</a>
     <small>
       We treat security reports seriously. Please include enough detail to help us reproduce and
       understand the issue. If you are a SafariLink user, you may also contact support through your
@@ -678,5 +682,6 @@
   <small>Arusha, United Republic of Tanzania</small>
 </footer>
 
+<script>document.addEventListener("DOMContentLoaded",function(){if(window.lucide)lucide.createIcons();});</script>
 </body>
 </html>
