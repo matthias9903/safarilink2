@@ -270,6 +270,50 @@
   @media (max-width: 700px) {
     .sidebar { display: none; }
   }
+
+  /* ── LIGHT SIDEBAR (content-matched) ── */
+  .sidebar {
+    background: var(--warm-off-white) !important;
+    color: var(--forest-green) !important;
+    border-right: 1px solid var(--border-light);
+  }
+  .sidebar-brand {
+    border-bottom: 1px solid var(--border-light) !important;
+  }
+  .logo-icon {
+    background: #fff !important;
+    border: 1px solid var(--border-light);
+    overflow: hidden;
+    padding: 3px;
+    box-sizing: border-box;
+  }
+  .logo-icon img {
+    width: 100%; height: 100%; object-fit: contain; display: block;
+  }
+  .logo-text { color: var(--forest-green) !important; }
+  .logo-text span { color: var(--accent-green) !important; }
+  .sidebar-section {
+    color: rgba(26, 90, 58, 0.55) !important;
+  }
+  .sidebar-link {
+    color: var(--forest-green) !important;
+  }
+  .sidebar-link:hover {
+    background: rgba(26, 90, 58, 0.08) !important;
+    color: var(--forest-green) !important;
+  }
+  .sidebar-link.active {
+    background: rgba(63, 185, 131, 0.15) !important;
+    color: var(--forest-green) !important;
+    font-weight: 600;
+  }
+  .sidebar-footer {
+    border-top: 1px solid var(--border-light) !important;
+    color: var(--forest-green);
+  }
+  .sidebar-footer > div:first-child { color: var(--forest-green) !important; }
+  .sidebar-footer > div:last-child { opacity: 0.75 !important; color: var(--forest-green) !important; }
+
 </style>
 </head>
 
@@ -293,7 +337,7 @@ var page=location.pathname.split('/').pop();if(map[page]&&map[page].indexOf(u.ro
      ============================================================ -->
 <aside class="sidebar" id="sidebar">
 
-<div class="sidebar-brand"><div class="logo-icon"><img src="safarilink-emblem-transparent.png" alt="SafariLink" style="width:100%;height:100%;object-fit:contain;display:block;"></div><div class="logo-text">Safari<span>Link</span></div><button type="button" class="sidebar-collapse-btn" onclick="toggleCollapse()" title="Collapse / expand menu"><i data-lucide="chevrons-left" id="collapseIcon"></i></button></div>
+<div class="sidebar-brand"><div class="logo-icon"><img src="safarilink-emblem-transparent.png" alt="SafariLink" style="width:100%;height:100%;object-fit:contain;display:block;"><img src="safarilink-emblem-transparent.png" alt="SafariLink" style="width:100%;height:100%;object-fit:contain;display:block;"></div><div class="logo-text">Safari<span>Link</span></div><button type="button" class="sidebar-collapse-btn" onclick="toggleCollapse()" title="Collapse / expand menu"><i data-lucide="chevrons-left" id="collapseIcon"></i></button></div>
 <nav class="sidebar-nav">
 <div class="sidebar-section">Main</div>
 <a class="sidebar-link active" data-p="dashboard" onclick="go('dashboard')"><i data-lucide="layout-dashboard"></i><span> Dashboard</span></a>
@@ -314,7 +358,7 @@ var page=location.pathname.split('/').pop();if(map[page]&&map[page].indexOf(u.ro
 </nav>
 <!-- Sidebar footer: property name + live status -->
 <div class="sidebar-footer">
-<div style="color:#fff;font-weight:600">Serengeti Hill Camp</div><div style="opacity:.5;font-size:.7rem"><span class="live-dot"></span>Accommodation · Live</div></div>
+<div style="color:var(--forest-green);font-weight:600">Serengeti Hill Camp</div><div style="opacity:.5;font-size:.7rem"><span class="live-dot"></span>Accommodation · Live</div></div>
 </aside>
 
 <!-- ============================================================
