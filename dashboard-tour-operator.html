@@ -735,251 +735,97 @@
              ITINERARY PAGE (MODIFIED – 3-STEP BUILDER)
              ========================================== -->
         <div id="itinerary-page" class="page">
+            <div class="page-header"><div>
+                <div class="page-title">Itinerary Builder</div>
+                <div class="page-subtitle">Live accommodation, fleet and guides from your partners · route map and photos go into the client quote</div>
+            </div></div>
+            <div id="ipHost"></div>
+            <template id="ipTpl"><style>
+:host{display:block;--p:#1a5a3a;--pd:#0f3d26;--bg:#f8f7f4;--k:#e8e5dd;--c:#2c2c2c;--g:#8a857c;--b:#d4cfc6}
+*{box-sizing:border-box;margin:0}
+.ipr{font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--c);line-height:1.5}
+.mu{color:var(--g);font-size:.82rem}
+.wrap{display:flex;margin-top:16px;border:1px solid var(--b);border-radius:16px;overflow:hidden;min-height:620px;background:var(--bg)}
+.side{width:200px;background:var(--p);padding:24px 16px;flex-shrink:0}
+.si{display:flex;gap:10px;align-items:center;color:#cfe3d7;cursor:pointer;padding:8px 6px;border-radius:8px;font-size:.88rem}
+.si.on{color:#fff;font-weight:700;background:rgba(255,255,255,.12)}
+.sn{width:26px;height:26px;border-radius:50%;border:2px solid currentColor;display:grid;place-items:center;font-weight:700;font-size:.8rem}
+.si.done .sn{background:#fff;color:var(--p)}.sl{height:18px;border-left:2px dashed #ffffff55;margin:0 19px}
+.main{flex:1;padding:26px;background:#fff;min-width:0}
+.t{font-size:1.15rem;font-weight:700;color:var(--pd)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}.r3{grid-template-columns:1fr 1fr 1fr}
+label{display:block;font-size:.76rem;font-weight:600;margin-bottom:3px}
+input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--b);border-radius:6px;font:inherit;font-size:.86rem;background:#fff;color:var(--c)}
+:focus-visible{outline:2px solid var(--p);outline-offset:1px}
+.f{margin-bottom:12px}.nav{display:flex;justify-content:space-between;margin-top:20px}
+.b{border:0;border-radius:8px;padding:10px 18px;font:inherit;font-weight:600;font-size:.86rem;cursor:pointer;background:var(--k);color:var(--c)}
+.bp{background:var(--p);color:#fff}.sm{padding:5px 10px;font-size:.76rem}
+.card{border:1px solid var(--b);border-radius:12px;margin-bottom:16px;overflow:hidden}
+.ct{padding:12px 16px;background:var(--bg);border-bottom:1px solid var(--b);font-weight:700;display:flex;align-items:center;gap:8px}
+.day .dh{padding:10px 16px;background:var(--bg);border-bottom:1px solid var(--b);display:flex;gap:10px;align-items:center}
+.day .dh b{color:var(--p)}.db{padding:14px 16px}
+.ar{display:flex;gap:8px}.th{width:56px;height:38px;flex-shrink:0;border:1px dashed var(--b);border-radius:6px;overflow:hidden;display:grid;place-items:center;font-size:.65rem;color:var(--g);cursor:pointer;text-align:center}
+.th img,.pi img{width:100%;height:100%;object-fit:cover}
+.ph{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.pi{width:84px;height:62px;position:relative;border-radius:6px;overflow:hidden}
+.pi span{position:absolute;top:2px;right:2px;background:#000a;color:#fff;border-radius:50%;width:18px;height:18px;text-align:center;font-size:.7rem;cursor:pointer}
+#map svg{display:block;width:100%;height:auto}#trail{padding:10px 16px;font-size:.86rem}
+table{width:100%;border-collapse:collapse}th{text-align:left;font-size:.72rem;color:var(--g);padding:8px;background:var(--bg)}td{padding:6px 8px;border-bottom:1px solid var(--b)}
+.ci{width:90px;padding:6px 8px;font-size:.8rem;text-align:right}.x{background:none;border:0;color:var(--g);cursor:pointer;font-size:1rem}
+.qs{background:var(--bg);border-radius:10px;padding:20px;margin-top:16px}.qr{display:flex;justify-content:space-between;padding:5px 0;font-size:.9rem}
+.qr.tot{font-size:1.1rem;font-weight:700;color:var(--p);border-top:1px solid var(--b);margin-top:6px;padding-top:12px}
 
-            <div class="page-header">
-                <div>
-                    <div class="page-title">Itinerary Builder</div>
-                    <div class="page-subtitle">Step-by-step itinerary creation for tour operators</div>
-                </div>
-            </div>
+@media(max-width:760px){.wrap{flex-direction:column}.side{width:auto;display:flex;gap:6px;padding:10px;overflow-x:auto}.sl{display:none}.row,.r3{grid-template-columns:1fr}}
+</style><div class="ipr"><div class="wrap">
+<div class="side">
+ <div class="si on" onclick="IP.go(1)"><div class="sn">1</div>Client Information</div><div class="sl"></div>
+ <div class="si" onclick="IP.go(2)"><div class="sn">2</div>Tour Request</div><div class="sl"></div>
+ <div class="si" onclick="IP.go(3)"><div class="sn">3</div>Quote Builder</div>
+</div>
+<div class="main">
 
-            <div class="ib-wrapper">
-                <!-- Step Indicator Sidebar -->
-                <div class="ib-sidebar">
-                    <div class="ib-step-indicator">
-                        <div class="ib-step-item active" id="ibStepInd1" onclick="ibGoToStep(1)">
-                            <div class="ib-step-num">1</div>
-                            <div class="ib-step-text">Client Information</div>
-                        </div>
-                        <div class="ib-step-line"></div>
-                        <div class="ib-step-item" id="ibStepInd2" onclick="ibGoToStep(2)">
-                            <div class="ib-step-num">2</div>
-                            <div class="ib-step-text">Tour Request</div>
-                        </div>
-                        <div class="ib-step-line"></div>
-                        <div class="ib-step-item" id="ibStepInd3" onclick="ibGoToStep(3)">
-                            <div class="ib-step-num">3</div>
-                            <div class="ib-step-text">Quote Builder</div>
-                        </div>
-                    </div>
-                </div>
+<div class="step">
+ <div class="t">Client Information</div><div class="mu" style="margin-bottom:16px">Enter your client's personal and contact details.</div>
+ <div class="row"><div><label>Salutation</label><select id="sal"><option value="">Select</option><option>Mr.</option><option>Mrs.</option><option>Ms.</option><option>Dr.</option><option>Prof.</option></select></div>
+ <div><label>Language</label><select id="lang"><option value="">Select</option><option>English</option><option>French</option><option>German</option><option>Spanish</option><option>Italian</option><option>Mandarin</option><option>Arabic</option><option>Swahili</option></select></div></div>
+ <div class="row"><div><label>First Name *</label><input id="fn" placeholder="e.g. James"></div><div><label>Last Name *</label><input id="ln" placeholder="e.g. Williams"></div></div>
+ <div class="row"><div><label>Email Address *</label><input id="em" type="email" placeholder="client@example.com"></div><div><label>Phone Number</label><input id="ph" type="tel" placeholder="+255 123 456 789"></div></div>
+ <div class="f"><label>Country of Residence</label><input id="co" placeholder="e.g. United States"></div>
+ <div class="nav"><span></span><button class="b bp" onclick="IP.go(2)">Next: Tour Request →</button></div>
+</div>
 
-                <!-- Step Content Area -->
-                <div class="ib-main">
+<div class="step" style="display:none">
+ <div class="t">Tour Request</div><div class="mu" style="margin-bottom:16px">Define the tour details and travel requirements.</div>
+ <div class="f"><label>Tour Title *</label><input id="title" placeholder="e.g. 5-Day Serengeti &amp; Ngorongoro Safari"></div>
+ <div class="row"><div><label>Tour Type</label><select id="type"><option value="">Select type</option><option>Safari</option><option>Beach Holiday</option><option>Mountain Trekking</option><option>Cultural Tour</option><option>Honeymoon</option><option>Family Adventure</option><option>Photography Expedition</option><option>Mixed Safari &amp; Beach</option></select></div>
+ <div><label>Tour Length (days)</label><input id="len" type="number" min="1" max="60" value="5" oninput="IP.lenCh()"></div></div>
+ <div class="row"><div><label>Start Destination</label><input id="sdest" list="pl" placeholder="e.g. Arusha"></div><div><label>End Destination</label><input id="edest" list="pl" placeholder="e.g. Arusha"></div></div>
+ <div class="row"><div><label>Start Date</label><input id="sd" type="date" onchange="IP.dateCh()"></div><div><label>End Date</label><input id="ed" type="date" onchange="IP.dateCh()"></div></div>
+ <div class="row"><div><label>Number of Travelers</label><input id="trav" type="number" min="1" max="50" value="2"></div>
+ <div><label>Room Type Preference</label><select id="room"><option value="">Select preference</option><option>Single</option><option>Double</option><option>Twin</option><option>Triple</option><option>Family Room</option><option>Suite</option></select></div></div>
+ <div class="f"><label>Additional Information / Special Requests</label><textarea id="extra" rows="3" placeholder="Dietary requirements, special occasions, preferred pace..."></textarea></div>
+ <div class="nav"><button class="b" onclick="IP.go(1)">← Back: Client Info</button><button class="b bp" onclick="IP.go(3)">Next: Quote Builder →</button></div>
+</div>
 
-                    <!-- STEP 1: CLIENT INFORMATION -->
-                    <div class="ib-step" id="ibStep1">
-                        <div style="font-size:1.15rem;font-weight:700;color:var(--primary-dark);margin-bottom:4px;">Client Information</div>
-                        <div style="font-size:.82rem;color:var(--text-secondary);margin-bottom:18px;">Enter your client's personal and contact details.</div>
+<div class="step" style="display:none">
+ <div class="t">Quote Builder</div><div class="mu" style="margin-bottom:16px">Plan each day, watch the route map draw itself, add costs and generate the quote.</div>
+ <div class="card"><div class="ct">Trip Route Map <span class="mu" style="font-weight:400">updates as you type locations</span></div><div id="map"></div><div id="trail"></div></div>
+ <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><b>Day-by-Day Activities &amp; Accommodations</b><button class="b sm" onclick="IP.addDay()">+ Add Day</button></div>
+ <div id="days"></div>
+ <div style="display:flex;justify-content:space-between;align-items:center;margin:24px 0 10px"><b>Costing &amp; Quote Preview</b><button class="b sm" onclick="IP.CA()">+ Add Cost Item</button></div>
+ <div style="overflow-x:auto"><table><thead><tr><th>Cost Item</th><th>Category</th><th>Supplier</th><th>Unit Cost</th><th>Qty</th><th>Total</th><th></th></tr></thead><tbody id="cb"></tbody>
+ <tfoot><tr><td colspan="5" style="text-align:right;font-weight:700">Total Cost</td><td id="ctot" style="font-weight:700">$0.00</td><td></td></tr></tfoot></table></div>
+ <div class="qs"><b style="color:var(--p)">Quote Summary</b>
+  <div class="row" style="margin-top:10px"><div><label>Margin (%)</label><input id="mg" type="number" value="25" min="0" max="100" oninput="IP.calc()" style="width:100px"></div><div><label>Tax / VAT (%)</label><input id="tx" type="number" value="18" min="0" max="50" oninput="IP.calc()" style="width:100px"></div></div>
+  <div class="qr"><span>Total Direct Cost</span><span id="s1"></span></div><div class="qr"><span>Markup</span><span id="s2"></span></div>
+  <div class="qr"><span>Subtotal</span><span id="s3"></span></div><div class="qr"><span>Tax / VAT</span><span id="s4"></span></div>
+  <div class="qr tot"><span>Quote Total</span><span id="s5"></span></div>
+  <div style="margin-top:16px;display:flex;gap:10px;justify-content:flex-end"><button class="b" onclick="IP.go(2)">← Back</button><button class="b bp" onclick="IP.gen()">Generate Quote</button></div>
+ </div>
+</div>
 
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Salutation</label>
-                                <select id="ibSalutation">
-                                    <option value="">Select</option>
-                                    <option>Mr.</option><option>Mrs.</option><option>Ms.</option><option>Dr.</option><option>Prof.</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Language</label>
-                                <select id="ibLanguage">
-                                    <option value="">Select</option>
-                                    <option>English</option><option>French</option><option>German</option><option>Spanish</option><option>Italian</option><option>Mandarin</option><option>Arabic</option><option>Swahili</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>First Name *</label>
-                                <input type="text" id="ibFirstName" placeholder="e.g. James">
-                            </div>
-                            <div class="form-group">
-                                <label>Last Name *</label>
-                                <input type="text" id="ibLastName" placeholder="e.g. Williams">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Email Address *</label>
-                                <input type="email" id="ibEmail" placeholder="client@example.com">
-                            </div>
-                            <div class="form-group">
-                                <label>Phone Number</label>
-                                <input type="tel" id="ibPhone" placeholder="+255 123 456 789">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Country of Residence</label>
-                            <input type="text" id="ibCountry" placeholder="e.g. United States">
-                        </div>
-                        <div style="margin-top:20px;display:flex;justify-content:flex-end;">
-                            <button class="btn btn-primary" onclick="ibGoToStep(2)">Next: Tour Request →</button>
-                        </div>
-                    </div>
-
-                    <!-- STEP 2: TOUR REQUEST -->
-                    <div class="ib-step" id="ibStep2" style="display:none;">
-                        <div style="font-size:1.15rem;font-weight:700;color:var(--primary-dark);margin-bottom:4px;">Tour Request</div>
-                        <div style="font-size:.82rem;color:var(--text-secondary);margin-bottom:18px;">Define the tour details and travel requirements.</div>
-
-                        <div class="form-group">
-                            <label>Tour Title *</label>
-                            <input type="text" id="ibTourTitle" placeholder="e.g. 5-Day Serengeti & Ngorongoro Safari">
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Tour Type</label>
-                                <select id="ibTourType">
-                                    <option value="">Select type</option>
-                                    <option>Safari</option><option>Beach Holiday</option><option>Mountain Trekking</option><option>Cultural Tour</option><option>Honeymoon</option><option>Family Adventure</option><option>Photography Expedition</option><option>Mixed Safari & Beach</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Tour Length (days)</label>
-                                <input type="number" id="ibTourLength" min="1" max="60" value="5" placeholder="Number of days">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Start Destination</label>
-                                <input type="text" id="ibStartDest" placeholder="e.g. Arusha / Kilimanjaro Airport">
-                            </div>
-                            <div class="form-group">
-                                <label>End Destination</label>
-                                <input type="text" id="ibEndDest" placeholder="e.g. Arusha / Zanzibar">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Start Date</label>
-                                <input type="date" id="ibStartDate">
-                            </div>
-                            <div class="form-group">
-                                <label>End Date</label>
-                                <input type="date" id="ibEndDate">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Number of Travelers</label>
-                                <input type="number" id="ibTravelers" min="1" max="50" value="2" placeholder="Adults & children">
-                            </div>
-                            <div class="form-group">
-                                <label>Room Type Preference</label>
-                                <select id="ibRoomType">
-                                    <option value="">Select preference</option>
-                                    <option>Single</option><option>Double</option><option>Twin</option><option>Triple</option><option>Family Room</option><option>Suite</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Additional Information / Special Requests</label>
-                            <textarea id="ibAdditional" rows="3" placeholder="Dietary requirements, accessibility needs, special occasions, preferred pace, budget range..."></textarea>
-                        </div>
-                        <div style="margin-top:20px;display:flex;justify-content:space-between;">
-                            <button class="btn btn-secondary" onclick="ibGoToStep(1)">← Back: Client Info</button>
-                            <button class="btn btn-primary" onclick="ibGoToStep(3)">Next: Quote Builder →</button>
-                        </div>
-                    </div>
-
-                    <!-- STEP 3: QUOTE BUILDER (Day-by-Day + Costing) -->
-                    <div class="ib-step" id="ibStep3" style="display:none;">
-                        <div style="font-size:1.15rem;font-weight:700;color:var(--primary-dark);margin-bottom:4px;">Quote Builder</div>
-                        <div style="font-size:.82rem;color:var(--text-secondary);margin-bottom:18px;">Plan day-by-day activities, add costs, review margins, and generate the quote.</div>
-
-                        <!-- Day-by-Day Section -->
-                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-                            <div style="font-weight:700;color:var(--charcoal);display:flex;align-items:center;gap:8px;"><i data-lucide="calendar-days" style="width:18px;height:18px;"></i> Day-by-Day Activities &amp; Accommodations</div>
-                            <div style="display:flex;gap:8px;">
-                                <button class="btn btn-secondary btn-sm" onclick="ibAddDay()">+ Add Day</button>
-                                <button class="btn btn-primary btn-sm" onclick="openSupplierModal()">+ Find Suppliers</button>
-                            </div>
-                        </div>
-                        <div id="ibDayCards">
-                            <!-- Day cards injected by JS -->
-                        </div>
-
-                        <!-- Costing & Quote Preview -->
-                        <div style="margin-top:28px;">
-                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-                                <div style="font-weight:700;color:var(--charcoal);display:flex;align-items:center;gap:8px;"><i data-lucide="wallet" style="width:18px;height:18px;"></i> Costing &amp; Quote Preview</div>
-                                <button class="btn btn-secondary btn-sm" onclick="ibAddCostItem()">+ Add Cost Item</button>
-                            </div>
-                            <div style="overflow-x:auto;">
-                                <table class="cost-table" id="ibCostTable">
-                                    <thead>
-                                        <tr>
-                                            <th>Cost Item</th><th>Category</th><th>Supplier</th>
-                                            <th>Unit Cost</th><th>Qty</th><th>Total</th><th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="ibCostBody">
-                                        <!-- Cost rows injected by JS -->
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <td colspan="5" style="text-align:right;">Total Cost</td>
-                                            <td id="ibCostTotal">$0.00</td><td></td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-
-                            <!-- Quote Summary -->
-                            <div class="quote-summary" style="margin-top:16px;">
-                                <div style="font-weight:700;margin-bottom:12px;color:var(--primary);">Quote Summary</div>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label>Margin (%)</label>
-                                        <input type="number" id="ibMargin" value="25" min="0" max="100" oninput="ibCalcCosts()" style="width:100px;">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Tax / VAT (%)</label>
-                                        <input type="number" id="ibTax" value="18" min="0" max="50" oninput="ibCalcCosts()" style="width:100px;">
-                                    </div>
-                                </div>
-                                <div class="quote-summary-row">
-                                    <span>Total Direct Cost</span><span id="ibSummaryCost">$0.00</span>
-                                </div>
-                                <div class="quote-summary-row">
-                                    <span>Markup (<span id="ibSummaryMarginPct">25</span>%)</span><span id="ibSummaryMarkup">$0.00</span>
-                                </div>
-                                <div class="quote-summary-row">
-                                    <span>Subtotal</span><span id="ibSummarySubtotal">$0.00</span>
-                                </div>
-                                <div class="quote-summary-row">
-                                    <span>Tax / VAT (<span id="ibSummaryTaxPct">18</span>%)</span><span id="ibSummaryTax">$0.00</span>
-                                </div>
-                                <div class="quote-summary-row total">
-                                    <span>Quote Total</span><span id="ibSummaryTotal">$0.00</span>
-                                </div>
-                                <div style="margin-top:16px;display:flex;gap:10px;justify-content:flex-end;">
-                                    <button class="btn btn-secondary" onclick="ibGoToStep(2)">← Back: Tour Request</button>
-                                    <button class="btn btn-primary" onclick="ibGenerateQuote()"><i data-lucide="file-text" style="width:16px;height:16px;"></i> Generate Quote</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-            <!-- Supplier Modal -->
-            <div class="modal-overlay" id="supplierModal">
-                <div class="modal">
-                    <div class="modal-header">
-                        <div class="modal-title">Find &amp; Add Suppliers</div>
-                        <button class="modal-close" onclick="closeSupplierModal()"><i data-lucide="x" style="width:16px;height:16px;"></i></button>
-                    </div>
-                    <div class="modal-body">
-                        <input type="text" id="supplierSearch" placeholder="Search accommodations, vehicles, guides..." style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:6px;margin-bottom:16px;" oninput="ibFilterSuppliers()">
-                        <div class="supplier-grid" id="supplierGrid">
-                            <!-- Populated by JS -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+</div></div>
+<datalist id="pl"></datalist></div></template>
         </div>
 
         <!-- ==========================================
@@ -1898,328 +1744,144 @@ window.initImagePlaceholders = function() {
 
 
 /* ============================================
-   ITINERARY BUILDER
+   ITINERARY BUILDER (live partner data, route map, photos)
    ============================================ */
-(function() {
-    var ibDays = [];
-    var ibCostItems = [];
-    var currentStep = 1;
+(function(){
 
-    window.ibGoToStep = function(step) {
-        currentStep = step;
-        // Show/hide step panels
-        document.querySelectorAll('.ib-step').forEach(function(el, i) {
-            el.style.display = (i + 1 === step) ? 'block' : 'none';
-        });
-        // Update step indicators
-        document.querySelectorAll('.ib-step-item').forEach(function(ind, i) {
-            var s = i + 1;
-            ind.classList.toggle('active', s === step);
-            ind.classList.toggle('completed', s < step);
-        });
-        // Build days when entering step 3
-        if (step === 3) { ibBuildDays(); ibCalcCosts(); }
-    };
+var root,$=id=>root.getElementById(id),esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+var m=n=>'$'+(+n||0).toFixed(2),D=[],C=[];
+function toast(t){if(window.showToast)showToast(t);else alert(t)}
 
-    window.ibInitDates = function() {
-        var today = new Date();
-        var tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
-        var later = new Date(today); later.setDate(later.getDate() + 6);
-        var startEl = document.getElementById('ibStartDate');
-        var endEl = document.getElementById('ibEndDate');
-        if (startEl && !startEl.value) startEl.value = tomorrow.toISOString().split('T')[0];
-        if (endEl && !endEl.value) endEl.value = later.toISOString().split('T')[0];
-    };
+/* Places (lat, lng) — type "lat,lng" in a location to add any other point */
+var PL={'Arusha':[-3.37,36.68],'Kilimanjaro Airport':[-3.43,37.07],'Moshi':[-3.35,37.34],'Arusha NP':[-3.25,36.85],'Kilimanjaro NP':[-3.07,37.35],
+'Tarangire NP':[-3.85,36.0],'Lake Manyara NP':[-3.5,35.85],'Mto wa Mbu':[-3.37,35.85],'Karatu':[-3.33,35.67],'Ngorongoro Conservation Area':[-3.2,35.5],
+'Serengeti NP':[-2.45,34.82],'Central Serengeti':[-2.45,34.82],'Northern Serengeti':[-1.6,34.9],'Southern Serengeti':[-3.0,35.0],'Lake Natron':[-2.4,36.0],
+'Zanzibar':[-6.16,39.19],'Dar es Salaam':[-6.79,39.28],'Mikumi NP':[-7.4,37.0],'Ruaha NP':[-7.5,34.9],'Nyerere NP':[-7.9,38.0]};
+function find(s){s=(s||'').trim();if(!s)return null;var q=s.match(/^(-?\d+(\.\d+)?)\s*,\s*(-?\d+(\.\d+)?)$/);if(q)return[+q[1],+q[3],s];
+ var ps=[s].concat(s.split('/'));for(var j=0;j<ps.length;j++){var k=ps[j].toLowerCase().trim();if(k.length<3)continue;
+  for(var n in PL)if(n.toLowerCase()==k)return PL[n].concat(n);
+  for(n in PL){var x=n.toLowerCase();if(x.indexOf(k)>-1||k.indexOf(x)>-1)return PL[n].concat(n)}}return null}
 
-    /* ── Day-by-Day ── */
-    function ibBuildDays() {
-        var startVal = document.getElementById('ibStartDate').value;
-        var endVal = document.getElementById('ibEndDate').value;
-        var lengthVal = parseInt(document.getElementById('ibTourLength').value) || 1;
+/* Catalog: LIVE from the platform data every partner dashboard writes to */
+var ACC=[],VEH=[],GUI=[],sig='';
+var imgOf=p=>p.preview||(typeof(p.images||[])[0]=='string'?p.images[0]:'');
+function refreshCat(){var A=[],V=[],G=[];
+ try{A=getLiveAccommodations().map(p=>({name:p.name,loc:p.location,reg:p.region,img:imgOf(p),label:[p.type,p.location,p.pricePerNight?'from $'+p.pricePerNight+'/night':''].filter(Boolean).join(' · ')}));
+ V=getLiveFleet().map(v=>({name:(v.plate?v.plate+' — ':'')+String(v.name).split(' · ')[0],label:[v.type,v.seats+' seats',v.base,v.status,v.safariDayRate?'$'+v.safariDayRate+'/day':''].filter(Boolean).join(' · ')}));
+ G=getLiveGuides().map(g=>({name:g.name,label:[g.special,g.location,g.dailyRate?'$'+g.dailyRate+'/day':''].filter(Boolean).join(' · ')}))}catch(e){}
+ var s=JSON.stringify([A,V,G]);if(s==sig)return;sig=s;ACC=A;VEH=V;GUI=G;
+ if(root&&$('days')&&$('days').childElementCount&&!root.activeElement)render()}
+var company=()=>{var e=document.getElementById('coName');return e&&e.value||'Dreamtrails Expeditions'};
 
-        // Use tour length if dates not set
-        var diff = lengthVal;
-        if (startVal && endVal) {
-            var s = new Date(startVal), e = new Date(endVal);
-            diff = Math.max(1, Math.round((e - s) / 864e5) + 1);
-        }
+/* Steps & dates */
+function go(n){root.querySelectorAll('.step').forEach((e,i)=>e.style.display=i+1==n?'block':'none');
+ root.querySelectorAll('.si').forEach((e,i)=>{e.classList.toggle('on',i+1==n);e.classList.toggle('done',i+1<n)});if(n==3)build()}
+function iso(d){return d.toISOString().slice(0,10)}
+function lenCh(){var s=$('sd').value,n=+$('len').value;if(s&&n>0){var d=new Date(s);d.setDate(d.getDate()+n-1);$('ed').value=iso(d)}}
+function dateCh(){var s=$('sd').value,e=$('ed').value;if(s&&e)$('len').value=Math.max(1,Math.round((new Date(e)-new Date(s))/864e5)+1)}
 
-        // Preserve existing data
-        var oldDays = ibDays.slice();
-        ibDays = [];
-        var baseDate = startVal ? new Date(startVal) : new Date();
+/* Days */
+var blank=()=>({loc:'',acc:'',accImg:'',veh:'',guide:'',am:'',pm:'',eve:'',meals:'',notes:'',photos:[]});
+function build(){var s=$('sd').value,n=+$('len').value||1,old=D;D=[];
+ for(var i=0;i<n;i++){var d=new Date(s||Date.now());d.setDate(d.getDate()+i);D.push(Object.assign(blank(),old[i]||{},{date:iso(d)}))}
+ var a=find($('sdest').value),z=find($('edest').value);
+ if(a&&!D[0].loc)D[0].loc=a[2];if(z&&n>1&&!D[n-1].loc)D[n-1].loc=z[2];render()}
+function addDay(){var d=new Date(D.length?D[D.length-1].date:Date.now());d.setDate(d.getDate()+1);D.push(Object.assign(blank(),{date:iso(d)}));render()}
+function del(i){if(D.length<2)return toast('Cannot delete the last day');D.splice(i,1);render()}
+function dup(i){D.splice(i+1,0,JSON.parse(JSON.stringify(D[i])));render()}
+function U(i,k,v,r){if(v=='__other'){v=prompt('Enter the name');if(!v)return render()}
+ D[i][k]=v;if(k=='acc'&&v&&!D[i].loc){var a=ACC.find(x=>x.name==v),p=a&&(find(a.loc)||find(a.reg));if(p)D[i].loc=p[2]}
+ if(r||k=='acc')render();else if(k=='loc')map()}
+function pick(cb,multi){var f=document.createElement('input');f.type='file';f.accept='image/*';f.multiple=!!multi;
+ f.onchange=()=>[].forEach.call(f.files,file=>{var r=new FileReader();r.onload=()=>{var im=new Image();im.onload=()=>{var c=document.createElement('canvas'),s=Math.min(1,800/Math.max(im.width,im.height));
+  c.width=im.width*s;c.height=im.height*s;c.getContext('2d').drawImage(im,0,0,c.width,c.height);cb(c.toDataURL('image/jpeg',.72))};im.src=r.result};r.readAsDataURL(file)});f.click()}
+function accPhoto(i){pick(u=>{D[i].accImg=u;render()})}
+function addPh(i){pick(u=>{D[i].photos.push(u);render()},1)}
+function rp(i,j){D[i].photos.splice(j,1);render()}
+function sel(i,k,list,ph,cur){var has=!cur||list.some(x=>x.name==cur);
+ return `<select onchange="IP.U(${i},'${k}',this.value)"><option value="">${list.length?ph:'No partners listed yet'}</option>${list.map(x=>`<option value="${esc(x.name)}"${x.name==cur?' selected':''}>${esc(x.name)} — ${esc(x.label)}</option>`).join('')}${has?'':`<option value="${esc(cur)}" selected>${esc(cur)} (custom)</option>`}<option value="__other">Other (type a name)…</option></select>`}
+function render(){
+ $('days').innerHTML=D.map((d,i)=>{var ai=d.accImg||(ACC.find(a=>a.name==d.acc)||{}).img;
+  var inp=(k,l,ph,li)=>`<div><label>${l}</label><input ${li?'list="'+li+'"':''} placeholder="${ph}" value="${esc(d[k])}" onchange="IP.U(${i},'${k}',this.value)"></div>`;
+  return `<div class="card day"><div class="dh"><b>Day ${i+1}</b><span class="mu">${d.date}</span><span style="flex:1"></span><button class="b sm" onclick="IP.dup(${i})">Duplicate</button><button class="b sm" onclick="IP.del(${i})">Delete</button></div><div class="db">
+  <div class="row">${inp('loc','Location / Park','e.g. Serengeti NP','pl')}
+  <div><label>Accommodation <span class="mu">(${ACC.length} live)</span></label><div class="ar"><div style="flex:1;min-width:0">${sel(i,'acc',ACC,'Select accommodation',d.acc)}</div><div class="th" onclick="IP.accPhoto(${i})" title="Upload accommodation photo">${ai?`<img src="${esc(ai)}">`:'+ Photo'}</div></div></div></div>
+  <div class="row"><div><label>Vehicle <span class="mu">(${VEH.length} live)</span></label>${sel(i,'veh',VEH,'Select vehicle',d.veh)}</div><div><label>Guide <span class="mu">(${GUI.length} live)</span></label>${sel(i,'guide',GUI,'Select guide',d.guide)}</div></div>
+  <div class="row r3">${inp('am','Morning','Game drive')}${inp('pm','Afternoon','Activity')}${inp('eve','Evening','Sundowner')}</div>
+  <div class="row">${inp('meals','Meals','B / L / D')}${inp('notes','Notes','Transfers, special requests')}</div>
+  <label>Activity photos</label><div class="ph">${d.photos.map((p,j)=>`<div class="pi"><img src="${p}"><span onclick="IP.rp(${i},${j})">✕</span></div>`).join('')}<button class="b sm" onclick="IP.addPh(${i})">+ Add photos</button></div></div></div>`}).join('');
+ map()}
 
-        for (var i = 0; i < diff; i++) {
-            var existing = oldDays[i] || {};
-            var d = new Date(baseDate); d.setDate(d.getDate() + i);
-            ibDays.push({
-                label: 'Day ' + (i + 1),
-                date: d.toISOString().split('T')[0],
-                location: existing.location || '',
-                accommodation: existing.accommodation || '',
-                vehicle: existing.vehicle || '',
-                guide: existing.guide || '',
-                activities: existing.activities || '',
-                morning: existing.morning || '',
-                afternoon: existing.afternoon || '',
-                evening: existing.evening || '',
-                meals: existing.meals || '',
-                parkFees: existing.parkFees || '',
-                notes: existing.notes || ''
-            });
-        }
-        ibRenderDays();
-    }
+/* Trail map: one coloured leg per move, labelled with the arrival day */
+var COL=['#1a5a3a','#c2410c','#0369a1','#7e22ce','#be123c','#a16207','#0f766e','#4d7c0f'];
+function stops(days){var r=[];days.forEach((d,i)=>{var p=find(d.loc);if(!p)return;var k=p[0]+','+p[1],l=r[r.length-1];if(l&&l.k==k)l.days.push(i+1);else r.push({k:k,p:p,days:[i+1]})});return r}
+var dr=a=>'Day '+(a.length>1?a[0]+'–'+a[a.length-1]:a[0]);
+function mapSVG(days){var r=stops(days);if(!r.length)return'';
+ var W=800,H=440,la=r.map(s=>s.p[0]),lo=r.map(s=>s.p[1]),a1=Math.min(...la),a2=Math.max(...la),o1=Math.min(...lo),o2=Math.max(...lo),pa=Math.max((a2-a1)*.25,.6),po=Math.max((o2-o1)*.25,.7);
+ a1-=pa;a2+=pa;o1-=po;o2+=po;var k=Math.cos((a1+a2)/2*Math.PI/180),s=Math.min((W-60)/((o2-o1)*k),(H-60)/(a2-a1)),ox=(W-(o2-o1)*k*s)/2,oy=(H-(a2-a1)*s)/2,
+ X=g=>ox+(g-o1)*k*s,Y=t=>oy+(a2-t)*s,used={},u={};r.forEach(q=>used[q.k]=1);
+ var o=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" font-family="system-ui,sans-serif"><rect width="${W}" height="${H}" fill="#eef1ea"/>`;
+ for(var n in PL){var p=PL[n];if(p[0]>a1&&p[0]<a2&&p[1]>o1&&p[1]<o2&&!used[p[0]+','+p[1]])o+=`<circle cx="${X(p[1])}" cy="${Y(p[0])}" r="3" fill="#b3aea2"/><text x="${X(p[1])+6}" y="${Y(p[0])+3}" font-size="10" fill="#8a857c">${n}</text>`}
+ r.forEach((q,i)=>{if(!i)return;var a=r[i-1],x1=X(a.p[1]),y1=Y(a.p[0]),x2=X(q.p[1]),y2=Y(q.p[0]),cx=(x1+x2)/2-(y2-y1)*.16,cy=(y1+y2)/2+(x2-x1)*.16,col=COL[(q.days[0]-1)%8],
+  B=(t,a,c,b)=>(1-t)*(1-t)*a+2*(1-t)*t*c+t*t*b,tx=2*(.3*(cx-x1)+.7*(x2-cx)),ty=2*(.3*(cy-y1)+.7*(y2-cy)),L=Math.hypot(tx,ty)||1,ux=tx/L,uy=ty/L,ax=B(.7,x1,cx,x2),ay=B(.7,y1,cy,y2),lx=B(.38,x1,cx,x2),ly=B(.38,y1,cy,y2);
+  o+=`<path d="M${x1} ${y1}Q${cx} ${cy} ${x2} ${y2}" fill="none" stroke="${col}" stroke-width="3" stroke-dasharray="8 5" stroke-linecap="round"/><polygon points="${ax+ux*8},${ay+uy*8} ${ax-ux*6-uy*6},${ay-uy*6+ux*6} ${ax-ux*6+uy*6},${ay-uy*6-ux*6}" fill="${col}"/>
+  <rect x="${lx-25}" y="${ly-10}" width="50" height="20" rx="10" fill="${col}"/><text x="${lx}" y="${ly+4}" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">Day ${q.days[0]}</text>`});
+ r.forEach(q=>{var e=u[q.k]=u[q.k]||{p:q.p,days:[]};e.days=e.days.concat(q.days)});
+ for(var z in u){var e=u[z],x=X(e.p[1]),y=Y(e.p[0]);o+=`<circle cx="${x}" cy="${y}" r="12" fill="#0f3d26" stroke="#fff" stroke-width="2"/><text x="${x}" y="${y+4}" font-size="${e.days.length>2?8:10}" font-weight="700" fill="#fff" text-anchor="middle">${e.days.length>2?e.days[0]+'+':e.days.join('·')}</text><text x="${x}" y="${y+27}" font-size="12" font-weight="700" fill="#2c2c2c" text-anchor="middle" stroke="#eef1ea" stroke-width="3" paint-order="stroke">${esc(e.p[2])}</text>`}
+ return o+'</svg>'}
+var trailTxt=days=>stops(days).map(s=>`<b>${esc(s.p[2])}</b> <span class="mu">(${dr(s.days)})</span>`).join(' → ');
+function map(){$('map').innerHTML=mapSVG(D)||'<p class="mu" style="padding:24px">Type locations in the day cards (e.g. Arusha, Ngorongoro, Serengeti NP, Arusha) and the trail appears here.</p>';$('trail').innerHTML=trailTxt(D)}
 
-    window.ibRenderDays = function() {
-        var container = document.getElementById('ibDayCards');
-        if (!container) return;
-        var plat = (typeof slGet === 'function') ? slGet() : null;
-        var propOpts = (plat && plat.properties || []).map(function(p){ return '<option value="'+esc(p.name)+'">'; }).join('');
-        var vehOpts = (plat && plat.vehicles || []).map(function(v){ return '<option value="'+esc(v.plate+' — '+v.model)+'">'; }).join('');
-        var guideOpts = (plat && plat.guides || []).map(function(g){ return '<option value="'+esc(g.name)+'">'; }).join('');
+/* Costing — starts empty; every new item is blank */
+var CATS=['','Accommodation','Transport','Transfer Fee','Guide','Park Fees','Meals','Activities','Insurance','Other'];
+function CA(){C.push({n:'',c:'',s:'',u:0,q:1});rows();var i=document.querySelectorAll('#cb tr:last-child input')[0];if(i)i.focus()}
+function CD(i){C.splice(i,1);rows()}
+function CU(i,k,v){C[i][k]=(k=='u'||k=='q')?parseFloat(v)||0:v;if(k=='u'||k=='q')$('t'+i).textContent=m(C[i].u*C[i].q);calc()}
+function rows(){$('cb').innerHTML=C.length?C.map((c,i)=>`<tr><td><input class="ci" style="width:150px;text-align:left" value="${esc(c.n)}" placeholder="Item name" oninput="IP.CU(${i},'n',this.value)"></td>
+ <td><select class="ci" style="width:130px;text-align:left" onchange="IP.CU(${i},'c',this.value)">${CATS.map(x=>`<option value="${x}"${x==c.c?' selected':''}>${x||'Select category'}</option>`).join('')}</select></td>
+ <td><input class="ci" style="width:120px;text-align:left" value="${esc(c.s)}" placeholder="Supplier" oninput="IP.CU(${i},'s',this.value)"></td>
+ <td><input class="ci" type="number" min="0" step="0.01" value="${c.u||''}" placeholder="0" oninput="IP.CU(${i},'u',this.value)"></td>
+ <td><input class="ci" style="width:60px" type="number" min="1" value="${c.q}" oninput="IP.CU(${i},'q',this.value)"></td><td id="t${i}" style="font-weight:600">${m(c.u*c.q)}</td><td><button class="x" onclick="IP.CD(${i})">✕</button></td></tr>`).join('')
+ :'<tr><td colspan="7" class="mu" style="text-align:center;padding:20px">No cost items yet. Click “+ Add Cost Item” to begin.</td></tr>';calc()}
+function calc(){var tc=C.reduce((s,c)=>s+c.u*c.q,0),mg=parseFloat($('mg').value)||0,tx=parseFloat($('tx').value)||0,mk=tc*mg/100,sub=tc+mk,ta=sub*tx/100,tot=sub+ta;
+ $('ctot').textContent=$('s1').textContent=m(tc);$('s2').textContent=m(mk)+' ('+mg+'%)';$('s3').textContent=m(sub);$('s4').textContent=m(ta)+' ('+tx+'%)';$('s5').textContent=m(tot);
+ return{cost:tc,margin:mg,tax:tx,total:tot}}
 
-        container.innerHTML = ibDays.map(function(day, i) {
-            return '<div class="day-card" style="border:1px solid var(--border);border-radius:12px;margin-bottom:14px;overflow:hidden;background:#fff;">' +
-                '<div class="day-card-header" style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--bg);border-bottom:1px solid var(--border);">' +
-                    '<div style="display:flex;align-items:center;gap:12px;">' +
-                        '<strong style="color:var(--primary);font-size:1rem;">' + esc(day.label) + '</strong>' +
-                        '<span style="font-size:.8rem;color:var(--text-secondary);">' + esc(day.date) + '</span>' +
-                    '</div>' +
-                    '<div style="display:flex;gap:6px;">' +
-                        '<button class="btn btn-secondary btn-sm" onclick="ibDupDay(' + i + ')" title="Duplicate"><i data-lucide="copy" style="width:14px;height:14px;"></i></button>' +
-                        '<button class="btn btn-secondary btn-sm" onclick="ibDelDay(' + i + ')" title="Delete"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>' +
-                    '</div>' +
-                '</div>' +
-                '<div class="day-card-body" style="padding:14px 16px;">' +
-                    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">' +
-                        '<div><label style="font-size:.72rem;font-weight:600;color:var(--warm-gray);">Location / Park</label><input type="text" list="parkList" placeholder="e.g. Serengeti NP" value="' + esc(day.location||'') + '" onchange="ibUpdateDay(' + i + ',\'location\',this.value)" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:.85rem;"></div>' +
-                        '<div><label style="font-size:.72rem;font-weight:600;color:var(--warm-gray);">Accommodation</label><input type="text" list="propList" placeholder="Lodge / camp" value="' + esc(day.accommodation||'') + '" onchange="ibUpdateDay(' + i + ',\'accommodation\',this.value)" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:.85rem;"></div>' +
-                    '</div>' +
-                    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">' +
-                        '<div><label style="font-size:.72rem;font-weight:600;color:var(--warm-gray);">Vehicle</label><input type="text" list="vehList" placeholder="Safari car / van" value="' + esc(day.vehicle||'') + '" onchange="ibUpdateDay(' + i + ',\'vehicle\',this.value)" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:.85rem;"></div>' +
-                        '<div><label style="font-size:.72rem;font-weight:600;color:var(--warm-gray);">Guide</label><input type="text" list="guideList" placeholder="Guide name" value="' + esc(day.guide||'') + '" onchange="ibUpdateDay(' + i + ',\'guide\',this.value)" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:.85rem;"></div>' +
-                    '</div>' +
-                    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;">' +
-                        '<div><label style="font-size:.72rem;font-weight:600;color:var(--warm-gray);">Morning</label><input type="text" placeholder="Game drive" value="' + esc(day.morning||'') + '" onchange="ibUpdateDay(' + i + ',\'morning\',this.value)" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:.85rem;"></div>' +
-                        '<div><label style="font-size:.72rem;font-weight:600;color:var(--warm-gray);">Afternoon</label><input type="text" placeholder="Activity" value="' + esc(day.afternoon||'') + '" onchange="ibUpdateDay(' + i + ',\'afternoon\',this.value)" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:.85rem;"></div>' +
-                        '<div><label style="font-size:.72rem;font-weight:600;color:var(--warm-gray);">Evening</label><input type="text" placeholder="Sundowner" value="' + esc(day.evening||'') + '" onchange="ibUpdateDay(' + i + ',\'evening\',this.value)" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:.85rem;"></div>' +
-                    '</div>' +
-                    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">' +
-                        '<div><label style="font-size:.72rem;font-weight:600;color:var(--warm-gray);">Meals</label><input type="text" placeholder="B / L / D" value="' + esc(day.meals||'') + '" onchange="ibUpdateDay(' + i + ',\'meals\',this.value)" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:.85rem;"></div>' +
-                        '<div><label style="font-size:.72rem;font-weight:600;color:var(--warm-gray);">Park fees (est. $)</label><input type="number" placeholder="0" value="' + (day.parkFees||'') + '" onchange="ibUpdateDay(' + i + ',\'parkFees\',this.value)" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:.85rem;"></div>' +
-                    '</div>' +
-                    '<div><label style="font-size:.72rem;font-weight:600;color:var(--warm-gray);">Notes</label><input type="text" placeholder="Transfers, special requests" value="' + esc(day.notes||'') + '" onchange="ibUpdateDay(' + i + ',\'notes\',this.value)" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:.85rem;"></div>' +
-                '</div>' +
-            '</div>';
-        }).join('') +
-        '<datalist id="propList">'+propOpts+'</datalist><datalist id="vehList">'+vehOpts+'</datalist><datalist id="guideList">'+guideOpts+'</datalist>' +
-        '<datalist id="parkList"><option value="Serengeti NP"><option value="Ngorongoro Conservation Area"><option value="Tarangire NP"><option value="Lake Manyara NP"><option value="Arusha NP"><option value="Kilimanjaro NP"><option value="Zanzibar"></datalist>';
-        if (window.lucide) lucide.createIcons();
-        ibCalcCosts();
-    };
+/* Quote: final price only, with map, accommodation + activity photos */
+function quoteHTML(q,svg){var fmt=n=>'$'+Number(n).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+ return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${esc(q.id)} — ${esc(q.client)}</title><style>body{font-family:system-ui,sans-serif;max-width:820px;margin:32px auto;padding:0 16px;color:#2c2c2c;line-height:1.5}h1{font-size:1.5rem;margin:14px 0 4px}.m{color:#8a857c;font-size:.85rem}.box{border:1px solid #d4cfc6;border-radius:12px;padding:16px;margin:16px 0}.day{border:1px solid #d4cfc6;border-radius:12px;margin:14px 0;overflow:hidden;break-inside:avoid}.dh{background:#f8f7f4;padding:10px 16px;font-weight:700;color:#1a5a3a;border-bottom:1px solid #d4cfc6}.dbd{padding:14px 16px;display:flex;gap:16px;flex-wrap:wrap}.dbd img{width:210px;height:140px;object-fit:cover;border-radius:8px}.ph{display:flex;gap:8px;flex-wrap:wrap;padding:0 16px 14px}.ph img{height:105px;border-radius:8px}.tt{font-size:2rem;font-weight:700;color:#1a5a3a}svg{width:100%;height:auto;border-radius:12px}@media print{body{margin:0}}</style></head><body>
+ <div style="display:flex;justify-content:space-between"><div><b style="color:#1a5a3a">${esc(company())}</b></div><div class="m">${q.created}</div></div>
+ <h1>${esc(q.trip)}</h1><p class="m">Quote <b>${esc(q.id)}</b> for <b>${esc(q.client)}</b> · ${q.days} day(s)${q.travelers?' · '+q.travelers+' traveller(s)':''}</p>
+ ${svg?`<div class="box" style="padding:10px"><b>Your route</b><div style="margin:6px 0 10px;font-size:.9rem">${trailTxt(D)}</div>${svg}</div>`:''}
+ ${q.daysDetail.map((d,i)=>`<div class="day"><div class="dh">Day ${i+1} · ${esc(d.date)}${d.location?' · '+esc(d.location):''}</div><div class="dbd">${d.accImg?`<img src="${d.accImg}">`:''}<div style="flex:1;min-width:200px">
+  ${d.accommodation?`<div><b>Stay:</b> ${esc(d.accommodation)}</div>`:''}${d.am?`<div><b>Morning:</b> ${esc(d.am)}</div>`:''}${d.pm?`<div><b>Afternoon:</b> ${esc(d.pm)}</div>`:''}${d.eve?`<div><b>Evening:</b> ${esc(d.eve)}</div>`:''}${d.meals?`<div><b>Meals:</b> ${esc(d.meals)}</div>`:''}${d.notes?`<div class="m">${esc(d.notes)}</div>`:''}</div></div>
+  ${d.photos.length?`<div class="ph">${d.photos.map(p=>`<img src="${p}">`).join('')}</div>`:''}</div>`).join('')}
+ <div class="box"><p>Total investment</p><div class="tt">${fmt(q.amount)}</div><p class="m">All-inclusive package price as quoted. Valid for 14 days.</p></div>
+ <p>We look forward to hosting you on safari.</p><script>window.onload=function(){setTimeout(function(){window.print()},500)}<\/script></body></html>`}
+function gen(){var fn=$('fn').value.trim(),ln=$('ln').value.trim(),title=$('title').value.trim();
+ if(!fn||!ln){toast('Please enter client first and last name (Step 1).');return go(1)}
+ if(!title){toast('Please enter a tour title (Step 2).');return go(2)}
+ var t=calc(),id='QT-'+new Date().getFullYear()+'-'+String(Date.now()).slice(-4),client=fn+' '+ln,
+ full=D.map((d,i)=>({label:'Day '+(i+1),date:d.date,location:d.loc,accommodation:d.acc,vehicle:d.veh,guide:d.guide,am:d.am,pm:d.pm,eve:d.eve,meals:d.meals,notes:d.notes,accImg:d.accImg||(ACC.find(a=>a.name==d.acc)||{}).img||'',photos:d.photos})),
+ q={id:id,client:client,trip:title,days:D.length,travelers:+$('trav').value||0,amount:t.total,cost:t.cost,margin:t.margin,tax:t.tax,status:'Draft',booked:false,created:iso(new Date()),
+ items:C.map(c=>({name:c.n,category:c.c,supplier:c.s,unitCost:c.u,qty:c.q,line:c.u*c.q})),
+ daysDetail:full.map(d=>({label:d.label,location:d.location,accommodation:d.accommodation,vehicle:d.vehicle,guide:d.guide,am:d.am,pm:d.pm,eve:d.eve}))};
+ var st;try{st=JSON.parse(localStorage.getItem('safarilink_op_activity'))}catch(e){}st=st||{quotes:[],trips:[],tasks:[]};
+ st.quotes=st.quotes||[];st.tasks=st.tasks||[];st.quotes.unshift(q);
+ st.tasks.unshift({id:Date.now(),task:'Review & send quote '+id+' to '+client,related:id,due:q.created,assignee:'Admin',status:'Open'});
+ var note='';try{localStorage.setItem('safarilink_op_activity',JSON.stringify(st))}catch(e){note=' (could not save to dashboard)'}
+ var html=quoteHTML(Object.assign({},q,{daysDetail:full}),mapSVG(D));
+ try{localStorage.setItem('safarilink_quote_html_'+id,html)}catch(e){note+=' (photos too large to re-download later from Quotes)'}
+ var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));a.download=id+'_client_quote.html';document.body.appendChild(a);a.click();a.remove();
+ var w=window.open('','_blank');if(w){w.document.write(html);w.document.close()}toast('Quote '+id+' saved · client quote downloaded'+note)}
 
-    window.ibUpdateDay = function(i, field, value) {
-        if (ibDays[i]) ibDays[i][field] = value;
-    };
-
-    window.ibAddDay = function() {
-        var lastDate = ibDays.length ? new Date(ibDays[ibDays.length - 1].date) : new Date();
-        lastDate.setDate(lastDate.getDate() + 1);
-        ibDays.push({
-            label: 'Day ' + (ibDays.length + 1),
-            date: lastDate.toISOString().split('T')[0],
-            location: '', accommodation: '', vehicle: '', guide: '', activities: '',
-            morning: '', afternoon: '', evening: '', meals: '', parkFees: '', notes: ''
-        });
-        ibRenderDays();
-    };
-
-    window.ibDelDay = function(i) {
-        if (ibDays.length <= 1) { showToast('Cannot delete the last day'); return; }
-        ibDays.splice(i, 1);
-        // Re-label
-        ibDays.forEach(function(d, idx) { d.label = 'Day ' + (idx + 1); });
-        ibRenderDays();
-    };
-
-    window.ibDupDay = function(i) {
-        var copy = JSON.parse(JSON.stringify(ibDays[i]));
-        copy.label = 'Day ' + (ibDays.length + 1);
-        ibDays.splice(i + 1, 0, copy);
-        ibDays.forEach(function(d, idx) { d.label = 'Day ' + (idx + 1); });
-        ibRenderDays();
-    };
-
-    /* ── Costing ── */
-    window.ibAddCostItem = function() {
-        ibCostItems.push({ name: '', category: 'Accommodation', supplier: '', unitCost: 0, qty: ibDays.length || 1 });
-        ibRenderCosts();
-    };
-
-    window.ibRemoveCostItem = function(i) {
-        ibCostItems.splice(i, 1);
-        ibRenderCosts();
-    };
-
-    window.ibUpdateCostItem = function(i, field, value) {
-        if (ibCostItems[i]) {
-            ibCostItems[i][field] = (field === 'unitCost' || field === 'qty') ? parseFloat(value) || 0 : value;
-        }
-        ibRenderCosts();
-    };
-
-    function ibRenderCosts() {
-        var tbody = document.getElementById('ibCostBody');
-        if (!tbody) return;
-        if (ibCostItems.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" style="color:var(--warm-gray);text-align:center;padding:20px;">No cost items yet. Click "+ Add Cost Item" to begin.</td></tr>';
-            document.getElementById('ibCostTotal').textContent = '$0.00';
-            return;
-        }
-        tbody.innerHTML = ibCostItems.map(function(item, i) {
-            var total = (item.unitCost || 0) * (item.qty || 1);
-            return '<tr>' +
-                '<td><input class="cost-input" style="width:140px;" value="' + esc(item.name) + '" placeholder="Item name" onchange="ibUpdateCostItem(' + i + ',\'name\',this.value)"></td>' +
-                '<td><select class="cost-input" style="width:130px;" onchange="ibUpdateCostItem(' + i + ',\'category\',this.value)">' +
-                    '<option' + (item.category === 'Accommodation' ? ' selected' : '') + '>Accommodation</option>' +
-                    '<option' + (item.category === 'Transport' ? ' selected' : '') + '>Transport</option>' +
-                    '<option' + (item.category === 'Transfer Fee' ? ' selected' : '') + '>Transfer Fee</option>' +
-                    '<option' + (item.category === 'Guide' ? ' selected' : '') + '>Guide</option>' +
-                    '<option' + (item.category === 'Park Fees' ? ' selected' : '') + '>Park Fees</option>' +
-                    '<option' + (item.category === 'Meals' ? ' selected' : '') + '>Meals</option>' +
-                    '<option' + (item.category === 'Activities' ? ' selected' : '') + '>Activities</option>' +
-                    '<option' + (item.category === 'Insurance' ? ' selected' : '') + '>Insurance</option>' +
-                    '<option' + (item.category === 'Other' ? ' selected' : '') + '>Other</option>' +
-                '</select></td>' +
-                '<td><input class="cost-input" style="width:120px;" value="' + esc(item.supplier) + '" placeholder="Supplier" onchange="ibUpdateCostItem(' + i + ',\'supplier\',this.value)"></td>' +
-                '<td><input class="cost-input" type="number" value="' + item.unitCost + '" min="0" step="0.01" onchange="ibUpdateCostItem(' + i + ',\'unitCost\',this.value)"></td>' +
-                '<td><input class="cost-input" style="width:60px;" type="number" value="' + item.qty + '" min="1" onchange="ibUpdateCostItem(' + i + ',\'qty\',this.value)"></td>' +
-                '<td style="font-weight:600;">$' + total.toFixed(2) + '</td>' +
-                '<td><button class="cost-remove" onclick="ibRemoveCostItem(' + i + ')"><i data-lucide="x" style="width:14px;height:14px;"></i></button></td>' +
-            '</tr>';
-        }).join('');
-        ibCalcCosts();
-    }
-
-    window.ibCalcCosts = function() {
-        // Keep user-edited quantities — do not reset qty to day count
-        var totalCost = ibCostItems.reduce(function(sum, item) {
-            return sum + (item.unitCost || 0) * (item.qty || 1);
-        }, 0);
-
-        var margin = parseFloat((document.getElementById('ibMargin')||{}).value) || 0;
-        var tax = parseFloat((document.getElementById('ibTax')||{}).value) || 0;
-        var markup = totalCost * (margin / 100);
-        var subtotal = totalCost + markup;
-        var taxAmount = subtotal * (tax / 100);
-        var quoteTotal = subtotal + taxAmount;
-
-        var el;
-        if ((el=document.getElementById('ibCostTotal'))) el.textContent = '$' + totalCost.toFixed(2);
-        if ((el=document.getElementById('ibSummaryCost'))) el.textContent = '$' + totalCost.toFixed(2);
-        if ((el=document.getElementById('ibSummaryMarginPct'))) el.textContent = margin;
-        if ((el=document.getElementById('ibSummaryMarkup'))) el.textContent = '$' + markup.toFixed(2);
-        if ((el=document.getElementById('ibSummarySubtotal'))) el.textContent = '$' + subtotal.toFixed(2);
-        if ((el=document.getElementById('ibSummaryTaxPct'))) el.textContent = tax;
-        if ((el=document.getElementById('ibSummaryTax'))) el.textContent = '$' + taxAmount.toFixed(2);
-        if ((el=document.getElementById('ibSummaryTotal'))) el.textContent = '$' + quoteTotal.toFixed(2);
-        return { totalCost: totalCost, margin: margin, tax: tax, markup: markup, subtotal: subtotal, taxAmount: taxAmount, quoteTotal: quoteTotal };
-    };
-
-    /* ── Generate Quote ── */
-    window.ibGenerateQuote = function() {
-        var firstName = (document.getElementById('ibFirstName')||{}).value; firstName = (firstName||'').trim();
-        var lastName = (document.getElementById('ibLastName')||{}).value; lastName = (lastName||'').trim();
-        var tourTitle = (document.getElementById('ibTourTitle')||{}).value; tourTitle = (tourTitle||'').trim();
-        if (!firstName || !lastName) { showToast('Please enter client first and last name (Step 1).'); if (window.ibGoToStep) ibGoToStep(1); return; }
-        if (!tourTitle) { showToast('Please enter a tour title (Step 2).'); if (window.ibGoToStep) ibGoToStep(2); return; }
-        var totals = ibCalcCosts();
-        var clientName = firstName + ' ' + lastName;
-        var qid = 'QT-' + new Date().getFullYear() + '-' + String(Date.now()).slice(-4);
-        var days = (typeof ibDays !== 'undefined' && ibDays.length) ? ibDays.length : 1;
-        var quote = {
-          id: qid, client: clientName, trip: tourTitle, days: days,
-          amount: totals.quoteTotal, cost: totals.totalCost, margin: totals.margin, tax: totals.tax,
-          status: 'Draft', booked: false, created: new Date().toISOString().slice(0,10),
-          items: ibCostItems.map(function(it){ return { name: it.name, category: it.category, supplier: it.supplier, unitCost: it.unitCost, qty: it.qty, line: (it.unitCost||0)*(it.qty||1) }; }),
-          daysDetail: (typeof ibDays !== 'undefined') ? ibDays.map(function(d){ return { label: d.label, location: d.location||'', accommodation: d.accommodation||'', vehicle: d.vehicle||'', guide: d.guide||'' }; }) : []
-        };
-        // Save internal digital quote (full breakdown)
-        var store = opActivityGet();
-        store.quotes = store.quotes || [];
-        store.quotes.unshift(quote);
-        store.tasks = store.tasks || [];
-        store.tasks.unshift({ id: Date.now(), task: 'Review & send quote '+qid+' to '+clientName, related: qid, due: quote.created, assignee: 'Admin', status: 'Open' });
-        opActivitySave(store);
-        // Client-facing download (final price only — no cost breakdown)
-        downloadClientQuotePdf(quote);
-        showToast('Quote '+qid+' saved · client PDF downloaded');
-        if (window.renderQuotesPage) renderQuotesPage();
-        if (window.renderPartnerQuotes) renderPartnerQuotes();
-        if (window.renderTasksPage) renderTasksPage();
-    };
-
-    /* ── Supplier Modal — live partners only ── */
-    function buildLiveSuppliers() {
-        var all = [];
-        getLiveAccommodations().forEach(function(a) {
-            all.push({ name: a.name, type: 'Accommodation', location: a.location, subtype: a.type });
-        });
-        getLiveFleet().forEach(function(v) {
-            all.push({ name: v.plate || v.name, type: 'Safari Vehicle', subtype: v.type, seats: v.seats, location: v.base });
-        });
-        getLiveGuides().forEach(function(g) {
-            all.push({ name: g.name, type: 'Professional Guide', subtype: g.special, location: g.location });
-        });
-        return all;
-    }
-
-    window.ibFilterSuppliers = function() {
-        var query = (document.getElementById('supplierSearch').value || '').toLowerCase();
-        var grid = document.getElementById('supplierGrid');
-        var filtered = buildLiveSuppliers().filter(function(s) {
-            return s.name.toLowerCase().indexOf(query) !== -1 || s.type.toLowerCase().indexOf(query) !== -1;
-        });
-        grid.innerHTML = filtered.map(function(s) {
-            return '<div class="supplier-card" onclick="ibAddSupplierToDay(\'' + esc(s.name) + '\',\'' + esc(s.type) + '\')">' +
-                '<div class="supplier-card-name">' + esc(s.name) + '</div>' +
-                '<div class="supplier-card-type">' + esc(s.type) + (s.location ? ' · ' + esc(s.location) : '') + '</div>' +
-            '</div>';
-        }).join('') || '<div style="grid-column:1/-1;text-align:center;color:var(--warm-gray);padding:20px;">No partners listed yet.</div>';
-    };
-
-    window.openSupplierModal = function() {
-        ibFilterSuppliers();
-        openModal('supplierModal');
-    };
-    window.closeSupplierModal = function() {
-        closeModal('supplierModal');
-    };
-
-    window.ibAddSupplierToDay = function(name, type) {
-        var target = null;
-        for (var i = 0; i < ibDays.length; i++) {
-            if (type === 'Accommodation' && !ibDays[i].accommodation) { target = ibDays[i]; break; }
-            if (type === 'Safari Vehicle' && !ibDays[i].vehicle) { target = ibDays[i]; break; }
-            if (type === 'Professional Guide' && !ibDays[i].guide) { target = ibDays[i]; break; }
-        }
-        if (!target) target = ibDays[0];
-        if (type === 'Accommodation') target.accommodation = name;
-        else if (type === 'Safari Vehicle') target.vehicle = name;
-        else target.guide = name;
-        ibRenderDays();
-        closeSupplierModal();
-        showToast(name + ' added to ' + target.label);
-    };
-
-    // Add some default cost items for demo
-    ibCostItems = [
-        { name: 'Park Entry Fees', category: 'Park Fees', supplier: 'TANAPA', unitCost: 70, qty: 5 },
-        { name: 'Accommodation (Full Board)', category: 'Accommodation', supplier: 'Serengeti Heritage', unitCost: 350, qty: 5 },
-        { name: '4x4 Safari Vehicle', category: 'Transport', supplier: 'SafariLink Fleet', unitCost: 200, qty: 5 },
-        { name: 'Professional Guide', category: 'Guide', supplier: 'Joseph Mwangi', unitCost: 150, qty: 5 }
-    ];
+function init(){if(root)return;root=document.getElementById('ipHost').attachShadow({mode:'open'});
+ root.appendChild(document.getElementById('ipTpl').content.cloneNode(true));
+ $('pl').innerHTML=Object.keys(PL).map(n=>`<option value="${n}">`).join('');
+ var d=new Date();d.setDate(d.getDate()+1);$('sd').value=iso(d);lenCh();rows();refreshCat();
+ if(typeof slOnChange=='function')slOnChange(refreshCat)}
+window.IP={init:init,go:go,lenCh:lenCh,dateCh:dateCh,addDay:addDay,dup:dup,del:del,U:U,accPhoto:accPhoto,addPh:addPh,rp:rp,CA:CA,CD:CD,CU:CU,calc:calc,gen:gen};
+window.ibInitDates=function(){init();refreshCat()};
 })();
 
 
@@ -2742,6 +2404,13 @@ function opActivitySave(s){ try { localStorage.setItem('safarilink_op_activity',
 
 /** Client PDF-style HTML: final price only (no cost breakdown) */
 window.downloadClientQuotePdf = function(quote) {
+  var rich=null; try { rich = localStorage.getItem('safarilink_quote_html_'+quote.id); } catch(e){}
+  if (rich) {
+    var ra = document.createElement('a'); ra.href = URL.createObjectURL(new Blob([rich], { type: 'text/html' })); ra.download = quote.id + '_client_quote.html';
+    document.body.appendChild(ra); ra.click(); document.body.removeChild(ra);
+    var rw = window.open('', '_blank'); if (rw) { rw.document.write(rich); rw.document.close(); }
+    return;
+  }
   var html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+quote.id+' — '+quote.client+'</title>' +
     '<style>body{font-family:system-ui,sans-serif;max-width:640px;margin:40px auto;color:#2c2c2c;line-height:1.5}' +
     'h1{font-size:1.4rem;margin:0 0 8px}.muted{color:#a39e95;font-size:.85rem}' +
