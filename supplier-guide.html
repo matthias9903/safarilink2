@@ -214,12 +214,12 @@
 <body>
 
   <nav class="navbar">
-    <a href="index.html" class="brand">
-      <div class="brand-mark">S</div>
-      <span>SafariLink</span>
-    </a>
-    <a href="index.html" style="color:#ccc; font-size:14px; text-decoration:none;">Back to Portal</a>
-  </nav>
+<a class="brand" href="index.html">
+<div class="brand-mark" style="background:transparent !important;border:0;box-shadow:none;padding:0;overflow:hidden;width:36px;height:36px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;"><img src="safarilink-emblem-transparent.png" alt="SafariLink" style="width:100%;height:100%;object-fit:contain;display:block;filter:brightness(0) invert(1);"></div>
+<span>SafariLink</span>
+</a>
+
+<a class="sl-back" href="index.html" onclick="if(history.length&gt;1&amp;&amp;document.referrer){history.back();return false;}" style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border:1px solid rgba(255,255,255,.7);border-radius:8px;color:#fff;font-size:14px;font-weight:600;line-height:1.2;text-decoration:none;white-space:nowrap;">← Back</a></nav>
 
   <header class="hero">
     <h1>Supplier Guide</h1>
@@ -346,9 +346,242 @@
     </div>
   </div>
 
-  <footer style="background: var(--charcoal); color: #ccc; padding: 40px 6%; text-align: center; font-size: 13px;">
-    © 2026 SafariLink Tanzania B2B. Built for the industry, in Tanzania.
-  </footer>
+  <div id="site-footer"><template shadowrootmode="open"><style>*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}:host{display:block;font-size:16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;color:#2c2c2c}img{max-width:100%}h4{line-height:1.2}.site-footer {
+    background: linear-gradient(160deg, #0f3d26 0%, #1a5a3a 55%, #2d7a52 100%);
+    color: rgba(255,255,255,0.88);
+    font-family: inherit;
+    margin-top: 48px;
+    border-top: none;
+  }
+  .site-footer a {
+    color: rgba(255,255,255,0.78) !important;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .site-footer a:hover {
+    color: #ffffff !important;
+  }
+  .site-footer h4 {
+    color: #ffffff !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    margin-bottom: 16px !important;
+  }
+  .site-footer .footer-brand-name,
+  .site-footer span[style*="font-weight:800"] {
+    color: #ffffff !important;
+  }
+  .site-footer .footer-muted,
+  .site-footer [style*="color:#666"],
+  .site-footer [style*="color:#999"] {
+    color: rgba(255,255,255,0.65) !important;
+  }
+  .site-footer [style*="color:#ccc"] {
+    color: rgba(255,255,255,0.85) !important;
+  }
+  .site-footer [style*="background:rgba(255,255,255,0.06)"] {
+    background: rgba(255,255,255,0.1) !important;
+    border-color: rgba(255,255,255,0.18) !important;
+    color: #fff !important;
+  }
+  .site-footer a[style*="background:rgba(255,255,255,0.06)"]:hover,
+  .site-footer a[onmouseover] {
+    /* hover handled by inline may fight; reinforce */
+  }
+  .site-footer [style*="border-top: 1px solid rgba(255,255,255,0.08)"] {
+    border-top-color: rgba(255,255,255,0.15) !important;
+  }
+  .site-footer [style*="color:#666"] {
+    color: rgba(255,255,255,0.6) !important;
+  }
+  /* Social icons always readable */
+  .site-footer a[title] {
+    color: rgba(255,255,255,0.85) !important;
+  }
+  .site-footer a[title]:hover {
+    background: rgba(255,255,255,0.18) !important;
+    color: #fff !important;
+  }
+  @media (max-width: 900px) {
+    .site-footer > div:first-of-type {
+      grid-template-columns: 1fr 1fr !important;
+    }
+  }
+  @media (max-width: 600px) {
+    .site-footer > div:first-of-type {
+      grid-template-columns: 1fr !important;
+    }
+    .site-footer > div:nth-of-type(3) {
+      flex-direction: column !important;
+      gap: 8px !important;
+    }
+  }
+
+  /* Footer responsive */
+    @media (max-width: 900px) {
+      footer > div:first-of-type {
+        grid-template-columns: 1fr 1fr !important;
+      }
+    }
+    @media (max-width: 600px) {
+      footer > div:first-of-type {
+        grid-template-columns: 1fr !important;
+      }
+      footer > div:nth-of-type(3) {
+        flex-direction: column !important;
+        gap: 8px !important;
+      }
+    }
+  .site-footer{padding:48px 0 24px}</style><footer class="site-footer">
+
+    <!-- Main Footer Grid -->
+    <div style="
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 48px 24px 32px;
+      display: grid;
+      grid-template-columns: 1.4fr repeat(4, 1fr);
+      gap: 32px;
+    ">
+
+      <!-- Brand Column -->
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+<div style="width:40px;height:40px;border-radius:10px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.22);padding:5px;box-sizing:border-box;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);"><img src="safarilink-emblem-transparent.png" alt="SafariLink" style="width:100%;height:100%;object-fit:contain;display:block;"></div>
+          <span style="font-size:18px;font-weight:800;color:#fff;letter-spacing:-.3px;">SafariLink</span>
+        </div>
+        <p style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.7;max-width:280px;margin-bottom:16px;">
+          The operating network for Tanzania tourism. Connecting tour operators with verified suppliers.
+        </p>
+        <div style="display:flex;gap:8px;">
+          <a href="https://www.facebook.com/safari_linktz" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;color:#999;text-decoration:none;font-size:14px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.85)'" title="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+  <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.093 10.125 24v-8.438H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.514c-1.491 0-1.956.93-1.956 1.885v2.268h3.328l-.532 3.49h-2.796V24C19.612 23.093 24 18.1 24 12.073z"/>
+</svg></a>
+          <a href="https://www.instagram.com/safari_linktz" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;color:#999;text-decoration:none;font-size:14px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.85)'" title="Instagram"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="3" y="3" width="18" height="18" rx="5"/>
+  <circle cx="12" cy="12" r="4"/>
+  <circle cx="18" cy="6" r="1" fill="currentColor" stroke="none"/>
+</svg></a>
+          <a href="https://www.x.com/safari_linktz" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;color:#999;text-decoration:none;font-size:14px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.85)'" title="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+  <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.847h-7.406l-5.8-7.584-6.636 7.584H.477l8.6-9.83L0 1.153h7.594l5.243 6.932zm-1.291 19.49h2.039L6.486 3.245H4.298z"/>
+</svg></a>
+          <a href="https://www.youtube.com/@safari_linktz" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;color:#999;text-decoration:none;font-size:14px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.85)'" title="YouTube"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.5 12 3.5 12 3.5s-7.505 0-9.376.55A3.016 3.016 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136C4.495 20.5 12 20.5 12 20.5s7.505 0 9.376-.55a3.016 3.016 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.6 15.5v-7l6.3 3.5-6.3 3.5z"/>
+</svg></a>
+          <a href="https://www.tiktok.com/@safari_linktz" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;color:#999;text-decoration:none;font-size:14px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.85)'" title="TikTok"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+  <path d="M19.321 5.562a5.124 5.124 0 0 1-3.03-4.192V1h-3.839v13.532a2.896 2.896 0 1 1-2.893-2.896c.24 0 .475.03.699.085V7.81a6.75 6.75 0 1 0 6.033 6.722V7.61a8.92 8.92 0 0 0 5.215 1.68V5.45a5.05 5.05 0 0 1-2.185.112z"/>
+</svg></a>
+        </div>
+      </div>
+
+      <!-- Product Column -->
+      <div>
+        <h4 style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#fff;margin-bottom:16px;">Product</h4>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;">
+          <li><a href="how-it-works.html" style="color:#999;text-decoration:none;font-size:13px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">How It Works</a></li>
+          <li><a href="security.html" style="color:#999;text-decoration:none;font-size:13px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Security</a></li>
+          <li><a href="roadmap.html" style="color:#999;text-decoration:none;font-size:13px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Roadmap</a></li>
+        </ul>
+      </div>
+
+      <!-- Company Column -->
+      <div>
+        <h4 style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#fff;margin-bottom:16px;">Company</h4>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;">
+          <li><a href="about.html" style="color:#999;text-decoration:none;font-size:13px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">About SafariLink</a></li>
+          <li><a href="for-tour-operator.html" style="color:#999;text-decoration:none;font-size:13px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">For Tour Operators</a></li>
+          <li><a href="for-supplier.html" style="color:#999;text-decoration:none;font-size:13px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">For Suppliers</a></li>
+          <li><a href="blog.html" style="color:#999;text-decoration:none;font-size:13px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Blog</a></li>
+          <li><a href="contact.html" style="color:#999;text-decoration:none;font-size:13px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Contact</a></li>
+        </ul>
+      </div>
+
+      <!-- Resources Column -->
+      <div>
+        <h4 style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#fff;margin-bottom:16px;">Resources</h4>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;">
+          <li><a href="help-center.html" style="color:#999;text-decoration:none;font-size:13px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Help Center</a></li>
+          <li><a href="documentation.html" style="color:#999;text-decoration:none;font-size:13px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Documentation</a></li>
+          <li><a href="supplier-guide.html" style="color:#999;text-decoration:none;font-size:13px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Supplier Guide</a></li>
+          <li><a href="support.html" style="color:#999;text-decoration:none;font-size:13px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Support</a></li>
+        </ul>
+      </div>
+
+      <!-- Legal Column -->
+      <div>
+        <h4 style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#fff;margin-bottom:16px;">Legal</h4>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;">
+          <li><a href="privacy.html" style="color:#999;text-decoration:none;font-size:13px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Privacy Policy</a></li>
+          <li><a href="supplier-terms.html" style="color:#999;text-decoration:none;font-size:13px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Supplier Service</a></li>
+          <li><a href="operator-terms.html" style="color:#999;text-decoration:none;font-size:13px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Operator Terms</a></li>
+          <li><a href="cookie-policy.html" style="color:#999;text-decoration:none;font-size:13px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Cookie Policy</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Contact Bar -->
+    <div style="
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 28px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 32px;
+      align-items: flex-start;
+    ">
+      <!-- Email -->
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:15px;">&#9993;</div>
+        <div>
+          <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,0.55);margin-bottom:2px;">Email Us</div>
+          <a href="mailto:info@safarilink.co.tz" style="color:#ccc;text-decoration:none;font-size:13px;font-weight:500;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">info@safarilink.co.tz</a>
+        </div>
+      </div>
+      <!-- Phone -->
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:15px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/><title>Phone</title></svg>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,0.55);margin-bottom:2px;">Call Us</div>
+          <a href="tel:+255745325009" style="color:#ccc;text-decoration:none;font-size:13px;font-weight:500;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">+255 745 325 009</a>
+        </div>
+      </div>
+      <!-- Location -->
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:15px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,0.55);margin-bottom:2px;">Location</div>
+          <a href="https://maps.app.goo.gl/TYrhVk39EXZgphny7" style="font-size:13px;font-weight:500;color:#ccc;">Arusha, Tanzania</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div style="
+      border-top: 1px solid rgba(255,255,255,0.08);
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    ">
+      <div>
+        <span style="font-size:14px;font-weight:800;color:#fff;letter-spacing:-.3px;">SafariLink</span>
+        <span style="font-size:12px;color:rgba(255,255,255,0.65);margin-left:6px;">The operating network for Tanzania tourism.</span>
+      </div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.6);">
+        Built for Tanzania's tourism businesses. &nbsp;&middot;&nbsp; &copy; 2026 SafariLink Tanzania. All rights reserved.
+      </div>
+    </div>
+  </footer></template></div>
 
 </body>
 </html>
