@@ -3,728 +3,632 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Privacy Policy — SafariLink Tanzania B2B</title>
+<title>Support — SafariLink Tanzania</title>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <style>
-  :root{
-    --forest:#1a5a3a; --forest-dark:#12462a; --accent:#2d8c5f;
-    --khaki:#e8e5dd; --bg:#f8f7f4; --ink:#2c2c2c; --muted:#6f6a5e;
-    --line:#e8e5dd; --white:#fff; --radius-lg:16px; --radius-md:10px;
+  :root {
+    --forest-green: #1a5a3a;
+    --forest-green-light: #2d7a52;
+    --accent-green: #3fb983;
+    --warm-off-white: #f8f7f4;
+    --khaki: #e8e5dd;
+    --charcoal: #2c2c2c;
+    --warm-gray: #a39e95;
+    --border-light: #d4cfc6;
+    --critical: #dc2626;
+    --high: #f59e0b;
+    --normal: #0891b2;
+    --low: #6b7280;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
   }
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;font-size:15px;}
-  a{color:var(--forest);text-decoration:none;}
-  a:hover{text-decoration:underline;}
 
-  /* Top bar */
-  .topbar{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
-  .topbar-inner{max-width:860px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
-  .brand{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--forest);font-size:15px;}
-  .brand-mark{width:34px;height:34px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,#2d8c5f,#1a5a3a);display:flex;align-items:center;justify-content:center;color:#fff;}
-  .back-link{font-size:13px;font-weight:600;color:var(--forest);border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 16px;white-space:nowrap;}
-  .back-link:hover{background:var(--bg);text-decoration:none;}
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+    background: var(--warm-off-white);
+    color: var(--charcoal);
+    line-height: 1.6;
+  }
 
-  /* Hero */
-  .hero{background:linear-gradient(135deg,#123b26 0%,#1a5a3a 55%,#2d8c5f 100%);color:#fff;padding:56px 24px 44px;text-align:center;}
-  .hero small{display:inline-block;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#cfe5d8;margin-bottom:10px;border:1px solid rgba(255,255,255,.25);padding:5px 14px;border-radius:999px;background:rgba(255,255,255,.08);}
-  .hero h1{font-size:clamp(26px,4vw,40px);font-weight:800;letter-spacing:.3px;}
-  .hero p{color:#cfe5d8;font-size:14px;margin-top:10px;}
-  .hero p strong{color:#fff;font-weight:600;}
+  /* ── Topbar ── */
+  .sl-topbar {
+    position: sticky; top:0; z-index:100;
+    background: #fff; border-bottom: 1px solid var(--border-light);
+    padding: 0 24px;
+  }
+  .sl-topbar-inner {
+    max-width: 1200px; margin:0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px;
+  }
+  .sl-topbar-brand {
+    display: flex; align-items: center; gap: 8px;
+    font-weight: 800; font-size: 17px; color: var(--forest-green);
+    text-decoration: none;
+  }
+  .sl-topbar-brand-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: var(--forest-green);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 800; font-size: 14px;
+  }
 
-  /* Layout */
-  .wrap{max-width:860px;margin:0 auto;padding:40px 24px 80px;}
-  .intro{background:#fff;border:1px solid var(--line);border-radius:var(--radius-lg);padding:26px 28px;margin-bottom:34px;font-size:14.5px;color:#3d3d3d;line-height:1.8;}
-  .intro p{margin-bottom:10px;}
-  .intro p:last-child{margin-bottom:0;}
+  /* ── Hero ── */
+  .sl-hero {
+    background: linear-gradient(135deg, var(--forest-green) 0%, #0e4028 100%);
+    padding: 64px 24px 48px; text-align: center; color: #fff;
+  }
+  .sl-hero h1 { font-size: 36px; font-weight: 800; margin-bottom: 12px; }
+  .sl-hero p { font-size: 17px; color: rgba(255,255,255,0.8); max-width: 620px; margin: 0 auto; }
 
-  .toc{background:#fff;border:1px solid var(--line);border-radius:var(--radius-lg);padding:22px 24px;margin-bottom:34px;}
-  .toc h3{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
-  .toc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:6px;}
-  .toc-grid a{font-size:13px;color:var(--ink);padding:6px 10px;border-radius:6px;display:flex;gap:8px;align-items:baseline;}
-  .toc-grid a:hover{background:var(--bg);text-decoration:none;color:var(--forest);}
-  .toc-grid .num{font-weight:800;color:var(--forest);font-size:12px;min-width:22px;}
-  .toc-grid a.missing{color:#a89c80;cursor:default;}
-  .toc-grid a.missing .num{color:#a89c80;}
-  .toc-grid a.missing:hover{background:transparent;}
+  /* ── Back Link ── */
+  .sl-back { max-width: 900px; margin: 24px auto 0; padding: 0 24px; }
+  .sl-back a { color: var(--forest-green); font-size: 14px; text-decoration: none; font-weight: 600; }
+  .sl-back a:hover { text-decoration: underline; }
 
-  /* Sections */
-  .privacy-section{background:#fff;border:1px solid var(--line);border-radius:var(--radius-lg);padding:26px 28px;margin-bottom:16px;display:flex;gap:18px;}
-  .section-num{flex-shrink:0;width:44px;height:44px;border-radius:12px;background:var(--bg);border:1px solid var(--line);color:var(--forest);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;}
-  .section-body{flex:1;min-width:0;}
-  .section-body h2{font-size:17px;font-weight:800;margin-bottom:10px;letter-spacing:.2px;}
-  .section-body p{margin-bottom:10px;color:#3d3d3d;}
-  .section-body ul{margin:0 0 10px;padding-left:0;list-style:none;}
-  .section-body ul li{padding:5px 0 5px 26px;position:relative;color:#3d3d3d;font-size:14.5px;}
-  .section-body ul li::before{content:"";position:absolute;left:6px;top:13px;width:7px;height:7px;border-radius:50%;background:var(--accent);opacity:.55;}
+  /* ── Content ── */
+  .sl-content { max-width: 900px; margin: 0 auto 64px; padding: 0 24px; }
 
-  /* Placeholder */
-  .placeholder{background:#fffbeb;border:1px dashed #d8b45a;border-radius:10px;padding:12px 14px;font-size:13px;color:#8a6d1d;margin:8px 0 12px;}
-  .privacy-section.is-placeholder{background:#fffbeb;border-style:dashed;border-color:#d8b45a;}
-  .privacy-section.is-placeholder .section-num{background:#fff7dd;border-color:#d8b45a;color:#8a6d1d;}
+  /* ── Section Title ── */
+  .section-title {
+    font-size: 22px; font-weight: 800; color: var(--charcoal);
+    margin: 48px 0 20px;
+  }
+  .section-title:first-of-type { margin-top: 32px; }
 
-  /* Doc footer */
-  .doc-footer{margin-top:40px;background:var(--forest-dark);color:#cfe5d8;border-radius:var(--radius-lg);padding:28px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px;}
-  .doc-footer h4{color:#fff;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:10px;}
-  .doc-footer p,.doc-footer a{font-size:13.5px;line-height:1.8;color:#cfe5d8;}
-  .doc-footer a:hover{color:#fff;}
-  .copyright{border-top:1px solid rgba(255,255,255,.15);margin-top:26px;padding-top:16px;text-align:center;font-size:12.5px;color:rgba(255,255,255,.55);}
+  /* ── Support Options ── */
+  .options-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px; margin-bottom: 8px;
+  }
+  .option-card {
+    background: #fff; border: 1px solid var(--border-light);
+    border-radius: var(--radius-md); padding: 24px 20px;
+    text-align: center;
+  }
+  .option-card i { width: 32px; height: 32px; color: var(--forest-green); margin-bottom: 12px; }
+  .option-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .option-card p { font-size: 13px; color: var(--warm-gray); margin-bottom: 14px; }
+  .option-card a {
+    color: var(--forest-green); font-weight: 600; font-size: 13px;
+    text-decoration: none;
+  }
+  .option-card a:hover { text-decoration: underline; }
 
-  @media (max-width:640px){
-    .privacy-section{flex-direction:column;gap:10px;padding:20px;}
-    .section-num{width:38px;height:38px;}
-    .wrap{padding:24px 16px 60px;}
-    .hero{padding:40px 18px 32px;}
+  /* ── In-App Note ── */
+  .callout {
+    background: #fff; border: 1px solid var(--border-light);
+    border-radius: var(--radius-md); padding: 20px 24px;
+    margin-bottom: 8px; font-size: 14px;
+  }
+  .callout strong { color: var(--forest-green); }
+  .callout ul { margin: 10px 0 0 18px; color: var(--warm-gray); font-size: 13px; }
+
+  /* ── Categories Grid ── */
+  .cat-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .cat-card {
+    background: #fff; border: 1px solid var(--border-light);
+    border-radius: var(--radius-md); padding: 20px;
+  }
+  .cat-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+  .cat-card ul { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+  .cat-card li { font-size: 13px; color: var(--charcoal); padding: 4px 0; border-bottom: 1px solid var(--khaki); }
+  .cat-card li:last-child { border-bottom: none; }
+
+  /* ── Priority Badges ── */
+  .priority-list { display: flex; flex-direction: column; gap: 12px; }
+  .priority-item {
+    display: flex; align-items: flex-start; gap: 14px;
+    background: #fff; border: 1px solid var(--border-light);
+    border-radius: var(--radius-md); padding: 16px 20px;
+  }
+  .priority-dot {
+    width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; margin-top: 5px;
+  }
+  .priority-dot.critical { background: var(--critical); box-shadow: 0 0 0 4px rgba(220,38,38,0.15); }
+  .priority-dot.high { background: var(--high); box-shadow: 0 0 0 4px rgba(245,158,11,0.15); }
+  .priority-dot.normal { background: var(--normal); box-shadow: 0 0 0 4px rgba(8,145,178,0.15); }
+  .priority-dot.low { background: var(--low); box-shadow: 0 0 0 4px rgba(107,114,128,0.15); }
+  .priority-label { font-weight: 700; font-size: 14px; }
+  .priority-desc { font-size: 13px; color: var(--warm-gray); }
+
+  /* ── Process Steps ── */
+  .process-flow {
+    display: flex; flex-direction: column; gap: 0;
+    background: #fff; border: 1px solid var(--border-light);
+    border-radius: var(--radius-md); overflow: hidden;
+  }
+  .process-step {
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px 24px; border-bottom: 1px solid var(--khaki);
+  }
+  .process-step:last-child { border-bottom: none; }
+  .process-num {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--forest-green); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 14px; flex-shrink: 0;
+  }
+  .process-label { font-weight: 700; font-size: 14px; }
+  .process-arrow { color: var(--warm-gray); font-size: 20px; flex-shrink: 0; margin: 0 4px; }
+
+  /* ── Feature Requests ── */
+  .feature-box {
+    background: #fff; border: 1px solid var(--border-light);
+    border-radius: var(--radius-md); padding: 24px;
+  }
+  .feature-box ul { margin: 14px 0 0 18px; display: flex; flex-direction: column; gap: 6px; }
+  .feature-box li { font-size: 14px; }
+
+  /* ── Footer ── */
+  .sl-footer {
+    background: var(--charcoal); color: #999;
+    padding: 40px 24px; text-align: center; font-size: 13px;
+  }
+  .sl-footer a { color: #ccc; text-decoration: none; margin: 0 8px; }
+
+  @media (max-width: 600px) {
+    .options-grid { grid-template-columns: 1fr; }
+    .cat-grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
 <body>
 
-<header class="topbar">
-  <div class="topbar-inner">
-    <a class="brand" href="index.html">
-      <span class="brand-mark">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c4-4 8-7.5 8-12a8 8 0 1 0-16 0c0 4.5 4 8 8 12z"/><circle cx="12" cy="10" r="3"/></svg>
-      </span>
-      SafariLink Tanzania B2B
-    </a>
-    <a class="back-link" href="#" onclick="if(document.referrer){history.back();return false;}window.location.href='index.html';return false;">&larr; Back</a>
-  </div>
+  <header class="sl-topbar">
+<div class="sl-topbar-inner">
+<a class="sl-topbar-brand" href="index.html">
+<div class="sl-topbar-brand-icon" style="background:transparent !important;border:0;box-shadow:none;padding:0;overflow:hidden;width:36px;height:36px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;"><img src="safarilink-emblem-transparent.png" alt="SafariLink" style="width:100%;height:100%;object-fit:contain;display:block;"></div>
+<span>SafariLink</span>
+</a>
+<a class="sl-back" href="index.html" onclick="if(history.length&gt;1&amp;&amp;document.referrer){history.back();return false;}" style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border:1px solid currentColor;border-radius:8px;color:inherit;font-size:14px;font-weight:600;line-height:1.2;text-decoration:none;white-space:nowrap;">← Back</a></div>
 </header>
 
-<div class="hero">
-  <small>Legal</small>
-  <h1>Privacy Policy</h1>
-  <p><strong>Last Updated:</strong> [Insert Date]</p>
-</div>
-
-<main class="wrap">
-
-  <!-- ============ INTRO ============ -->
-  <div class="intro">
-    <p>This Privacy Policy explains how SafariLink Tanzania B2B ("SafariLink," "we," "our," or "us") collects, uses, stores and discloses personal information when you use the SafariLink platform, website and services (together, the "Platform") and when you otherwise interact with us.</p>
-    <p>SafariLink operates as a B2B travel-operating network that connects tour operators, accommodation, fleet providers and professional guides across Tanzania. The Platform processes information about businesses, their authorized users, and — to a limited extent — travellers whose information is submitted by operator accounts.</p>
-    <p>By using the Platform, you acknowledge that your information will be handled as described in this Privacy Policy.</p>
-  </div>
-
-  <!-- ============ TABLE OF CONTENTS ============ -->
-  <div class="toc">
-    <h3>Contents</h3>
-    <div class="toc-grid">
-      <a href="#s1"><span class="num">1</span>Who we Are</a>
-      <a href="#s2"><span class="num">2</span>Information We Collect</a>
-      <a href="#s3"><span class="num">3</span>Business and Supplier Information</a>
-      <a href="#s4"><span class="num">4</span>Traveller Information</a>
-      <a href="#s5"><span class="num">5</span>Payment Information</a>
-      <a href="#s6"><span class="num">6</span>Communication Information</a>
-      <a href="#s7"><span class="num">7</span>Technical Information</a>
-      <a href="#s8"><span class="num">8</span>Cookies and Similar Technologies</a>
-      <a href="#s9"><span class="num">9</span>How We Use Information</a>
-      <a href="#s10"><span class="num">10</span>Lragal Basis for Processing</a>
-      <a href="#s11"><span class="num">11</span>AI and Automated Processing</a>
-      <a href="#s12-26"><span class="num">12&ndash;26</span>Additional Provisions</a>
-      <a href="#s27"><span class="num">27</span>Privacy of STO Rataes and Commercial Data</a>
-      <a href="#s28"><span class="num">28</span>Data Accuracy</a>
-      <a href="#s29"><span class="num">29</span>Changes to this Privacy Policy</a>
-      <a href="#s30"><span class="num">30</span>Contacts</a>
-      <a href="#s31"><span class="num">31</span>Governing Law</a>
-    </div>
-  </div>
-
-  <!-- ============ 1. WHO WE ARE ============ -->
-  <section class="privacy-section" id="s1">
-    <div class="section-num">1</div>
-    <div class="section-body">
-    <h2>Who We Are</h2>
-      <p>SafariLink Tanzania B2B is a business-to-business tourism technology platform connecting tourism businesses and professionals within the Tanzanian tourism ecosystem.</p>
-      <p>Our Platform may facilitate interactions between:</p>
-    <ul>
-        <li>Tour Operators</li>
-        <li>Travel Agencies</li>
-        <li>Accommodation Providers</li>
-        <li>Fleet and Vehicle Providers</li>
-        <li>Professional Guides</li>
-        <li>Other Service providers; Activity, transfer providers etc.</li>
-      </ul>
-    </div>
-  </section>
-      
- <!-- ============ 2. INFORMATION WE COLLECT ============ -->
-  <section class="privacy-section" id="s2">
-    <div class="section-num">2</div>
-    <div class="section-body">
-    <h2>Information We Collect</h2>
-      <p>Depending on how you use SafariLink, we may collect the following categories of information.</p>
-      <p><strong>Account Information</strong></p>
-      <p>When creating an Account, we may collect:</p>
-    <ul>
-        <li>Full Name</li>
-        <li>Job Title</li>
-        <li>Business Name</li>
-        <li>Business Email</li>
-        <li>Telephone Number</li>
-        <li>Username</li>
-        <li>Password or Authentication Information</li>
-        <li>Company Adress</li>
-        <li>Country</li>
-        <li>Verification Documents</li>
-      </ul>
-    </div>
-  </section>
-  
-  <!-- ============ 3. BUSINESS AND SUPPLIER INFORMATION ============ -->
-  <section class="privacy-section" id="s3">
-    <div class="section-num">3</div>
-    <div class="section-body">
-    <h2>Business and Supplier Information</h2>
-      <p>Suppliers may provide information relating to their business, including:</p>
-    <ul>
-        <li>Property Name</li>
-        <li>Company Details</li>
-        <li>Contact Information</li>
-        <li>Accommodation Information</li>
-        <li>Room Types</li>
-        <li>Vehicle Information</li>
-        <li>Guide Profiles</li>
-        <li>Activity Information</li>
-        <li>Availability</li>
-        <li>Prices</li>
-       <li>STO Rates</li>
-        <li>Contacts</li>
-        <li>Liceses</li>
-        <li>Policies</li>
-        <li>Photographs</li>
-        <li>Documents</li>
-        <li>Other Operational Information</li>
-      </ul>
-    </div>
-  </section>
-  
-  <!-- ============ 4. TRAVELer INFORMATION  ============ -->
-  <section class="privacy-section" id="s4">
-    <div class="section-num">4</div>
-    <div class="section-body">
-    <h2>Traveler Information</h2>
-      <p>Operators may enter traveler information necessary to plan and operate trips.</p>
-      <p>This may include:</p>
-    <ul>
-        <li>Name</li>
-        <li>Job Title</li>
-        <li>Nationality</li>
-        <li>Age</li>
-        <li>Travel Dates</li>
-        <li>Accommodation Requirements</li>
-        <li>Dietary or Accessibility Requirement</li>
-        <li>Arrival and Departure Information</li>
-        <li>Emergency Contact Information</li>
-        <li>Other Informations Requred for the Provision of Tourism Services</li>
-      </ul>
-         <p>Operators are responsible for ensuring they have an appropriate legal basis and, where required, appropriate permission to provide traveler information to SafariLink.</p>
-         <p>Users should not submit unnecessary sensitive personal information.</p>
-    </div>
+  <section class="sl-hero">
+    <h1>Support</h1>
+    <p>When tourism operations cannot wait, neither should support. Our team helps tourism businesses use SafariLink effectively and resolve platform issues.</p>
   </section>
 
-  <!-- ============ 5. PAYMENT AND BILLING INFORMATION  ============ -->
-  <section class="privacy-section" id="s5">
-    <div class="section-num">5</div>
-    <div class="section-body">
-    <h2>Payment and Billing Information</h2>
-      <p>Where applicable, SafariLink may process:</p>
-    <ul>
-        <li>Billing Information</li>
-        <li>Invoices</li>
-        <li>Transaction References</li>
-        <li>Payment Status</li>
-        <li>Currency</li>
-        <li>Amounts</li>
-        <li>Limited Pyment Information Supplied by Payment Providers</li>
-      </ul>
-         <p>Where payments are processed through a third-party payment provider, the provider may independently process payment information under its own privacy policy.</p>
-         <p>SafariLink does not necessarily store full payment-card information.</p>
-    </div>
-  </section>
-  
-<!-- ============ 6. COMMUNICATION INFORMATION  ============ -->
-  <section class="privacy-section" id="s6">
-    <div class="section-num">6</div>
-    <div class="section-body">
-    <h2>Communication Information</h2>
-      <p>When users communicate through the Platform, we may process:</p>
-    <ul>
-        <li>Messagaes</li>
-        <li>Emails</li>
-        <li>Reservation Conversations</li>
-        <li>Attachments</li>
-        <li>Documents</li>
-        <li>Images</li>
-        <li>Booking References</li>
-      <li>Support Requests and other communications</li>
-      </ul>
-         <p>This information may be associated with the relevant Account, Supplier, Reservation, Trip, or transaction.</p>
-    </div>
-  </section>  
-  
- <!-- ============ 7. TECHNICAL INFORMATION  ============ -->
-  <section class="privacy-section" id="s7">
-    <div class="section-num">7</div>
-    <div class="section-body">
-    <h2>Technical Information</h2>
-      <p>When you use the Platform, we may automatically collect technical information such as:</p>
-    <ul>
-        <li>IP Address</li>
-        <li>Browser</li>
-        <li>Device Type</li>
-        <li>Operating System</li>
-        <li>Login Activity</li>
-        <li>Approximate location derived from technical information where permitted</li>
-        <li>Pages or features accessed</li>
-       <li>Timestamps</li>
-       <li>Referral Information</li>
-       <li>Session Information</li>
-       <li>Error Logs </li>
-       <li>Security information</li>
-      <li>Support Requests and other communications</li>
-      </ul>
-         <p>We use this information to operate, secure, troubleshoot, and improve the Platform.</p>
-    </div>
-  </section>
+  <div class="sl-content">
 
-   <!-- ============ 8. COOKIES AND SIMILAR TECHNOLOGIES  ============ -->
-  <section class="privacy-section" id="s8">
-    <div class="section-num">8</div>
-    <div class="section-body">
-    <h2>Cookies and Similar Technologies</h2>
-      <p>SafariLink may use cookies and similar technologies to:</p>
-    <ul>
-        <li>Keep Users Signed in</li>
-        <li>Remember Preferences</li>
-        <li>Mantain Security</li>
-        <li>Understand Platform Usage</li>
-        <li>Measure Performance</li>
-        <li>Improve User Experience</li>
-        <li>Support Analytics</li>
-      </ul>
-         <p>Where required by applicable law, SafariLink will obtain appropriate consent for non-essential cookies or similar technologies.</p>
-         <p>Users may control cookies through their browser settings, although disabling certain cookies may affect Platform functionality.</p>
-    </div>
-  </section>
-
-  <!-- ============ 9 HOW WE USE PERSONAL INFORMATION  ============ -->
-  <section class="privacy-section" id="s9">
-    <div class="section-num">9</div>
-    <div class="section-body">
-    <h2>How We Use Personal Information</h2>
-      <p>We may use personal information to:</p>
-    <ul>
-        <li>Create and Manage Accounts</li>
-        <li>Verify Businesses and Suppliers</li>
-        <li>Provide Platform Functionality</li>
-        <li>Connect Operators with Suppliers</li>
-        <li>Facilitate Availability Searches</li>
-        <li>Process Reservation Requests</li>
-        <li>Manage Itineraries</li>
-       <li>Generate Quotations</li>
-       <li>Manage Invoices and Payments</li>
-       <li>Communicate With Users</li>
-       <li>Provide Customer Support</li>
-       <li>Protect Platform Security</li>
-       <li>Detect Fraud and Abuse</li>
-        <li>Maintain Operational Records</li>
-       <li>Improve Platform Functionality</li>
-       <li>Analyze Platform Performance</li>
-       <li>Develop New Products and Features</li>
-       <li>Comply With Legal Obligations</li>
-       <li>Provide AI-assisted Functionality</li>
-       <li>Enforce Our Agreements and Policies</li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- ============ 10. LEGAL BASIS FOR PROCESSING  ============ -->
-  <section class="privacy-section" id="s10">
-    <div class="section-num">10</div>
-    <div class="section-body">
-    <h2>Legal Basis for Processing</h2>
-      <p>Where applicable, SafariLink may process personal information on one or more of the following grounds:</p>
-    <ul>
-        <li>Performance of a Contract</li>
-        <li>Step Taken at The Request of a User before Enering into a Contract</li>
-        <li>Compliance With Legal Obligations</li>
-        <li>Legitimate Business Interests</li>
-        <li>Consent</li>
-        <li>Protection of Rights and Security</li>
-        <li>Another Lawful Basis Recognized by Applicable Law</li>
-      </ul>
-         <p>Where processing relies on consent, you may withdraw consent where legally permitted.</p>
-         <p>Withdrawal of consent does not necessarily affect processing that occurred before withdrawal.</p>
-    </div>
-  </section>
-  
-  <!-- ============ 11. AI AND AUTOMATED PROCESSING  ============ -->
-  <section class="privacy-section" id="s11">
-    <div class="section-num">11</div>
-    <div class="section-body">
-    <h2>AI and Automated Processing</h2>
-      <p>SafariLink may use artificial intelligence and machine-learning technologies to provide features such as:</p>
-    <ul>
-        <li>Natural-Language Search</li>
-        <li>Itinerary Generation</li>
-        <li>Supplier Matching</li>
-        <li>Doucument Extraction</li>
-        <li>Reservation Assictance</li>
-        <li>Operational Recommendations</li>
-        <li>Analytic and Business Intelligence</li>
-      </ul>
-          <p>AI features may process information available within the Platform to provide the requested functionality.</p>
-          <p>SafariLink will implement appropriate controls designed to prevent AI systems from unnecessarily exposing confidential or personal information.</p>
-          <p>AI-generated results may contain errors and should be reviewed by authorized Users before material business decisions are made.</p>
-          <p>Where legally required, SafariLink will provide additional information or rights concerning automated decision-making.</p>
-    </div>
-  </section>
-
-  <!-- ============ 12. SHARING INFORMATIOn WITH SUPPLIERS ============ -->
-  <section class="privacy-section" id="s12">
-    <div class="section-num">12</div>
-    <div class="section-body">
-    <h2>Sharing Information With Suppliers</h2>
-      <p>When an Operator requests or confirms a Service, SafariLink may share information necessary for the Supplier to fulfill the request.</p>
-      <p>For example, this may include:</p>
-    <ul>
-        <li>Traveler Name</li>
-        <li>Number of Travelers</li>
-        <li>Dates</li>
-        <li>Accommodation Requirements</li>
-        <li>Arrival Information</li>
-        <li>Special Request</li>
-        <li>Reservation Details</li>
-        <li>Contact Information</li>
-        <li>Operational Information</li>
-      </ul>
-         <p>SafariLink aims to limit shared information to what is reasonably necessary for the relevant Service.</p>
-    </div>
-  </section>
-
-   <!-- ============ 13. SHARING INFORMATIOn WITH SERVICE PROVIDERS ============ -->
-  <section class="privacy-section" id="s13">
-    <div class="section-num">13</div>
-    <div class="section-body">
-    <h2>Sharing Information With Service Providers</h2>
-      <p>SafariLink may use third-party providers that support Platform operations, including:</p>
-    <ul>
-        <li>Cloud Hosting Providers</li>
-        <li>Payment Processors</li>
-        <li>Email Providers</li>
-        <li>Messaging Providers</li>
-        <li>Analytics Providers</li>
-        <li>Cybersecurity Providers</li>
-        <li>Authentication Providers</li>
-        <li>Mapping Providers</li>
-        <li>AI Technology Providers</li>
-        <li>Document-Processing Providers and Technical Support Provider</li>
-      </ul>
-         <p>These providers may process information on SafariLink's behalf or independently where legally appropriate.</p>
-          <p>SafariLink requires appropriate contractual, technical, or organizational safeguards where applicable.</p>
-    </div>
-  </section>
-
-  <!-- ============ 14. BUSINESS TRANSACTIONS ============ -->
-  <section class="privacy-section" id="s14">
-    <div class="section-num">14</div>
-    <div class="section-body">
-    <h2>Business Transactions</h2>
-      <p>If SafariLink is involved in a merger, acquisition, restructuring, financing, sale of assets, or similar transaction, personal information may be transferred as part of that transaction, subject to applicable legal requirements.</p>
-    </div>
-  </section>
-
-  <!-- ============ 15. LEGAL DISCLOSURES ============ -->
-  <section class="privacy-section" id="s15">
-    <div class="section-num">15</div>
-    <div class="section-body">
-    <h2>Legal Disclosures</h2>
-      <p>SafariLink may disclose information where reasonably necessary to:</p>
-    <ul>
-        <li>Comply With Applicable Law</li>
-        <li>Respond to Lawful Government Requests</li>
-        <li>Comply With Court Orders</li>
-        <li>Protect the Rights or Property of SafaariLink</li>
-        <li>Investigate Fraud or Security Incidents</li>
-        <li>Prevent Misuse of the Platform </li>
-        <li>Protect Users or Public From Serious Harm</li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- ============ 16. INTERNATIONAL DATA TRANSFERS============ -->
-  <section class="privacy-section" id="s16">
-    <div class="section-num">16</div>
-    <div class="section-body">
-    <h2>International Data Transfers</h2>
-      <p>Some Platform infrastructure and service providers may process information outside Tanzania.</p>
-      <p>Where personal information is transferred internationally, SafariLink will seek to implement safeguards required by applicable data-protection laws.</p>
-      <p>Such safeguards may include:</p>
-    <ul>
-        <li>Contractual Protections</li>
-        <li>Appropriate Security Measures</li>
-        <li>Approved Transfer Mechanisms Where Applicable</li>
-        <li>Other Legally Recognized Safeguards</li>
-      </ul>
-    </div>
-  </section>
-  
- <!-- ============ 17. DATA SECURITY============ -->
-  <section class="privacy-section" id="s17">
-    <div class="section-num">17</div>
-    <div class="section-body">
-    <h2>Data Security</h2>
-      <p>SafariLink uses reasonable technical and organizational measures designed to protect personal information against:</p>
-    <ul>
-        <li>Unauthorized  Access</li>
-        <li>Unauthorized Disclosure</li>
-        <li>Alteration</li>
-        <li>Loss</li>
-        <li>Destruction</li>
-        <li>Misuse</li>
-        <li>Other unlawful Processing</li></li>
-      </ul>
-    <p>Security measures may include:</p>
-      <ul>
-        <li>Access Controls</li>
-        <li>Authentication</li>
-        <li>Encryption Where Appropriate</li>
-        <li>Logging</li>
-        <li>Monitoring</li>
-        <li>Backups</li>
-        <li>Role-based Permissions</li>
-        <li>Security Procedures</li>
-      </ul>
-          <p>However, no internet-based system can be guaranteed to be completely secure.</p>
+    <!-- Support Options -->
+    <h2 class="section-title">Support Options</h2>
+    <div class="options-grid">
+      <div class="option-card">
+        <i data-lucide="help-circle"></i>
+        <h3>Help Centre</h3>
+        <p>Find answers to common questions.</p>
+        <a href="#">Browse Help Centre →</a>
       </div>
-  </section>
-  
- <!-- ============ 18.ROLE-BASED ACCESS============ -->
-  <section class="privacy-section" id="s18">
-    <div class="section-num">18</div>
-    <div class="section-body">
-    <h2>Role-based Access</h2>
-      <p>SafariLink may restrict information based on a user's role.</p>
-      <p>For Example</p>
-    <ul>
-        <li>Operators may access information relevant to their business</li>
-        <li>Suppliers may access their own listings and reservations</li>
-        <li>Authorized employees may access information required for their role</li>
-        <li>Private STO Rates may be restricted to eligible users</li>
-        <li>administrative personnel may have broader access where necessary to operate and secure the Platform</li>
-      </ul>
-       <p>Users must not attempt to access information beyond their authorized permissions.</p>
+      <div class="option-card">
+        <i data-lucide="book-open"></i>
+        <h3>Documentation</h3>
+        <p>Read detailed guides for using SafariLink.</p>
+        <a href="#">View Documentation →</a>
+      </div>
+      <div class="option-card">
+        <i data-lucide="mail"></i>
+        <h3>Contact Support</h3>
+        <p>For account, technical or operational issues.</p>
+        <a href="mailto:support@safarilink.co.tz">support@safarilink.co.tz</a>
+      </div>
+      <div class="option-card">
+        <i data-lucide="message-circle"></i>
+        <h3>In-App Support</h3>
+        <p>Contact support directly from your SafariLink dashboard.</p>
+      </div>
     </div>
-  </section>
 
-   <!-- ============ 19.DATA RETENTION============ -->
-  <section class="privacy-section" id="s19">
-    <div class="section-num">19</div>
-    <div class="section-body">
-    <h2>Data Retention</h2>
-      <p>SafariLink retains information only for as long as reasonably necessary for the purposes described in this Privacy Policy, including:</p>
-    <ul>
-        <li>Providing the Platform</li>
-        <li>Maintaining Business Records</li>
-        <li>Fulfilling Contractual Obligations</li>
-        <li>Resolving Disputes</li>
-        <li>Preventing Fraud</li>
-        <li>Complying with Legal Requirements</li>
-        <li>Maintaining Security</li>
-        <li>Legitimate Business Purposes</li>
-      </ul>
-       <p>Retention periods may vary depending on the type of information and applicable legal requirements.</p>
-       <p>When information is no longer required, SafariLink may securely delete, anonymize, or otherwise dispose of it where appropriate.</p>
-    </div>
-  </section>
-  
-  <!-- ============ 20.YOUR DATA PROTECTION RIGHTS============ -->
-  <section class="privacy-section" id="s20">
-    <div class="section-num">20</div>
-    <div class="section-body">
-    <h2>Your Data Protection Rights</h2>
-      <p>Subject to applicable law, individuals may have rights relating to their personal information, including the right to:</p>
-    <ul>
-        <li>Request Access to Personal Information</li>
-        <li>Request Correction of Inaccurate Information</li>
-        <li>Request Deletion Where Legally Available</li>
-        <li>Request Restriction of Certain Processing;</li>
-        <li>Object to Certain Processing</li>
-        <li>Withdraw Consent Where processing is based on consent</li>
-        <li>Request Information About How Personal Data is Processed</li>
-        <li>Lodge a Complaint With the Relevant Data-Protection Authority</li>
-      </ul>
-       <p>Requests may be subject to identity verification and applicable legal limitations.</p>
-    </div>
-  </section>
-
-   <!-- ============ 21.BUSINESS ACCOUNTS AND EMPLOYEE DATA ============ -->
-  <section class="privacy-section" id="s21">
-    <div class="section-num">21</div>
-    <div class="section-body">
-    <h2>Business Account and Employee Data</h2>
-      <p>Where an Account is created on behalf of a company, the company may be responsible for information entered by its employees or representatives.</p>
-      <p>Companies should ensure that their employees:</p>
+    <div class="callout">
+      <strong>In-App Support</strong> — requests can automatically include:
       <ul>
-        <li>Understand A Privacy Requirements;</li>
-        <li>Provide Accurate Information</li>
-        <li>Have Appropriate Authorization</li>
-        <li>Do Not Upload Unnecessary Sensitive Information</li>
-        <li>Use The Platform in Accordance With Company Policies</li>
+        <li>Company &nbsp;·&nbsp; User &nbsp;·&nbsp; Trip &nbsp;·&nbsp; Reservation</li>
+        <li>Booking reference &nbsp;·&nbsp; Error information &nbsp;·&nbsp; Timestamp</li>
       </ul>
+      <p style="margin-top:10px;font-size:13px;color:var(--warm-gray);">This helps the support team investigate faster.</p>
     </div>
-  </section>
-  
- <!-- ============ 22.CHILDREN INFORMATION============ -->
-  <section class="privacy-section" id="s22">
-    <div class="section-num">22</div>
-    <div class="section-body">
-    <h2>Children Information</h2>
-      <p>SafariLink is primarily a B2B platform and is not directed at children.</p>
-      <p>However, tourism Operators may process information relating to children as part of family travel arrangements.</p>
-      <p>Operators should provide only information reasonably necessary to arrange the relevant Service and should comply with applicable privacy and child-protection requirements.</p>
-      <p>SafariLink does not intentionally collect children's information directly for marketing purposes.</p>
-     </div>
-  </section> 
 
-   <!-- ============ 23.MARKETING COMMUNICATIONS============ -->
-  <section class="privacy-section" id="s23">
-    <div class="section-num">23</div>
-    <div class="section-body">
-    <h2>Marketing Communications</h2>
-      <p>Where permitted by law, SafariLink may send business-related communications including:</p>
-    <ul>
-        <li>Platform Updates</li>
-        <li>Product Announcement</li>
-        <li>Operational Notices</li>
-        <li>Educational Information</li>
-        <li>Newsletters</li>
-        <li>Supplier Opportunities</li>
-        <li>Promotional Communications</li>
-      </ul>
-       <p>Users may opt out of non-essential marketing communications through the unsubscribe mechanism provided or by contacting SafariLink.</p>
-       <p>Operational and transactional communications may continue where necessary.</p>
+    <!-- Support Categories -->
+    <h2 class="section-title">Support Categories</h2>
+    <p style="font-size:14px;color:var(--warm-gray);margin-bottom:20px;">Choose the issue that best describes your request.</p>
+    <div class="cat-grid">
+      <div class="cat-card">
+        <h3>Account &amp; Login</h3>
+        <ul>
+          <li>Cannot log in</li>
+          <li>Password reset</li>
+          <li>Account verification</li>
+          <li>User access</li>
+          <li>Permissions</li>
+        </ul>
+      </div>
+      <div class="cat-card">
+        <h3>Reservations</h3>
+        <ul>
+          <li>Reservation request</li>
+          <li>Supplier response</li>
+          <li>Confirmation issue</li>
+          <li>Cancellation</li>
+          <li>Booking modification</li>
+        </ul>
+      </div>
+      <div class="cat-card">
+        <h3>Supplier</h3>
+        <ul>
+          <li>Supplier information</li>
+          <li>Availability</li>
+          <li>STO rate</li>
+          <li>Supplier account</li>
+        </ul>
+      </div>
+      <div class="cat-card">
+        <h3>Itinerary</h3>
+        <ul>
+          <li>Itinerary issue</li>
+          <li>Costing problem</li>
+          <li>Quote problem</li>
+          <li>Trip modification</li>
+        </ul>
+      </div>
+      <div class="cat-card">
+        <h3>Payments</h3>
+        <ul>
+          <li>Invoice</li>
+          <li>Payment</li>
+          <li>Subscription</li>
+          <li>Transaction issue</li>
+        </ul>
+      </div>
+      <div class="cat-card">
+        <h3>Technical</h3>
+        <ul>
+          <li>Error</li>
+          <li>Slow performance</li>
+          <li>Page not loading</li>
+          <li>System issue</li>
+        </ul>
+      </div>
+      <div class="cat-card">
+        <h3>Security</h3>
+        <ul>
+          <li>Suspicious login</li>
+          <li>Unauthorised access</li>
+          <li>Security concern</li>
+          <li>Vulnerability report</li>
+        </ul>
+      </div>
     </div>
-  </section>
 
-  <!-- ============ 24.THIRD-PARTY WEBSITES============ -->
-  <section class="privacy-section" id="s24">
-    <div class="section-num">24</div>
-    <div class="section-body">
-    <h2>Third-parties Websites</h2>
-      <p>The Platform may contain links to third-party websites or services.</p>
-      <p>SafariLink is not responsible for the privacy practices of independent third parties.</p>
-      <p>Users should review the relevant third-party privacy policies before providing personal information.</p>
-     </div>
-  </section> 
-
-  <!-- ============ 25.SUPPLIER DATA RESPONSIBILITY============ -->
-  <section class="privacy-section" id="s25">
-    <div class="section-num">25</div>
-    <div class="section-body">
-    <h2>Supplier Data Responsibility</h2>
-      <p>Suppliers are responsible for personal information they independently collect from travelers and Users through their own businesses.</p>
-      <p>Where SafariLink processes personal information on behalf of a Supplier, the parties may enter into additional data-processing or commercial agreements where appropriate.</p>
-     </div>
-  </section> 
-
-   <!-- ============ 26.DATA BREACHES AND SECURITY INCIDENTS============ -->
-  <section class="privacy-section" id="s26">
-    <div class="section-num">26</div>
-    <div class="section-body">
-    <h2>Data Breaches and Security Incidents</h2>
-      <p>SafariLink maintains procedures designed to identify, investigate, contain, and respond to security incidents.</p>
-      <p>Where applicable law requires notification of a personal-data breach, SafariLink will make the required notifications within the applicable timeframe.</p>
-     </div>
-  </section> 
-  
-   <!-- ============ 27.PRIVACY OF STO RATES AND COMMERCIAL DATA============ -->
-  <section class="privacy-section" id="s27">
-    <div class="section-num">27</div>
-    <div class="section-body">
-    <h2>Privacy of STO Rates and Commercial Data</h2>
-      <p>STO Rates, negotiated prices, commissions, supplier contracts, and related commercial information may contain confidential business information.</p>
-      <p>SafariLink may use access controls and other measures to restrict access to such information.</p>
-      <p>Users must not attempt to obtain, copy, disclose, or redistribute private commercial information without authorization.</p>
-     </div>
-  </section> 
-  
-  <!-- ============ 28. DATA ACCURACY ============ -->
-  <section class="privacy-section" id="s28">
-    <div class="section-num">28</div>
-    <div class="section-body">
-      <h2>Data Accuracy</h2>
-      <p>SafariLink aims to maintain accurate information but relies partly on Users and Suppliers to provide and update information.</p>
-      <p>Users should notify SafariLink where information associated with their Account is inaccurate or outdated.</p>
+    <!-- Priority Levels -->
+    <h2 class="section-title">Priority Levels</h2>
+    <div class="priority-list">
+      <div class="priority-item">
+        <div class="priority-dot critical"></div>
+        <div>
+          <div class="priority-label">Critical</div>
+          <div class="priority-desc">A major operational issue preventing an active trip or essential platform function from operating.</div>
+        </div>
+      </div>
+      <div class="priority-item">
+        <div class="priority-dot high"></div>
+        <div>
+          <div class="priority-label">High</div>
+          <div class="priority-desc">A major feature is unavailable or significantly affecting business operations.</div>
+        </div>
+      </div>
+      <div class="priority-item">
+        <div class="priority-dot normal"></div>
+        <div>
+          <div class="priority-label">Normal</div>
+          <div class="priority-desc">A standard issue or question that does not prevent normal operations.</div>
+        </div>
+      </div>
+      <div class="priority-item">
+        <div class="priority-dot low"></div>
+        <div>
+          <div class="priority-label">Low</div>
+          <div class="priority-desc">General questions, suggestions and feature requests.</div>
+        </div>
+      </div>
     </div>
-  </section>
 
-  <!-- ============ 29. CHANGES TO THIS PRIVACY POLICY ============ -->
-  <section class="privacy-section" id="s29">
-    <div class="section-num">29</div>
-    <div class="section-body">
-      <h2>Changes to this Privacy Policy</h2>
-      <p>SafariLink may update this Privacy Policy from time to time to reflect:</p>
+    <!-- Support Process -->
+    <h2 class="section-title">Support Process</h2>
+    <div class="process-flow">
+      <div class="process-step">
+        <div class="process-num">1</div>
+        <div class="process-label">Submit Request</div>
+        <span class="process-arrow">↓</span>
+      </div>
+      <div class="process-step">
+        <div class="process-num">2</div>
+        <div class="process-label">Ticket Created</div>
+        <span class="process-arrow">↓</span>
+      </div>
+      <div class="process-step">
+        <div class="process-num">3</div>
+        <div class="process-label">Issue Categorised</div>
+        <span class="process-arrow">↓</span>
+      </div>
+      <div class="process-step">
+        <div class="process-num">4</div>
+        <div class="process-label">Support Investigation</div>
+        <span class="process-arrow">↓</span>
+      </div>
+      <div class="process-step">
+        <div class="process-num">5</div>
+        <div class="process-label">Resolution / Guidance</div>
+        <span class="process-arrow">↓</span>
+      </div>
+      <div class="process-step">
+        <div class="process-num">6</div>
+        <div class="process-label">User Confirmation</div>
+        <span class="process-arrow">↓</span>
+      </div>
+      <div class="process-step">
+        <div class="process-num">7</div>
+        <div class="process-label">Ticket Closed</div>
+      </div>
+    </div>
+
+    <!-- Feature Requests -->
+    <h2 class="section-title">Feature Requests</h2>
+    <div class="feature-box">
+      <p style="font-size:14px;">Have an idea that would make SafariLink better? Tell us:</p>
       <ul>
-        <li>Changes to the Platform</li>
-        <li>New Features</li>
-        <li>Changes in Technology</li>
-        <li>Legal or regulatory Requirements</li>
-        <li>Changes to Our Data-processing Practices</li>
+        <li><strong>What you want</strong> — describe the feature</li>
+        <li><strong>Why you need it</strong> — the problem it solves</li>
+        <li><strong>How you currently solve the problem</strong></li>
+        <li><strong>How often the problem occurs</strong></li>
+        <li><strong>Who on your team would use the feature</strong></li>
       </ul>
-       <p>The updated Privacy Policy will be published through the Platform with a revised “Last Updated” date.</p>
-       <p>Where legally required, SafariLink will provide additional notice or obtain consent.</p>
+      <p style="margin-top:16px;font-size:13px;color:var(--warm-gray);">Send feature requests to <a href="mailto:support@safarilink.co.tz" style="color:var(--forest-green);font-weight:600;">support@safarilink.co.tz</a></p>
     </div>
-  </section>
 
-  <!-- ============ 30. CONTACT AND DATA PROTECTION REQUESTS ============ -->
-  <section class="privacy-section" id="s30">
-    <div class="section-num">30</div>
-    <div class="section-body">
-      <h2>Contact and Data Protection Requests</h2>
-      <h2><strong>SafariLink Tanzania B2B</strong></h2>
-       <ul>
-        <li>Email:info@safarilink.co.tz</li> 
-        <li>Phone : +255745325009</li>
-        <li>Adress: Arusha - Tanzania</li>      
-      </ul>
-      <p>When submitting a privacy request, please provide enough information for SafariLink to identify your Account or the relevant information and verify your identity where necessary.</p>
-    </div>
-  </section>
-
-  <!-- ============ 31. GOVERNING LAW ============ -->
-  <section class="privacy-section" id="s31">
-    <div class="section-num">31</div>
-    <div class="section-body">
-      <h2>Governing Law</h2>
-      <p>This Privacy Policy shall be interpreted in accordance with applicable laws of the United Republic of Tanzania, subject to any mandatory data-protection rights or requirements that apply to the individual concerned.</p>
-    </div>
-  </section>
-
-  <!-- ============ PAGE FOOTER ============ -->
-  <div class="doc-footer">
-    <div>
-      <h4>SafariLink Tanzania B2B</h4>
-      <p>United Republic of Tanzania</p>
-    </div>
-    <div>
-      <h4>Contact</h4>
-      <p>Email: info@safarilink.co.tz<br>Website: www.safarilink.co.tz</p>
-    </div>
-    <div>
-      <h4>Legal</h4>
-      <a href="terms.html">Terms &amp; Conditions</a><br>
-      <a href="javascript:window.print()">Print / Save PDF</a><br>
-      <a href="index.html">Back to Dashboard</a>
-    </div>
   </div>
-  <p class="copyright">&copy; <span id="year"></span> SafariLink Tanzania B2B. All rights reserved.</p>
 
-</main>
+  <div id="site-footer"><template shadowrootmode="open"><style>*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}:host{display:block;font-size:16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;color:#2c2c2c}img{max-width:100%}h4{line-height:1.2}.site-footer {
+    background: linear-gradient(160deg, #0f3d26 0%, #1a5a3a 55%, #2d7a52 100%);
+    color: rgba(255,255,255,0.88);
+    font-family: inherit;
+    margin-top: 48px;
+    border-top: none;
+  }
+  .site-footer a {
+    color: rgba(255,255,255,0.78) !important;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .site-footer a:hover {
+    color: #ffffff !important;
+  }
+  .site-footer h4 {
+    color: #ffffff !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    margin-bottom: 16px !important;
+  }
+  .site-footer .footer-brand-name,
+  .site-footer span[style*="font-weight:800"] {
+    color: #ffffff !important;
+  }
+  .site-footer .footer-muted,
+  .site-footer [style*="color:#666"],
+  .site-footer [style*="color:#999"] {
+    color: rgba(255,255,255,0.65) !important;
+  }
+  .site-footer [style*="color:#ccc"] {
+    color: rgba(255,255,255,0.85) !important;
+  }
+  .site-footer [style*="background:rgba(255,255,255,0.06)"] {
+    background: rgba(255,255,255,0.1) !important;
+    border-color: rgba(255,255,255,0.18) !important;
+    color: #fff !important;
+  }
+  .site-footer a[style*="background:rgba(255,255,255,0.06)"]:hover,
+  .site-footer a[onmouseover] {
+    /* hover handled by inline may fight; reinforce */
+  }
+  .site-footer [style*="border-top: 1px solid rgba(255,255,255,0.08)"] {
+    border-top-color: rgba(255,255,255,0.15) !important;
+  }
+  .site-footer [style*="color:#666"] {
+    color: rgba(255,255,255,0.6) !important;
+  }
+  /* Social icons always readable */
+  .site-footer a[title] {
+    color: rgba(255,255,255,0.85) !important;
+  }
+  .site-footer a[title]:hover {
+    background: rgba(255,255,255,0.18) !important;
+    color: #fff !important;
+  }
+  @media (max-width: 900px) {
+    .site-footer > div:first-of-type {
+      grid-template-columns: 1fr 1fr !important;
+    }
+  }
+  @media (max-width: 600px) {
+    .site-footer > div:first-of-type {
+      grid-template-columns: 1fr !important;
+    }
+    .site-footer > div:nth-of-type(3) {
+      flex-direction: column !important;
+      gap: 8px !important;
+    }
+  }
 
-<script>
-  document.getElementById('year').textContent = new Date().getFullYear();
-</script>
+  /* Footer responsive */
+    @media (max-width: 900px) {
+      footer > div:first-of-type {
+        grid-template-columns: 1fr 1fr !important;
+      }
+    }
+    @media (max-width: 600px) {
+      footer > div:first-of-type {
+        grid-template-columns: 1fr !important;
+      }
+      footer > div:nth-of-type(3) {
+        flex-direction: column !important;
+        gap: 8px !important;
+      }
+    }
+  .site-footer{padding:48px 0 24px}</style><footer class="site-footer">
+
+    <!-- Main Footer Grid -->
+    <div style="
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 48px 24px 32px;
+      display: grid;
+      grid-template-columns: 1.4fr repeat(4, 1fr);
+      gap: 32px;
+    ">
+
+      <!-- Brand Column -->
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+<div style="width:40px;height:40px;border-radius:10px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.22);padding:5px;box-sizing:border-box;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);"><img src="safarilink-emblem-transparent.png" alt="SafariLink" style="width:100%;height:100%;object-fit:contain;display:block;"></div>
+          <span style="font-size:18px;font-weight:800;color:#fff;letter-spacing:-.3px;">SafariLink</span>
+        </div>
+        <p style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.7;max-width:280px;margin-bottom:16px;">
+          The operating network for Tanzania tourism. Connecting tour operators with verified suppliers.
+        </p>
+        <div style="display:flex;gap:8px;">
+          <a href="https://www.facebook.com/safari_linktz" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;color:#999;text-decoration:none;font-size:14px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.85)'" title="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+  <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.093 10.125 24v-8.438H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.514c-1.491 0-1.956.93-1.956 1.885v2.268h3.328l-.532 3.49h-2.796V24C19.612 23.093 24 18.1 24 12.073z"/>
+</svg></a>
+          <a href="https://www.instagram.com/safari_linktz" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;color:#999;text-decoration:none;font-size:14px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.85)'" title="Instagram"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="3" y="3" width="18" height="18" rx="5"/>
+  <circle cx="12" cy="12" r="4"/>
+  <circle cx="18" cy="6" r="1" fill="currentColor" stroke="none"/>
+</svg></a>
+          <a href="https://www.x.com/safari_linktz" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;color:#999;text-decoration:none;font-size:14px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.85)'" title="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+  <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.847h-7.406l-5.8-7.584-6.636 7.584H.477l8.6-9.83L0 1.153h7.594l5.243 6.932zm-1.291 19.49h2.039L6.486 3.245H4.298z"/>
+</svg></a>
+          <a href="https://www.youtube.com/@safari_linktz" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;color:#999;text-decoration:none;font-size:14px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.85)'" title="YouTube"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.5 12 3.5 12 3.5s-7.505 0-9.376.55A3.016 3.016 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136C4.495 20.5 12 20.5 12 20.5s7.505 0 9.376-.55a3.016 3.016 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.6 15.5v-7l6.3 3.5-6.3 3.5z"/>
+</svg></a>
+          <a href="https://www.tiktok.com/@safari_linktz" style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;color:#999;text-decoration:none;font-size:14px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.85)'" title="TikTok"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+  <path d="M19.321 5.562a5.124 5.124 0 0 1-3.03-4.192V1h-3.839v13.532a2.896 2.896 0 1 1-2.893-2.896c.24 0 .475.03.699.085V7.81a6.75 6.75 0 1 0 6.033 6.722V7.61a8.92 8.92 0 0 0 5.215 1.68V5.45a5.05 5.05 0 0 1-2.185.112z"/>
+</svg></a>
+        </div>
+      </div>
+
+      <!-- Product Column -->
+      <div>
+        <h4 style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#fff;margin-bottom:16px;">Product</h4>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;">
+          <li><a href="how-it-works.html" style="color:#999;text-decoration:none;font-size:13px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">How It Works</a></li>
+          <li><a href="security.html" style="color:#999;text-decoration:none;font-size:13px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Security</a></li>
+          <li><a href="roadmap.html" style="color:#999;text-decoration:none;font-size:13px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Roadmap</a></li>
+        </ul>
+      </div>
+
+      <!-- Company Column -->
+      <div>
+        <h4 style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#fff;margin-bottom:16px;">Company</h4>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;">
+          <li><a href="about.html" style="color:#999;text-decoration:none;font-size:13px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">About SafariLink</a></li>
+          <li><a href="for-tour-operator.html" style="color:#999;text-decoration:none;font-size:13px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">For Tour Operators</a></li>
+          <li><a href="for-supplier.html" style="color:#999;text-decoration:none;font-size:13px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">For Suppliers</a></li>
+          <li><a href="blog.html" style="color:#999;text-decoration:none;font-size:13px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Blog</a></li>
+          <li><a href="contact.html" style="color:#999;text-decoration:none;font-size:13px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Contact</a></li>
+        </ul>
+      </div>
+
+      <!-- Resources Column -->
+      <div>
+        <h4 style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#fff;margin-bottom:16px;">Resources</h4>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;">
+          <li><a href="help-center.html" style="color:#999;text-decoration:none;font-size:13px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Help Center</a></li>
+          <li><a href="documentation.html" style="color:#999;text-decoration:none;font-size:13px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Documentation</a></li>
+          <li><a href="supplier-guide.html" style="color:#999;text-decoration:none;font-size:13px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Supplier Guide</a></li>
+          <li><a href="support.html" style="color:#999;text-decoration:none;font-size:13px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Support</a></li>
+        </ul>
+      </div>
+
+      <!-- Legal Column -->
+      <div>
+        <h4 style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#fff;margin-bottom:16px;">Legal</h4>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;">
+          <li><a href="privacy.html" style="color:#999;text-decoration:none;font-size:13px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Privacy Policy</a></li>
+          <li><a href="supplier-terms.html" style="color:#999;text-decoration:none;font-size:13px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Supplier Service</a></li>
+          <li><a href="operator-terms.html" style="color:#999;text-decoration:none;font-size:13px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Operator Terms</a></li>
+          <li><a href="cookie-policy.html" style="color:#999;text-decoration:none;font-size:13px;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Cookie Policy</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Contact Bar -->
+    <div style="
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 28px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 32px;
+      align-items: flex-start;
+    ">
+      <!-- Email -->
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:15px;">&#9993;</div>
+        <div>
+          <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,0.55);margin-bottom:2px;">Email Us</div>
+          <a href="mailto:info@safarilink.co.tz" style="color:#ccc;text-decoration:none;font-size:13px;font-weight:500;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">info@safarilink.co.tz</a>
+        </div>
+      </div>
+      <!-- Phone -->
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:15px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/><title>Phone</title></svg>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,0.55);margin-bottom:2px;">Call Us</div>
+          <a href="tel:+255745325009" style="color:#ccc;text-decoration:none;font-size:13px;font-weight:500;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">+255 745 325 009</a>
+        </div>
+      </div>
+      <!-- Location -->
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:15px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,0.55);margin-bottom:2px;">Location</div>
+          <a href="https://maps.app.goo.gl/TYrhVk39EXZgphny7" style="font-size:13px;font-weight:500;color:#ccc;">Arusha, Tanzania</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div style="
+      border-top: 1px solid rgba(255,255,255,0.08);
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    ">
+      <div>
+        <span style="font-size:14px;font-weight:800;color:#fff;letter-spacing:-.3px;">SafariLink</span>
+        <span style="font-size:12px;color:rgba(255,255,255,0.65);margin-left:6px;">The operating network for Tanzania tourism.</span>
+      </div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.6);">
+        Built for Tanzania's tourism businesses. &nbsp;&middot;&nbsp; &copy; 2026 SafariLink Tanzania. All rights reserved.
+      </div>
+    </div>
+  </footer></template></div>
+
+  <script>lucide.createIcons();</script>
 </body>
 </html>
