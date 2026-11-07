@@ -1397,5 +1397,48 @@
   // Lucide icons
   if (window.lucide) lucide.createIcons();
 </script>
+<script id="sl-cookie-script">
+/* SafariLink cookie consent — shows once, remembers the choice (localStorage + first-party cookie).
+   Categories follow cookie-policy.html. Other scripts can listen: window.addEventListener('safarilink:consent', e => e.detail)
+   No floating button: the popup shows once per browser. To let visitors change their choice later, link to <a href="#cookie-settings">. */
+(function(){
+if(window.SafariLinkConsent)return;
+var KEY='safarilink_cookie_consent_v1',V=1;
+function read(){try{var c=JSON.parse(localStorage.getItem(KEY));return c&&c.v===V?c:null}catch(e){return null}}
+function save(c){c={v:V,necessary:true,functional:!!c.functional,analytics:!!c.analytics,marketing:!!c.marketing,ts:new Date().toISOString()};
+ try{localStorage.setItem(KEY,JSON.stringify(c))}catch(e){}
+ try{document.cookie='sl_consent='+(c.functional?'f':'')+(c.analytics?'a':'')+(c.marketing?'m':'')+'n; max-age=15552000; path=/; SameSite=Lax'}catch(e){}
+ window.dispatchEvent(new CustomEvent('safarilink:consent',{detail:c}));return c}
+var css='*{box-sizing:border-box;margin:0}:host{position:fixed;left:0;right:0;bottom:0;z-index:2147483000;pointer-events:none;font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;color:#2c2c2c}'
++'.w{display:flex;justify-content:center;padding:16px}.card{pointer-events:auto;width:100%;max-width:580px;background:#fff;border:1px solid #d4cfc6;border-radius:16px;box-shadow:0 12px 40px rgba(15,61,38,.22);padding:22px;animation:up .35s ease both}'
++'@keyframes up{from{opacity:0;transform:translateY(24px)}}@media(prefers-reduced-motion:reduce){.card{animation:none}}'
++'.h{display:flex;align-items:center;gap:12px;margin-bottom:10px}.ic{width:40px;height:40px;border-radius:10px;background:rgba(26,90,58,.1);color:#1a5a3a;display:grid;place-items:center;flex-shrink:0}'
++'h2{font-size:1.08rem;font-weight:700;color:#0f3d26}p{font-size:.88rem;line-height:1.6;color:#555}p a{color:#1a5a3a;font-weight:600}'
++'.pf{margin-top:14px;border-top:1px solid #eceae4}.r{display:flex;gap:14px;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #eceae4}.r b{display:block;font-size:.86rem}.r span{font-size:.78rem;color:#777;line-height:1.45}'
++'.sw{position:relative;width:42px;height:24px;flex-shrink:0}.sw input{position:absolute;inset:0;opacity:0;width:100%;height:100%;margin:0;cursor:pointer}.sw i{position:absolute;inset:0;background:#cfcac0;border-radius:24px;transition:.2s;pointer-events:none}'
++'.sw i:after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:.2s}.sw input:checked+i{background:#1a5a3a}.sw input:checked+i:after{transform:translateX(18px)}.sw input:disabled{cursor:not-allowed}.sw input:disabled+i{opacity:.55}.sw input:focus-visible+i{outline:2px solid #1a5a3a;outline-offset:2px}'
++'.b{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}button{font:inherit;font-size:.86rem;font-weight:600;border-radius:10px;padding:11px 16px;cursor:pointer;border:1.5px solid #1a5a3a;flex:1;min-width:130px}button:focus-visible{outline:2px solid #1a5a3a;outline-offset:2px}'
++'.pri{background:#1a5a3a;color:#fff}.pri:hover{background:#0f3d26}.sec{background:#fff;color:#1a5a3a}.sec:hover{background:#f1f5f2}.lnk{background:none;border-color:transparent;color:#555;text-decoration:underline;flex:0 0 100%;padding:4px;font-weight:500}'
++'@media(max-width:520px){.w{padding:10px}.card{padding:18px}button{flex:1 0 100%}}';
+var cookie='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/><path d="M8.5 8.5v.01M16 15.5v.01M12 12v.01M11 17v.01M7 14v.01"/></svg>';
+var host,root,open=false;
+function rows(c){return[['functional','Functional','Remember your preferences, language and settings.'],['analytics','Analytics & performance','Help us understand how the site is used so we can improve it.'],['marketing','Marketing','Measure campaigns and show relevant content. Off unless you allow it.']]
+ .map(function(r){return'<div class="r"><div><b>'+r[1]+'</b><span>'+r[2]+'</span></div><label class="sw"><input type="checkbox" data-k="'+r[0]+'"'+(c&&c[r[0]]?' checked':'')+' aria-label="'+r[1]+'"><i></i></label></div>'}).join('')}
+function mount(){host=document.createElement('div');host.id='sl-cookie-consent';document.body.appendChild(host);root=host.attachShadow({mode:'open'});root.innerHTML='<style>'+css+'</style><div id="m"></div>'}
+function hide(){open=false;root.getElementById('m').innerHTML=''}
+function show(prefs){var c=read();open=true;root.getElementById('m').innerHTML='<div class="w"><div class="card" role="dialog" aria-labelledby="t" aria-describedby="d"><div class="h"><div class="ic">'+cookie+'</div><h2 id="t">We value your privacy</h2></div>'
+ +'<p id="d">We use cookies and similar technologies to keep you signed in, remember your settings and understand how SafariLink is used. Necessary cookies are always on. You can accept all, reject everything optional, or choose. Read our <a href="cookie-policy.html">Cookie Policy</a>.</p>'
+ +'<div class="pf" id="pf" '+(prefs?'':'hidden')+'><div class="r"><div><b>Strictly necessary</b><span>Login, security and core platform features. Always on.</span></div><label class="sw"><input type="checkbox" checked disabled aria-label="Strictly necessary"><i></i></label></div>'+rows(c)+'</div>'
+ +'<div class="b"><button class="sec" id="rej">Reject non-essential</button><button class="pri" id="acc">Accept all</button><button class="lnk" id="cu">'+(prefs?'Save my choices':'Customize')+'</button></div></div></div>';
+ var q=function(s){return root.querySelector(s)};
+ q('#acc').onclick=function(){save({functional:1,analytics:1,marketing:1});hide()};
+ q('#rej').onclick=function(){save({});hide()};
+ q('#cu').onclick=function(){var pf=q('#pf');if(pf.hidden){pf.hidden=false;this.textContent='Save my choices'}else{var o={};[].forEach.call(root.querySelectorAll('input[data-k]'),function(i){o[i.dataset.k]=i.checked});save(o);hide()}}}
+function init(){mount();if(read())hide();else setTimeout(function(){show(false)},500)}
+window.SafariLinkConsent={get:read,open:function(){if(root)show(true)}};
+document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href="#cookie-settings"],[data-cookie-settings]');if(a){e.preventDefault();window.SafariLinkConsent.open()}});
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
 </body>
 </html>
