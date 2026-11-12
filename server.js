@@ -1,6 +1,7 @@
 /**
  * SafariLink — production backend
- * Deploy on Railway with a volume at /app/data
+ * Deploy on Render (or Railway). Use DB_PATH + persistent disk for SQLite.
+ * Sessions, login monitoring, lockout, team roles (Admin/Manager/Sales).
  */
 import express from 'express';
 import Database from 'better-sqlite3';
@@ -41,6 +42,11 @@ const EMAIL_USER = process.env.EMAIL_USER || '';
 const EMAIL_PASS = process.env.EMAIL_PASS || '';
 const EMAIL_FROM = process.env.EMAIL_FROM || EMAIL_USER || 'noreply@safarilink.app';
 const PUBLIC_URL = (process.env.PUBLIC_URL || '').replace(/\/$/, '');
+
+// Session / lockout tuning (override via Render env vars)
+const SESSION_MINUTES = 30;
+const MAX_LOGIN_FAILS = Math.max(3, Number(process.env.MAX_LOGIN_FAILS) || 5);
+const LOCKOUT_MINUTES = Math.max(5, Number(process.env.LOCKOUT_MINUTES) || 15);
 
 const ALLOWED_ROLES = new Set([
   'accommodation',
@@ -145,11 +151,43 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_requests_status ON access_requests(status);
   CREATE INDEX IF NOT EXISTS idx_requests_email ON access_requests(email);
   CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+
+  CREATE TABLE IF NOT EXISTS sessions (
+    id           TEXT PRIMARY KEY,
+    user_id      INTEGER NOT NULL,
+    email        TEXT NOT NULL,
+    role         TEXT NOT NULL,
+    team_role    TEXT NOT NULL DEFAULT 'Admin',
+    company_name TEXT,
+    contact_name TEXT,
+    ip           TEXT,
+    user_agent   TEXT,
+    expires_at   INTEGER NOT NULL,
+    created_at   TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS login_events (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    email      TEXT,
+    role       TEXT,
+    success    INTEGER NOT NULL,
+    reason     TEXT,
+    ip         TEXT,
+    user_agent TEXT,
+    created_at TEXT DEFAULT (datetime('now'))
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
+  CREATE INDEX IF NOT EXISTS idx_sessions_expires ON sessions(expires_at);
+  CREATE INDEX IF NOT EXISTS idx_login_events_email ON login_events(email);
+  CREATE INDEX IF NOT EXISTS idx_login_events_created ON login_events(created_at);
 `);
 
 try { db.exec(`ALTER TABLE access_requests ADD COLUMN documents_note TEXT DEFAULT ''`); } catch (_) {}
 try { db.exec(`ALTER TABLE access_requests ADD COLUMN documents_json TEXT DEFAULT '[]'`); } catch (_) {}
 try { db.exec(`ALTER TABLE users ADD COLUMN must_change_password INTEGER DEFAULT 0`); } catch (_) {}
+try { db.exec(`ALTER TABLE users ADD COLUMN team_role TEXT DEFAULT 'Admin'`); } catch (_) {}
 
 try {
   db.exec(`
@@ -188,12 +226,13 @@ function seedOwnerAccounts() {
   const roles = [...ALLOWED_ROLES];
   const hash = bcrypt.hashSync(OWNER_TEMP_PASSWORD, 12);
   const insert = db.prepare(`
-    INSERT INTO users (email, password_hash, role, company_name, contact_name, must_change_password, status)
-    VALUES (?, ?, ?, ?, ?, 0, 'active')
+    INSERT INTO users (email, password_hash, role, company_name, contact_name, must_change_password, status, team_role)
+    VALUES (?, ?, ?, ?, ?, 0, 'active', 'Admin')
     ON CONFLICT(email, role) DO UPDATE SET
       password_hash = excluded.password_hash,
       status = 'active',
-      must_change_password = 0
+      must_change_password = 0,
+      team_role = COALESCE(users.team_role, 'Admin')
   `);
   const tx = db.transaction(() => {
     for (const role of roles) {
@@ -213,6 +252,118 @@ function adminAuth(req, res, next) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
   next();
+}
+
+function clientIp(req) {
+  const xf = req.headers['x-forwarded-for'];
+  if (typeof xf === 'string' && xf.trim()) return xf.split(',')[0].trim();
+  return req.ip || req.socket?.remoteAddress || '';
+}
+
+function clientUa(req) {
+  return String(req.headers['user-agent'] || '').slice(0, 300);
+}
+
+function logLoginEvent({ email, role, success, reason, req }) {
+  try {
+    db.prepare(`
+      INSERT INTO login_events (email, role, success, reason, ip, user_agent)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).run(
+      email || '',
+      role || '',
+      success ? 1 : 0,
+      reason || '',
+      clientIp(req),
+      clientUa(req)
+    );
+  } catch (e) {
+    console.warn('login_events write failed:', e.message);
+  }
+}
+
+function countRecentFails(email) {
+  const row = db.prepare(`
+    SELECT COUNT(*) AS c FROM login_events
+    WHERE email = ? AND success = 0
+      AND created_at > datetime('now', ?)
+  `).get(email, `-${LOCKOUT_MINUTES} minutes`);
+  return row ? row.c : 0;
+}
+
+function createSession(user, req) {
+  const id = crypto.randomBytes(32).toString('hex');
+  const expiresAt = Date.now() + SESSION_MINUTES * 60 * 1000;
+  const teamRole = user.team_role || 'Admin';
+  db.prepare(`
+    INSERT INTO sessions
+      (id, user_id, email, role, team_role, company_name, contact_name, ip, user_agent, expires_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(
+    id,
+    user.id,
+    user.email,
+    user.role,
+    teamRole,
+    user.company_name || '',
+    user.contact_name || '',
+    clientIp(req),
+    clientUa(req),
+    expiresAt
+  );
+  return { token: id, expiresAt, teamRole };
+}
+
+function destroySession(token) {
+  if (!token) return;
+  try { db.prepare(`DELETE FROM sessions WHERE id = ?`).run(token); } catch (_) {}
+}
+
+function purgeExpiredSessions() {
+  try { db.prepare(`DELETE FROM sessions WHERE expires_at < ?`).run(Date.now()); } catch (_) {}
+}
+
+/** Bearer session required for partner APIs */
+function requireSession(req, res, next) {
+  const auth = (req.headers.authorization || '').trim();
+  const token = auth.startsWith('Bearer ') ? auth.slice(7).trim() : '';
+  if (!token) {
+    return res.status(401).json({ error: 'Session required. Please log in.' });
+  }
+  const row = db.prepare(`SELECT * FROM sessions WHERE id = ?`).get(token);
+  if (!row) {
+    return res.status(401).json({ error: 'Invalid session. Please log in again.' });
+  }
+  if (Number(row.expires_at) < Date.now()) {
+    destroySession(token);
+    return res.status(401).json({ error: 'Session expired. Please log in again.' });
+  }
+  req.session = row;
+  req.sessionToken = token;
+  req.user = {
+    id: row.user_id,
+    email: row.email,
+    role: row.role,
+    teamRole: row.team_role || 'Admin',
+    companyName: row.company_name,
+    contactName: row.contact_name
+  };
+  next();
+}
+
+/** Restrict by company team role: Admin | Manager | Sales */
+function requireTeamRole(...allowed) {
+  const set = new Set(allowed.map(String));
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Session required' });
+    }
+    const tr = req.user.teamRole || 'Admin';
+    if (!set.has(tr)) {
+      return res.status(403).json({ error: 'Not allowed for your team role' });
+    }
+    next();
+  };
 }
 
 function isValidEmail(email) {
@@ -357,7 +508,18 @@ app.post('/api/login', authLimiter, (req, res) => {
     return res.status(400).json({ error: 'Email and password required' });
   }
   if (!isValidEmail(email)) {
+    logLoginEvent({ email, role, success: false, reason: 'invalid_email', req });
     return res.status(401).json({ success: false, error: 'Invalid email or password' });
+  }
+
+  // Suspicious activity: too many recent failures
+  const fails = countRecentFails(email);
+  if (fails >= MAX_LOGIN_FAILS) {
+    logLoginEvent({ email, role, success: false, reason: 'locked_out', req });
+    return res.status(429).json({
+      success: false,
+      error: `Account temporarily locked after failed attempts. Try again in ${LOCKOUT_MINUTES} minutes.`
+    });
   }
 
   let user = null;
@@ -379,6 +541,7 @@ app.post('/api/login', authLimiter, (req, res) => {
     }
   }
   if (!user) {
+    logLoginEvent({ email, role, success: false, reason: 'invalid_credentials', req });
     return res.status(401).json({ success: false, error: 'Invalid email or password' });
   }
 
@@ -393,13 +556,61 @@ app.post('/api/login', authLimiter, (req, res) => {
     }
   }
 
+  // Ensure team_role exists
+  if (!user.team_role) {
+    try {
+      db.prepare(`UPDATE users SET team_role = 'Admin' WHERE id = ? AND (team_role IS NULL OR team_role = '')`).run(user.id);
+      user.team_role = 'Admin';
+    } catch (_) {
+      user.team_role = 'Admin';
+    }
+  }
+
+  purgeExpiredSessions();
+  const session = createSession(user, req);
+  logLoginEvent({ email: user.email, role: outRole, success: true, reason: 'ok', req });
+
   res.json({
     success: true,
+    token: session.token,
+    expiresAt: session.expiresAt,
     role: outRole,
+    teamRole: session.teamRole,
     companyName: user.company_name,
     contactName: user.contact_name,
-    mustChangePassword: !!user.must_change_password
+    email: user.email,
+    mustChangePassword: !!user.must_change_password,
+    sessionHours: SESSION_HOURS
   });
+});
+
+/** End session (partner logout) */
+app.post('/api/logout', (req, res) => {
+  const auth = (req.headers.authorization || '').trim();
+  const token = auth.startsWith('Bearer ') ? auth.slice(7).trim() : cleanStr(req.body?.token, 128);
+  destroySession(token);
+  res.json({ success: true });
+});
+
+/** Current session info — frontend can poll / gate pages */
+app.get('/api/session', requireSession, (req, res) => {
+  res.json({
+    success: true,
+    user: req.user,
+    expiresAt: req.session.expires_at
+  });
+});
+
+/** Platform admin: recent login attempts (monitoring) */
+app.get('/api/admin/login-events', adminAuth, (req, res) => {
+  const limit = Math.min(200, Math.max(1, Number(req.query.limit) || 50));
+  const rows = db.prepare(`
+    SELECT id, email, role, success, reason, ip, user_agent, created_at
+    FROM login_events
+    ORDER BY id DESC
+    LIMIT ?
+  `).all(limit);
+  res.json({ events: rows });
 });
 
 app.post('/api/change-password', authLimiter, (req, res) => {
@@ -421,7 +632,8 @@ app.post('/api/change-password', authLimiter, (req, res) => {
 
   const hash = bcrypt.hashSync(String(newPassword), 12);
   db.prepare(`UPDATE users SET password_hash = ?, must_change_password = 0 WHERE email = ?`).run(hash, email);
-  res.json({ success: true });
+  try { db.prepare(`DELETE FROM sessions WHERE email = ?`).run(email); } catch (_) {}
+  res.json({ success: true, message: 'Password updated. Please log in again.' });
 });
 
 app.post('/api/admin/login', authLimiter, (req, res) => {
@@ -578,9 +790,11 @@ app.use((err, _req, res, _next) => {
   res.status(500).json({ error: IS_PROD ? 'Server error' : err.message });
 });
 
-const server = app.listen(PORT, () => {
+purgeExpiredSessions();
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`SafariLink listening on :${PORT} (${IS_PROD ? 'production' : 'development'})`);
   console.log(`DB: ${dbPath}`);
+  console.log(`Sessions: ${SESSION_HOURS}h · lockout: ${MAX_LOGIN_FAILS} fails / ${LOCKOUT_MINUTES}m`);
 });
 
 function shutdown(signal) {
