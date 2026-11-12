@@ -392,6 +392,28 @@ function goToDashboard(role) {
   window.location.href = map[role] || 'dashboard-tour-operator.html';
 }
 
+function saveLoginSession(email, data) {
+  var user = {
+    email: data.email || email,
+    role: data.role,
+    teamRole: data.teamRole || 'Admin',
+    companyName: data.companyName || '',
+    contactName: data.contactName || ''
+  };
+  // Used by dashboard guards
+  try { sessionStorage.setItem('safariLinkUser', JSON.stringify(user)); } catch (e) {}
+  try { localStorage.setItem('safarilink_user', JSON.stringify(user)); } catch (e) {}
+  // Session token from server.js
+  if (data.token) {
+    try { sessionStorage.setItem('safariLinkToken', data.token); } catch (e) {}
+    try { localStorage.setItem('safariLinkToken', data.token); } catch (e) {}
+  }
+  if (data.expiresAt) {
+    try { sessionStorage.setItem('safariLinkExpiresAt', String(data.expiresAt)); } catch (e) {}
+    try { localStorage.setItem('safariLinkExpiresAt', String(data.expiresAt)); } catch (e) {}
+  }
+}
+
 function handleLogin(e) {
   e.preventDefault();
   var email = document.getElementById('email').value.trim();
@@ -401,7 +423,7 @@ function handleLogin(e) {
   if (!email || !password) {
     errorBox.classList.add('show');
     errorBox.querySelector('span').textContent = 'Please enter email and password.';
-    lucide.createIcons();
+    if (window.lucide) lucide.createIcons();
     return false;
   }
 
@@ -415,19 +437,14 @@ function handleLogin(e) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email: email, password: password, role: selectedRole })
   })
-  .then(function(res) {
-    return res.json().then(function(data) {
-      return { ok: res.ok, data: data };
+  .then(function (res) {
+    return res.json().then(function (data) {
+      return { ok: res.ok, status: res.status, data: data };
     });
   })
-  .then(function(result) {
-    if (result.ok && result.data.success) {
-      localStorage.setItem('safarilink_user', JSON.stringify({
-        email: email,
-        role: result.data.role,
-        companyName: result.data.companyName,
-        contactName: result.data.contactName || ''
-      }));
+  .then(function (result) {
+    if (result.ok && result.data && result.data.success) {
+      saveLoginSession(email, result.data);
 
       if (result.data.mustChangePassword) {
         var newPass = prompt('You must set a new password (min 8 characters):');
@@ -441,15 +458,13 @@ function handleLogin(e) {
               newPassword: newPass
             })
           })
-          .then(function(r) { return r.json(); })
-          .then(function(d) {
+          .then(function (r) { return r.json(); })
+          .then(function (d) {
             if (d.success) alert('Password changed. Use your new password next time.');
             else alert(d.error || 'Could not change password');
             goToDashboard(result.data.role);
           })
-          .catch(function() {
-            goToDashboard(result.data.role);
-          });
+          .catch(function () { goToDashboard(result.data.role); });
         } else {
           alert('Please change your password later from your dashboard.');
           goToDashboard(result.data.role);
@@ -459,19 +474,20 @@ function handleLogin(e) {
       }
     } else {
       errorBox.classList.add('show');
-      errorBox.querySelector('span').textContent =
-        (result.data && result.data.error) || 'Invalid email or password.';
+      var msg = (result.data && result.data.error) || 'Invalid email or password.';
+      if (result.status === 429) msg = (result.data && result.data.error) || 'Too many failed attempts. Try again later.';
+      errorBox.querySelector('span').textContent = msg;
       btn.innerHTML = '<i data-lucide="log-in"></i> Sign in to dashboard';
       btn.disabled = false;
-      lucide.createIcons();
+      if (window.lucide) lucide.createIcons();
     }
   })
-  .catch(function() {
+  .catch(function () {
     errorBox.classList.add('show');
     errorBox.querySelector('span').textContent = 'Server unreachable. Please try again later.';
     btn.innerHTML = '<i data-lucide="log-in"></i> Sign in to dashboard';
     btn.disabled = false;
-    lucide.createIcons();
+    if (window.lucide) lucide.createIcons();
   });
 
   return false;
