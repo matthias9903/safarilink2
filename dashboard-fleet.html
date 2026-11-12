@@ -290,9 +290,102 @@
   .sidebar-footer > div:first-child { color: var(--forest-green) !important; }
   .sidebar-footer > div:last-child { opacity: 0.75 !important; color: var(--forest-green) !important; }
 
-</style></head>
-<script>(function(){function ru(){try{var a=sessionStorage.getItem('safariLinkUser');if(a)return JSON.parse(a)}catch(e){}try{var b=localStorage.getItem('safarilink_user');if(b)return JSON.parse(b)}catch(e){}return null}var u=ru();if(!u){location.href='login.html';return}var map={'dashboard-fleet.html':['fleet','fleet-owner'],'dashboard-accommodation.html':['accommodation','accommodation-provider'],'dashboard-tour-operator.html':['tour-operator','service-offering'],'dashboard-guide.html':['guide']};var page=location.pathname.split('/').pop();if(map[page]&&map[page].indexOf(u.role)===-1)location.href='login.html';})();</script><body>
-<aside class="sidebar" id="sidebar"><div class="sidebar-brand"><div class="logo-icon"><img src="safarilink-emblem-transparent.png" alt="SafariLink" style="width:100%;height:100%;object-fit:contain;display:block;"></div><div class="logo-text">Safari<span>Link</span></div><button type="button" class="sidebar-collapse-btn" onclick="toggleCollapse()" title="Collapse / expand menu"><i data-lucide="chevrons-left" id="collapseIcon"></i></button></div>
+</style>
+</head>
+<script>
+(function () {
+  function readUser() {
+    try {
+      var a = sessionStorage.getItem('safariLinkUser');
+      if (a) return JSON.parse(a);
+    } catch (e) {}
+    try {
+      var b = localStorage.getItem('safarilink_user');
+      if (b) return JSON.parse(b);
+    } catch (e) {}
+    return null;
+  }
+
+  function readToken() {
+    try {
+      return sessionStorage.getItem('safariLinkToken') || localStorage.getItem('safariLinkToken') || '';
+    } catch (e) { return ''; }
+  }
+
+  function readExpires() {
+    try {
+      var v = sessionStorage.getItem('safariLinkExpiresAt') || localStorage.getItem('safariLinkExpiresAt');
+      return v ? Number(v) : 0;
+    } catch (e) { return 0; }
+  }
+
+  function clearAuth() {
+    try {
+      sessionStorage.removeItem('safariLinkUser');
+      sessionStorage.removeItem('safariLinkToken');
+      sessionStorage.removeItem('safariLinkExpiresAt');
+    } catch (e) {}
+    try {
+      localStorage.removeItem('safarilink_user');
+      localStorage.removeItem('safariLinkToken');
+      localStorage.removeItem('safariLinkExpiresAt');
+    } catch (e) {}
+  }
+
+  var u = readUser();
+  var token = readToken();
+  var exp = readExpires();
+
+  // Must be logged in
+  if (!u || !u.role) {
+    clearAuth();
+    location.href = 'login.html';
+    return;
+  }
+
+  // Session expired (from server expiresAt)
+  if (exp && Date.now() > exp) {
+    clearAuth();
+    location.href = 'login.html';
+    return;
+  }
+
+  // Prefer having a token (new server). If missing, still allow old sessions once,
+  // but you can harden later by requiring token always.
+  // if (!token) { clearAuth(); location.href = 'login.html'; return; }
+
+  var map = {
+    'dashboard-fleet.html': ['fleet', 'fleet-owner'],
+    'dashboard-accommodation.html': ['accommodation', 'accommodation-provider'],
+    'dashboard-tour-operator.html': ['tour-operator', 'service-offering'],
+    'dashboard-guide.html': ['guide']
+  };
+  var page = location.pathname.split('/').pop();
+  if (map[page] && map[page].indexOf(u.role) === -1) {
+    location.href = 'login.html';
+    return;
+  }
+
+  // Expose helpers for the rest of the page
+  window.__slAuth = {
+    user: u,
+    token: token,
+    teamRole: u.teamRole || 'Admin',
+    clear: clearAuth,
+    authHeaders: function () {
+      var h = { 'Content-Type': 'application/json' };
+      if (token) h['Authorization'] = 'Bearer ' + token;
+      return h;
+    }
+  };
+})();
+</script>
+<aside class="sidebar" id="sidebar">
+     <div class="sidebar-brand">
+          <div class="logo-icon"><img src="safarilink-emblem-transparent.png" alt="SafariLink" style="width:100%;height:100%;object-fit:contain;display:block;"></div>
+          <div class="logo-text">Safari<span>Link</span>
+          </div>
+          <button type="button" class="sidebar-collapse-btn" onclick="toggleCollapse()" title="Collapse / expand menu"><i data-lucide="chevrons-left" id="collapseIcon"></i></button></div>
 <nav class="sidebar-nav">
 <div class="sidebar-section">Main</div>
 <a class="sidebar-link active" data-p="dashboard" onclick="go('dashboard')"><i data-lucide="layout-dashboard"></i><span> Dashboard</span></a>
@@ -598,8 +691,45 @@ function toggleCollapse(){
   }
   if(window.lucide) lucide.createIcons();
 }
-function logout(){sessionStorage.removeItem('safariLinkUser');try{localStorage.removeItem('safarilink_user')}catch(e){}location.href='index.html'}
-var TITLES={
+function logout() {
+  var token = '';
+  try {
+    token = sessionStorage.getItem('safariLinkToken') || localStorage.getItem('safariLinkToken') || '';
+  } catch (e) {}
+
+  function done() {
+    try {
+      sessionStorage.removeItem('safariLinkUser');
+      sessionStorage.removeItem('safariLinkToken');
+      sessionStorage.removeItem('safariLinkExpiresAt');
+    } catch (e) {}
+    try {
+      localStorage.removeItem('safarilink_user');
+      localStorage.removeItem('safariLinkToken');
+      localStorage.removeItem('safariLinkExpiresAt');
+    } catch (e) {}
+    location.href = 'login.html';
+  }
+
+  if (!token) { done(); return; }
+
+  // Tell server to drop session (ignore network errors)
+  var apiBase = '';
+  try {
+    // same origin on Render; if you use API constant elsewhere, reuse it
+    apiBase = (typeof API !== 'undefined' ? API : '');
+  } catch (e) {}
+
+  fetch(apiBase + '/api/logout', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token
+    },
+    body: JSON.stringify({ token: token })
+  }).catch(function () {}).finally(done);
+}
+     var TITLES={
   dashboard:['Dashboard','On hire, availability, revenue and live operator activity'],
   bookings:['Charter Bookings','Operator hires — details, proforma, confirm and paid'],
   fleet:['My Fleet','Vehicles with features and photos — add units here'],
