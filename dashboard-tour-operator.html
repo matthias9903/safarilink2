@@ -526,33 +526,92 @@
 </style>
 </head>
 <script>
-  (function () {
-    function readUser() {
-      try {
-        var a = sessionStorage.getItem('safariLinkUser');
-        if (a) return JSON.parse(a);
-      } catch (e) {}
-      try {
-        var b = localStorage.getItem('safarilink_user');
-        if (b) return JSON.parse(b);
-      } catch (e) {}
-      return null;
-    }
-    var user = readUser();
-    if (!user) { window.location.href = 'login.html'; return; }
+(function () {
+  function readUser() {
+    try {
+      var a = sessionStorage.getItem('safariLinkUser');
+      if (a) return JSON.parse(a);
+    } catch (e) {}
+    try {
+      var b = localStorage.getItem('safarilink_user');
+      if (b) return JSON.parse(b);
+    } catch (e) {}
+    return null;
+  }
 
-    var rolePageMap = {
-      'dashboard-fleet.html': ['fleet', 'fleet-owner'],
-      'dashboard-accommodation.html': ['accommodation', 'accommodation-provider'],
-      'dashboard-tour-operator.html': ['tour-operator', 'service-offering'],
-      'dashboard-guide.html': ['guide']
-    };
-    var currentPage = window.location.pathname.split('/').pop();
-    var allowed = rolePageMap[currentPage];
-    if (allowed && allowed.indexOf(user.role) === -1) {
-      window.location.href = 'login.html';
+  function readToken() {
+    try {
+      return sessionStorage.getItem('safariLinkToken') || localStorage.getItem('safariLinkToken') || '';
+    } catch (e) { return ''; }
+  }
+
+  function readExpires() {
+    try {
+      var v = sessionStorage.getItem('safariLinkExpiresAt') || localStorage.getItem('safariLinkExpiresAt');
+      return v ? Number(v) : 0;
+    } catch (e) { return 0; }
+  }
+
+  function clearAuth() {
+    try {
+      sessionStorage.removeItem('safariLinkUser');
+      sessionStorage.removeItem('safariLinkToken');
+      sessionStorage.removeItem('safariLinkExpiresAt');
+    } catch (e) {}
+    try {
+      localStorage.removeItem('safarilink_user');
+      localStorage.removeItem('safariLinkToken');
+      localStorage.removeItem('safariLinkExpiresAt');
+    } catch (e) {}
+  }
+
+  var u = readUser();
+  var token = readToken();
+  var exp = readExpires();
+
+  // Must be logged in
+  if (!u || !u.role) {
+    clearAuth();
+    location.href = 'login.html';
+    return;
+  }
+
+  // Session expired (from server expiresAt)
+  if (exp && Date.now() > exp) {
+    clearAuth();
+    location.href = 'login.html';
+    return;
+  }
+
+  // Prefer having a token (new server). If missing, still allow old sessions once,
+  // but you can harden later by requiring token always.
+  // if (!token) { clearAuth(); location.href = 'login.html'; return; }
+
+  var map = {
+    'dashboard-fleet.html': ['fleet', 'fleet-owner'],
+    'dashboard-accommodation.html': ['accommodation', 'accommodation-provider'],
+    'dashboard-tour-operator.html': ['tour-operator', 'service-offering'],
+    'dashboard-guide.html': ['guide']
+  };
+  var page = location.pathname.split('/').pop();
+  if (map[page] && map[page].indexOf(u.role) === -1) {
+    location.href = 'login.html';
+    return;
+  }
+
+  // Expose helpers for the rest of the page
+  window.__slAuth = {
+    user: u,
+    token: token,
+    teamRole: u.teamRole || 'Admin',
+    clear: clearAuth,
+    authHeaders: function () {
+      var h = { 'Content-Type': 'application/json' };
+      if (token) h['Authorization'] = 'Bearer ' + token;
+      return h;
     }
-  })();
+  };
+})();
 </script>
 
 <body>
