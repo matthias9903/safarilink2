@@ -1856,5 +1856,29 @@ function refresh(){renderDash();renderRes();renderProps();renderRooms();renderRa
 document.getElementById('memF')&&document.querySelector('[onclick*=memF]')&&null;
 slEnsure();checkReminders();loadPaymentProfile();refresh();slOnChange(refresh);
 
+ (function applyTeamRoleMenus() {
+  var role = 'Admin';
+  try {
+    if (window.__slAuth && window.__slAuth.teamRole) role = window.__slAuth.teamRole;
+    else {
+      var u = JSON.parse(sessionStorage.getItem('safariLinkUser') || localStorage.getItem('safarilink_user') || '{}');
+      role = u.teamRole || 'Admin';
+    }
+  } catch (e) {}
+
+  // data-min-role="Admin" → only Admin
+  // data-min-role="Manager" → Admin or Manager
+  document.querySelectorAll('[data-min-role]').forEach(function (el) {
+    var need = el.getAttribute('data-min-role');
+    var ok = false;
+    if (need === 'Admin') ok = (role === 'Admin');
+    else if (need === 'Manager') ok = (role === 'Admin' || role === 'Manager');
+    else if (need === 'Sales') ok = true;
+    else ok = (role === 'Admin');
+    if (!ok) el.style.display = 'none';
+  });
+})();
+     
 lucide.createIcons();
-</script></body></html>
+</script>
+</body></html>
