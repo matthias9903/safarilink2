@@ -1063,7 +1063,32 @@ function saveGuideAccount(){
 }
 
 function refresh(){ensureWelcomeMsg();renderDash();renderSchedule();renderRequests();renderServices();fillProfile();fillPricing();fillRegions();fillLang();renderCerts();renderReviews();renderMessages();renderEarnings();renderCal();renderGuideQuotes();if(document.getElementById("page-account")&&document.getElementById("page-account").classList.contains("active")){loadPaymentProfile();loadGuideAccount();}}
-slEnsure();ensureWelcomeMsg();loadGuideAccount();loadPaymentProfile();refresh();slOnChange(refresh);lucide.createIcons();
+
+     // ===== TEAM ROLE MENUS (paste here) ===== //   
+    (function applyTeamRoleMenus() {
+  var role = 'Admin';
+  try {
+    if (window.__slAuth && window.__slAuth.teamRole) role = window.__slAuth.teamRole;
+    else {
+      var u = JSON.parse(sessionStorage.getItem('safariLinkUser') || localStorage.getItem('safarilink_user') || '{}');
+      role = u.teamRole || 'Admin';
+    }
+  } catch (e) {}
+
+  // data-min-role="Admin" → only Admin
+  // data-min-role="Manager" → Admin or Manager
+  document.querySelectorAll('[data-min-role]').forEach(function (el) {
+    var need = el.getAttribute('data-min-role');
+    var ok = false;
+    if (need === 'Admin') ok = (role === 'Admin');
+    else if (need === 'Manager') ok = (role === 'Admin' || role === 'Manager');
+    else if (need === 'Sales') ok = true;
+    else ok = (role === 'Admin');
+    if (!ok) el.style.display = 'none';
+  });
+})();
+     // ===== END TEAM ROLE MENUS =====
+     slEnsure();ensureWelcomeMsg();loadGuideAccount();loadPaymentProfile();refresh();slOnChange(refresh);lucide.createIcons();
 </script>
      <div class="modal-bg" id="modal" onclick="if(event.target===this)this.classList.remove('show')"><div class="modal"><div id="modalBody"></div></div></div>
 </body>
