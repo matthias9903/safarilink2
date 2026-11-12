@@ -682,8 +682,7 @@
             </div>
             <div class="nav-section">
                 <div class="nav-section-title">Settings</div>
-                <div class="nav-item" onclick="switchPage('accounts')">
-                    <i data-lucide="users-round"></i> <span>Accounts</span>
+<div class="nav-item" data-min-role="Admin" onclick="switchPage('accounts')">                    <i data-lucide="users-round"></i> <span>Accounts</span>
                 </div>
             </div>
         </nav>
@@ -1694,10 +1693,35 @@ window.switchPage = function(pageName) {
 
 /* ── Sidebar Toggle (Mobile) ── */
 window.operatorLogout = function() {
-  try { sessionStorage.removeItem('safariLinkUser'); } catch (e) {}
-  try { localStorage.removeItem('safarilink_user'); } catch (e) {}
-  try { sessionStorage.clear(); } catch (e) {}
-  window.location.href = 'login.html';
+  var token = '';
+  try {
+    token = sessionStorage.getItem('safariLinkToken') || localStorage.getItem('safariLinkToken') || '';
+  } catch (e) {}
+
+  function done() {
+    try {
+      sessionStorage.removeItem('safariLinkUser');
+      sessionStorage.removeItem('safariLinkToken');
+      sessionStorage.removeItem('safariLinkExpiresAt');
+    } catch (e) {}
+    try {
+      localStorage.removeItem('safarilink_user');
+      localStorage.removeItem('safariLinkToken');
+      localStorage.removeItem('safariLinkExpiresAt');
+    } catch (e) {}
+    window.location.href = 'login.html';
+  }
+
+  if (!token) { done(); return; }
+
+  fetch('/api/logout', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token
+    },
+    body: JSON.stringify({ token: token })
+  }).catch(function () {}).finally(done);
 };
 window.toggleSidebar = function() {
     document.getElementById('sidebar').classList.toggle('open');
@@ -3119,7 +3143,32 @@ window.updateOpBadges = function(){
 document.addEventListener('DOMContentLoaded', function() {
     // Render lucide icons
     if (window.lucide) { lucide.createIcons(); }
+  
+ // ===== TEAM ROLE MENUS (paste here) ===== //   
+    (function applyTeamRoleMenus() {
+  var role = 'Admin';
+  try {
+    if (window.__slAuth && window.__slAuth.teamRole) role = window.__slAuth.teamRole;
+    else {
+      var u = JSON.parse(sessionStorage.getItem('safariLinkUser') || localStorage.getItem('safarilink_user') || '{}');
+      role = u.teamRole || 'Admin';
+    }
+  } catch (e) {}
 
+  // data-min-role="Admin" → only Admin
+  // data-min-role="Manager" → Admin or Manager
+  document.querySelectorAll('[data-min-role]').forEach(function (el) {
+    var need = el.getAttribute('data-min-role');
+    var ok = false;
+    if (need === 'Admin') ok = (role === 'Admin');
+    else if (need === 'Manager') ok = (role === 'Admin' || role === 'Manager');
+    else if (need === 'Sales') ok = true;
+    else ok = (role === 'Admin');
+    if (!ok) el.style.display = 'none';
+  });
+})();
+     // ===== END TEAM ROLE MENUS =====
+  
     // Init image placeholders
     initImagePlaceholders();
 
