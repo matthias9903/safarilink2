@@ -580,7 +580,7 @@ app.post('/api/login', authLimiter, (req, res) => {
     contactName: user.contact_name,
     email: user.email,
     mustChangePassword: !!user.must_change_password,
-    sessionHours: SESSION_HOURS
+    sessionMinutes: SESSION_MINUTES
   });
 });
 
@@ -794,7 +794,7 @@ purgeExpiredSessions();
 const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`SafariLink listening on :${PORT} (${IS_PROD ? 'production' : 'development'})`);
   console.log(`DB: ${dbPath}`);
-  console.log(`Sessions: ${SESSION_HOURS}h · lockout: ${MAX_LOGIN_FAILS} fails / ${LOCKOUT_MINUTES}m`);
+  console.log(`Sessions: ${SESSION_MINUTES}m · lockout: ${MAX_LOGIN_FAILS} fails / ${LOCKOUT_MINUTES}m`);
 });
 
 function shutdown(signal) {
