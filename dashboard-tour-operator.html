@@ -523,6 +523,27 @@
     color: var(--forest-green) !important;
   }
 
+  /* ── Date filter + availability calendars (tour operator) ── */
+  .dp-btn{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border:1px solid var(--border);border-radius:6px;background:#fff;font:inherit;font-size:.85rem;cursor:pointer;color:var(--charcoal);white-space:nowrap}
+  .dp-btn:hover{border-color:var(--primary)}.dp-btn.on{border-color:var(--primary);background:rgba(26,90,58,.07);color:var(--primary);font-weight:600}
+  .dp-x{margin-left:2px;opacity:.7;font-weight:700;padding:0 2px}.dp-x:hover{opacity:1}
+  .dp-note{font-size:.78rem;color:var(--warm-gray);align-self:center}
+  #dpPop{position:absolute;z-index:4000;display:none;width:320px;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.2);padding:14px}
+  .dp-h,.av-nav{display:flex;align-items:center;gap:8px;margin-bottom:10px}.dp-h{justify-content:space-between;font-weight:700}
+  .dp-h button,.av-nav button{border:1px solid var(--border);background:#fff;border-radius:6px;width:30px;height:30px;cursor:pointer;font-size:1.1rem;line-height:1}
+  .dp-g,.av-g{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+  .dp-g .hd,.av-g .hd{font-size:.68rem;color:var(--warm-gray);text-align:center;font-weight:600;padding:2px 0}
+  .dp-d,.av-d{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;font-size:.8rem;border:1px solid transparent;user-select:none}
+  .dp-d{cursor:pointer;background:#f4f2ec}.dp-d:hover{border-color:var(--primary)}.dp-d.off{opacity:.3;cursor:not-allowed;background:transparent}.dp-d.off:hover{border-color:transparent}
+  .dp-d.in{background:rgba(26,90,58,.16);color:var(--primary)}.dp-d.end{background:var(--primary);color:#fff;font-weight:700}.dp-d.today{border-color:var(--primary)}
+  .dp-info{font-size:.8rem;color:var(--charcoal);margin:10px 0;min-height:1.2em}.dp-f{display:flex;gap:8px;justify-content:flex-end}
+  .av-wrap{margin:16px 0}.av-box{border:1px solid var(--border);border-radius:10px;padding:14px;margin-top:10px}
+  .av-d.free{background:#d1fae5;color:#065f46}.av-d.blocked{background:#fee2e2;color:#991b1b}.av-d.booked{background:#fde8c8;color:#92400e}
+  .av-d.past{opacity:.45}.av-d.sel{outline:2px solid var(--primary);outline-offset:-2px;font-weight:700}
+  .av-chk{font-size:.82rem;font-weight:600;padding:8px 10px;border-radius:8px;margin-bottom:10px}.av-chk.ok{background:#d1fae5;color:#065f46}.av-chk.no{background:#fee2e2;color:#991b1b}
+  .av-leg{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;font-size:.76rem;color:var(--warm-gray)}.av-leg span{display:inline-flex;align-items:center;gap:6px}
+  .av-leg i{width:14px;height:14px;border-radius:4px;display:inline-block}.av-leg i.free{background:#d1fae5}.av-leg i.blocked{background:#fee2e2}.av-leg i.booked{background:#fde8c8}.av-leg i.sel{outline:2px solid var(--primary);outline-offset:-2px}
+  .av-src{font-size:.72rem;color:var(--warm-gray);margin-top:8px}
 </style>
 </head>
 <script>
@@ -899,7 +920,7 @@ table{width:100%;border-collapse:collapse}th{text-align:left;font-size:.72rem;co
 
             <!-- Filter Toolbar -->
             <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
-                <input type="text" id="accomSearch" placeholder="Search properties..." style="padding:9px 14px;border:1px solid var(--border);border-radius:6px;font-size:.85rem;flex:1;min-width:200px;" oninput="accomApplyFilters()">
+                <input type="text" id="accomSearch" placeholder="Search properties..." style="padding:9px 14px;border:1px solid var(--border);border-radius:6px;font-size:.85rem;flex:1;min-width:200px;" oninput="accomApplyFilters()"><button type="button" class="dp-btn" id="accomDateBtn" onclick="dpOpen('accom',this)"></button><span class="dp-note" id="accomAvNote"></span>
                 <select id="accomTypeFilter" onchange="accomApplyFilters()" style="padding:9px 14px;border:1px solid var(--border);border-radius:6px;font-size:.85rem;">
                     <option value="">All Types</option>
                     <option>Lodge</option><option>Tented Camp</option><option>Hotel</option><option>Resort</option><option>Guesthouse</option>
@@ -942,7 +963,7 @@ table{width:100%;border-collapse:collapse}th{text-align:left;font-size:.72rem;co
 
             <!-- Filter Toolbar -->
             <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
-                <input type="text" id="fleetSearch" placeholder="Search vehicles..." style="padding:9px 14px;border:1px solid var(--border);border-radius:6px;font-size:.85rem;flex:1;min-width:200px;" oninput="fleetApplyFilters()">
+                <input type="text" id="fleetSearch" placeholder="Search vehicles..." style="padding:9px 14px;border:1px solid var(--border);border-radius:6px;font-size:.85rem;flex:1;min-width:200px;" oninput="fleetApplyFilters()"><button type="button" class="dp-btn" id="fleetDateBtn" onclick="dpOpen('fleet',this)"></button><span class="dp-note" id="fleetAvNote"></span>
                 <select id="fleetTypeFilter" onchange="fleetApplyFilters()" style="padding:9px 14px;border:1px solid var(--border);border-radius:6px;font-size:.85rem;">
                     <option value="">All Types</option>
                     <option>4x4 Safari Jeep</option><option>Minibus</option><option>Land Cruiser</option><option>Overland Truck</option><option>Luxury SUV</option>
@@ -986,7 +1007,7 @@ table{width:100%;border-collapse:collapse}th{text-align:left;font-size:.72rem;co
 
             <!-- Filter Toolbar -->
             <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
-                <input type="text" id="guideSearch" placeholder="Search guides..." style="padding:9px 14px;border:1px solid var(--border);border-radius:6px;font-size:.85rem;flex:1;min-width:200px;" oninput="guideApplyFilters()">
+                <input type="text" id="guideSearch" placeholder="Search guides..." style="padding:9px 14px;border:1px solid var(--border);border-radius:6px;font-size:.85rem;flex:1;min-width:200px;" oninput="guideApplyFilters()"><button type="button" class="dp-btn" id="guideDateBtn" onclick="dpOpen('guide',this)"></button><span class="dp-note" id="guideAvNote"></span>
                 <select id="guideSpecFilter" onchange="guideApplyFilters()" style="padding:9px 14px;border:1px solid var(--border);border-radius:6px;font-size:.85rem;">
                     <option value="">All Specializations</option>
                     <option>Big Cats</option><option>Birding</option><option>Photography</option><option>Walking Safari</option><option>Cultural</option><option>General Wildlife</option>
@@ -1969,6 +1990,117 @@ window.ibInitDates=function(){init();refreshCat()};
 
 
 /* ============================================
+   AVAILABILITY — date filter + partner calendars (read-only, live)
+   Uses the same data the partner dashboards edit:
+   calendarBlocks p<id>/r<roomTypeId>/v<id>, guides[].dayBlocks, reservations, charters, guideJobs
+   ============================================ */
+(function(){
+var MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+ CAL='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',
+ AVF={accom:null,fleet:null,guide:null},NAME={accom:['property','properties'],fleet:['vehicle','vehicles'],guide:['guide','guides']},DP=null,AVS=null,lastSig='';
+function pd(s){var m=/^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(s||'');return m?new Date(+m[1],+m[2]-1,+m[3]):null}
+function iso(t){return t.getFullYear()+'-'+('0'+(t.getMonth()+1)).slice(-2)+'-'+('0'+t.getDate()).slice(-2)}
+function K(t){return t.getFullYear()+'-'+(t.getMonth()+1)+'-'+t.getDate()}   /* partner dashboards' key format */
+function fmt(t){return t.getDate()+' '+MON[t.getMonth()]}
+function today(){var t=new Date();return new Date(t.getFullYear(),t.getMonth(),t.getDate())}
+var gone=/cancel|declin/i;
+
+/* ---------- per-day state of one partner item ---------- */
+function accomState(id,date,roomId){var d=slGet(),cb=d.calendarBlocks||{},key=K(date),blk=function(k){return (cb[k]||{})[key]};
+ if(blk('p'+id))return{s:'blocked',t:'Blocked by the property'};
+ var rooms=(d.roomTypes||[]).filter(function(r){return r.propertyId===id}),
+ res=(d.reservations||[]).filter(function(r){var a=pd(r.checkIn),b=pd(r.checkOut);return !gone.test(r.status||'')&&r.propertyId===id&&a&&b&&date>=a&&date<b}),
+ rm=roomId?rooms.find(function(r){return r.id===roomId}):null,cap,bk=0;
+ if(rm){if(blk('r'+rm.id))return{s:'blocked',t:'Room type blocked'};cap=Number(rm.units)||0;
+  res.forEach(function(r){var L=r.roomLines||[];L.forEach(function(l){if(l.roomType===rm.name)bk+=Number(l.qty)||1});if(!L.length&&String(r.room||'').indexOf(rm.name)>-1)bk+=1})}
+ else{var open=rooms.filter(function(r){return !blk('r'+r.id)});if(rooms.length&&!open.length)return{s:'blocked',t:'All room types blocked'};
+  cap=open.reduce(function(s,r){return s+(Number(r.units)||0)},0)||(rooms.length?0:Number(((d.properties||[]).find(function(p){return p.id===id})||{}).unitsTotal)||0);
+  res.forEach(function(r){bk+=(r.roomLines&&r.roomLines.length)?r.roomLines.reduce(function(s,l){return s+(Number(l.qty)||1)},0):1})}
+ if(cap?bk>=cap:bk>0)return{s:'booked',t:'Fully booked'};
+ return{s:'free',t:cap?(cap-bk)+' of '+cap+' units free':'Available'}}
+function fleetState(id,date){var d=slGet(),key=K(date);
+ if(((d.calendarBlocks||{})['v'+id]||{})[key])return{s:'blocked',t:'Blocked by the owner'};
+ var v=(d.vehicles||[]).find(function(x){return x.id===id})||{};
+ if(/maint|repair|service|inactive/i.test(v.status||''))return{s:'blocked',t:v.status};
+ var af=pd(v.availableFrom);if(af&&date<af)return{s:'blocked',t:'Free from '+fmt(af)};
+ var c=(d.charters||[]).find(function(c){var a=pd(c.start),b=pd(c.end);return !gone.test(c.status||'')&&c.vehicleId===id&&a&&b&&date>=a&&date<=b});
+ return c?{s:'booked',t:'On charter · '+(c.operator||'')}:{s:'free',t:'Available'}}
+function guideState(id,date){var d=slGet(),key=K(date),gs=d.guides||[],g=gs.find(function(x){return x.id===id})||{};
+ if((g.dayBlocks||{})[key])return{s:'blocked',t:'Day off / blocked by guide'};
+ var mine=gs[0]&&gs[0].id===id,j=(d.guideJobs||[]).find(function(j){var a=pd(j.start),b=pd(j.end);return !gone.test(j.status||'')&&(j.guideId?j.guideId===id:mine)&&a&&b&&date>=a&&date<=b});
+ return j?{s:'booked',t:'On assignment · '+(j.operator||'')}:{s:'free',t:'Available'}}
+function dayState(kind,id,date,room){return kind==='accom'?accomState(id,date,room):kind==='fleet'?fleetState(id,date):guideState(id,date)}
+function days(kind,f){var a=pd(f.start),b=pd(f.end),o=[],t;
+ if(kind==='accom'&&b>a){for(t=new Date(a);t<b;t.setDate(t.getDate()+1))o.push(new Date(t))}
+ else if(kind==='accom')o.push(a);else for(t=new Date(a);t<=b;t.setDate(t.getDate()+1))o.push(new Date(t));return o}
+function rangeState(kind,id,f){var ds=days(kind,f);for(var i=0;i<ds.length;i++){var s=dayState(kind,id,ds[i]);if(s.s!=='free')return{s:s.s,t:s.t,date:ds[i]}}return{s:'free'}}
+
+/* ---------- filter: applied by the existing *ApplyFilters functions ---------- */
+function label(kind){var f=AVF[kind],b=document.getElementById(kind+'DateBtn');if(!b)return;
+ b.classList.toggle('on',!!f);
+ b.innerHTML=CAL+'<span>'+(f?(f.start===f.end?fmt(pd(f.start)):fmt(pd(f.start))+' → '+fmt(pd(f.end))):'Select dates')+'</span>'+(f?'<span class="dp-x" title="Clear dates" onclick="event.stopPropagation();dpClear(\''+kind+'\')">✕</span>':'')}
+window.avActive=function(kind){return !!AVF[kind]};
+window.avFilter=function(kind,list){var f=AVF[kind],n=document.getElementById(kind+'AvNote');label(kind);
+ if(!f){if(n)n.textContent='';return list}
+ var out=list.filter(function(x){return rangeState(kind,x.id,f).s==='free'});
+ if(n)n.textContent=out.length+' of '+list.length+' '+NAME[kind][list.length===1?0:1]+' available for these dates';return out};
+function reapply(kind){var fn=window[kind+'ApplyFilters'];if(typeof fn==='function')fn()}
+
+/* ---------- date picker popup ---------- */
+function pop(){var p=document.getElementById('dpPop');if(!p){p=document.createElement('div');p.id='dpPop';document.body.appendChild(p)}return p}
+window.dpOpen=function(kind,btn){var p=pop();if(p.style.display==='block'&&DP&&DP.kind===kind){dpClose();return}
+ var f=AVF[kind],base=f?pd(f.start):today();DP={kind:kind,btn:btn,start:f?f.start:null,end:f?f.end:null,month:new Date(base.getFullYear(),base.getMonth(),1)};dpDraw();
+ var r=btn.getBoundingClientRect();p.style.display='block';p.style.top=(window.scrollY+r.bottom+6)+'px';p.style.left=Math.max(8,Math.min(window.scrollX+r.left,window.innerWidth-336))+'px'};
+function dpClose(){var p=document.getElementById('dpPop');if(p)p.style.display='none';DP=null}
+function dpDraw(){var m=DP.month,y=m.getFullYear(),mo=m.getMonth(),first=new Date(y,mo,1).getDay(),n=new Date(y,mo+1,0).getDate(),t0=today(),a=DP.start,b=DP.end,h='';
+ ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(function(x){h+='<div class="hd">'+x+'</div>'});
+ for(var i=0;i<first;i++)h+='<div></div>';
+ for(var d=1;d<=n;d++){var t=new Date(y,mo,d),s=iso(t),c='dp-d';
+  if(t<t0)c+=' off';else{if(s===a||s===b)c+=' end';else if(a&&b&&s>a&&s<b)c+=' in';if(t.getTime()===t0.getTime())c+=' today'}
+  h+='<div class="'+c+'"'+(t<t0?'':' onclick="dpPick(\''+s+'\')"')+'>'+d+'</div>'}
+ var unit=DP.kind==='accom'?'night':'day',cnt=a?(DP.kind==='accom'?Math.max(1,Math.round((pd(b||a)-pd(a))/864e5)):Math.round((pd(b||a)-pd(a))/864e5)+1):0,
+ info=!a?'Click a start date, then an end date.':(!b?fmt(pd(a))+' → pick the end date (or Apply for one date)':fmt(pd(a))+' → '+fmt(pd(b))+' · '+cnt+' '+unit+(cnt>1?'s':''));
+ pop().innerHTML='<div class="dp-h"><button onclick="dpMove(-1)" aria-label="Previous month">‹</button><span>'+m.toLocaleString('default',{month:'long',year:'numeric'})+'</span><button onclick="dpMove(1)" aria-label="Next month">›</button></div><div class="dp-g">'+h+'</div><div class="dp-info">'+info+'</div><div class="dp-f"><button class="btn btn-secondary btn-sm" onclick="dpClear(\''+DP.kind+'\')">Clear</button><button class="btn btn-primary btn-sm" onclick="dpApply()"'+(a?'':' disabled')+'>Apply</button></div>'}
+window.dpMove=function(n){DP.month=new Date(DP.month.getFullYear(),DP.month.getMonth()+n,1);dpDraw()};
+window.dpPick=function(s){if(!DP.start||DP.end){DP.start=s;DP.end=null}else if(s<DP.start){DP.start=s}else DP.end=s;dpDraw()};
+window.dpApply=function(){if(!DP||!DP.start)return;var k=DP.kind;AVF[k]={start:DP.start,end:DP.end||DP.start};dpClose();reapply(k);avRefreshOpen()};
+window.dpClear=function(k){AVF[k]=null;dpClose();reapply(k);avRefreshOpen()};
+document.addEventListener('mousedown',function(e){var p=document.getElementById('dpPop');if(p&&p.style.display==='block'&&!p.contains(e.target)&&!(e.target.closest&&e.target.closest('.dp-btn')))dpClose()});
+
+/* ---------- availability calendar inside the Details window ---------- */
+var BODY={accom:'accomDetailBody',fleet:'fleetDetailBody',guide:'guideDetailBody'};
+window.avMount=function(kind,id){var body=document.getElementById(BODY[kind]);if(!body)return;var f=AVF[kind],b=f?pd(f.start):today(),w=document.createElement('div');w.className='av-wrap';
+ body.insertBefore(w,body.lastElementChild);AVS={kind:kind,id:id,room:0,open:!!f,month:new Date(b.getFullYear(),b.getMonth(),1),el:w};avDraw()};
+function avDraw(){var S=AVS;if(!S||!S.el||!S.el.isConnected)return;var kind=S.kind,y=S.month.getFullYear(),mo=S.month.getMonth(),f=AVF[kind],h='';
+ var head='<button class="btn btn-secondary" style="width:100%;justify-content:center;" onclick="avToggle()">'+CAL+' '+(S.open?'Hide availability calendar':'View availability calendar')+'</button>';
+ if(!S.open){S.el.innerHTML=head;return}
+ var rooms=kind==='accom'?(slGet().roomTypes||[]).filter(function(r){return r.propertyId===S.id}):[],
+ sel=rooms.length?'<select onchange="avRoom(this.value)" style="padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:.82rem;"><option value="0">Whole property</option>'+rooms.map(function(r){return'<option value="'+r.id+'"'+(S.room===r.id?' selected':'')+'>'+esc(r.name)+'</option>'}).join('')+'</select>':'';
+ ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(function(x){h+='<div class="hd">'+x+'</div>'});
+ for(var i=0,fi=new Date(y,mo,1).getDay();i<fi;i++)h+='<div></div>';
+ var inR={};if(f)days(kind,f).forEach(function(t){inR[K(t)]=1});
+ for(var d=1,n=new Date(y,mo+1,0).getDate();d<=n;d++){var t=new Date(y,mo,d),st=dayState(kind,S.id,t,S.room);
+  h+='<div class="av-d '+st.s+(inR[K(t)]?' sel':'')+(t<today()?' past':'')+'" title="'+esc(fmt(t)+' · '+st.t)+'">'+d+'</div>'}
+ var chk='';if(f){var rs=rangeState(kind,S.id,f);chk='<div class="av-chk '+(rs.s==='free'?'ok':'no')+'">Your dates ('+(f.start===f.end?fmt(pd(f.start)):fmt(pd(f.start))+' → '+fmt(pd(f.end)))+'): '+(rs.s==='free'?'available':'not available — '+esc(rs.t)+' on '+fmt(rs.date))+'</div>'}
+ S.el.innerHTML=head+'<div class="av-box"><div class="av-nav"><button onclick="avMove(-1)" aria-label="Previous month">‹</button><b>'+S.month.toLocaleString('default',{month:'long',year:'numeric'})+'</b><button onclick="avMove(1)" aria-label="Next month">›</button><span style="flex:1"></span>'+sel+'</div>'+chk+'<div class="av-g">'+h+'</div>'+
+ '<div class="av-leg"><span><i class="free"></i>Available</span><span><i class="blocked"></i>Blocked by partner</span><span><i class="booked"></i>Booked</span>'+(f?'<span><i class="sel"></i>Your dates</span>':'')+'</div><div class="av-src">Live from the partner’s own availability calendar — updates automatically.</div></div>'}
+window.avToggle=function(){AVS.open=!AVS.open;avDraw()};
+window.avMove=function(n){AVS.month=new Date(AVS.month.getFullYear(),AVS.month.getMonth()+n,1);avDraw()};
+window.avRoom=function(v){AVS.room=Number(v)||0;avDraw()};
+function avRefreshOpen(){avDraw()}
+
+/* ---------- live refresh when a partner changes availability ---------- */
+function sig(){var d=slGet();return JSON.stringify([d.calendarBlocks,d.reservations,d.charters,d.guideJobs,(d.guides||[]).map(function(g){return g.dayBlocks}),d.roomTypes])}
+function live(){var s=sig();if(s===lastSig)return;var first=lastSig==='';lastSig=s;if(first)return;
+ ['accom','fleet','guide'].forEach(function(k){if(AVF[k])reapply(k)});avDraw()}
+window.avRefresh=live;
+function initLabels(){['accom','fleet','guide'].forEach(label)}
+initLabels();document.addEventListener('DOMContentLoaded',initLabels);
+if(typeof slOnChange==='function')slOnChange(live);
+})();
+
+
+/* ============================================
    ACCOMMODATION — live from partner dashboard only
    ============================================ */
 (function() {
@@ -1977,7 +2109,7 @@ window.ibInitDates=function(){init();refreshCat()};
     var grid = document.getElementById('accomGrid');
     if (!grid) return;
     if (!data || !data.length) {
-      grid.innerHTML = '<div class="card" style="padding:24px;grid-column:1/-1;"><p style="color:var(--warm-gray);">No properties from accommodation partners yet. When partners add or update properties on their dashboard, they appear here live.</p></div>';
+      grid.innerHTML = '<div class="card" style="padding:24px;grid-column:1/-1;"><p style="color:var(--warm-gray);">' + (window.avActive && avActive('accom') ? 'No properties are available for the selected dates. Try other dates or clear the date filter.' : 'No properties from accommodation partners yet. When partners add or update properties on their dashboard, they appear here live.') + '</p></div>';
       return;
     }
     grid.innerHTML = data.map(function(a) {
@@ -2018,7 +2150,7 @@ window.ibInitDates=function(){init();refreshCat()};
                    (!type || a.type === type) &&
                    (!budget || a.budget === budget);
         });
-        accomRenderCards(filtered);
+        accomRenderCards(avFilter('accom', filtered));
     };
 
     window.accomViewDetail = function(id) {
@@ -2054,6 +2186,7 @@ window.ibInitDates=function(){init();refreshCat()};
                 '<button class="btn btn-secondary" onclick="addOpFavoriteByKey(\x27ac\x27,'+a.id+')"><i data-lucide="heart" style="width:14px;height:14px;"></i> Save to favorites</button>' +
             '</div>';
         if (window.lucide) lucide.createIcons();
+        avMount('accom', a.id);
         openModal('accomDetailModal');
     };
 
@@ -2072,7 +2205,7 @@ window.ibInitDates=function(){init();refreshCat()};
         var grid = document.getElementById('fleetGrid');
         if (!grid) return;
         if (!data || !data.length) {
-          grid.innerHTML = '<div class="card" style="padding:24px;grid-column:1/-1;"><p style="color:var(--warm-gray);">No vehicles from fleet partners yet. When fleet owners add or update units, they appear here live.</p></div>';
+          grid.innerHTML = '<div class="card" style="padding:24px;grid-column:1/-1;"><p style="color:var(--warm-gray);">' + (window.avActive && avActive('fleet') ? 'No vehicles are available for the selected dates. Try other dates or clear the date filter.' : 'No vehicles from fleet partners yet. When fleet owners add or update units, they appear here live.') + '</p></div>';
           return;
         }
         grid.innerHTML = data.map(function(v) {
@@ -2119,7 +2252,7 @@ window.ibInitDates=function(){init();refreshCat()};
                        (seats === '11+ Seats' && v.seats >= 11)
                    ));
         });
-        fleetRenderCards(filtered);
+        fleetRenderCards(avFilter('fleet', filtered));
     };
 
     window.fleetViewDetail = function(id) {
@@ -2145,6 +2278,7 @@ window.ibInitDates=function(){init();refreshCat()};
                 '<button class="btn btn-secondary" onclick="addOpFavoriteByKey(\x27fl\x27,'+v.id+')"><i data-lucide="heart" style="width:14px;height:14px;"></i> Save to favorites</button>' +
             '</div>';
         initImagePlaceholders();
+        avMount('fleet', v.id);
         openModal('fleetDetailModal');
     };
 
@@ -2163,7 +2297,7 @@ window.ibInitDates=function(){init();refreshCat()};
     var grid = document.getElementById('guideGrid');
     if (!grid) return;
     if (!data || !data.length) {
-      grid.innerHTML = '<div class="card" style="padding:24px;grid-column:1/-1;"><p style="color:var(--warm-gray);">No guides from partner profiles yet. When guides update their profile on their dashboard, they appear here live.</p></div>';
+      grid.innerHTML = '<div class="card" style="padding:24px;grid-column:1/-1;"><p style="color:var(--warm-gray);">' + (window.avActive && avActive('guide') ? 'No guides are available for the selected dates. Try other dates or clear the date filter.' : 'No guides from partner profiles yet. When guides update their profile on their dashboard, they appear here live.') + '</p></div>';
       return;
     }
     grid.innerHTML = data.map(function(g) {
@@ -2204,7 +2338,7 @@ window.ibInitDates=function(){init();refreshCat()};
                    (!spec || g.special === spec) &&
                    (!lang || g.languages.indexOf(lang) !== -1);
         });
-        guideRenderCards(filtered);
+        guideRenderCards(avFilter('guide', filtered));
     };
 
     window.guideViewDetail = function(id) {
@@ -2234,6 +2368,7 @@ window.ibInitDates=function(){init();refreshCat()};
                 '<button class="btn btn-secondary" onclick="addOpFavoriteByKey(\x27gd\x27,'+g.id+')"><i data-lucide="heart" style="width:14px;height:14px;"></i> Save to favorites</button>' +
             '</div>';
         initImagePlaceholders();
+        avMount('guide', g.id);
         openModal('guideDetailModal');
     };
 
