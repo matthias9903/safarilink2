@@ -1174,6 +1174,9 @@ function renderTeam(){
   if (!m) return;
   if (m.isMain || m.role === 'Admin') { alert('The Admin account cannot be removed'); return; }
   if (!confirm('Remove '+m.name+' ('+m.role+') from the team?')) return;
+  if (!m.isMain && m.role !== 'Admin') {
+  actions += '<div style="margin-top:6px"><button type="button" class="btn" onclick="removeTeamMember(\''+String(m.id)+'\')">Remove</button></div>';
+}
   list = list.filter(function(x){ return String(x.id) !== String(id); });
   saveFleetTeam(list);
   try {
