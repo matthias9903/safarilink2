@@ -1168,6 +1168,25 @@ function renderTeam(){
   if(main&&document.getElementById('kpiLoginEmail'))document.getElementById('kpiLoginEmail').textContent=main.email||'—';
   try{var a=JSON.parse(localStorage.getItem('sl_fleet_company_profile')||'{}');if(a.name&&document.getElementById('kpiCompanyName'))document.getElementById('kpiCompanyName').textContent=a.name;}catch(e){}
 }
+   function removeTeamMember(id){
+  var list = loadFleetTeam();
+  var m = list.find(function(x){ return String(x.id) === String(id); });
+  if (!m) return;
+  if (m.isMain || m.role === 'Admin') { alert('The Admin account cannot be removed'); return; }
+  if (!confirm('Remove '+m.name+' ('+m.role+') from the team?')) return;
+  list = list.filter(function(x){ return String(x.id) !== String(id); });
+  saveFleetTeam(list);
+  try {
+    slUpdate(function(d){
+      if (d.pendingTeam) d.pendingTeam = d.pendingTeam.filter(function(p){ return (p.email||'').toLowerCase() !== (m.email||'').toLowerCase(); });
+      if (d.team && d.team.fleet) {
+        d.team.fleet = d.team.fleet.filter(function(x){ return String(x.id) !== String(id) && (x.email||'').toLowerCase() !== (m.email||'').toLowerCase(); });
+      }
+    });
+  } catch(err){}
+  renderTeam();
+  alert('Member removed');
+}  
 function addMember(){
   var list=loadFleetTeam();
   var n=(document.getElementById('mName')||{}).value;n=(n||'').trim();
@@ -1176,8 +1195,15 @@ function addMember(){
   if(!n||!e){alert('Name and email required');return;}
   if(role==='Admin'){alert('Admin is the main account only');return;}
   if(!list.some(function(m){return m.role==='Admin'||m.isMain;})){alert('Admin account must exist first');return;}
-  if(list.length>=3){alert('Team is full');return;}
-  if(list.some(function(m){return (m.email||'').toLowerCase()===e.toLowerCase();})){alert('Email already on team');return;}
+var activeList = list.filter(function(m){ return m.status !== 'Rejected'; });
+if (activeList.length >= 5) { alert('Team is full (max 5: 1 Admin, 1 Manager, 3 Sales)'); return; }
+if (role === 'Manager' && activeList.some(function(m){ return m.role === 'Manager'; })) {
+  alert('Only one Manager account is allowed'); return;
+}
+if (role === 'Sales' && activeList.filter(function(m){ return m.role === 'Sales'; }).length >= 3) {
+  alert('Maximum 3 Sales accounts allowed'); return;
+}
+     if(list.some(function(m){return (m.email||'').toLowerCase()===e.toLowerCase();})){alert('Email already on team');return;}
   list.push({id:Date.now(),name:n,email:e,role:role,status:'Pending',requestedAt:Date.now()});
   saveFleetTeam(list);
   document.getElementById('memF').style.display='none';
