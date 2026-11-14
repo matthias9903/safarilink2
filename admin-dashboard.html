@@ -75,6 +75,12 @@
   .panel { display: none; }
   .panel.active { display: block; }
   .note { font-size: 0.85rem; color: var(--warm-gray); margin-bottom: 12px; }
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; margin: -6px 0 14px; }
+  .chip { border: 1px solid var(--border-light); background: #fff; border-radius: 999px; padding: 6px 14px; font: inherit; font-size: 0.8rem; cursor: pointer; color: inherit; }
+  .chip span { opacity: .6; margin-left: 4px; }
+  .chip.on { background: var(--forest-green, #1a5a3a); border-color: var(--forest-green, #1a5a3a); color: #fff; }
+  .btn-ghost-sm { border: 1px solid var(--border-light); background: #fff; border-radius: 6px; padding: 5px 10px; font: inherit; font-size: 0.78rem; cursor: pointer; margin-left: 4px; }
+  .btn-ghost-sm:hover { background: #f4f2ec; }
 </style>
 </head>
 <body>
@@ -111,6 +117,7 @@
     <div class="panel active" id="panel-providers">
       <p class="note">New businesses from <strong>Request Access</strong>. Approve to create login and notify by email.</p>
       <div class="stats" id="statsProviders"></div>
+      <div class="filters" id="reqFilters"></div>
       <div class="table-wrap">
         <table>
           <thead>
@@ -126,6 +133,7 @@
     <div class="panel" id="panel-members">
       <p class="note">When a service provider adds Sales / Manager / staff, they appear here until <strong>you</strong> approve. Business admins cannot activate accounts themselves.</p>
       <div class="stats" id="statsMembers"></div>
+      <div class="filters" id="memFilters"></div>
       <div class="table-wrap">
         <table>
           <thead>
@@ -323,13 +331,16 @@
     stats.innerHTML =
       '<div class="stat-card pending"><div class="label">Pending</div><div class="number">' + pending + '</div></div>' +
       '<div class="stat-card approved"><div class="label">Approved</div><div class="number">' + approved + '</div></div>' +
-      '<div class="stat-card rejected"><div class="label">Rejected</div><div class="number">' + rejected + '</div></div>';
+      '<div class="stat-card rejected"><div class="label">Declined</div><div class="number">' + rejected + '</div></div>';
+    drawFilters('reqFilters', reqFilter, requests.length, pending, approved, rejected, 'setReqFilter');
     if (!requests.length) {
       tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No access requests yet.</td></tr>';
       return;
     }
+    var shown = requests.filter(function(r) { return reqFilter === 'all' || (r.status || 'pending') === reqFilter; });
+    if (!shown.length) { tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No ' + filterLabel(reqFilter) + ' requests.</td></tr>'; return; }
     var order = { pending: 0, approved: 1, rejected: 2 };
-    var sorted = requests.slice().sort(function(a, b) {
+    var sorted = shown.slice().sort(function(a, b) {
       var sa = order[a.status] != null ? order[a.status] : 9;
       var sb = order[b.status] != null ? order[b.status] : 9;
       if (sa !== sb) return sa - sb;
@@ -337,16 +348,16 @@
     });
     tbody.innerHTML = sorted.map(function(r) {
       var st = r.status || 'pending';
-      var badge = '<span class="badge ' + st + '">' + st.charAt(0).toUpperCase() + st.slice(1) + '</span>';
+      var badge = '<span class="badge ' + st + '">' + statusLabel(st) + '</span>';
       var actions = '<button class="btn-sm btn-review" onclick="openReview(' + r.id + ')">View</button>';
       if (st === 'pending') {
         actions +=
           '<button class="btn-sm btn-approve" onclick="approveProvider(' + r.id + ')">Approve</button>' +
           '<button class="btn-sm btn-reject" onclick="rejectProvider(' + r.id + ')">Reject</button>';
       } else if (st === 'approved') {
-        actions += '<span style="font-size:0.75rem;color:#166534;margin-left:6px;">Kept on record</span>';
+        actions += '<button class="btn-ghost-sm" onclick="reviewAgain(' + r.id + ')">Review again</button>';
       } else if (st === 'rejected') {
-        actions += '<span style="font-size:0.75rem;color:#991b1b;margin-left:6px;">Kept on record</span>';
+        actions += '<button class="btn-ghost-sm" onclick="reviewAgain(' + r.id + ')">Review again</button>';
       }
       return '<tr>' +
         '<td><strong>' + esc(r.company_name) + '</strong></td>' +
@@ -377,7 +388,8 @@
         '<button class="btn-danger" onclick="rejectProvider(' + r.id + '); closeReview();">Reject</button>' +
         '<button class="btn-ghost" onclick="closeReview()">Close</button>';
     } else {
-      actions.innerHTML = '<button class="btn-ghost" onclick="closeReview()">Close</button>';
+      actions.innerHTML = '<button class="btn-primary" onclick="reviewAgain(' + r.id + ')">Review again</button>' +
+        '<button class="btn-ghost" onclick="closeReview()">Close</button>';
     }
     document.getElementById('reviewOverlay').classList.add('show');
   }
@@ -417,6 +429,43 @@
     writePlatform(d);
     showCreds(temp, r.email, r.business_type || 'provider', 'Provider approved. Email notification simulated to ' + r.email);
     loadRequests();
+  }
+
+  var reqFilter = 'all', memFilter = 'all';
+  function statusLabel(s) { s = (s || 'pending').toLowerCase(); return s === 'rejected' ? 'Declined' : s.charAt(0).toUpperCase() + s.slice(1); }
+  function filterLabel(f) { return f === 'rejected' ? 'declined' : f; }
+  function drawFilters(elId, cur, all, p, a, r, fn) {
+    var defs = [['all', 'All', all], ['pending', 'Pending', p], ['approved', 'Approved', a], ['rejected', 'Declined', r]];
+    document.getElementById(elId).innerHTML = defs.map(function(d) {
+      return '<button class="chip' + (cur === d[0] ? ' on' : '') + '" onclick="' + fn + '(\'' + d[0] + '\')">' + d[1] + ' <span>' + d[2] + '</span></button>';
+    }).join('');
+  }
+  function setReqFilter(f) { reqFilter = f; renderRequests(allRequests); }
+  function setMemFilter(f) { memFilter = f; renderMembers(allMembers); }
+
+  /* Move an approved/declined request back to Pending so it can be decided again */
+  function reviewAgain(id) {
+    var r = allRequests.find(function(x) { return x.id === id; });
+    if (!r) return;
+    var msg = 'Move "' + (r.company_name || 'this request') + '" back to Pending so you can decide again?' +
+      (r.status === 'approved' ? '\n\nTheir login is paused until you approve them again.' : '');
+    if (!confirm(msg)) return;
+    if (useApi) {
+      fetch('/api/admin/reopen/' + id, { method: 'POST', headers: { Authorization: 'Bearer ' + token } })
+        .then(function(res) { return res.json().catch(function() { return {}; }).then(function(d) { return { ok: res.ok, d: d }; }); })
+        .then(function(res) {
+          if (!res.ok) { alert((res.d && res.d.error) || 'The server could not reopen this request. Make sure the latest server.js is deployed.'); return; }
+          closeReview();
+          loadRequests();
+        })
+        .catch(function() { alert('Cannot reach the server.'); });
+    } else {
+      var list = readAccessRequests();
+      var x = list.find(function(y) { return y.id === id; });
+      if (x) { x.status = 'pending'; delete x.tempPassword; x.reviewed_at = null; saveAccessRequests(list); }
+      closeReview();
+      loadRequests();
+    }
   }
 
   function rejectProvider(id) {
@@ -485,22 +534,33 @@
   function renderMembers(list) {
     var tbody = document.getElementById('membersBody');
     var stats = document.getElementById('statsMembers');
-    var pending = list.filter(function(m) { return (m.status || 'pending') === 'pending' || m.status === 'Pending'; }).length;
+    var stOf = function(m) { return (m.status || 'pending').toLowerCase(); };
+    var cnt = function(s) { return list.filter(function(m) { return stOf(m) === s; }).length; };
+    var p = cnt('pending'), a = cnt('approved'), r = cnt('rejected');
     stats.innerHTML =
-      '<div class="stat-card pending"><div class="label">Pending members</div><div class="number">' + pending + '</div></div>' +
-      '<div class="stat-card approved"><div class="label">In queue</div><div class="number">' + list.length + '</div></div>';
+      '<div class="stat-card pending"><div class="label">Pending</div><div class="number">' + p + '</div></div>' +
+      '<div class="stat-card approved"><div class="label">Approved</div><div class="number">' + a + '</div></div>' +
+      '<div class="stat-card rejected"><div class="label">Declined</div><div class="number">' + r + '</div></div>';
+    drawFilters('memFilters', memFilter, list.length, p, a, r, 'setMemFilter');
     if (!list.length) {
-      tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No team members waiting. When operators/partners add staff, they appear here.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No team members yet. When operators/partners add staff, they appear here.</td></tr>';
       return;
     }
-    tbody.innerHTML = list.map(function(m, idx) {
-      var st = (m.status || 'pending').toLowerCase();
-      var badge = '<span class="badge ' + (st === 'pending' ? 'pending' : 'approved') + '">' + st + '</span>';
+    var order = { pending: 0, approved: 1, rejected: 2 };
+    var rows = list.map(function(m, idx) { return { m: m, idx: idx }; })
+      .filter(function(x) { return memFilter === 'all' || stOf(x.m) === memFilter; })
+      .sort(function(x, y) { return (order[stOf(x.m)] != null ? order[stOf(x.m)] : 9) - (order[stOf(y.m)] != null ? order[stOf(y.m)] : 9); });
+    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No ' + filterLabel(memFilter) + ' team members.</td></tr>'; return; }
+    tbody.innerHTML = rows.map(function(x) {
+      var m = x.m, idx = x.idx, st = stOf(m);
+      var badge = '<span class="badge ' + st + '">' + statusLabel(st) + '</span>';
       var actions = '';
       if (st === 'pending') {
         actions =
           '<button class="btn-sm btn-approve" onclick="approveMember(' + idx + ')">Approve & email login</button>' +
           '<button class="btn-sm btn-reject" onclick="rejectMember(' + idx + ')">Reject</button>';
+      } else {
+        actions = '<button class="btn-ghost-sm" onclick="reopenMember(' + idx + ')">Review again</button>';
       }
       return '<tr>' +
         '<td><strong>' + esc(m.name) + '</strong></td>' +
@@ -512,6 +572,30 @@
         '<td>' + badge + '</td>' +
         '<td>' + actions + '</td></tr>';
     }).join('');
+  }
+
+  /* Move an approved/declined team member back to Pending (login paused until approved again) */
+  function reopenMember(idx) {
+    var m = allMembers[idx];
+    if (!m) return;
+    var was = (m.status || '').toLowerCase();
+    if (!confirm('Move ' + m.name + ' back to Pending so you can decide again?' + (was === 'approved' ? '\n\nTheir login is paused until you approve them again.' : ''))) return;
+    var email = (m.email || '').toLowerCase();
+    var d = readPlatform();
+    d.teamMemberRegistry = (d.teamMemberRegistry || []).map(function(x) {
+      return (x.email || '').toLowerCase() === email ? Object.assign({}, x, { status: 'pending', reviewedAt: Date.now() }) : x;
+    });
+    Object.keys(d.team || {}).forEach(function(k) {
+      (d.team[k] || []).forEach(function(t) { if ((t.email || '').toLowerCase() === email) t.status = 'Pending'; });
+    });
+    writePlatform(d);
+    try {
+      var opTeam = JSON.parse(localStorage.getItem('safarilink_op_team') || '[]');
+      opTeam.forEach(function(x) { if ((x.email || '').toLowerCase() === email) { x.status = 'Pending'; delete x.tempPassword; } });
+      localStorage.setItem('safarilink_op_team', JSON.stringify(opTeam));
+    } catch (e) {}
+    try { localStorage.removeItem('safarilink_pwd_' + email); } catch (e) {}
+    loadMembers();
   }
 
   function approveMember(idx) {
