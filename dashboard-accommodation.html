@@ -1595,7 +1595,11 @@ function renderTeam(){
   var btn = document.getElementById('btnAddMember');
   if (btn) {
     var hasAdmin = list.some(function(m){ return m.role === 'Admin' || m.isMain; });
-    btn.style.display = (hasAdmin && list.length < 3) ? 'inline-flex' : 'none';
+   var activeList = list.filter(function(m){ return m.status !== 'Rejected'; });
+var mgrN = activeList.filter(function(m){ return m.role === 'Manager'; }).length;
+var salesN = activeList.filter(function(m){ return m.role === 'Sales'; }).length;
+var canAddMore = activeList.length < 5 && (mgrN < 1 || salesN < 3);
+btn.style.display = (hasAdmin && canAddMore) ? 'inline-flex' : 'none';
   }
   var el = document.getElementById('teamList');
   if (!el) return;
@@ -1606,6 +1610,9 @@ function renderTeam(){
   el.innerHTML = list.map(function(m){
     var roleLabel = (m.isMain || m.role === 'Admin') ? 'Admin · Main' : m.role;
     var actions = '';
+    if (!m.isMain && m.role !== 'Admin') {
+  actions += '<div style="margin-top:6px"><button type="button" class="btn" onclick="removeTeamMember(\''+String(m.id)+'\')">Remove</button></div>';
+}
     if (m.status === 'Pending') {
       actions = '<div class="meta" style="margin-top:4px;color:#92400e">Awaiting <strong>SafariLink Admin</strong> approval — login will be emailed after approval.</div>';
     } else if (m.status === 'Active' && !m.isMain && m.role !== 'Admin') {
@@ -1624,6 +1631,27 @@ function renderTeam(){
     if (a.name && document.getElementById('kpiCompanyName')) document.getElementById('kpiCompanyName').textContent = a.name;
   } catch(e){}
 }
+
+function removeTeamMember(id){
+  var list = loadAccomTeam();
+  var m = list.find(function(x){ return String(x.id) === String(id); });
+  if (!m) return;
+  if (m.isMain || m.role === 'Admin') { alert('The Admin account cannot be removed'); return; }
+  if (!confirm('Remove '+m.name+' ('+m.role+') from the team?')) return;
+  list = list.filter(function(x){ return String(x.id) !== String(id); });
+  saveAccomTeam(list);
+  try {
+    slUpdate(function(d){
+      if (d.pendingTeam) d.pendingTeam = d.pendingTeam.filter(function(p){ return (p.email||'').toLowerCase() !== (m.email||'').toLowerCase(); });
+      if (d.team && d.team.accommodation) {
+        d.team.accommodation = d.team.accommodation.filter(function(x){ return String(x.id) !== String(id) && (x.email||'').toLowerCase() !== (m.email||'').toLowerCase(); });
+      }
+    });
+  } catch(err){}
+  renderTeam();
+  alert('Member removed');
+}
+     
 function addMember(){
   var list = loadAccomTeam();
   var n = (document.getElementById('mName')||{}).value; n = (n||'').trim();
@@ -1634,8 +1662,15 @@ function addMember(){
   if (!list.some(function(m){ return m.role === 'Admin' || m.isMain; })) {
     alert('Admin account must exist first'); return;
   }
-  if (list.length >= 3) { alert('Team is full'); return; }
-  if (list.some(function(m){ return (m.email||'').toLowerCase() === e.toLowerCase(); })) {
+var activeList = list.filter(function(m){ return m.status !== 'Rejected'; });
+if (activeList.length >= 5) { alert('Team is full (max 5: 1 Admin, 1 Manager, 3 Sales)'); return; }
+if (role === 'Manager' && activeList.some(function(m){ return m.role === 'Manager'; })) {
+  alert('Only one Manager account is allowed'); return;
+}
+if (role === 'Sales' && activeList.filter(function(m){ return m.role === 'Sales'; }).length >= 3) {
+  alert('Maximum 3 Sales accounts allowed'); return;
+}
+     if (list.some(function(m){ return (m.email||'').toLowerCase() === e.toLowerCase(); })) {
     alert('That email is already on the team'); return;
   }
   list.push({
@@ -1670,11 +1705,6 @@ function addMember(){
   if (typeof renderMessages === 'function') renderMessages();
   alert('Member saved — awaiting SafariLink admin approval. Login details will be emailed after approval.');
 }
-
-
-
-
-
 
 function showToast(msg){
   try { alert(msg); } catch(e){}
