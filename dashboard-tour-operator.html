@@ -1485,15 +1485,21 @@ function renderOpTeam(){
   if (cnt) cnt.textContent = OP_TEAM.length + (pending ? ' · '+pending+' pending' : '');
   if (!body) return;
   body.innerHTML = OP_TEAM.map(function(m, i){
-    var roleLabel = m.isMain || m.role === 'Admin' ? 'Admin · Main' : m.role;
-    var actions = '';
-    if (m.status === 'Pending') {
-      actions = '<div style="font-size:.75rem;color:#92400e;margin-top:6px;max-width:220px;overflow-wrap:anywhere;">Awaiting <strong>SafariLink Admin</strong> approval — login will be emailed after approval.</div>';
-    } else if (m.status === 'Active' && !m.isMain && m.role !== 'Admin') {
-      actions = '<div style="font-size:.72rem;color:var(--warm-gray);margin-top:4px;max-width:220px;overflow-wrap:anywhere;">Approved by SafariLink · login emailed</div>';
-    }
-    return '<tr><td><strong>'+esc(m.name)+'</strong></td><td class="email-cell" title="'+esc(m.email)+'">'+esc(m.email)+'</td><td>'+esc(roleLabel)+'</td><td style="max-width:220px;overflow-wrap:anywhere;white-space:normal;">'+badgeOp(m.status)+actions+'</td></tr>';
-  }).join('');
+  var roleLabel = m.isMain || m.role === 'Admin' ? 'Admin · Main' : m.role;
+  var actions = '';
+  if (m.status === 'Pending') {
+    actions = '<div style="font-size:.75rem;color:#92400e;margin-top:6px;max-width:220px;overflow-wrap:anywhere;">Awaiting <strong>SafariLink Admin</strong> approval — login will be emailed after approval.</div>';
+  } else if (m.status === 'Active' && !m.isMain && m.role !== 'Admin') {
+    actions = '<div style="font-size:.72rem;color:var(--warm-gray);margin-top:4px;max-width:220px;overflow-wrap:anywhere;">Approved by SafariLink · login emailed</div>';
+  }
+
+  // NEW — Remove button for Manager / Sales (not Admin)
+  if (!m.isMain && m.role !== 'Admin') {
+    actions += '<div style="margin-top:6px"><button type="button" class="btn btn-sm btn-secondary" onclick="removeOpTeamMember(\''+String(m.id)+'\')">Remove</button></div>';
+  }
+
+  return '<tr><td><strong>'+esc(m.name)+'</strong></td><td class="email-cell" title="'+esc(m.email)+'">'+esc(m.email)+'</td><td>'+esc(roleLabel)+'</td><td style="max-width:220px;overflow-wrap:anywhere;white-space:normal;">'+badgeOp(m.status)+actions+'</td></tr>';
+}).join('');
   if (window.lucide) lucide.createIcons();
   var banner = document.getElementById('opPendingBanner');
   if (banner) {
@@ -1501,7 +1507,25 @@ function renderOpTeam(){
     banner.innerHTML = pending ? '<strong>'+pending+' member(s) awaiting SafariLink Admin approval.</strong> Platform admin must approve before login details are sent.' : '';
   }
 }
-
+function removeOpTeamMember(id){
+  OP_TEAM = loadOpTeam();
+  var m = OP_TEAM.find(function(x){ return String(x.id) === String(id); });
+  if (!m) return;
+  if (m.isMain || m.role === 'Admin') { showToast('The Admin account cannot be removed'); return; }
+  if (!confirm('Remove '+m.name+' ('+m.role+') from the team?')) return;
+  OP_TEAM = OP_TEAM.filter(function(x){ return String(x.id) !== String(id); });
+  saveOpTeam(OP_TEAM);
+  try {
+    slUpdate(function(d){
+      if (d.pendingTeam) d.pendingTeam = d.pendingTeam.filter(function(p){ return (p.email||'').toLowerCase() !== (m.email||'').toLowerCase(); });
+      if (d.team && d.team.operator) {
+        d.team.operator = d.team.operator.filter(function(x){ return String(x.id) !== String(id) && (x.email||'').toLowerCase() !== (m.email||'').toLowerCase(); });
+      }
+    });
+  } catch(err){}
+  renderOpTeam();
+  showToast('Member removed');
+}
 function opAddMember(){
   OP_TEAM = loadOpTeam();
   var n = (document.getElementById('opMemName')||{}).value; n = (n||'').trim();
@@ -1511,11 +1535,14 @@ function opAddMember(){
   if (OP_TEAM.some(function(m){ return (m.email||'').toLowerCase() === e.toLowerCase(); })) {
     showToast('This email is already on the team'); return;
   }
-  var extras = OP_TEAM.filter(function(m){ return m.role !== 'Admin' && !m.isMain; });
-  if (extras.length >= 2) { showToast('Admin can add at most 2 accounts (Sales and Manager)'); return; }
-  if (OP_TEAM.some(function(m){ return m.role === r && m.status !== 'Rejected'; })) {
-    showToast(r + ' role already assigned (or pending)'); return;
-  }
+  var active = OP_TEAM.filter(function(m){ return m.status !== 'Rejected'; });
+if (active.length >= 5) { showToast('Team is full (max 5: 1 Admin, 1 Manager, 3 Sales)'); return; }
+if (r === 'Manager' && active.some(function(m){ return m.role === 'Manager'; })) {
+  showToast('Only one Manager account is allowed'); return;
+}
+if (r === 'Sales' && active.filter(function(m){ return m.role === 'Sales'; }).length >= 3) {
+  showToast('Maximum 3 Sales accounts allowed'); return;
+}
   OP_TEAM.push({
     id: Date.now(), name: n, email: e, role: r, status: 'Pending',
     isMain: false, createdAt: Date.now(), serviceProvider: 'tour-operator'
