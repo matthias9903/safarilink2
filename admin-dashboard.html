@@ -308,12 +308,25 @@
       return;
     }
     tbody.innerHTML = requests.map(function(r) {
-      var badge = '<span class="badge ' + r.status + '">' + r.status.charAt(0).toUpperCase() + r.status.slice(1) + '</span>';
-      var actions = '<button class="btn-sm btn-review" onclick="openReview(' + r.id + ')">Review</button>';
-      if (r.status === 'pending') {
+          var order = { pending: 0, approved: 1, rejected: 2 };
+    var sorted = requests.slice().sort(function(a, b) {
+      var sa = order[a.status] != null ? order[a.status] : 9;
+      var sb = order[b.status] != null ? order[b.status] : 9;
+      if (sa !== sb) return sa - sb;
+      return String(b.created_at || '').localeCompare(String(a.created_at || ''));
+    });
+    tbody.innerHTML = sorted.map(function(r) {
+      var st = r.status || 'pending';
+      var badge = '<span class="badge ' + st + '">' + st.charAt(0).toUpperCase() + st.slice(1) + '</span>';
+      var actions = '<button class="btn-sm btn-review" onclick="openReview(' + r.id + ')">View</button>';
+      if (st === 'pending') {
         actions +=
           '<button class="btn-sm btn-approve" onclick="approveProvider(' + r.id + ')">Approve</button>' +
           '<button class="btn-sm btn-reject" onclick="rejectProvider(' + r.id + ')">Reject</button>';
+      } else if (st === 'approved') {
+        actions += '<span style="font-size:0.75rem;color:#166534;margin-left:6px;">Kept on record</span>';
+      } else if (st === 'rejected') {
+        actions += '<span style="font-size:0.75rem;color:#991b1b;margin-left:6px;">Kept on record</span>';
       }
       return '<tr>' +
         '<td><strong>' + esc(r.company_name) + '</strong></td>' +
@@ -405,7 +418,12 @@
 
   /* —— Team members from service providers —— */
   function loadMembers() {
-    var d = readPlatform();
+    var d = readPlatform();    
+    if (!d.teamMemberRegistry) d.teamMemberRegistry = [];
+    var byEmail = {};
+    d.teamMemberRegistry.forEach(function(m) {
+      if (m && m.email) byEmail[(m.email + '|' + (m.role || '')).toLowerCase()] = m;
+    });
     var pending = d.pendingTeam || [];
     // Also merge operator team pending from dedicated key
     try {
@@ -420,7 +438,29 @@
         }
       });
     } catch (e) {}
-    allMembers = pending;
+        // merge any pending into byEmail, then:
+    allMembers = Object.keys(byEmail).map(function(k) { return byEmail[k]; });
+    // also push brand-new pending not in registry:
+    (d.pendingTeam || []).forEach(function(m) {
+      if (!m.email) return;
+      var k = (m.email + '|' + (m.role || '')).toLowerCase();
+      if (!byEmail[k]) {
+        byEmail[k] = {
+          id: m.id || Date.now(),
+          name: m.name,
+          email: m.email,
+          role: m.role,
+          provider: m.provider,
+          providerLabel: m.providerLabel,
+          company: m.company,
+          status: 'pending',
+          createdAt: m.createdAt || Date.now()
+        };
+      }
+    });
+    allMembers = Object.keys(byEmail).map(function(k) { return byEmail[k]; });
+    d.teamMemberRegistry = allMembers;
+    writePlatform(d);
     renderMembers(allMembers);
   }
 
@@ -463,6 +503,36 @@
     // Update platform pendingTeam
     var d = readPlatform();
     d.pendingTeam = (d.pendingTeam || []).filter(function(p) { return p.email !== m.email; });
+          if (!d.teamMemberRegistry) d.teamMemberRegistry = [];
+      var updated = false;
+      d.teamMemberRegistry = d.teamMemberRegistry.map(function(x) {
+        if ((x.email || '').toLowerCase() === (m.email || '').toLowerCase()) {
+          updated = true;
+          return Object.assign({}, x, {
+            name: m.name,
+            email: m.email,
+            role: teamRole,
+            status: 'approved',
+            reviewedAt: Date.now(),
+            provider: platformRole,
+            company: m.company || x.company || ''
+          });
+        }
+        return x;
+      });
+      if (!updated) {
+        d.teamMemberRegistry.push({
+          id: m.id || Date.now(),
+          name: m.name,
+          email: m.email,
+          role: teamRole,
+          provider: platformRole,
+          company: m.company || '',
+          status: 'approved',
+          createdAt: Date.now(),
+          reviewedAt: Date.now()
+        });
+      }
     if (!d.team) d.team = {};
     var key = (m.provider === 'tour-operator') ? 'operator' : (m.provider || 'other');
     if (!d.team[key]) d.team[key] = [];
@@ -491,11 +561,34 @@
     loadMembers();
   }
 
-  function rejectMember(idx) {
+    function rejectMember(idx) {
     var m = allMembers[idx];
     if (!m || !confirm('Reject ' + m.name + '?')) return;
     var d = readPlatform();
     d.pendingTeam = (d.pendingTeam || []).filter(function(p) { return p.email !== m.email; });
+    if (!d.teamMemberRegistry) d.teamMemberRegistry = [];
+    var found = false;
+    d.teamMemberRegistry = d.teamMemberRegistry.map(function(x) {
+      if ((x.email || '').toLowerCase() === (m.email || '').toLowerCase()) {
+        found = true;
+        return Object.assign({}, x, { status: 'rejected', reviewedAt: Date.now() });
+      }
+      return x;
+    });
+    if (!found) {
+      d.teamMemberRegistry.push({
+        id: m.id || Date.now(),
+        name: m.name,
+        email: m.email,
+        role: m.role,
+        provider: m.provider,
+        providerLabel: m.providerLabel,
+        company: m.company,
+        status: 'rejected',
+        createdAt: m.createdAt || Date.now(),
+        reviewedAt: Date.now()
+      });
+    }
     writePlatform(d);
     try {
       var opTeam = JSON.parse(localStorage.getItem('safarilink_op_team') || '[]');
