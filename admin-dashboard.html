@@ -221,7 +221,7 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ password: pass })
     })
-    .then(function(r) { return r.json().then(function(data) { return { ok: r.ok, data: data }; }); })
+    .then(function(r) { return r.json().catch(function() { return {}; }).then(function(data) { return { ok: r.ok, status: r.status, data: data }; }); })
     .then(function(result) {
       if (result.ok && result.data && result.data.token) {
         useApi = true;
@@ -230,9 +230,23 @@
         enterDashboard();
         return;
       }
-      demoLogin(pass, err);
+      if (result.status === 401 || result.status === 429) {
+        err.textContent = (result.data && result.data.error) || 'Login failed.';
+        err.style.display = 'block';
+        return;
+      }
+      loginFallback(pass, err, 'The server returned an error (' + result.status + ').');
     })
-    .catch(function() { demoLogin(pass, err); });
+    .catch(function() { loginFallback(pass, err, 'Cannot reach the server.'); });
+  }
+
+  /* Demo mode (localStorage) is only for previewing the file on your own computer.
+     On the live site we show the real problem instead of silently showing fake data. */
+  function loginFallback(pass, err, msg) {
+    var local = location.protocol === 'file:' || /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+    if (local) { demoLogin(pass, err); return; }
+    err.textContent = msg + ' Check that the server is running, then try again.';
+    err.style.display = 'block';
   }
 
   function demoLogin(pass, err) {
@@ -282,10 +296,17 @@
         .then(function(r) { return r.json(); })
         .then(function(data) {
           if (Array.isArray(data)) { allRequests = data; renderRequests(allRequests); }
-          else loadRequestsLocal();
+          else {
+            if (data && /unauthor|invalid|token/i.test(data.error || '')) { logout(); alert('Your admin session is no longer valid. Please log in again.'); return; }
+            requestsError((data && data.error) || 'Unexpected response from the server.');
+          }
         })
-        .catch(loadRequestsLocal);
+        .catch(function() { requestsError('Cannot reach the server.'); });
     } else loadRequestsLocal();
+  }
+
+  function requestsError(msg) {
+    document.getElementById('requestsBody').innerHTML = '<tr><td colspan="8" class="empty-state">Could not load requests: ' + esc(msg) + ' <button class="btn-sm btn-review" onclick="loadRequests()">Retry</button></td></tr>';
   }
 
   function loadRequestsLocal() {
@@ -307,8 +328,7 @@
       tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No access requests yet.</td></tr>';
       return;
     }
-    tbody.innerHTML = requests.map(function(r) {
-          var order = { pending: 0, approved: 1, rejected: 2 };
+    var order = { pending: 0, approved: 1, rejected: 2 };
     var sorted = requests.slice().sort(function(a, b) {
       var sa = order[a.status] != null ? order[a.status] : 9;
       var sb = order[b.status] != null ? order[b.status] : 9;
@@ -438,10 +458,8 @@
         }
       });
     } catch (e) {}
-        // merge any pending into byEmail, then:
-    allMembers = Object.keys(byEmail).map(function(k) { return byEmail[k]; });
-    // also push brand-new pending not in registry:
-    (d.pendingTeam || []).forEach(function(m) {
+    // add brand-new pending members (platform + operator team) that are not in the registry yet:
+    pending.forEach(function(m) {
       if (!m.email) return;
       var k = (m.email + '|' + (m.role || '')).toLowerCase();
       if (!byEmail[k]) {
@@ -511,10 +529,10 @@
           return Object.assign({}, x, {
             name: m.name,
             email: m.email,
-            role: teamRole,
+            role: m.role,
             status: 'approved',
             reviewedAt: Date.now(),
-            provider: platformRole,
+            provider: m.provider,
             company: m.company || x.company || ''
           });
         }
@@ -525,8 +543,8 @@
           id: m.id || Date.now(),
           name: m.name,
           email: m.email,
-          role: teamRole,
-          provider: platformRole,
+          role: m.role,
+          provider: m.provider,
           company: m.company || '',
           status: 'approved',
           createdAt: Date.now(),
