@@ -770,6 +770,23 @@ app.post('/api/admin/reject/:id', adminAuth, async (req, res) => {
   res.json({ success: true, emailSent: mailResult.sent, emailNote: mailResult.reason || null });
 });
 
+// Re-open an approved or declined request so it can be reviewed again.
+// Approved -> pending also suspends the partner's login until they are approved again.
+app.post('/api/admin/reopen/:id', adminAuth, (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id) || id < 1) return res.status(400).json({ error: 'Invalid id' });
+  const r = db.prepare('SELECT * FROM access_requests WHERE id = ?').get(id);
+  if (!r) return res.status(404).json({ error: 'Request not found' });
+  if (r.status === 'pending') return res.status(400).json({ error: 'Already pending' });
+  db.transaction(() => {
+    if (r.status === 'approved') {
+      db.prepare("UPDATE users SET status = 'suspended' WHERE email = ? AND role = ?").run(r.email, r.business_type);
+    }
+    db.prepare("UPDATE access_requests SET status = 'pending', reviewed_at = NULL WHERE id = ?").run(id);
+  })();
+  res.json({ success: true });
+});
+
 app.get('/api/admin/stats', adminAuth, (_req, res) => {
   const pending = db.prepare(`SELECT COUNT(*) as c FROM access_requests WHERE status = 'pending'`).get();
   const approved = db.prepare(`SELECT COUNT(*) as c FROM access_requests WHERE status = 'approved'`).get();
