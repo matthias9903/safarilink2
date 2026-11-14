@@ -769,7 +769,7 @@ app.post('/api/admin/reject/:id', adminAuth, async (req, res) => {
   const mailResult = await sendMail(r.email, 'SafariLink — Access request update', mailText);
   res.json({ success: true, emailSent: mailResult.sent, emailNote: mailResult.reason || null });
 });
-
+app.post('/api/admin/team-member/approve', adminAuth, async (req, res) => {
 app.get('/api/admin/stats', adminAuth, (_req, res) => {
   const pending = db.prepare(`SELECT COUNT(*) as c FROM access_requests WHERE status = 'pending'`).get();
   const approved = db.prepare(`SELECT COUNT(*) as c FROM access_requests WHERE status = 'approved'`).get();
