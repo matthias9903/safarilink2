@@ -99,13 +99,7 @@ if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
 const uploadsDir = path.join(dataDir, 'uploads');
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
-app.use('/uploads', express.static(uploadsDir, {
-  fallthrough: false,
-  setHeaders(res) {
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.setHeader('Cache-Control', 'private, max-age=3600');
-  }
-}));
+// Uploaded business documents are private: they are only served to the admin via /api/admin/documents/:filename
 
 app.use(express.static(__dirname, {
   index: 'index.html',
@@ -768,6 +762,18 @@ app.post('/api/admin/reject/:id', adminAuth, async (req, res) => {
 
   const mailResult = await sendMail(r.email, 'SafariLink — Access request update', mailText);
   res.json({ success: true, emailSent: mailResult.sent, emailNote: mailResult.reason || null });
+});
+
+// Admin-only access to documents uploaded with an access request
+app.get('/api/admin/documents/:filename', adminAuth, (req, res) => {
+  const name = path.basename(String(req.params.filename || ''));
+  const file = path.join(uploadsDir, name);
+  if (!name || !file.startsWith(uploadsDir + path.sep) || !fs.existsSync(file)) {
+    return res.status(404).json({ error: 'File not found' });
+  }
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Cache-Control', 'private, no-store');
+  res.sendFile(file);
 });
 
 // Re-open an approved or declined request so it can be reviewed again.
