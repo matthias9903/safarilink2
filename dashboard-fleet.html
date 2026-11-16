@@ -291,6 +291,10 @@
   .sidebar-footer > div:first-child { color: var(--forest-green) !important; }
   .sidebar-footer > div:last-child { opacity: 0.75 !important; color: var(--forest-green) !important; }
 
+
+.rt-grid{width:100%;border-collapse:collapse}.rt-grid th,.rt-grid td{padding:4px 6px;font-size:.8rem;text-align:left}.rt-grid input{width:100%}
+.form-group textarea{width:100%;min-height:68px;padding:8px 10px;border:1px solid #d4cfc6;border-radius:6px;font:inherit;font-size:.86rem;resize:vertical}
+.pol-sec{grid-column:1/-1;font-weight:700;font-size:.9rem;margin-top:8px;padding-top:10px;border-top:1px solid #e4e0d6}
 </style>
 </head>
 <script>
@@ -422,7 +426,7 @@
 </div>
 </div>
 <div class="page" id="page-fleet">
-<div class="filters"><button class="btn btn-primary" onclick="document.getElementById('vehForm').style.display='block'"><i data-lucide="plus"></i> Add vehicle</button></div>
+<div class="filters"><button class="btn btn-primary" onclick="openVehForm()"><i data-lucide="plus"></i> Add vehicle</button></div>
 <div id="vehForm" class="card" style="display:none;padding:16px;margin-bottom:14px">
 <div class="form-grid">
 <div class="form-group"><label>Plate *</label><input id="vPlate"></div>
@@ -441,8 +445,14 @@
 </select></div>
 <div class="form-group"><label>Year</label><input type="number" id="vYear" value="2022"></div>
 <div class="form-group"><label>Seats</label><input type="number" id="vSeats" value="7"></div>
-<div class="form-group"><label>Day rate (USD)</label><input type="number" id="vRate" value="180"></div>
+<div class="form-group"><label>Car only — price per day (USD)</label><input type="number" min="0" id="vRate" value="180"></div>
+<div class="form-group"><label>Car with driver — price per day (USD)</label><input type="number" min="0" id="vDriverRate" placeholder="e.g. 260"></div>
 <div class="form-group full"><label>Features (comma)</label><input id="vFeat" placeholder="Pop-up roof, 4WD, Fridge"></div>
+<div class="pol-sec">Terms &amp; policies (shown to tour operators)</div>
+<div class="form-group full"><label>Terms &amp; conditions</label><textarea id="vTerms" placeholder="e.g. Fuel, park fees, driver accommodation, daily mileage limits..."></textarea></div>
+<div class="form-group full"><label>Cancellation &amp; amendment policy</label><textarea id="vCancel" placeholder="e.g. 30+ days free; 14-29 days 50%; under 14 days 100%"></textarea></div>
+<div class="form-group full"><label>Payment terms</label><textarea id="vPay" placeholder="e.g. 40% deposit to confirm, balance before pick-up"></textarea></div>
+<div class="form-group full"><label>Liability</label><textarea id="vLiab" placeholder="e.g. Insurance cover, damage excess, passenger responsibilities"></textarea></div>
 <div class="form-group full"><label>Photos (max 5 · first is card preview)</label>
 <input type="file" id="vImg" accept="image/*" multiple>
 <span class="meta">Insurance expiry, TALA and inspection are set under <strong>Insurance</strong> after saving.</span></div>
@@ -830,35 +840,46 @@ function renderDash(){
 }
 
 
-function renderFleet(){var st=document.getElementById('fFilter').value,cat=document.getElementById('fCat').value;document.getElementById('fleetGrid').innerHTML=slGet().vehicles.filter(function(v){return(st==='all'||v.status===st)&&(cat==='all'||v.category===cat)}).map(function(v){var img=v.preview?'<img src="'+v.preview+'">':'<i data-lucide="car" class="ph-icon"></i><span style="font-size:.75rem">No photo</span>';return '<div class="prop-card" onclick="openVeh('+v.id+')"><div class="img">'+img+'</div><div class="body"><h4>'+esc(v.plate)+'</h4><div class="meta">'+esc(v.category)+' · '+esc(v.model)+'</div><div style="margin-top:6px">'+badge(v.status)+'</div><div class="meta">Free from '+esc(v.availableFrom)+' · '+money(v.dayRate)+'/day</div></div></div>'}).join('');lucide.createIcons()}
-function openVeh(id){var v=slGet().vehicles.find(function(x){return x.id===id});if(!v)return;document.getElementById('modalBody').innerHTML='<h3>'+esc(v.plate)+'</h3><p class="meta">'+esc(v.model)+'</p><p>'+badge(v.status)+' · Available '+esc(v.availableFrom)+'</p><p>'+esc((v.features||[]).join(', '))+'</p><button class="btn" onclick="document.getElementById(\'modal\').classList.remove(\'show\')"><i data-lucide="x"></i> Close</button>';document.getElementById('modal').classList.add('show');lucide.createIcons()}
+function renderFleet(){var st=document.getElementById('fFilter').value,cat=document.getElementById('fCat').value;document.getElementById('fleetGrid').innerHTML=slGet().vehicles.filter(function(v){return(st==='all'||v.status===st)&&(cat==='all'||v.category===cat)}).map(function(v){var img=v.preview?'<img src="'+v.preview+'">':'<i data-lucide="car" class="ph-icon"></i><span style="font-size:.75rem">No photo</span>';return '<div class="prop-card" onclick="openVeh('+v.id+')"><div class="img">'+img+'</div><div class="body"><h4>'+esc(v.plate)+'</h4><div class="meta">'+esc(v.category)+' · '+esc(v.model)+'</div><div style="margin-top:6px">'+badge(v.status)+'</div><div class="meta">Free from '+esc(v.availableFrom)+' · Car '+money(v.dayRate)+'/day'+(v.withDriverRate?' · With driver '+money(v.withDriverRate)+'/day':'')+'</div></div></div>'}).join('');lucide.createIcons()}
+var POL_LABELS=[['terms','Terms & conditions'],['cancellation','Cancellation & amendment policy'],['payment','Payment terms'],['liability','Liability']];
+function openVeh(id){var v=slGet().vehicles.find(function(x){return x.id===id});if(!v)return;
+  var p=v.policies||{},pol=POL_LABELS.filter(function(l){return p[l[0]]}).map(function(l){return '<div style="margin-top:8px"><strong style="font-size:.78rem;color:var(--forest-green,#1a5a3a)">'+l[1]+'</strong><div style="white-space:pre-wrap;font-size:.86rem">'+esc(p[l[0]])+'</div></div>'}).join('');
+  document.getElementById('modalBody').innerHTML='<h3>'+esc(v.plate)+'</h3><p class="meta">'+esc(v.model)+'</p><p>'+badge(v.status)+' · Available '+esc(v.availableFrom)+'</p><p>'+esc((v.features||[]).join(', '))+'</p>'+
+   '<p style="margin-top:8px"><strong>Car only:</strong> '+money(v.dayRate)+' / day'+(v.withDriverRate?'<br><strong>Car with driver:</strong> '+money(v.withDriverRate)+' / day':'')+'</p>'+(pol||'<p class="meta" style="color:#92400e">No terms or policies added yet.</p>')+
+   '<div style="display:flex;gap:8px;margin-top:12px"><button class="btn btn-primary" onclick="document.getElementById(\'modal\').classList.remove(\'show\');openVehForm('+v.id+')"><i data-lucide="pencil"></i> Edit rates &amp; policies</button><button class="btn" onclick="document.getElementById(\'modal\').classList.remove(\'show\')"><i data-lucide="x"></i> Close</button></div>';
+  document.getElementById('modal').classList.add('show');lucide.createIcons()}
+var editVehId=null;
+function openVehForm(id){
+  editVehId=id||null;
+  var v=id?slGet().vehicles.find(function(x){return x.id===id}):null,p=(v&&v.policies)||{};
+  var set=function(k,x){var e=document.getElementById(k);if(e)e.value=(x==null?'':x)};
+  set('vPlate',v?v.plate:'');set('vCat',v?v.category:'Safari car (extended 4x4)');set('vModel',v?v.model:'Safari Land Cruiser Extended');set('vYear',v?v.year:2022);set('vSeats',v?v.seats:7);
+  set('vRate',v?v.dayRate:180);set('vDriverRate',v&&v.withDriverRate?v.withDriverRate:'');set('vFeat',v?(v.features||[]).join(', '):'');set('vImg','');
+  set('vTerms',p.terms);set('vCancel',p.cancellation);set('vPay',p.payment);set('vLiab',p.liability);
+  var form=document.getElementById('vehForm');form.style.display='block';form.scrollIntoView({behavior:'smooth',block:'start'});
+}
 async function addVehicle(){
-  var plate=(document.getElementById('vPlate')||{}).value;plate=(plate||'').trim();
+  var val=function(id){return (document.getElementById(id)||{}).value||''};
+  var plate=val('vPlate').trim();
   if(!plate){alert('Plate required');return;}
-  var files=(document.getElementById('vImg')||{}).files||[];
-  var imgs=[];
-  for(var i=0;i<Math.min(files.length,5);i++){
-    try{imgs.push(await fileToDataUrl(files[i]));}catch(e){}
-  }
-  var rate=Number((document.getElementById('vRate')||{}).value)||180;
-  var feats=((document.getElementById('vFeat')||{}).value||'').split(',').map(function(s){return s.trim()}).filter(Boolean);
+  var files=(document.getElementById('vImg')||{}).files||[],imgs=[];
+  for(var i=0;i<Math.min(files.length,5);i++){try{imgs.push(await fileToDataUrl(files[i]));}catch(e){}}
+  var rate=Number(val('vRate'))||180,driver=Number(val('vDriverRate'))||0;
+  var feats=val('vFeat').split(',').map(function(s){return s.trim()}).filter(Boolean);
+  var fields={plate:plate,category:val('vCat')||'Safari car (extended 4x4)',model:val('vModel'),year:Number(val('vYear'))||2022,seats:Number(val('vSeats'))||7,
+    dayRate:rate,safariDayRate:rate,transferRate:Math.round(rate*0.5),withDriverRate:driver,features:feats,
+    policies:{terms:val('vTerms').trim(),cancellation:val('vCancel').trim(),payment:val('vPay').trim(),liability:val('vLiab').trim()}};
+  var editing=editVehId;
   slUpdate(function(d){
     if(!d.vehicles)d.vehicles=[];
-    d.vehicles.push({
-      id:Date.now(), plate:plate,
-      category:(document.getElementById('vCat')||{}).value||'Safari car (extended 4x4)',
-      model:(document.getElementById('vModel')||{}).value||'',
-      year:Number((document.getElementById('vYear')||{}).value)||2022,
-      seats:Number((document.getElementById('vSeats')||{}).value)||7,
-      dayRate:rate, safariDayRate:rate, transferRate:Math.round(rate*0.5),
-      features:feats, status:'Available', base:'Arusha',
-      images:imgs, image:imgs[0]||'', preview:imgs[0]||'',
-      insuranceExpiry:'', insuranceNote:'', tala:'', inspected:false, parkReg:false
-    });
+    if(editing){var v=d.vehicles.find(function(x){return x.id===editing});if(v){Object.assign(v,fields);if(imgs.length){v.images=imgs;v.image=imgs[0];v.preview=imgs[0]}return}}
+    d.vehicles.push(Object.assign({id:Date.now(),status:'Available',base:'Arusha',images:imgs,image:imgs[0]||'',preview:imgs[0]||'',
+      insuranceExpiry:'',insuranceNote:'',tala:'',inspected:false,parkReg:false},fields));
   });
+  editVehId=null;
   var form=document.getElementById('vehForm');if(form)form.style.display='none';
-  pushActivity('Vehicle added: '+plate);
-  pushAlert('New vehicle listed','info');
+  pushActivity(editing?'Vehicle updated: '+plate:'Vehicle added: '+plate);
+  if(!editing)pushAlert('New vehicle listed','info');
   go('fleet');
   renderFleet();
 }
