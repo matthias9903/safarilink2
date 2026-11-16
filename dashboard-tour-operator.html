@@ -1646,6 +1646,31 @@ function showLoginDetailsModal(member, tempPass){
 
 
 /* Live sourcing — ONLY partner data from shared store (no static cards) */
+/* ---- Partner rates & policies shown to the operator ---- */
+var ROOM_POLICY_LABELS=[['extras','Possible extra costs (extra activities)'],['child','Child policy'],['terms','Terms & conditions'],['leader','Group leader / tour leader policy'],['payment','Payment terms'],['allocation','Allocation of rooms'],['liability','Liability'],['cancellation','Cancellation & amendment policy']];
+var FLEET_POLICY_LABELS=[['terms','Terms & conditions'],['cancellation','Cancellation & amendment policy'],['payment','Payment terms'],['liability','Liability']];
+function policyListHtml(p, labels){
+  return labels.filter(function(l){ return p && p[l[0]]; }).map(function(l){
+    return '<div style="margin-top:8px;"><div style="font-size:.76rem;font-weight:700;color:var(--primary);">'+l[1]+'</div>' +
+           '<div style="font-size:.84rem;white-space:pre-wrap;line-height:1.5;">'+esc(p[l[0]])+'</div></div>';
+  }).join('');
+}
+function roomTermsHtml(rooms){
+  var usd = function(n){ return n > 0 ? '$' + Number(n).toLocaleString() : '—'; };
+  var blocks = (rooms || []).map(function(r){
+    var b = r.boardRates || {}, p = r.policies || {};
+    var hasRates = [b.bb,b.hb,b.fb,b.resBb,b.resHb,b.resFb].some(function(x){ return x > 0; });
+    var pol = policyListHtml(p, ROOM_POLICY_LABELS);
+    if (!hasRates && !pol) return '';
+    var rates = hasRates ?
+      '<table style="width:100%;font-size:.82rem;border-collapse:collapse;margin-top:8px;"><thead><tr style="text-align:left;border-bottom:1px solid var(--border);"><th style="padding:6px 4px;"></th><th>BB</th><th>HB</th><th>FB</th></tr></thead><tbody>' +
+      '<tr><td style="padding:6px 4px;">Non-resident</td><td>'+usd(b.bb)+'</td><td>'+usd(b.hb)+'</td><td>'+usd(b.fb)+'</td></tr>' +
+      '<tr><td style="padding:6px 4px;">Residents</td><td>'+usd(b.resBb)+'</td><td>'+usd(b.resHb)+'</td><td>'+usd(b.resFb)+'</td></tr></tbody></table>' +
+      '<div style="font-size:.72rem;color:var(--warm-gray);margin-top:4px;">BB = Bed &amp; Breakfast · HB = Half Board · FB = Full Board · USD per night</div>' : '';
+    return '<details style="border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px;"><summary style="cursor:pointer;font-weight:600;">'+esc(r.name)+' — board rates &amp; policies</summary>'+rates+pol+'</details>';
+  }).join('');
+  return blocks ? '<div style="font-weight:700;margin:4px 0 8px;">Board-basis rates &amp; policies</div>' + blocks + '<div style="height:10px;"></div>' : '';
+}
 function getLiveAccommodations(){
   var d = slGet();
   return (d.properties || []).map(function(p){
@@ -1674,7 +1699,8 @@ function getLiveFleet(){
       features: Array.isArray(v.features) ? v.features.join(', ') : (v.features||''),
       description: (v.model||'') + ' · base ' + (v.base||'Arusha'),
       preview: v.preview||'', plate: v.plate||'', base: v.base||'',
-      insuranceExpiry: v.insuranceExpiry||'', parkReg: !!v.parkReg
+      insuranceExpiry: v.insuranceExpiry||'', parkReg: !!v.parkReg,
+      withDriverRate: v.withDriverRate||0, policies: v.policies||{}
     };
   });
 }
@@ -2208,6 +2234,7 @@ if(typeof slOnChange==='function')slOnChange(live);
               '<thead><tr style="text-align:left;border-bottom:1px solid var(--border);">' +
               '<th style="padding:8px 6px;">Room type</th><th>Guests</th><th>Units</th><th>STO / night</th><th>Public</th><th>Amenities</th></tr></thead>' +
               '<tbody>'+roomRows+'</tbody></table></div>' +
+            roomTermsHtml(rooms) +
             '<div style="display:flex;gap:8px;">' +
                 '<button class="btn btn-primary" style="flex:1;justify-content:center;" onclick="accomReserve('+a.id+')"><i data-lucide="send" style="width:14px;height:14px;"></i> Reserve</button>' +
                 '<button class="btn btn-secondary" onclick="addOpFavoriteByKey(\x27ac\x27,'+a.id+')"><i data-lucide="heart" style="width:14px;height:14px;"></i> Save to favorites</button>' +
@@ -2297,9 +2324,11 @@ if(typeof slOnChange==='function')slOnChange(live);
                 '<span style="font-size:.85rem;">' + v.seats + ' seats</span>' +
             '</div>' +
             '<div style="margin-bottom:8px;"><strong>Year:</strong> ' + v.year + '</div>' +
-            '<div style="margin-bottom:8px;"><strong>Rate:</strong> $' + v.ratePerDay + ' / day</div>' +
+            '<div style="margin-bottom:8px;"><strong>Car only:</strong> $' + v.ratePerDay + ' / day</div>' +
+            (v.withDriverRate ? '<div style="margin-bottom:8px;"><strong>Car with driver:</strong> $' + v.withDriverRate + ' / day</div>' : '') +
             '<div style="margin-bottom:8px;"><strong>Features:</strong> ' + esc(v.features) + '</div>' +
             '<p style="color:var(--charcoal);line-height:1.5;">' + esc(v.description) + '</p>' +
+            (policyListHtml(v.policies, FLEET_POLICY_LABELS) ? '<div style="font-weight:700;margin:14px 0 4px;">Terms &amp; policies</div>' + policyListHtml(v.policies, FLEET_POLICY_LABELS) : '') +
             '<div style="display:flex;gap:8px;margin-top:16px;">' +
                 '<button class="btn btn-primary" style="flex:1;justify-content:center;" onclick="fleetLease(' + v.id + ')"><i data-lucide="key" style="width:14px;height:14px;"></i> Lease Vehicle</button>' +
                 '<button class="btn btn-secondary" onclick="addOpFavoriteByKey(\x27fl\x27,'+v.id+')"><i data-lucide="heart" style="width:14px;height:14px;"></i> Save to favorites</button>' +
