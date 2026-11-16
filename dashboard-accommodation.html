@@ -314,6 +314,10 @@
   .sidebar-footer > div:first-child { color: var(--forest-green) !important; }
   .sidebar-footer > div:last-child { opacity: 0.75 !important; color: var(--forest-green) !important; }
 
+
+.rt-grid{width:100%;border-collapse:collapse}.rt-grid th,.rt-grid td{padding:4px 6px;font-size:.8rem;text-align:left}.rt-grid input{width:100%}
+.form-group textarea{width:100%;min-height:68px;padding:8px 10px;border:1px solid #d4cfc6;border-radius:6px;font:inherit;font-size:.86rem;resize:vertical}
+.pol-sec{grid-column:1/-1;font-weight:700;font-size:.9rem;margin-top:8px;padding-top:10px;border-top:1px solid #e4e0d6}
 </style>
 </head>
 
@@ -519,7 +523,7 @@
      Inventory & rates per property for operators to book
      ============================================================ -->
 <div class="page" id="page-rooms">
-<div class="filters"><button class="btn btn-primary" onclick="fillPropertySelects();document.getElementById('roomForm').style.display='block'"><i data-lucide="plus"></i> Add room type</button></div>
+<div class="filters"><button class="btn btn-primary" onclick="openRoomForm()"><i data-lucide="plus"></i> Add room type</button></div>
 <div id="roomForm" class="card" style="display:none;padding:16px;margin-bottom:14px;max-width:800px">
 <div class="form-grid">
 <div class="form-group"><label>Name *</label><input id="rName"></div>
@@ -530,6 +534,19 @@
 <div class="form-group"><label>Guests</label><input type="number" id="rGuests" value="2"></div>
 <div class="form-group full"><label>Amenities</label><input id="rAm"></div>
 <div class="form-group full"><label>Images</label><input type="file" id="rImg" accept="image/*" multiple></div>
+<div class="pol-sec">Room rates by board basis (USD per night)</div>
+<div class="form-group full"><table class="rt-grid"><thead><tr><th></th><th>BB · Bed &amp; Breakfast</th><th>HB · Half Board</th><th>FB · Full Board</th></tr></thead><tbody>
+<tr><td>Non-resident</td><td><input type="number" min="0" id="rBB"></td><td><input type="number" min="0" id="rHB"></td><td><input type="number" min="0" id="rFB"></td></tr>
+<tr><td>Residents</td><td><input type="number" min="0" id="rResBB"></td><td><input type="number" min="0" id="rResHB"></td><td><input type="number" min="0" id="rResFB"></td></tr></tbody></table></div>
+<div class="pol-sec">Policies &amp; terms (shown to tour operators)</div>
+<div class="form-group full"><label>Possible extra costs (extra activities)</label><textarea id="rExtras" placeholder="e.g. Game drive $60 pp, Balloon safari $550 pp, Laundry..."></textarea></div>
+<div class="form-group full"><label>Child policy</label><textarea id="rChild" placeholder="e.g. Under 3 free; 3-11 years 50% sharing with parents; 12+ pay adult rate"></textarea></div>
+<div class="form-group full"><label>Terms &amp; conditions</label><textarea id="rTerms"></textarea></div>
+<div class="form-group full"><label>Group leader / tour leader policy</label><textarea id="rLeader" placeholder="e.g. 1 free tour leader per 10 paying guests"></textarea></div>
+<div class="form-group full"><label>Payment terms</label><textarea id="rPayment" placeholder="e.g. 30% deposit on confirmation, balance 45 days before arrival"></textarea></div>
+<div class="form-group full"><label>Allocation of rooms</label><textarea id="rAlloc" placeholder="e.g. Rooms held for 14 days, released if not confirmed"></textarea></div>
+<div class="form-group full"><label>Liability</label><textarea id="rLiab"></textarea></div>
+<div class="form-group full"><label>Cancellation &amp; amendment policy</label><textarea id="rCancel" placeholder="e.g. 60+ days free; 30-59 days 50%; under 30 days 100%"></textarea></div>
 </div>
 <button class="btn btn-primary" style="margin-top:10px" onclick="addRoom()"><i data-lucide="save"></i> Save room type</button>
 <button class="btn" style="margin-top:10px" onclick="document.getElementById('roomForm').style.display='none'">Close</button>
@@ -1109,7 +1126,34 @@ function replyRes(id){slUpdate(function(d){d.reservations.forEach(function(r){if
 /* ---------- Simulate operator booking (real-time test) ---------- */
 
 function openProp(id){var p=slGet().properties.find(function(x){return x.id===id});if(!p)return;var rooms=slGet().roomTypes.filter(function(r){return r.propertyId===id});var imgs=(p.images||[]).map(function(s,i){return '<div class="g"><img src="'+s+'"><div class="cap">'+(i?'Photo '+(i+1):'Preview')+'</div></div>'}).join('');document.getElementById('modalBody').innerHTML='<h3>'+esc(p.name)+'</h3><p class="meta">'+esc(p.type)+' · '+esc(p.location)+'</p><p style="margin:10px 0">'+esc(p.desc||'')+'</p><p><strong>Amenities:</strong> '+esc((p.amenities||[]).join(', '))+'</p><div class="gallery" style="margin:12px 0">'+imgs+'</div><h4>Rooms</h4>'+rooms.map(function(r){return '<div class="meta">'+esc(r.name)+' · STO '+money(r.sto)+'</div>'}).join('')+'<br><button class="btn" onclick="document.getElementById(\'modal\').classList.remove(\'show\')"><i data-lucide="x"></i> Close</button>';document.getElementById('modal').classList.add('show');lucide.createIcons()}
-async function addRoom(){var n=document.getElementById('rName').value.trim(),sto=Number(document.getElementById('rSto').value),pid=Number(document.getElementById('rProp').value);if(!n||!sto||!pid){alert('Required');return}var files=document.getElementById('rImg').files,imgs=[];for(var i=0;i<files.length;i++)imgs.push(await fileToDataUrl(files[i]));slUpdate(function(d){d.roomTypes.push({id:Date.now(),propertyId:pid,name:n,guests:Number(document.getElementById('rGuests').value)||2,units:Number(document.getElementById('rUnits').value)||1,sto:sto,pub:Number(document.getElementById('rPub').value)||sto,location:'',amenities:(document.getElementById('rAm').value||'').split(',').map(function(s){return s.trim()}).filter(Boolean),images:imgs,notes:''})});document.getElementById("roomForm").style.display="none";pushActivity("Room type added");renderRooms()}
+var editRoomId=null;
+function openRoomForm(id){
+  fillPropertySelects();editRoomId=id||null;
+  var r=id?(slGet().roomTypes||[]).find(function(x){return x.id===id}):null,b=(r&&r.boardRates)||{},p=(r&&r.policies)||{};
+  var set=function(k,v){var e=document.getElementById(k);if(e)e.value=(v==null?'':v)};
+  set('rName',r?r.name:'');set('rProp',r?r.propertyId:'');set('rSto',r?r.sto:'');set('rPub',r?r.pub:'');set('rUnits',r?r.units:1);set('rGuests',r?r.guests:2);
+  set('rAm',r?(r.amenities||[]).join(', '):'');set('rImg','');
+  set('rBB',b.bb||'');set('rHB',b.hb||'');set('rFB',b.fb||'');set('rResBB',b.resBb||'');set('rResHB',b.resHb||'');set('rResFB',b.resFb||'');
+  set('rExtras',p.extras);set('rChild',p.child);set('rTerms',p.terms);set('rLeader',p.leader);set('rPayment',p.payment);set('rAlloc',p.allocation);set('rLiab',p.liability);set('rCancel',p.cancellation);
+  var f=document.getElementById('roomForm');f.style.display='block';f.scrollIntoView({behavior:'smooth',block:'start'});
+}
+async function addRoom(){
+  var val=function(id){return (document.getElementById(id)||{}).value||''},num=function(id){var v=Number(val(id));return v>0?v:0};
+  var n=val('rName').trim(),sto=Number(val('rSto')),pid=Number(val('rProp'));
+  if(!n||!sto||!pid){alert('Name, property and STO rate are required');return}
+  var files=document.getElementById('rImg').files,imgs=[];
+  for(var i=0;i<files.length;i++)imgs.push(await fileToDataUrl(files[i]));
+  var fields={propertyId:pid,name:n,guests:Number(val('rGuests'))||2,units:Number(val('rUnits'))||1,sto:sto,pub:Number(val('rPub'))||sto,
+    amenities:val('rAm').split(',').map(function(s){return s.trim()}).filter(Boolean),
+    boardRates:{bb:num('rBB'),hb:num('rHB'),fb:num('rFB'),resBb:num('rResBB'),resHb:num('rResHB'),resFb:num('rResFB')},
+    policies:{extras:val('rExtras').trim(),child:val('rChild').trim(),terms:val('rTerms').trim(),leader:val('rLeader').trim(),payment:val('rPayment').trim(),allocation:val('rAlloc').trim(),liability:val('rLiab').trim(),cancellation:val('rCancel').trim()}};
+  var editing=editRoomId;
+  slUpdate(function(d){
+    if(editing){var r=d.roomTypes.find(function(x){return x.id===editing});if(r){Object.assign(r,fields);if(imgs.length)r.images=imgs;return}}
+    d.roomTypes.push(Object.assign({id:Date.now(),location:'',images:imgs,notes:''},fields));
+  });
+  editRoomId=null;document.getElementById("roomForm").style.display="none";pushActivity(editing?"Room type updated":"Room type added");renderRooms()
+}
 /* ---------- Render: Room type cards ---------- */
 
 function renderProps(){
@@ -1163,6 +1207,10 @@ async function addProp(){
   pushActivity('Property added: '+n);
 }
 
+function roomRateLine(r){var b=r.boardRates||{},x=[];if(b.bb)x.push('BB '+money(b.bb));if(b.hb)x.push('HB '+money(b.hb));if(b.fb)x.push('FB '+money(b.fb));
+  var res=[];if(b.resBb)res.push('BB '+money(b.resBb));if(b.resHb)res.push('HB '+money(b.resHb));if(b.resFb)res.push('FB '+money(b.resFb));
+  var pol=Object.keys(r.policies||{}).filter(function(k){return r.policies[k]}).length;
+  return (x.length?'<div class="meta">Non-res: '+x.join(' · ')+'</div>':'')+(res.length?'<div class="meta">Residents: '+res.join(' · ')+'</div>':'')+(pol?'<div class="meta" style="color:#166534">'+pol+' polic'+(pol>1?'ies':'y')+' added</div>':'<div class="meta" style="color:#92400e">No policies added yet</div>')}
 function renderRooms(){
   fillPropertySelects();
   var rProp=document.getElementById('rProp');
@@ -1170,7 +1218,7 @@ function renderRooms(){
   if(rProp) rProp.innerHTML='<option value="">— Select property —</option>'+props.map(function(p){return '<option value="'+p.id+'">'+esc(p.name)+'</option>'}).join('');
   var list=slGet().roomTypes||[];
   var pg=paginate('rooms',list,10);
-  document.getElementById('roomGrid').innerHTML=pg.slice.map(function(r){var img=(r.images&&r.images[0])?'<img src="'+r.images[0]+'">':'<i data-lucide="bed-double" class="ph-icon"></i><span style="font-size:.75rem">No photo</span>';return '<div class="prop-card"><div class="img">'+img+'</div><div class="body"><h4>'+esc(r.name)+'</h4><div class="meta">'+esc(propName(r.propertyId))+' · STO '+money(r.sto)+' · '+r.units+' units</div><div class="meta">'+esc((r.amenities||[]).join(' · '))+'</div></div></div>'}).join('');
+  document.getElementById('roomGrid').innerHTML=pg.slice.map(function(r){var img=(r.images&&r.images[0])?'<img src="'+r.images[0]+'">':'<i data-lucide="bed-double" class="ph-icon"></i><span style="font-size:.75rem">No photo</span>';return '<div class="prop-card"><div class="img">'+img+'</div><div class="body"><h4>'+esc(r.name)+'</h4><div class="meta">'+esc(propName(r.propertyId))+' · STO '+money(r.sto)+' · '+r.units+' units</div><div class="meta">'+esc((r.amenities||[]).join(' · '))+'</div>'+roomRateLine(r)+'<button class="btn" style="margin-top:8px" onclick="openRoomForm('+r.id+')"><i data-lucide="pencil"></i> Edit rates &amp; policies</button></div></div>'}).join('');
   renderPager('pagerRooms','rooms',pg.total,'renderRooms');
   lucide.createIcons();
 }
@@ -1577,7 +1625,7 @@ function ensureAdminSeatFromSession(){
   saveAccomTeam(list);
 }
 function renderTeam(){
-  cleanLegacyAccomTeam();ensureAdminSeatFromSession();
+  cleanLegacyAccomTeam();ensureAdminSeatFromSession();cleanPendingManagers();
   var list = loadAccomTeam();
   var pending = list.filter(function(m){ return m.status === 'Pending'; }).length;
   var cnt = document.getElementById('teamSeatCount');
@@ -1614,7 +1662,7 @@ btn.style.display = (hasAdmin && canAddMore) ? 'inline-flex' : 'none';
   actions += '<div style="margin-top:6px"><button type="button" class="btn" onclick="removeTeamMember(\''+String(m.id)+'\')">Remove</button></div>';
 }
     if (m.status === 'Pending') {
-      actions = '<div class="meta" style="margin-top:4px;color:#92400e">Awaiting <strong>SafariLink Admin</strong> approval — login will be emailed after approval.</div>';
+      actions = '<div class="meta" style="margin-top:4px;color:#92400e">Awaiting <strong>SafariLink Admin</strong> approval — login will be emailed after approval.</div>' + actions;
     } else if (m.status === 'Active' && !m.isMain && m.role !== 'Admin') {
       actions = '<div class="meta" style="margin-top:4px">Approved by SafariLink · login emailed</div>';
     }
@@ -1632,6 +1680,20 @@ btn.style.display = (hasAdmin && canAddMore) ? 'inline-flex' : 'none';
   } catch(e){}
 }
 
+/* One-time removal of the Manager account that was waiting for approval */
+function cleanPendingManagers(){
+  var FLAG='sl_accom_pending_mgr_removed_v1';
+  try{
+    if(localStorage.getItem(FLAG))return;
+    var list=loadAccomTeam(),kept=list.filter(function(m){return !(m.role==='Manager'&&m.status==='Pending')});
+    if(kept.length!==list.length)saveAccomTeam(kept);
+    slUpdate(function(d){
+      if(d.pendingTeam)d.pendingTeam=d.pendingTeam.filter(function(p){return !(p.role==='Manager'&&(p.side||'accommodation')==='accommodation')});
+      if(d.teamMemberRegistry)d.teamMemberRegistry=d.teamMemberRegistry.filter(function(x){return !(x.role==='Manager'&&String(x.status).toLowerCase()==='pending'&&(x.provider==='accommodation'||x.side==='accommodation'))});
+    });
+    localStorage.setItem(FLAG,'1');
+  }catch(e){}
+}
 function removeTeamMember(id){
   var list = loadAccomTeam();
   var m = list.find(function(x){ return String(x.id) === String(id); });
