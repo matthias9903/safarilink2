@@ -1213,9 +1213,6 @@ function roomRateLine(r){var b=r.boardRates||{},x=[];if(b.bb)x.push('BB '+money(
   return (x.length?'<div class="meta">Non-res: '+x.join(' · ')+'</div>':'')+(res.length?'<div class="meta">Residents: '+res.join(' · ')+'</div>':'')+(pol?'<div class="meta" style="color:#166534">'+pol+' polic'+(pol>1?'ies':'y')+' added</div>':'<div class="meta" style="color:#92400e">No policies added yet</div>')}
 function renderRooms(){
   fillPropertySelects();
-  var rProp=document.getElementById('rProp');
-  var props=slGet().properties||[];
-  if(rProp) rProp.innerHTML='<option value="">— Select property —</option>'+props.map(function(p){return '<option value="'+p.id+'">'+esc(p.name)+'</option>'}).join('');
   var list=slGet().roomTypes||[];
   var pg=paginate('rooms',list,10);
   document.getElementById('roomGrid').innerHTML=pg.slice.map(function(r){var img=(r.images&&r.images[0])?'<img src="'+r.images[0]+'">':'<i data-lucide="bed-double" class="ph-icon"></i><span style="font-size:.75rem">No photo</span>';return '<div class="prop-card"><div class="img">'+img+'</div><div class="body"><h4>'+esc(r.name)+'</h4><div class="meta">'+esc(propName(r.propertyId))+' · STO '+money(r.sto)+' · '+r.units+' units</div><div class="meta">'+esc((r.amenities||[]).join(' · '))+'</div>'+roomRateLine(r)+'<button class="btn" style="margin-top:8px" onclick="openRoomForm('+r.id+')"><i data-lucide="pencil"></i> Edit rates &amp; policies</button></div></div>'}).join('');
@@ -1455,7 +1452,9 @@ function onAvPropChange(){
   var pid=Number(document.getElementById('avProp').value)||0;
   var sel=document.getElementById('avRoom');
   if(!sel)return;
+  var curRoom=sel.value;
   sel.innerHTML='<option value="">All rooms at property</option>'+(slGet().roomTypes||[]).filter(function(r){return !pid||r.propertyId===pid;}).map(function(r){return '<option value="'+r.id+'">'+esc(r.name)+'</option>';}).join('');
+  if(curRoom)try{sel.value=curRoom}catch(e){}
   renderCal();
 }
 function calShift(n){
