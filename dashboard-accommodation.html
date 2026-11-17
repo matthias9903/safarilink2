@@ -389,6 +389,8 @@
   var map = {
     'dashboard-fleet.html': ['fleet', 'fleet-owner'],
     'dashboard-accommodation.html': ['accommodation', 'accommodation-provider'],
+    'dashboard-accommodation1.html': ['accommodation', 'accommodation-provider'],
+    'dashboard-accommodation1-2.html': ['accommodation', 'accommodation-provider'],
     'dashboard-tour-operator.html': ['tour-operator', 'service-offering'],
     'dashboard-guide.html': ['guide']
   };
@@ -773,7 +775,7 @@
 </div>
 </div>
 
-<div class="modal-bg" id="modal"><div class="modal" id="modalBody"></div></div>
+<div class="modal-bg" id="modal" onclick="if(event.target===this)this.classList.remove('show')"><div class="modal" id="modalBody"></div></div>
 <script>
 
 var SL_KEY = 'safarilink_platform_v1';
@@ -1059,8 +1061,9 @@ function renderRes(){var d=slGet(),f=document.getElementById('resFilter').value,
   document.getElementById('resTable').innerHTML=pg.slice.map(function(r){return '<tr><td>'+r.id+'</td><td>'+esc(r.operator)+'</td><td>'+esc(r.room)+'</td><td>'+r.checkIn+'</td><td>'+r.checkOut+'</td><td>'+esc(r.payment)+'</td><td>'+badge(r.status)+'</td><td><button class="btn" onclick="openResDetail(\''+r.id+'\')">Details</button></td></tr>'}).join('');
   renderPager('pagerRes','res',pg.total,'renderRes');
 }
-function openResDetail(id){
-  var r=slGet().reservations.find(function(x){return x.id===id});if(!r)return;
+window.openResDetail=function openResDetail(id){
+  var r=(slGet().reservations||[]).find(function(x){return String(x.id)===String(id);});
+  if(!r){alert('Reservation not found');return;}
   var lines=(r.roomLines||[]).map(function(l){
     return '<tr><td>'+esc(l.roomType)+'</td><td>'+l.qty+'</td><td>'+(l.nights||'—')+'</td><td>$'+(l.sto||0)+'</td><td>$'+(l.amount||0)+'</td><td>'+esc(l.notes||'')+'</td></tr>';
   }).join('')||'<tr><td colspan="6">'+esc(r.room)+' · '+money(r.amount)+'</td></tr>';
