@@ -361,6 +361,7 @@
 
   var map = {
     'dashboard-fleet.html': ['fleet', 'fleet-owner'],
+    'dashboard-fleet1.html': ['fleet', 'fleet-owner'],
     'dashboard-accommodation.html': ['accommodation', 'accommodation-provider'],
     'dashboard-tour-operator.html': ['tour-operator', 'service-offering'],
     'dashboard-guide.html': ['guide']
@@ -763,8 +764,8 @@ function renderPager(elId,key,total,onChange){var el=document.getElementById(elI
 function pushAlert(text,kind){slUpdate(function(d){if(!d.fleetAlerts)d.fleetAlerts=[];d.fleetAlerts.unshift({text:text,kind:kind||'info',time:Date.now()});d.fleetAlerts=d.fleetAlerts.slice(0,3);});}
 function pushActivity(text){slUpdate(function(d){if(!d.fleetActivity)d.fleetActivity=[];d.fleetActivity.unshift({text:text,time:Date.now()});d.fleetActivity=d.fleetActivity.slice(0,10);});}
 
-function openCharterDetail(ref){
-  var c=(slGet().charters||[]).find(function(x){return x.ref===ref});
+window.openCharterDetail=function openCharterDetail(ref){
+  var c=(slGet().charters||[]).find(function(x){return String(x.ref)===String(ref)||String(x.id)===String(ref);});
   if(!c){alert('Charter not found');return;}
   var days=Math.max(1,Math.round((new Date(c.end)-new Date(c.start))/86400000)+1);
   var body=document.getElementById('modalBody');
@@ -1195,9 +1196,6 @@ function renderTeam(){
   if (!m) return;
   if (m.isMain || m.role === 'Admin') { alert('The Admin account cannot be removed'); return; }
   if (!confirm('Remove '+m.name+' ('+m.role+') from the team?')) return;
-  if (!m.isMain && m.role !== 'Admin') {
-  actions += '<div style="margin-top:6px"><button type="button" class="btn" onclick="removeTeamMember(\''+String(m.id)+'\')">Remove</button></div>';
-}
   list = list.filter(function(x){ return String(x.id) !== String(id); });
   saveFleetTeam(list);
   try {
