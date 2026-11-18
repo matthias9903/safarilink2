@@ -1217,20 +1217,48 @@ function addMember(){
   if(!n||!e){alert('Name and email required');return;}
   if(role==='Admin'){alert('Admin is the main account only');return;}
   if(!list.some(function(m){return m.role==='Admin'||m.isMain;})){alert('Admin account must exist first');return;}
-var activeList = list.filter(function(m){ return m.status !== 'Rejected'; });
-if (activeList.length >= 5) { alert('Team is full (max 5: 1 Admin, 1 Manager, 3 Sales)'); return; }
-if (role === 'Manager' && activeList.some(function(m){ return m.role === 'Manager'; })) {
-  alert('Only one Manager account is allowed'); return;
-}
-if (role === 'Sales' && activeList.filter(function(m){ return m.role === 'Sales'; }).length >= 3) {
-  alert('Maximum 3 Sales accounts allowed'); return;
-}
-     if(list.some(function(m){return (m.email||'').toLowerCase()===e.toLowerCase();})){alert('Email already on team');return;}
-  list.push({id:Date.now(),name:n,email:e,role:role,status:'Pending',requestedAt:Date.now()});
+  var activeList = list.filter(function(m){ return m.status !== 'Rejected'; });
+  if (activeList.length >= 5) { alert('Team is full (max 5: 1 Admin, 1 Manager, 3 Sales)'); return; }
+  if (role === 'Manager' && activeList.some(function(m){ return m.role === 'Manager'; })) {
+    alert('Only one Manager account is allowed'); return;
+  }
+  if (role === 'Sales' && activeList.filter(function(m){ return m.role === 'Sales'; }).length >= 3) {
+    alert('Maximum 3 Sales accounts allowed'); return;
+  }
+  if(list.some(function(m){return (m.email||'').toLowerCase()===e.toLowerCase();})){alert('Email already on team');return;}
+  var id = Date.now();
+  list.push({id:id,name:n,email:e,role:role,status:'Pending',requestedAt:Date.now()});
   saveFleetTeam(list);
+  try {
+    slUpdate(function(d){
+      if (!d.pendingTeam) d.pendingTeam = [];
+      d.pendingTeam = d.pendingTeam.filter(function(p){ return (p.email||'').toLowerCase() !== e.toLowerCase(); });
+      d.pendingTeam.push({
+        id: id,
+        side: 'fleet',
+        provider: 'fleet',
+        providerLabel: 'Fleet',
+        name: n,
+        email: e,
+        role: role,
+        company: (function(){ try { return (JSON.parse(localStorage.getItem('sl_fleet_company_profile')||'{}').name)||''; } catch(e){ return ''; } })(),
+        status: 'pending',
+        requestedAt: Date.now(),
+        createdAt: Date.now()
+      });
+      if (!d.messages) d.messages = [];
+      d.messages.unshift({
+        id: Date.now(), side: 'fleet', from: 'SafariLink', initials: 'SL',
+        text: 'Team request: '+n+' ('+role+') submitted for SafariLink admin approval.',
+        time: Date.now(), type: 'info', fromActivity: true, unread: true
+      });
+    });
+  } catch (err) {}
   document.getElementById('memF').style.display='none';
+  if (document.getElementById('mName')) document.getElementById('mName').value = '';
+  if (document.getElementById('mEmail')) document.getElementById('mEmail').value = '';
   renderTeam();
-  alert('Member saved — awaiting SafariLink admin approval.');
+  alert('Member saved — awaiting SafariLink admin approval. Login details will be emailed after approval.');
 }
 function saveCompanyProfile(){
   var p={name:(document.getElementById('coName')||{}).value||'',region:(document.getElementById('coRegion')||{}).value||'',email:(document.getElementById('coEmail')||{}).value||'',phone:(document.getElementById('coPhone')||{}).value||'',website:(document.getElementById('coWeb')||{}).value||'',address:(document.getElementById('coAddress')||{}).value||'',about:(document.getElementById('coAbout')||{}).value||'',logo:window._companyLogo||''};
