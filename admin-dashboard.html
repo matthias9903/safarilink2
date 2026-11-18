@@ -440,27 +440,7 @@
         .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
         .then(function(result) {
           if (!result.ok) { alert((result.data && result.data.error) || 'Approve failed'); return; }
-          // Inbox message for partner dashboards (same browser / shared localStorage)
-          try {
-            var d = readPlatform();
-            if (!d.messages) d.messages = [];
-            var side = (result.data.role || 'platform');
-            d.messages.unshift({
-              id: Date.now(), side: side, from: 'SafariLink Admin', initials: 'SL',
-              text: 'Your company was approved. Login ready for ' + (result.data.email || '') + '. Temporary password was issued — change it after first login.',
-              time: Date.now(), type: 'info', fromActivity: true, unread: true, keep: true
-            });
-            if (!d.accomAlerts) d.accomAlerts = [];
-            if (side === 'accommodation') {
-              d.accomAlerts.unshift({ text: 'Account approved by SafariLink Admin', kind: 'info', time: Date.now() });
-              d.accomAlerts = d.accomAlerts.slice(0, 3);
-            }
-            writePlatform(d);
-          } catch (e) {}
-          var note = result.data.emailSent
-            ? 'Service provider approved — email sent.'
-            : ('Service provider approved. ' + (result.data.emailNote || 'Email not configured — share the temp password manually.'));
-          showCreds(result.data.tempPassword, result.data.email, result.data.role, note);
+          showCreds(result.data.tempPassword, result.data.email, result.data.role, 'Service provider approved — email notification simulated.');
           loadRequests();
         })
         .catch(function() { approveProviderLocal(id); });
@@ -659,31 +639,22 @@
   function approveMember(idx) {
     var m = allMembers[idx];
     if (!m) return;
-
-    var provider = (m.provider || m.side || m.providerLabel || '').toString().toLowerCase();
-    var platformRole = 'tour-operator';
-    if (provider.indexOf('accommodation') >= 0) platformRole = 'accommodation';
-    else if (provider.indexOf('fleet') >= 0) platformRole = 'fleet';
-    else if (provider.indexOf('guide') >= 0) platformRole = 'guide';
-    else if (provider.indexOf('operator') >= 0 || provider.indexOf('tour') >= 0) platformRole = 'tour-operator';
-
-    var teamRole = m.role || 'Sales';
-    if (teamRole !== 'Manager' && teamRole !== 'Sales') {
-      alert('Only Manager or Sales can be approved here');
-      return;
-    }
-
-    function finishLocal(temp, fromServer) {
-      var d = readPlatform();
-      d.pendingTeam = (d.pendingTeam || []).filter(function(p) { return (p.email || '').toLowerCase() !== (m.email || '').toLowerCase(); });
-      if (!d.teamMemberRegistry) d.teamMemberRegistry = [];
+    var temp = genPass();
+    // Update platform pendingTeam
+    var d = readPlatform();
+    d.pendingTeam = (d.pendingTeam || []).filter(function(p) { return p.email !== m.email; });
+          if (!d.teamMemberRegistry) d.teamMemberRegistry = [];
       var updated = false;
       d.teamMemberRegistry = d.teamMemberRegistry.map(function(x) {
         if ((x.email || '').toLowerCase() === (m.email || '').toLowerCase()) {
           updated = true;
           return Object.assign({}, x, {
-            name: m.name, email: m.email, role: teamRole, status: 'approved',
-            reviewedAt: Date.now(), provider: platformRole, platformRole: platformRole,
+            name: m.name,
+            email: m.email,
+            role: m.role,
+            status: 'approved',
+            reviewedAt: Date.now(),
+            provider: m.provider,
             company: m.company || x.company || ''
           });
         }
@@ -691,85 +662,46 @@
       });
       if (!updated) {
         d.teamMemberRegistry.push({
-          id: m.id || Date.now(), name: m.name, email: m.email, role: teamRole,
-          provider: platformRole, company: m.company || '', status: 'approved',
-          createdAt: Date.now(), reviewedAt: Date.now()
+          id: m.id || Date.now(),
+          name: m.name,
+          email: m.email,
+          role: m.role,
+          provider: m.provider,
+          company: m.company || '',
+          status: 'approved',
+          createdAt: Date.now(),
+          reviewedAt: Date.now()
         });
       }
-      if (!d.team) d.team = {};
-      var key = (platformRole === 'tour-operator') ? 'operator' : platformRole;
-      if (!d.team[key]) d.team[key] = [];
-      d.team[key] = d.team[key].filter(function(x) { return (x.email || '').toLowerCase() !== (m.email || '').toLowerCase(); });
-      d.team[key].push({ id: m.id || Date.now(), name: m.name, email: m.email, role: teamRole, status: 'Active', platformRole: platformRole });
-      if (!d.messages) d.messages = [];
-      d.messages.unshift({
-        id: Date.now(), side: key === 'operator' ? 'operator' : platformRole,
-        from: 'SafariLink Admin', initials: 'SL',
-        text: 'Team member ' + m.name + ' (' + teamRole + ') approved. Login ready for ' + m.email + '.' + (fromServer ? ' (server account created)' : ''),
-        time: Date.now(), type: 'info', fromActivity: true, unread: true, keep: true
-      });
-      writePlatform(d);
-
-      try {
-        var opTeam = JSON.parse(localStorage.getItem('safarilink_op_team') || '[]');
-        opTeam.forEach(function(x) {
-          if ((x.email || '').toLowerCase() === (m.email || '').toLowerCase()) {
-            x.status = 'Active'; x.tempPassword = temp; x.approvedAt = Date.now();
-          }
-        });
-        localStorage.setItem('safarilink_op_team', JSON.stringify(opTeam));
-      } catch (e) {}
-      try {
-        ['sl_accom_team_v1', 'sl_fleet_team_v1'].forEach(function(k) {
-          var arr = JSON.parse(localStorage.getItem(k) || '[]');
-          if (!Array.isArray(arr)) return;
-          arr.forEach(function(x) {
-            if ((x.email || '').toLowerCase() === (m.email || '').toLowerCase()) {
-              x.status = 'Active'; x.tempPassword = temp; x.approvedAt = Date.now();
-            }
-          });
-          localStorage.setItem(k, JSON.stringify(arr));
-        });
-      } catch (e) {}
-      try { localStorage.setItem('safarilink_pwd_' + m.email.toLowerCase(), btoa(temp)); } catch (e) {}
-
-      showCreds(temp, m.email, teamRole + ' · ' + platformRole,
-        fromServer
-          ? 'Server login created. Member must choose business type "' + platformRole + '" on login.html.'
-          : 'Approved locally only (demo). Deploy server team-member API for real login.');
-      loadMembers();
-    }
-
-    if (useApi && token && token !== 'demo') {
-      fetch('/api/admin/team-member/approve', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-        body: JSON.stringify({
-          email: m.email,
-          name: m.name,
-          company: m.company || m.companyName || '',
-          teamRole: teamRole,
-          platformRole: platformRole,
-          provider: provider
-        })
-      })
-      .then(function(res) { return res.json().then(function(data) { return { ok: res.ok, data: data }; }); })
-      .then(function(result) {
-        if (!result.ok || !result.data.success) {
-          alert((result.data && result.data.error) || 'Could not create team login on server');
-          return;
+    if (!d.team) d.team = {};
+    var key = (m.provider === 'tour-operator') ? 'operator' : (m.provider || 'other');
+    if (!d.team[key]) d.team[key] = [];
+    d.team[key].push({ id: m.id || Date.now(), name: m.name, email: m.email, role: m.role, status: 'Active' });
+    if (!d.messages) d.messages = [];
+    d.messages.unshift({
+      id: Date.now(), side: m.provider || 'operator', from: 'SafariLink Admin', initials: 'SL',
+      text: 'Team member ' + m.name + ' (' + m.role + ') approved. Login emailed to ' + m.email + '.',
+      time: Date.now(), type: 'info', unread: true
+    });
+    writePlatform(d);
+    // Update operator team local key
+    try {
+      var opTeam = JSON.parse(localStorage.getItem('safarilink_op_team') || '[]');
+      opTeam.forEach(function(x) {
+        if (x.email === m.email && x.status === 'Pending') {
+          x.status = 'Active';
+          x.tempPassword = temp;
+          x.approvedAt = Date.now();
         }
-        finishLocal(result.data.tempPassword, true);
-      })
-      .catch(function() {
-        alert('Server unreachable — team login was NOT created on the server.');
       });
-    } else {
-      finishLocal(genPass(), false);
-    }
+      localStorage.setItem('safarilink_op_team', JSON.stringify(opTeam));
+    } catch (e) {}
+    try { localStorage.setItem('safarilink_pwd_' + m.email.toLowerCase(), btoa(temp)); } catch (e) {}
+    showCreds(temp, m.email, m.role, 'Team member approved. Email notification simulated.');
+    loadMembers();
   }
 
-      function rejectMember(idx) {
+    function rejectMember(idx) {
     var m = allMembers[idx];
     if (!m || !confirm('Reject ' + m.name + '?')) return;
     var d = readPlatform();
