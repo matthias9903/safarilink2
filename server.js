@@ -682,16 +682,15 @@ app.post('/api/admin/approve/:id', adminAuth, async (req, res) => {
   const hash = bcrypt.hashSync(tempPwd, 12);
 
   const tx = db.transaction(() => {
-        db.prepare(`
-      INSERT INTO users (email, password_hash, role, company_name, contact_name, must_change_password, status, team_role)
-      VALUES (?, ?, ?, ?, ?, 1, 'active', 'Admin')
+    db.prepare(`
+      INSERT INTO users (email, password_hash, role, company_name, contact_name, must_change_password, status)
+      VALUES (?, ?, ?, ?, ?, 1, 'active')
       ON CONFLICT(email, role) DO UPDATE SET
         password_hash = excluded.password_hash,
         company_name = excluded.company_name,
         contact_name = excluded.contact_name,
         status = 'active',
-        must_change_password = 1,
-        team_role = 'Admin'
+        must_change_password = 1
     `).run(r.email, hash, r.business_type, r.company_name, r.contact_name);
 
     db.prepare(`
@@ -792,90 +791,6 @@ app.post('/api/admin/reopen/:id', adminAuth, (req, res) => {
     db.prepare("UPDATE access_requests SET status = 'pending', reviewed_at = NULL WHERE id = ?").run(id);
   })();
   res.json({ success: true });
-});
-
-/** Approve Manager/Sales — creates real login user for /api/login */
-app.post('/api/admin/team-member/approve', adminAuth, async (req, res) => {
-  const body = req.body || {};
-  const email = cleanStr(body.email, 254).toLowerCase();
-  const contactName = cleanStr(body.name || body.contactName, 200) || email;
-  const companyName = cleanStr(body.company || body.companyName, 200) || '';
-  let teamRole = cleanStr(body.teamRole || body.role, 32);
-  if (teamRole === 'Admin') {
-    return res.status(400).json({ error: 'Use provider approve for Admin accounts' });
-  }
-  const trNorm = teamRole.charAt(0).toUpperCase() + teamRole.slice(1).toLowerCase();
-  if (trNorm === 'Manager' || trNorm === 'Sales') teamRole = trNorm;
-  else return res.status(400).json({ error: 'teamRole must be Manager or Sales' });
-
-  let platformRole = cleanStr(body.platformRole || body.businessType || body.provider, 64).toLowerCase();
-  const providerMap = {
-    'tour-operator': 'tour-operator',
-    operator: 'tour-operator',
-    accommodation: 'accommodation',
-    'accommodation-provider': 'accommodation',
-    fleet: 'fleet',
-    'fleet-owner': 'fleet',
-    guide: 'guide',
-    'service-offering': 'service-offering'
-  };
-  platformRole = providerMap[platformRole] || platformRole;
-  if (!ALLOWED_ROLES.has(platformRole)) {
-    return res.status(400).json({ error: 'Invalid platformRole (tour-operator, accommodation, fleet, guide)' });
-  }
-  if (!isValidEmail(email)) return res.status(400).json({ error: 'Invalid email' });
-
-  const tempPwd = crypto.randomBytes(5).toString('hex');
-  const hash = bcrypt.hashSync(tempPwd, 12);
-  try {
-    db.prepare(`
-      INSERT INTO users (email, password_hash, role, company_name, contact_name, must_change_password, status, team_role)
-      VALUES (?, ?, ?, ?, ?, 1, 'active', ?)
-      ON CONFLICT(email, role) DO UPDATE SET
-        password_hash = excluded.password_hash,
-        company_name = excluded.company_name,
-        contact_name = excluded.contact_name,
-        status = 'active',
-        must_change_password = 1,
-        team_role = excluded.team_role
-    `).run(email, hash, platformRole, companyName, contactName, teamRole);
-  } catch (e) {
-    console.error('team-member approve', e.message);
-    return res.status(500).json({ error: 'Could not create user' });
-  }
-
-  const loginLine = PUBLIC_URL
-    ? `Login: ${PUBLIC_URL}/login.html`
-    : 'Login at the SafariLink login page.';
-  const mailText = [
-    `Hello ${contactName},`,
-    ``,
-    `Your SafariLink team access has been APPROVED.`,
-    ``,
-    `Login email: ${email}`,
-    `Temporary password: ${tempPwd}`,
-    `Dashboard: ${platformRole}`,
-    `Team role: ${teamRole}`,
-    loginLine,
-    ``,
-    `Select the correct business type on the login page, then sign in.`,
-    `Please change your password after first login.`,
-    ``,
-    `— SafariLink Team`
-  ].join('\n');
-  const mailResult = await sendMail(email, 'SafariLink — Team access approved', mailText);
-
-  res.json({
-    success: true,
-    email,
-    tempPassword: tempPwd,
-    role: platformRole,
-    teamRole,
-    companyName,
-    contactName,
-    emailSent: mailResult.sent,
-    emailNote: mailResult.reason || null
-  });
 });
 
 app.get('/api/admin/stats', adminAuth, (_req, res) => {
